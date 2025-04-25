@@ -4,7 +4,17 @@
 
     <Frame name="MeleeUtils_UI" />
 
-    <Frame name="MeleeUtils_Parry" parent="UIParent" hidden="true" movable="false" enableMouse="false">
+    <Frame name="CustomizableWidget" virtual="true" hidden="true" movable="true" enableMouse="false">
+        <Scripts>
+            <OnLoad>
+                self:RegisterForDrag("LeftButton");
+                self:SetScript("OnDragStart", self.StartMoving);
+                self:SetScript("OnDragStop", self.StopMovingOrSizing);
+            </OnLoad>
+        </Scripts>
+    </Frame>
+
+    <Frame name="MeleeUtils_Parry" parent="UIParent" inherits="CustomizableWidget">
         <Size>
             <AbsDimension x="128" y="128" /> <!-- Frame size -->
         </Size>
@@ -25,9 +35,9 @@
         </Layers>
     </Frame>
 
-    <Frame name="MeleeUtils_Combo" parent="UIParent" hidden="true" movable="false" enableMouse="false">
+    <Frame name="MeleeUtils_Combo" parent="UIParent" inherits="CustomizableWidget">
         <Size>
-            <AbsDimension x="256" y="256" /> <!-- Frame size -->
+            <AbsDimension x="384" y="384" /> <!-- Frame size -->
         </Size>
         <Anchors>
             <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-30" />
@@ -36,7 +46,7 @@
             <Layer level="BACKGROUND">
                 <Texture name="$parent_Texture" file="Interface\AddOns\MeleeUtils\assets\PowerAura33.tga">
                     <Size>
-                        <AbsDimension x="256" y="256" /> <!-- Texture size -->
+                        <AbsDimension x="384" y="384" /> <!-- Texture size -->
                     </Size>
                     <Anchors>
                         <Anchor point="CENTER" />

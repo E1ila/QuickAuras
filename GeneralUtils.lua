@@ -4,6 +4,12 @@ function MeleeUtils_UI:InitGeneralUI()
     MeleeUtils_Parry_Texture:SetVertexColor(1, 0, 0)
 end
 
+function MeleeUtils_UI:ResetGeneralWidgets()
+    --MeleeUtils_Parry_Texture:ClearAllPoints()
+    --MeleeUtils_Parry_Texture:SetSize(128, 128)
+    --MeleeUtils_Parry_Texture:SetPoint("CENTER", UIParent, "CENTER", 0, 100)
+end
+
 function MeleeUtils_UI:UpdateZone()
     local inInstance, instanceType = IsInInstance()
     MUGLOBAL.InstanceName = nil

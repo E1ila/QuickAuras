@@ -14,10 +14,16 @@ MUGLOBAL = MeleeUtils
 local _class = select(2, UnitClass("player"))
 local _playerGuid = UnitGUID("player")
 local _isRogue = _class == "ROGUE"
+local _uiLocked = true
 
-local EVENTS = {
+local optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",
+}
+
+local adjustableFrames = {
+    "MeleeUtils_Parry",
+    "MeleeUtils_Combo",
 }
 
 -- Default settings
@@ -115,7 +121,7 @@ end
 function MeleeUtils:RegisterOptionalEvents()
     if MeleeUtils.db.profile.enabled  then
         debug("Registering events")
-        for _, event in ipairs(EVENTS) do
+        for _, event in ipairs(optionalEvents) do
             MeleeUtils.events:RegisterEvent(event)
         end
     end
@@ -123,7 +129,7 @@ end
 
 function MeleeUtils:UnregisterOptionalEvents()
     debug("Unregistering events")
-    for _, event in ipairs(EVENTS) do
+    for _, event in ipairs(optionalEvents) do
         MeleeUtils.events:UnregisterEvent(event)
     end
 end
@@ -140,6 +146,10 @@ function MeleeUtils:HandleSlashCommand(input)
             else
                 out("Debug mode "..c.disabled.."disabled|r") -- Orange text
             end
+        elseif cmd == "lock" then
+            MeleeUtils:ToggleLockedState()
+        elseif cmd == "reset" then
+            MeleeUtils:ResetWidgets()
         else
             out("Unknown command. Use '/mu' to open the options or '/mu debug' to toggle debug mode.")
         end
@@ -163,6 +173,24 @@ function MeleeUtils:Options_ToggleEnabled(value)
     else
         MeleeUtils:UnregisterOptionalEvents()
     end
+end
+
+function MeleeUtils:ToggleLockedState()
+    _uiLocked = not _uiLocked
+    for _, frame in ipairs(adjustableFrames) do
+        local f = _G[frame]
+        if f then
+            f:EnableMouse(not _uiLocked)
+            if _uiLocked then f:Hide() else f:Show() end
+        end
+    end
+    out("Frames are now "..(_uiLocked and c.disabled.."locked|r" or c.enabled.."unlocked|r"))
+end
+
+function MeleeUtils:ResetWidgets()
+    debug("Resetting widgets")
+    MeleeUtils_UI:ResetGeneralWidgets()
+    MeleeUtils_UI:ResetRogueWidgets()
 end
 
 -- Events

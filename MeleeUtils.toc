@@ -1,0 +1,17 @@
+﻿## Interface: 90207
+## Interface-Retail: 100107
+## Interface-Classic: 11507
+## Interface-BCC: 20504
+## Interface-Wrath: 30402
+## Title: MeleeUtils
+## Notes: Utils for melee classes, gear warnings, useful alerts, and more.
+## Author: Kof @Firemaw (era)
+## Version: v1.0.0
+## SavedVariables: MeleeUtilsGlobalVars
+## SavedVariablesPerCharacter: MeleeUtilsVars
+## OptionalDeps: Ace3, LibSharedMedia-3.0
+#@no-lib-strip@
+Libs\libs.xml
+#@end-no-lib-strip@
+
+MeleeUtils.xml

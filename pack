@@ -1,0 +1,11 @@
+cd ..
+rm -rf ~/tmp/MeleeUtils
+#mkdir ~/tmp/MeleeUtils
+cp -r MeleeUtils ~/tmp/
+rm ~/tmp/MeleeUtils/pack
+rm -rf ~/tmp/MeleeUtils/.git
+rm -rf ~/tmp/MeleeUtils/.idea
+rm ~/tmp/MeleeUtils/Preview*
+cd ~/tmp
+zip -9r MeleeUtils_$1.zip MeleeUtils -x \*.DS_Store -x \_MACOSX
+rm -rf ~/tmp/MeleeUtils

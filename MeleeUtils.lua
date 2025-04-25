@@ -94,20 +94,37 @@ function MeleeUtils:OnInitialize()
     MeleeUtils.events:SetScript("OnEvent", function(self, event, unit, powerType)
         MeleeUtils[event](self, unit, powerType)
     end)
+    MeleeUtils:RegisterMandatoryEvents()
     C_Timer.After(0.2, function()
+        debug("Init delay ended")
         MeleeUtils:InitUI()
         MeleeUtils:LoadConfig()
-        MeleeUtils:RegisterEvents()
+        MeleeUtils:RegisterOptionalEvents()
         out("MeleeUtils loaded. Type " .. c.bold .. "/mu|r for options.")
     end)
 end
 
-function MeleeUtils:RegisterEvents()
+function MeleeUtils:RegisterMandatoryEvents()
+    debug("Registering mandatory events")
+    MeleeUtils.events:RegisterEvent("ZONE_CHANGED")
+    MeleeUtils.events:RegisterEvent("ZONE_CHANGED_INDOORS")
+    MeleeUtils.events:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+    MeleeUtils.events:RegisterEvent("PLAYER_ENTERING_WORLD")
+end
+
+function MeleeUtils:RegisterOptionalEvents()
     if MeleeUtils.db.profile.enabled  then
         debug("Registering events")
         for _, event in ipairs(EVENTS) do
             MeleeUtils.events:RegisterEvent(event)
         end
+    end
+end
+
+function MeleeUtils:UnregisterOptionalEvents()
+    debug("Unregistering events")
+    for _, event in ipairs(EVENTS) do
+        MeleeUtils.events:UnregisterEvent(event)
     end
 end
 
@@ -142,10 +159,9 @@ end
 function MeleeUtils:Options_ToggleEnabled(value)
     MeleeUtils.db.profile.enabled = value
     if MeleeUtils.db.profile.enabled then
-        MeleeUtils:RegisterEvents()
+        MeleeUtils:RegisterOptionalEvents()
     else
-        debug("Unregistering events")
-        MeleeUtils.events:UnregisterAllEvents()
+        MeleeUtils:UnregisterOptionalEvents()
     end
 end
 
@@ -161,20 +177,34 @@ function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
 end
 
 function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
-    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _ = CombatLogGetCurrentEventInfo()
+    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
 
-    --debug("Combat Log Event:", sourceGUID, sourceName, destGUID, subevent, missType, UnitGUID("target"), UnitGUID("targettarget"), _playerGuid)
-
-    if MeleeUtils.db.profile.harryPaste and subevent == "SWING_MISSED" and sourceGUID == _playerGuid then
-        local missType = select(12, CombatLogGetCurrentEventInfo())
-        if missType == "PARRY" and destGUID == UnitGUID("target") and _playerGuid ~= UnitGUID("targettarget") then
-            MeleeUtils_UI:ShowParry()
-        end
+    if  -- parry haste
+        MeleeUtils.db.profile.harryPaste and
+        subevent == "SWING_MISSED" and
+        sourceGUID == _playerGuid and
+        p1 == "PARRY" and -- missType
+        destGUID == UnitGUID("target") and
+        _playerGuid ~= UnitGUID("targettarget") and
+        not UnitIsPlayer("target") and
+        IsInInstance()
+    then
+        MeleeUtils_UI:ShowParry()
     end
+end
 
-    -- Example: Filter for SPELL_DAMAGE events
-    --if subevent == "SPELL_DAMAGE" then
-    --    print("Spell Damage Event:")
-    --    print("Source:", sourceName, "Target:", destName, "Spell:", spellName, "Amount:", amount)
-    --end
+function MeleeUtils:ZONE_CHANGED()
+    MeleeUtils_UI:UpdateZone()
+end
+
+function MeleeUtils:ZONE_CHANGED_INDOORS()
+    MeleeUtils_UI:UpdateZone()
+end
+
+function MeleeUtils:ZONE_CHANGED_NEW_AREA()
+    MeleeUtils_UI:UpdateZone()
+end
+
+function MeleeUtils:PLAYER_ENTERING_WORLD()
+    MeleeUtils_UI:UpdateZone()
 end

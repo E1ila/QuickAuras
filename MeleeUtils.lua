@@ -11,11 +11,15 @@ MeleeUtils = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
 MeleeUtils.events = CreateFrame("Frame")
 MUGLOBAL = MeleeUtils
 
+local _class = select(2, UnitClass("player"))
+local isRogue = _class == "ROGUE"
+
 -- Default settings
 local defaults = {
     profile = {
         enabled = true,
         someSetting = 50,
+        rogue5combo = true,
     },
 }
 
@@ -24,6 +28,7 @@ local options = {
     name = "Melee Utils",
     handler = MeleeUtils,
     type = "group",
+    childGroups = "tab",
     args = {
         enabled = {
             type = "toggle",
@@ -32,32 +37,18 @@ local options = {
             get = function(info) return MeleeUtils.db.profile.enabled end,
             set = function(info, value) MeleeUtils.db.profile.enabled = value end,
         },
-        someSetting = {
-            type = "range",
-            name = "Some Setting",
-            desc = "Adjust some setting",
-            min = 1,
-            max = 100,
-            step = 1,
-            get = function(info) return MeleeUtils.db.profile.someSetting end,
-            set = function(info, value) MeleeUtils.db.profile.someSetting = value end,
-        },
-        rogue = {
+        rogueUtils = {
             type = "group",
-            name = "Rogue Options",
-            desc = "Settings specific to rogues",
+            name = "Rogue Utils",
             args = {
-                someSetting = {
-                    type = "range",
-                    name = "Some Setting",
-                    desc = "Adjust some setting",
-                    min = 1,
-                    max = 100,
-                    step = 1,
-                    get = function(info) return true end,
-                    set = function(info, value)  end,
+                rogue5Combo = {
+                    type = "toggle",
+                    name = "5 Combo Points",
+                    desc = "Shows a visible indication when you have 5 combo points.",
+                    get = function(info) return MeleeUtils.db.profile.rogue5combo end,
+                    set = function(info, value) MeleeUtils.db.profile.rogue5combo = value end,
                 },
-            },
+            }
         },
     },
 }
@@ -130,11 +121,13 @@ function MeleeUtils:LoadConfig()
     debug("Loading config")
 end
 
--- Event
+-- Events
 
 function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
-    if unit == "player" and powerType == "COMBO_POINTS" then
-        local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
-        MeleeUtils_Rogue:Rogue_SetCombo(comboPoints)
+    if isRogue and MeleeUtils.db.profile.rogue5combo then
+        if unit == "player" and powerType == "COMBO_POINTS" then
+            local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
+            MeleeUtils_Rogue:Rogue_SetCombo(comboPoints)
+        end
     end
 end

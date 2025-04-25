@@ -44,7 +44,7 @@ function MeleeUtils:ADDON_LOADED(addonName)
     out("|cffffbb00v" .. tostring(VERSION) .. "|r " .. CREDITS .. ", " .. L["loaded-welcome"]);
 
     -- Options UI
-    MeleeUtils.InterfacePanel:AddonLoaded()
+    MeleeUtils.InterfacePanel:LoadConfig()
 
     MeleeUtils:SetScript("OnUpdate", function(self, ...)
         MeleeUtils:OnUpdate(...)

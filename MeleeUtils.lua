@@ -9,6 +9,8 @@ local _ = LibStub("AceConsole-3.0")
 
 MeleeUtils = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
 MeleeUtils.events = CreateFrame("Frame")
+MeleeUtils.timers = {}
+MeleeUtils.timerByName = {}
 MUGLOBAL = MeleeUtils
 
 local _class = select(2, UnitClass("player"))
@@ -19,11 +21,31 @@ local _uiLocked = true
 local optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",
+    "UNIT_AURA",
 }
 
 local adjustableFrames = {
     "MeleeUtils_Parry",
     "MeleeUtils_Combo",
+    "MeleeUtils_Flurry",
+}
+
+local progressSpells = {
+    [13877] = {
+        name = "Blade Flurry",
+        icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
+        color = {246/256, 122/256, 0},
+    },
+    [13750] = {
+        name = "Adrenaline Rush",
+        icon = "Interface\\Icons\\Ability_Rogue_AdrenalineRush",
+        color = {246/256, 220/256, 0},
+    },
+    [6774] = {
+        name = "Slice and Dice",
+        icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
+        color = {0, 0.9, 0.2},
+    },
 }
 
 -- Default settings
@@ -33,6 +55,7 @@ local defaults = {
         someSetting = 50,
         rogue5combo = true,
         harryPaste = true,
+        spellProgress = true,
     },
 }
 
@@ -56,6 +79,13 @@ local options = {
             desc = "Warn when a mob parries your attack while being tanked",
             get = function(info) return MeleeUtils.db.profile.harryPaste end,
             set = function(info, value) MeleeUtils.db.profile.harryPaste = value end,
+        },
+        spellProgress = {
+            type = "toggle",
+            name = "Spell Progress",
+            desc = "Show a progress bar with time left on important spells",
+            get = function(info) return MeleeUtils.db.profile.spellProgress end,
+            set = function(info, value) MeleeUtils.db.profile.spellProgress = value end,
         },
         rogueUtils = {
             type = "group",
@@ -100,12 +130,16 @@ function MeleeUtils:OnInitialize()
     MeleeUtils.events:SetScript("OnEvent", function(self, event, unit, powerType)
         MeleeUtils[event](self, unit, powerType)
     end)
+    MeleeUtils.events:SetScript("OnUpdate", function()
+        MeleeUtils:OnUpdate()
+    end)
     MeleeUtils:RegisterMandatoryEvents()
     C_Timer.After(0.2, function()
         debug("Init delay ended")
         MeleeUtils:InitUI()
         MeleeUtils:LoadConfig()
         MeleeUtils:RegisterOptionalEvents()
+        MeleeUtils:CheckAuras()
         out("MeleeUtils loaded. Type " .. c.bold .. "/mu|r for options.")
     end)
 end
@@ -195,6 +229,27 @@ end
 
 -- Events
 
+function MeleeUtils:CheckAuras()
+    if not MeleeUtils.db.profile.spellProgress then return end
+    local i = 1
+    while true do
+        local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL")
+        --debug(UnitAura("player", i, "HELPFUL"))
+        if not name then break end -- Exit the loop when no more auras are found
+        local progressSpell = progressSpells[spellID]
+        if progressSpell then
+            --debug("Aura", name, icon, duration, expTime)
+            local onUpdate = function(timer)
+                return MeleeUtils_UI:UpdateProgress(timer)
+            end
+            MeleeUtils:AddTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
+        end
+        i = i + 1
+    end
+end
+
+-- Events
+
 function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
     if _isRogue and MeleeUtils.db.profile.rogue5combo then
         if unit == "player" and powerType == "COMBO_POINTS" then
@@ -235,4 +290,22 @@ end
 
 function MeleeUtils:PLAYER_ENTERING_WORLD()
     MeleeUtils_UI:UpdateZone()
+end
+
+function MeleeUtils:UNIT_AURA(unit)
+    if unit ~= "player" then return end
+    MeleeUtils:CheckAuras()
+end
+
+-- OnUpdate
+
+local lastUpdate = 0
+local updateInterval = 0.1 -- Execute every 0.1 seconds
+
+function MeleeUtils:OnUpdate()
+    local currentTime = GetTime()
+    if MeleeUtils.db.profile.spellProgress and currentTime - lastUpdate >= updateInterval then
+        lastUpdate = currentTime
+        MeleeUtils:CheckTimers()
+    end
 end

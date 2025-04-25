@@ -17,4 +17,3 @@ function MeleeUtils_UI:Rogue_SetCombo(n)
         MeleeUtils_Combo:Show()
     end
 end
-

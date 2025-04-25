@@ -11,6 +11,5 @@
 ## SavedVariablesPerCharacter: MeleeUtilsDB
 
 Libs\libs.xml
-OptionsConfig.lua
 MeleeUtils.xml
 MeleeUtils.lua

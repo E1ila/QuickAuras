@@ -1,60 +1,95 @@
-﻿local VERSION = "1.0.0"
-local VERSION_INT = 1.0000
-local ADDON_NAME = "MeleeUtils"
-local CREDITS = "by |cffb266ffKof|r @ |cffff2222Firemaw|r (era)"
+﻿-- MeleeUtils.lua
+local ADDON_NAME, MeleeUtils = ...
 
-local L = MeleeUtils_BuildLocalization()
-local REALM = GetRealmName()
+-- Load Ace3 libraries
+local AceAddon = LibStub("AceAddon-3.0")
+local AceConfig = LibStub("AceConfig-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local _ = LibStub("AceConsole-3.0")
 
-local SharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
-local DEFAULT_FONT_NAME = SharedMedia.MediaTable.font[SharedMedia.DefaultMedia.font]
+-- Create the addon object
+MeleeUtils = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
+MUGLOBAL = MeleeUtils
 
-MeleeUtils = CreateFrame("Frame", "MeleeUtils")
-MeleeUtils:RegisterEvent("ADDON_LOADED")
-MeleeUtils.L = L
-MeleeUtils.Version = VERSION
-MeleeUtils.AddonName = ADDON_NAME
-
-MeleeUtilsGlobalVars = {
-    debug = false,
-    fontName = DEFAULT_FONT_NAME,
-    ver = VERSION_INT,
+-- Default settings
+local defaults = {
+    profile = {
+        enabled = true,
+        debug = false,
+        someSetting = 50,
+    },
 }
 
-MeleeUtilsVars = {
-    enabled = true,
+-- Options table for the settings page
+local options = {
+    name = "Melee Utils",
+    handler = MeleeUtils,
+    type = "group",
+    args = {
+        enabled = {
+            type = "toggle",
+            name = "Enable",
+            desc = "Enable or disable the addon",
+            get = function(info) return MeleeUtils.db.profile.enabled end,
+            set = function(info, value) MeleeUtils.db.profile.enabled = value end,
+        },
+        someSetting = {
+            type = "range",
+            name = "Some Setting",
+            desc = "Adjust some setting",
+            min = 1,
+            max = 100,
+            step = 1,
+            get = function(info) return MeleeUtils.db.profile.someSetting end,
+            set = function(info, value) MeleeUtils.db.profile.someSetting = value end,
+        },
+    },
 }
 
 local function out(text, ...)
-    print(" |cffff8800{|cffffbb00MeleeUtils|cffff8800}|r", text, ...)
+    print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
 end
-MeleeUtils.out = out
+MeleeUtils.Print = out
 
-local function debug(...)
-    if MeleeUtilsGlobalVars.debug then
-        out(...)
+local function debug(text, ...)
+    if RaidLoggerStore.debug then
+        print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cff009999DEBUG|cff999999", text, ...)
     end
 end
-MeleeUtils.debug = debug
+MeleeUtils.Debug = debug
 
-function MeleeUtils:ADDON_LOADED(addonName)
-    if addonName ~= ADDON_NAME then
-        return
-    end
-    out("|cffffbb00v" .. tostring(VERSION) .. "|r " .. CREDITS .. ", " .. L["loaded-welcome"]);
+local c = {
+    bold = "|cffff77aa",
+    enabled = "|cff00ff00",
+}
+MeleeUtils.Colors = c
 
-    -- Options UI
-    --MeleeUtils.InterfacePanel:LoadConfig()
-
-    MeleeUtils:SetScript("OnUpdate", function(self, ...)
-        MeleeUtils:OnUpdate(...)
+-- Initialize the addon
+function MeleeUtils:OnInitialize()
+    self.db = LibStub("AceDB-3.0"):New("MeleeUtilsDB", defaults, true)
+    AceConfig:RegisterOptionsTable("MeleeUtils", options)
+    self.optionsFrame = AceConfigDialog:AddToBlizOptions("MeleeUtils", "Melee Utils")
+    self:RegisterChatCommand("mu", "HandleSlashCommand")
+    C_Timer.After(1, function()
+        out("MeleeUtils loaded. Type " .. c.bold .. "/mu|r for options.")
     end)
 end
 
-MeleeUtils:SetScript("OnEvent", function(self, event, a, b, ...)
-    MeleeUtils[event](self, a, b, ...)
-end)
-
-function MeleeUtils:OnUpdate()
+-- Handle slash commands
+function MeleeUtils:HandleSlashCommand(input)
+    if not input or input:trim() == "" then
+        AceConfigDialog:Open("MeleeUtils")
+    else
+        local cmd = input:trim():lower()
+        if cmd == "debug" then
+            self.db.debug = not self.db.debug
+            if self.db.debug then
+                out("Debug mode "..c.enabled.."enabled|r") -- Green text
+            else
+                out("Debug mode "..c.disabled.."disabled|r") -- Orange text
+            end
+        else
+            out("Unknown command. Use '/mu' to open the options or '/mu debug' to toggle debug mode.")
+        end
+    end
 end
-

@@ -7,17 +7,9 @@
 ## Notes: Utils for melee classes, gear warnings, useful alerts, and more.
 ## Author: Kof @Firemaw (era)
 ## Version: v1.0.0
-## SavedVariables: MeleeUtilsGlobalVars
-## SavedVariablesPerCharacter: MeleeUtilsVars
-## OptionalDeps: Ace3, LibSharedMedia-3.0
-#@no-lib-strip@
-Libs\libs.xml
-#@end-no-lib-strip@
+## SavedVariables: MeleeUtilsDBG
+## SavedVariablesPerCharacter: MeleeUtilsDB
 
+Libs\libs.xml
 MeleeUtils.xml
-Localization.lua
 MeleeUtils.lua
-MeleeUtilsOptions.lua
-Events.lua
-UI.lua
-Slash.lua

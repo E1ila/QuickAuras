@@ -2,9 +2,30 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 
-    <Frame name="MeleeUtils_Rogue" />
+    <Frame name="MeleeUtils_UI" />
 
-    <Frame name="MeleeUtils_Combo" parent="UIParent" hidden="false" movable="false" enableMouse="false">
+    <Frame name="MeleeUtils_Parry" parent="UIParent" hidden="true" movable="false" enableMouse="false">
+        <Size>
+            <AbsDimension x="128" y="128" /> <!-- Frame size -->
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="100" />
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parent_Texture" file="Interface\AddOns\MeleeUtils\assets\PowerAura19.tga">
+                    <Size>
+                        <AbsDimension x="128" y="128" /> <!-- Texture size -->
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <Frame name="MeleeUtils_Combo" parent="UIParent" hidden="true" movable="false" enableMouse="false">
         <Size>
             <AbsDimension x="256" y="256" /> <!-- Frame size -->
         </Size>
@@ -25,5 +46,6 @@
         </Layers>
     </Frame>
 
+    <Script file="GeneralUtils.lua" />
     <Script file="RogueUtils.lua" />
 </Ui>

@@ -12,7 +12,13 @@ MeleeUtils.events = CreateFrame("Frame")
 MUGLOBAL = MeleeUtils
 
 local _class = select(2, UnitClass("player"))
-local isRogue = _class == "ROGUE"
+local _playerGuid = UnitGUID("player")
+local _isRogue = _class == "ROGUE"
+
+local EVENTS = {
+    "UNIT_POWER_UPDATE",
+    "COMBAT_LOG_EVENT_UNFILTERED",
+}
 
 -- Default settings
 local defaults = {
@@ -20,6 +26,7 @@ local defaults = {
         enabled = true,
         someSetting = 50,
         rogue5combo = true,
+        harryPaste = true,
     },
 }
 
@@ -35,7 +42,14 @@ local options = {
             name = "Enable",
             desc = "Enable or disable the addon",
             get = function(info) return MeleeUtils.db.profile.enabled end,
-            set = function(info, value) MeleeUtils.db.profile.enabled = value end,
+            set = function(info, value) MeleeUtils:Options_ToggleEnabled(value) end,
+        },
+        harryPaste = {
+            type = "toggle",
+            name = "Harry Paste",
+            desc = "Warn when a mob parries your attack while being tanked",
+            get = function(info) return MeleeUtils.db.profile.harryPaste end,
+            set = function(info, value) MeleeUtils.db.profile.harryPaste = value end,
         },
         rogueUtils = {
             type = "group",
@@ -77,6 +91,9 @@ function MeleeUtils:OnInitialize()
     AceConfig:RegisterOptionsTable("MeleeUtils", options)
     self.optionsFrame = AceConfigDialog:AddToBlizOptions("MeleeUtils", "Melee Utils")
     self:RegisterChatCommand("mu", "HandleSlashCommand")
+    MeleeUtils.events:SetScript("OnEvent", function(self, event, unit, powerType)
+        MeleeUtils[event](self, unit, powerType)
+    end)
     C_Timer.After(0.2, function()
         MeleeUtils:InitUI()
         MeleeUtils:LoadConfig()
@@ -86,12 +103,12 @@ function MeleeUtils:OnInitialize()
 end
 
 function MeleeUtils:RegisterEvents()
-    debug("Registering events")
-    MeleeUtils.events:SetScript("OnEvent", function(self, event, unit, powerType)
-        MeleeUtils[event](self, unit, powerType)
-    end)
-
-    MeleeUtils.events:RegisterEvent("UNIT_POWER_UPDATE")
+    if MeleeUtils.db.profile.enabled  then
+        debug("Registering events")
+        for _, event in ipairs(EVENTS) do
+            MeleeUtils.events:RegisterEvent(event)
+        end
+    end
 end
 
 function MeleeUtils:HandleSlashCommand(input)
@@ -114,20 +131,50 @@ end
 
 function MeleeUtils:InitUI()
     debug("Initializing UI")
-    MeleeUtils_Rogue:InitRogueUI()
+    MeleeUtils_UI:InitGeneralUI()
+    MeleeUtils_UI:InitRogueUI()
 end
 
 function MeleeUtils:LoadConfig()
     debug("Loading config")
 end
 
+function MeleeUtils:Options_ToggleEnabled(value)
+    MeleeUtils.db.profile.enabled = value
+    if MeleeUtils.db.profile.enabled then
+        MeleeUtils:RegisterEvents()
+    else
+        debug("Unregistering events")
+        MeleeUtils.events:UnregisterAllEvents()
+    end
+end
+
 -- Events
 
 function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
-    if isRogue and MeleeUtils.db.profile.rogue5combo then
+    if _isRogue and MeleeUtils.db.profile.rogue5combo then
         if unit == "player" and powerType == "COMBO_POINTS" then
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
-            MeleeUtils_Rogue:Rogue_SetCombo(comboPoints)
+            MeleeUtils_UI:Rogue_SetCombo(comboPoints)
         end
     end
+end
+
+function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
+    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _ = CombatLogGetCurrentEventInfo()
+
+    --debug("Combat Log Event:", sourceGUID, sourceName, destGUID, subevent, missType, UnitGUID("target"), UnitGUID("targettarget"), _playerGuid)
+
+    if MeleeUtils.db.profile.harryPaste and subevent == "SWING_MISSED" and sourceGUID == _playerGuid then
+        local missType = select(12, CombatLogGetCurrentEventInfo())
+        if missType == "PARRY" and destGUID == UnitGUID("target") and _playerGuid ~= UnitGUID("targettarget") then
+            MeleeUtils_UI:ShowParry()
+        end
+    end
+
+    -- Example: Filter for SPELL_DAMAGE events
+    --if subevent == "SPELL_DAMAGE" then
+    --    print("Spell Damage Event:")
+    --    print("Source:", sourceName, "Target:", destName, "Spell:", spellName, "Amount:", amount)
+    --end
 end

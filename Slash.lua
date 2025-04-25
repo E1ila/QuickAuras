@@ -6,7 +6,7 @@ SLASH_MELEEUTILS3 = "/melee";
 SlashCmdList.MELEEUTILS = function(msg)
     local _, _, cmd, arg1 = string.find(msg, "([%w]+)%s*(.*)$")
     if not cmd then
-        Settings.OpenToCategory(MeleeUtils.InterfacePanel.category)
+        Settings.OpenToCategory("Melee Utils")
     else
         cmd = string.upper(cmd)
         if "HELP" == cmd or "H" == cmd then

@@ -15,3 +15,9 @@ Libs\libs.xml
 #@end-no-lib-strip@
 
 MeleeUtils.xml
+Localization.lua
+MeleeUtils.lua
+MeleeUtilsOptions.lua
+Events.lua
+UI.lua
+Slash.lua

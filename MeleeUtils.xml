@@ -306,12 +306,4 @@
 
     <Frame name="MeleeUtilsFrame_Options">
     </Frame>  <!---->
-
-    <Script file="Localization.lua"/>
-    <Script file="MeleeUtils.lua"/>
-    <Script file="MeleeUtilsOptions.lua"/>
-    <Script file="Events.lua"/>
-    <Script file="UI.lua"/>
-    <Script file="Slash.lua"/>
-
 </Ui>

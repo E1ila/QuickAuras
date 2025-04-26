@@ -2,18 +2,21 @@ local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 local pbId = 0
-local pbCount = 0
 
-function MeleeUtils:CreateStatusBar(index, height, padding, color, icon)
+function MeleeUtils:CreateStatusBar(parent, list, height, padding, color, icon, gap)
     local frame
-    if type(index) == "table" then
-        frame = index
+    pbId = pbId + 1
+    frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), parent, "MeleeUtils_StatusBar")
+    debug("Created progress bar", "name", frame:GetName(), "index", #list)
+    if #list > 0 then
+        local lastFrame = list[#list].frame
+        frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -gap)
     else
-        pbId = pbId + 1
-        frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), UIParent, "MeleeUtils_StatusBar")
-        debug("Created progress bar", "name", frame:GetName(), "index", index)
-        frame:SetPoint("CENTER", UIParent, "CENTER", 0, -180 - (index * (height + padding)))
+        frame:SetPoint("TOP", parent, "TOP", 0, 0)
     end
+    frame:SetPoint("LEFT", parent, "LEFT", 0, 0)
+    frame:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
+    frame:SetHeight(height)
     frame:SetBackdrop({
         bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -58,7 +61,7 @@ end
 
 function MeleeUtils:AddProgressTimer(progressSpell, duration, expTime, onUpdate, onEnd)
     local existingTimer = self.timerByName[progressSpell.name]
-    local index = pbCount
+    local index = #self.timers
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == progressSpell.name then
             return -- already exists
@@ -69,11 +72,10 @@ function MeleeUtils:AddProgressTimer(progressSpell, duration, expTime, onUpdate,
         index = existingTimer.index
     else
         debug("Adding timer", "name", progressSpell.name, "expTime", expTime)
-        pbCount = pbCount + 1
-        index = pbCount - 1
+        index = #self.timers
     end
 
-    local frame = self:CreateStatusBar(index, 25, 2, progressSpell.color, progressSpell.icon)
+    local frame = self:CreateStatusBar(MeleeUtils_BuffProgress, self.timers, 25, 2, progressSpell.color, progressSpell.icon, 0)
     local timer = {
         frame = frame,
         index = index,
@@ -85,8 +87,7 @@ function MeleeUtils:AddProgressTimer(progressSpell, duration, expTime, onUpdate,
         onUpdate = onUpdate,
         onEnd = onEnd,
     }
-    local key = progressSpell.name..tostring(expTime)
-    self.timers[key] = timer
+    table.insert(self.timers, timer)
     self.timerByName[progressSpell.name] = timer
 end
 
@@ -96,15 +97,18 @@ function MeleeUtils:RemoveProgressTimer(timer)
     if timer.onEnd then
         timer:onEnd(timer)
     end
-    if self.timers[key] then
-        timer.frame:Hide()
-        timer.frame:SetParent(nil)
-        timer.frame:ClearAllPoints()
-        timer.frame = nil
-        self.timers[key] = nil
-        self.timerByName[timer.name] = nil
+    -- remove from timers the one with matching name and expTime
+    for i, t in ipairs(self.timers) do
+        if t.name == timer.name and t.expTime == timer.expTime then
+            table.remove(self.timers, i)
+            break
+        end
     end
-    pbCount = pbCount - 1
+    timer.frame:Hide()
+    timer.frame:SetParent(nil)
+    timer.frame:ClearAllPoints()
+    timer.frame = nil
+    self.timerByName[timer.name] = nil
 end
 
 function MeleeUtils:CheckProgressTimers()

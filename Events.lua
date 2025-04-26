@@ -49,17 +49,29 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
 
     if  -- parry haste
-    self.db.profile.harryPaste and
-            subevent == "SWING_MISSED" and
-            sourceGUID == self.playerGuid and
-            p1 == "PARRY" and -- missType
-            destGUID == UnitGUID("target") and
-            self.playerGuid ~= UnitGUID("targettarget") and
-            not UnitIsPlayer("target") and
-            IsInInstance()
+        self.db.profile.harryPaste and
+        subevent == "SWING_MISSED" and
+        sourceGUID == self.playerGuid and
+        p1 == "PARRY" and -- missType
+        destGUID == UnitGUID("target") and
+        self.playerGuid ~= UnitGUID("targettarget") and
+        not UnitIsPlayer("target") and
+        IsInInstance()
     then
         self:ShowParry()
     end
+
+    --if  -- IEA announce
+    --    self.db.profile.eaAnnounce
+    --    and subevent == "SPELL_AURA_APPLIED"
+    --    and sourceGUID == self.playerGuid
+    --    and p1 == 11198 -- IEA
+    --    and destGUID == UnitGUID("target")
+    --    and not UnitIsPlayer("target")
+    --    --and IsInInstance()
+    --then
+    --    SendChatMessage(">> EXPORE ARMOR <<", "SAY")
+    --end
 end
 
 function MeleeUtils:ZONE_CHANGED()

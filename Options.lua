@@ -1,5 +1,6 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 MeleeUtils.defaultOptions = {
     profile = {
@@ -8,6 +9,7 @@ MeleeUtils.defaultOptions = {
         rogue5combo = true,
         harryPaste = true,
         spellProgress = true,
+        eaAnnounce = true,
     },
 }
 
@@ -49,6 +51,13 @@ MeleeUtils.options = {
                     get = function(info) return MeleeUtils.db.profile.rogue5combo end,
                     set = function(info, value) MeleeUtils.db.profile.rogue5combo = value end,
                 },
+                --eaAnnounce = {
+                --    type = "toggle",
+                --    name = "IEA Announce",
+                --    desc = "Informs the raid in /s once you've applied IEA.",
+                --    get = function(info) return MeleeUtils.db.profile.eaAnnounce end,
+                --    set = function(info, value) MeleeUtils.db.profile.eaAnnounce = value end,
+                --},
             }
         },
     },

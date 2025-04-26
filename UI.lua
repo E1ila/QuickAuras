@@ -8,6 +8,10 @@ function MeleeUtils:InitUI()
     MeleeUtils_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
 
+    --self:SetDarkBackdrop(MeleeUtils_BuffProgress)
+    --self:DisableDarkBackdrop(MeleeUtils_BuffProgress)
+    MeleeUtils_BuffProgress_Text:Hide()
+
     --self:CreateStatusBar(MeleeUtils_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     --MeleeUtils_Flurry:Show()
     --MeleeUtils_Flurry_Progress_Bar:SetValue(1)
@@ -22,6 +26,16 @@ function MeleeUtils:ResetRogueWidgets()
     --MeleeUtils_Parry_Texture:SetSize(128, 128)
     --MeleeUtils_Parry_Texture:SetPoint("CENTER", UIParent, "CENTER", 0, 100)
 
+end
+
+function MeleeUtils:SetDarkBackdrop(frame)
+    frame:SetBackdrop ({bgFile = [[Interface\AddOns\MeleeUtils\assets\background]], tile = true, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}})
+    frame:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
+    frame:SetBackdropBorderColor(0, 0, 0, 0.9)
+end
+
+function MeleeUtils:DisableDarkBackdrop(frame)
+    frame:SetBackdrop (nil)
 end
 
 function MeleeUtils:Rogue_SetCombo(n)

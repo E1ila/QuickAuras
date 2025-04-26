@@ -19,7 +19,6 @@ MUGLOBAL = MeleeUtils
 MeleeUtils.playerClass = select(2, UnitClass("player"))
 MeleeUtils.playerGuid = UnitGUID("player")
 MeleeUtils.isRogue = MeleeUtils.playerClass == "ROGUE"
-local _uiLocked = true
 local _c
 
 local function out(text, ...)

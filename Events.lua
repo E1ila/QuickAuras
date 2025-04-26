@@ -2,6 +2,13 @@ local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 
+local enemyDebuffs = {
+    exporeArmor = {},
+}
+
+local lastUpdate = 0
+local updateInterval = 0.1 -- Execute every 0.1 seconds
+
 function MeleeUtils:CheckAuras()
     if not self.db.profile.watchBars then return end
     local i = 1
@@ -41,59 +48,6 @@ function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
     end
 end
 
-local exporeArmor = {
-
-}
-
-function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
-    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
-    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
-
-    if  -- parry haste
-        self.db.profile.harryPaste and
-        subevent == "SWING_MISSED" and
-        sourceGUID == self.playerGuid and
-        p1 == "PARRY" and -- missType
-        destGUID == UnitGUID("target") and
-        self.playerGuid ~= UnitGUID("targettarget") and
-        not UnitIsPlayer("target") and
-        IsInInstance()
-    then
-        self:ShowParry()
-    end
-
-    if self.db.profile.watchBars and self.db.profile.rogueEaBar then
-        if  -- IEA apply
-            (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-            and sourceGUID == self.playerGuid
-            and p1 == 11198 -- IEA
-            and destGUID == UnitGUID("target")
-        then
-            local progressSpell = self.watchBarOffensive[p1]
-            local timer = self:SetProgressTimer(progressSpell, 30, GetTime()+30, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
-            exporeArmor[destGUID] = timer
-        end
-
-        if  -- IEA remove
-            subevent == "SPELL_AURA_REMOVED"
-            and sourceGUID == self.playerGuid
-            and p1 == 11198 -- IEA
-            and exporeArmor[destGUID]
-        then
-            self:RemoveProgressTimer(exporeArmor[destGUID])
-            exporeArmor[destGUID] = nil
-        end
-
-        if -- IEA remove
-            subevent == "UNIT_DIED"
-            and exporeArmor[destGUID]
-        then
-            self:RemoveProgressTimer(exporeArmor[destGUID])
-            exporeArmor[destGUID] = nil
-        end
-    end
-end
-
 function MeleeUtils:ZONE_CHANGED()
     self:UpdateZone()
 end
@@ -116,18 +70,101 @@ function MeleeUtils:UNIT_AURA(unit)
 end
 
 function MeleeUtils:UI_ERROR_MESSAGE(errorType, errorMessage)
-    if self.db.profile.outOfRange then
+    if self.db.profile.outOfRange and UnitAffectingCombat("player") then
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
-        if errorMessage == ERR_OUT_OF_RANGE or errorMessage == ERR_SPELL_OUT_OF_RANGE or errorMessage == "You must be behind your target" then
+        if  errorMessage == ERR_OUT_OF_RANGE
+            or errorMessage == ERR_SPELL_OUT_OF_RANGE
+            or errorMessage == "You must be behind your target" then
             self:ShowNoticableError(errorMessage)
         end
     end
 end
 
--- OnUpdate
+function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
+    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
+    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
-local lastUpdate = 0
-local updateInterval = 0.1 -- Execute every 0.1 seconds
+    if  -- parry haste
+        self.db.profile.harryPaste and
+        subevent == "SWING_MISSED" and
+        sourceGUID == self.playerGuid and
+        p1 == "PARRY" and -- missType
+        destGUID == UnitGUID("target") and
+        self.playerGuid ~= UnitGUID("targettarget") and
+        not UnitIsPlayer("target") and
+        IsInInstance()
+    then
+        self:ShowParry()
+    end
+
+    -- self.db.profile.watchBars and self.db.profile.rogueEaBar
+    if type(p1) == "number" and p1 > 0 then
+        for spellID, conf in pairs(MeleeUtils.watchBarOffensive) do
+            if p1 == spellID then
+                if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+                    and sourceGUID == self.playerGuid
+                    and destGUID == UnitGUID("target")
+                    and (not conf.option or self.db.profile[conf.option])
+                then
+                    local timer = self:SetProgressTimer(conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)
+                    if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
+                    enemyDebuffs[p1][destGUID] = timer
+                end
+
+                if  subevent == "SPELL_AURA_REMOVED"
+                    and sourceGUID == self.playerGuid
+                    and enemyDebuffs[p1] and enemyDebuffs[p1][destGUID]
+                then
+                    self:RemoveProgressTimer(enemyDebuffs[p1][destGUID])
+                    enemyDebuffs[p1][destGUID] = nil
+                end
+            end
+        end
+    end
+
+    if subevent == "UNIT_DIED" then
+        for spellID, conf in pairs(MeleeUtils.watchBarOffensive) do
+            if enemyDebuffs[spellID] and enemyDebuffs[spellID][destGUID] then
+                self:RemoveProgressTimer(enemyDebuffs[spellID][destGUID])
+                enemyDebuffs[spellID][destGUID] = nil
+            end
+        end
+    end
+
+        --if self.db.profile.offensiveBars then
+    --    if  -- IEA apply
+    --        (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+    --        and sourceGUID == self.playerGuid
+    --        and p1 == 11198 -- IEA
+    --        and destGUID == UnitGUID("target")
+    --    then
+    --        local progressSpell = self.watchBarOffensive[p1]
+    --        local timer = self:SetProgressTimer(progressSpell, 30, GetTime()+30, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
+    --        exporeArmor[destGUID] = timer
+    --    end
+    --
+    --    if  -- IEA remove
+    --        subevent == "SPELL_AURA_REMOVED"
+    --        and sourceGUID == self.playerGuid
+    --        and p1 == 11198 -- IEA
+    --        and exporeArmor[destGUID]
+    --    then
+    --        self:RemoveProgressTimer(exporeArmor[destGUID])
+    --        exporeArmor[destGUID] = nil
+    --    end
+    --
+    --    if -- IEA remove
+    --        subevent == "UNIT_DIED"
+    --        and exporeArmor[destGUID]
+    --    then
+    --        self:RemoveProgressTimer(exporeArmor[destGUID])
+    --        exporeArmor[destGUID] = nil
+    --    end
+    --end
+end
+
+
+-- OnUpdate
 
 function MeleeUtils:OnUpdate()
     local currentTime = GetTime()

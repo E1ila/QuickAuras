@@ -8,9 +8,13 @@ function MeleeUtils:InitUI()
     MeleeUtils_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
 
-    --self:SetDarkBackdrop(MeleeUtils_BuffProgress)
-    --self:DisableDarkBackdrop(MeleeUtils_BuffProgress)
-    MeleeUtils_BuffProgress_Text:Hide()
+    --self:SetDarkBackdrop(MeleeUtils_WatchBars)
+    --self:DisableDarkBackdrop(MeleeUtils_WatchBars)
+    MeleeUtils_WatchBars_Text:Hide()
+
+    --self:SetDarkBackdrop(MeleeUtils_OffensiveBars)
+    --self:DisableDarkBackdrop(MeleeUtils_OffensiveBars)
+    MeleeUtils_OffensiveBars_Text:Hide()
 
     --self:CreateProgressBar(MeleeUtils_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     --MeleeUtils_Flurry:Show()

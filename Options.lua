@@ -1,6 +1,7 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local _uiLocked = true
 
 MeleeUtils.defaultOptions = {
     profile = {
@@ -11,10 +12,14 @@ MeleeUtils.defaultOptions = {
         rogueSndBar = true,
         rogueFlurryBar = true,
         rogueArBar = true,
+        rogueGauge = true,
+        rogueCheapShot = true,
+        rogueKidneyShot = true,
         harryPaste = true,
         watchBars = true,
         outOfRange = true,
         outOfRangeSound = true,
+        offensiveBars = true,
     },
 }
 
@@ -44,6 +49,13 @@ MeleeUtils.options = {
             desc = "Show a progress bar with time left on important abilities",
             get = function(info) return MeleeUtils.db.profile.watchBars end,
             set = function(info, value) MeleeUtils.db.profile.watchBars = value end,
+        },
+        offensiveBars = {
+            type = "toggle",
+            name = "Offensive Bars",
+            desc = "Show a progress bar with time left on important abilities",
+            get = function(info) return MeleeUtils.db.profile.offensiveBars end,
+            set = function(info, value) MeleeUtils.db.profile.offensiveBars = value end,
         },
         outOfRange = {
             type = "toggle",
@@ -104,6 +116,27 @@ MeleeUtils.options = {
                     get = function(info) return MeleeUtils.db.profile.rogueArBar end,
                     set = function(info, value) MeleeUtils.db.profile.rogueArBar = value end,
                 },
+                rogueGauge = {
+                    type = "toggle",
+                    name = "Gauge",
+                    desc = "Shows time bar for Gauge.",
+                    get = function(info) return MeleeUtils.db.profile.rogueGauge end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueGauge = value end,
+                },
+                rogueCheapShot = {
+                    type = "toggle",
+                    name = "Cheap Shot",
+                    desc = "Shows time bar for Cheap Shot.",
+                    get = function(info) return MeleeUtils.db.profile.rogueCheapShot end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueCheapShot = value end,
+                },
+                rogueKidneyShot = {
+                    type = "toggle",
+                    name = "Kidney Shot",
+                    desc = "Shows time bar for Kidney Shot.",
+                    get = function(info) return MeleeUtils.db.profile.rogueKidneyShot end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueKidneyShot = value end,
+                }
                 --eaAnnounce = {
                 --    type = "toggle",
                 --    name = "IEA Announce",

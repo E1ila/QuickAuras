@@ -38,12 +38,19 @@ MeleeUtils.watchBarAuras = {
     },
 }
 
+function MeleeUtils_Timer_OnUpdate(timer)
+    return MeleeUtils:UpdateProgressBar(timer)
+end
+
 MeleeUtils.watchBarOffensive = {
     [11198] = {
         name = "Expose Armor",
         icon = "Interface\\Icons\\Ability_Warrior_Riposte",
         color = {0.0, 0.0, 1.0},
         list = MeleeUtils.watchBars,
+        duration = 30,
+        onUpdate = MeleeUtils_Timer_OnUpdate,
+        option = "rogueEaBar",
     },
 }
 

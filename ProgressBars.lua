@@ -60,8 +60,9 @@ end
 -- Timers ------------------------
 
 function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate, onEnd)
+    local list = progressSpell.list
     local existingTimer = self.timerByName[progressSpell.name]
-    local index = #self.timers
+    local index = #list
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == progressSpell.name then
             return -- already exists
@@ -72,13 +73,14 @@ function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate,
         index = existingTimer.index
     else
         debug("Adding timer", "name", progressSpell.name, "expTime", expTime)
-        index = #self.timers
+        index = #list
     end
 
-    local frame = self:CreateProgressBar(MeleeUtils_BuffProgress, self.timers, 25, 2, progressSpell.color, progressSpell.icon, 0)
+    local frame = self:CreateProgressBar(MeleeUtils_BuffProgress, list, 25, 2, progressSpell.color, progressSpell.icon, 0)
     local timer = {
         frame = frame,
         index = index,
+        list = list,
         name = progressSpell.name,
         icon = progressSpell.icon,
         color = progressSpell.color,
@@ -87,20 +89,26 @@ function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate,
         onUpdate = onUpdate,
         onEnd = onEnd,
     }
-    table.insert(self.timers, timer)
+    timer.key = self:GetTimerKey(timer)
+    table.insert(list, timer)
+    self.timers[timer.key] = timer
     self.timerByName[progressSpell.name] = timer
+    onUpdate(timer)
+end
+
+function MeleeUtils:GetTimerKey(timer)
+    return timer.name..tostring(timer.expTime)
 end
 
 function MeleeUtils:RemoveProgressTimer(timer)
     debug("Removing timer", "name", timer.name, "expTime", timer.expTime)
-    local key = timer.name..tostring(timer.expTime)
     if timer.onEnd then
         timer:onEnd(timer)
     end
     -- remove from timers the one with matching name and expTime
-    for i, t in ipairs(self.timers) do
+    for i, t in ipairs(timer.list) do
         if t.name == timer.name and t.expTime == timer.expTime then
-            table.remove(self.timers, i)
+            table.remove(timer.list, i)
             break
         end
     end
@@ -109,10 +117,11 @@ function MeleeUtils:RemoveProgressTimer(timer)
     timer.frame:ClearAllPoints()
     timer.frame = nil
     self.timerByName[timer.name] = nil
+    self.timers[timer.key] = nil
 end
 
 function MeleeUtils:CheckProgressTimers()
-    for key, timer in pairs(self.timers) do
+    for _, timer in pairs(self.timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then
                 self:RemoveProgressTimer(timer)

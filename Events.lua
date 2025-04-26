@@ -14,9 +14,9 @@ function MeleeUtils:CheckAuras()
         if progressSpell then
             --debug("Aura", name, icon, duration, expTime)
             local onUpdate = function(timer)
-                return MeleeUtils:UpdateProgress(timer)
+                return MeleeUtils:UpdateProgressBar(timer)
             end
-            self:AddProgressTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
+            self:SetProgressTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
         end
         i = i + 1
     end

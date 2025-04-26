@@ -3,7 +3,7 @@ local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 local pbId = 0
 
-function MeleeUtils:CreateStatusBar(parent, list, height, padding, color, icon, gap)
+function MeleeUtils:CreateProgressBar(parent, list, height, padding, color, icon, gap)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), parent, "MeleeUtils_StatusBar")
@@ -44,7 +44,7 @@ function MeleeUtils:CreateStatusBar(parent, list, height, padding, color, icon, 
     return frame
 end
 
-function MeleeUtils:UpdateProgress(timer)
+function MeleeUtils:UpdateProgressBar(timer)
     --debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
     if timer.duration > 0 and timer.expTime > GetTime() then
         timer.frame:Show()
@@ -59,7 +59,7 @@ end
 
 -- Timers ------------------------
 
-function MeleeUtils:AddProgressTimer(progressSpell, duration, expTime, onUpdate, onEnd)
+function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate, onEnd)
     local existingTimer = self.timerByName[progressSpell.name]
     local index = #self.timers
     if existingTimer then
@@ -75,7 +75,7 @@ function MeleeUtils:AddProgressTimer(progressSpell, duration, expTime, onUpdate,
         index = #self.timers
     end
 
-    local frame = self:CreateStatusBar(MeleeUtils_BuffProgress, self.timers, 25, 2, progressSpell.color, progressSpell.icon, 0)
+    local frame = self:CreateProgressBar(MeleeUtils_BuffProgress, self.timers, 25, 2, progressSpell.color, progressSpell.icon, 0)
     local timer = {
         frame = frame,
         index = index,

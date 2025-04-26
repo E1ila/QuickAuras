@@ -5,6 +5,7 @@ MeleeUtils.optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",
     "UNIT_AURA",
+    "UI_ERROR_MESSAGE",
 }
 
 MeleeUtils.adjustableFrames = {

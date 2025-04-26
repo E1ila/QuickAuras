@@ -115,6 +115,15 @@ function MeleeUtils:UNIT_AURA(unit)
     self:CheckAuras()
 end
 
+function MeleeUtils:UI_ERROR_MESSAGE(errorType, errorMessage)
+    if self.db.profile.outOfRange then
+        --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
+        if errorMessage == ERR_OUT_OF_RANGE or errorMessage == ERR_SPELL_OUT_OF_RANGE or errorMessage == "You must be behind your target" then
+            self:ShowNoticableError(errorMessage)
+        end
+    end
+end
+
 -- OnUpdate
 
 local lastUpdate = 0

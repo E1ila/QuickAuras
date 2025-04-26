@@ -52,3 +52,25 @@ function MeleeUtils:ShowParry()
         MeleeUtils_Parry:Hide()
     end)
 end
+
+local lastErrorTime = 0
+local errorCount = 0
+function MeleeUtils:ShowNoticableError(text)
+    MeleeUtils_OutOfRange_Text:SetText(string.upper(text))
+    MeleeUtils_OutOfRange:Show()
+    if self.db.profile.outOfRangeSound then
+        if GetTime() - lastErrorTime > 6 then
+            errorCount = 0
+        end
+        lastErrorTime = GetTime()
+        if errorCount == 1 then
+            PlaySoundFile("Interface\\AddOns\\MeleeUtils\\assets\\sonar.ogg", "Master")
+        elseif errorCount == 4 then
+            errorCount = 0
+        end
+        errorCount = errorCount + 1
+    end
+    C_Timer.After(1, function()
+        MeleeUtils_OutOfRange:Hide()
+    end)
+end

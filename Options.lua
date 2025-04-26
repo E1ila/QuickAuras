@@ -13,6 +13,8 @@ MeleeUtils.defaultOptions = {
         rogueArBar = true,
         harryPaste = true,
         watchBars = true,
+        outOfRange = true,
+        outOfRangeSound = true,
     },
 }
 
@@ -42,6 +44,26 @@ MeleeUtils.options = {
             desc = "Show a progress bar with time left on important abilities",
             get = function(info) return MeleeUtils.db.profile.watchBars end,
             set = function(info, value) MeleeUtils.db.profile.watchBars = value end,
+        },
+        outOfRange = {
+            type = "toggle",
+            name = "Out of Range",
+            desc = "Show a noticable warning when you are out of range of your target in combat",
+            get = function(info) return MeleeUtils.db.profile.outOfRange end,
+            set = function(info, value)
+                MeleeUtils.db.profile.outOfRange = value
+                if not value then MeleeUtils.db.profile.outOfRangeSound = false end
+            end,
+        },
+        outOfRangeSound = {
+            type = "toggle",
+            name = "Out of Range Sound",
+            desc = "Play a warning when you are out of range of your target in combat",
+            get = function(info) return MeleeUtils.db.profile.outOfRangeSound end,
+            set = function(info, value)
+                MeleeUtils.db.profile.outOfRangeSound = value
+                if value then MeleeUtils.db.profile.outOfRange = true end
+            end,
         },
         rogueUtils = {
             type = "group",

@@ -97,13 +97,13 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
         self:ShowParry()
     end
 
-    -- self.db.profile.watchBars and self.db.profile.rogueEaBar
     if type(p1) == "number" and p1 > 0 then
         for spellID, conf in pairs(MeleeUtils.watchBarOffensive) do
             if p1 == spellID then
                 if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                     and sourceGUID == self.playerGuid
                     and destGUID == UnitGUID("target")
+                    and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
                     local timer = self:SetProgressTimer(conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)

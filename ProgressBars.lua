@@ -59,39 +59,38 @@ end
 
 -- Timers ------------------------
 
-function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate, onEnd)
-    local list = progressSpell.list
-    local existingTimer = self.timerByName[progressSpell.name]
-    local index = #list
+function MeleeUtils:SetProgressTimer(conf, duration, expTime, onUpdate, onEnd)
+    local existingTimer = self.timerByName[conf.name]
+    local index = #conf.list
     if existingTimer then
-        if existingTimer.expTime == expTime and existingTimer.name == progressSpell.name then
+        if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             return -- already exists
         end
         -- different timer, remove old
         self:RemoveProgressTimer(existingTimer)
-        debug("Replacing timer", "name", progressSpell.name, "expTime", expTime)
+        debug("Replacing timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug("Adding timer", "name", progressSpell.name, "expTime", expTime)
+        debug("Adding timer", "name", conf.name, "expTime", expTime)
     end
 
-    local frame = self:CreateProgressBar(MeleeUtils_WatchBars, list, index, 25, 2, progressSpell.color, progressSpell.icon, 0)
+    local frame = self:CreateProgressBar(conf.parent, conf.list, index, 25, 2, conf.color, conf.icon, 0)
     local timer = {
         frame = frame,
         index = index,
-        list = list,
-        name = progressSpell.name,
-        icon = progressSpell.icon,
-        color = progressSpell.color,
+        list = conf.list,
+        name = conf.name,
+        icon = conf.icon,
+        color = conf.color,
         expTime = expTime,
         duration = duration,
         onUpdate = onUpdate,
         onEnd = onEnd,
     }
     timer.key = self:GetTimerKey(timer)
-    table.insert(list, timer)
+    table.insert(conf.list, timer)
     self.timers[timer.key] = timer
-    self.timerByName[progressSpell.name] = timer
+    self.timerByName[conf.name] = timer
     onUpdate(timer)
     return timer
 end

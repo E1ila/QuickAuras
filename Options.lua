@@ -12,7 +12,7 @@ MeleeUtils.defaultOptions = {
         rogueSndBar = true,
         rogueFlurryBar = true,
         rogueArBar = true,
-        rogueGauge = true,
+        rogueGouge = true,
         rogueCheapShot = true,
         rogueKidneyShot = true,
         harryPaste = true,
@@ -116,12 +116,12 @@ MeleeUtils.options = {
                     get = function(info) return MeleeUtils.db.profile.rogueArBar end,
                     set = function(info, value) MeleeUtils.db.profile.rogueArBar = value end,
                 },
-                rogueGauge = {
+                rogueGouge = {
                     type = "toggle",
                     name = "Gauge",
                     desc = "Shows time bar for Gauge.",
-                    get = function(info) return MeleeUtils.db.profile.rogueGauge end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueGauge = value end,
+                    get = function(info) return MeleeUtils.db.profile.rogueGouge end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueGouge = value end,
                 },
                 rogueCheapShot = {
                     type = "toggle",

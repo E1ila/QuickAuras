@@ -1,4 +1,5 @@
-local MeleeUtils = MUGLOBAL
+local ADDON_NAME, addon = ...
+local MeleeUtils = addon.root
 
 function MeleeUtils:AddTimer(progressSpell, duration, expTime, onUpdate, onEnd)
     --MUGLOBAL.Debug("Adding timer", "name", name, "expTime", expTime)

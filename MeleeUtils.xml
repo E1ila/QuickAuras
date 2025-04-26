@@ -2,8 +2,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 
-    <Frame name="MeleeUtils_UI" />
-
     <Frame name="MeleeUtils_CustomizableWidget" virtual="true" hidden="true" movable="true" enableMouse="false">
         <Scripts>
             <OnLoad>

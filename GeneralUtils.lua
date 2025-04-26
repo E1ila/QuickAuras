@@ -1,17 +1,19 @@
+local ADDON_NAME, addon = ...
+local MeleeUtils = addon.root
 
-function MeleeUtils_UI:InitGeneralUI()
+function MeleeUtils:InitGeneralUI()
     MUGLOBAL.Debug("Initializing General UI")
     MeleeUtils_Parry_Texture:SetVertexColor(1, 0, 0)
-    MeleeUtils_UI:InitStatusBar(MeleeUtils_Flurry, 25, 2, {246/256, 122/256, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
+    MeleeUtils:InitStatusBar(MeleeUtils_Flurry, 25, 2, {246/256, 122/256, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
 end
 
-function MeleeUtils_UI:ResetGeneralWidgets()
+function MeleeUtils:ResetGeneralWidgets()
     --MeleeUtils_Parry_Texture:ClearAllPoints()
     --MeleeUtils_Parry_Texture:SetSize(128, 128)
     --MeleeUtils_Parry_Texture:SetPoint("CENTER", UIParent, "CENTER", 0, 100)
 end
 
-function MeleeUtils_UI:UpdateZone()
+function MeleeUtils:UpdateZone()
     local inInstance, instanceType = IsInInstance()
     MUGLOBAL.InstanceName = nil
     if inInstance and (instanceType == "raid" or instanceType == "party") then
@@ -21,14 +23,14 @@ function MeleeUtils_UI:UpdateZone()
     MUGLOBAL.Debug("Updating Zone:", MUGLOBAL.ZoneName)
 end
 
-function MeleeUtils_UI:ShowParry()
+function MeleeUtils:ShowParry()
     MeleeUtils_Parry:Show()
     C_Timer.After(1, function()
         MeleeUtils_Parry:Hide()
     end)
 end
 
-function MeleeUtils_UI:InitStatusBar(frame, height, padding, color, icon)
+function MeleeUtils:InitStatusBar(frame, height, padding, color, icon)
     frame:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -55,7 +57,7 @@ function MeleeUtils_UI:InitStatusBar(frame, height, padding, color, icon)
     iconFrame.icon:SetSize(height-padding*2, height-padding*2)
 end
 
-function MeleeUtils_UI:UpdateProgress(timer)
+function MeleeUtils:UpdateProgress(timer)
     MUGLOBAL.Debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
     if timer.duration > 0 and timer.expTime > GetTime() then
         MeleeUtils_Flurry:Show()

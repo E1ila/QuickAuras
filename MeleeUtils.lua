@@ -1,5 +1,5 @@
 ﻿-- MeleeUtils.lua
-local ADDON_NAME, MeleeUtils = ...
+local ADDON_NAME, addon = ...
 
 -- Load Ace3 libraries
 local AceAddon = LibStub("AceAddon-3.0")
@@ -7,7 +7,8 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local _ = LibStub("AceConsole-3.0")
 
-MeleeUtils = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
+addon.root = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
+local MeleeUtils = addon.root
 MeleeUtils.events = CreateFrame("Frame")
 MeleeUtils.timers = {}
 MeleeUtils.timerByName = {}
@@ -20,8 +21,8 @@ local _uiLocked = true
 
 local optionalEvents = {
     "UNIT_POWER_UPDATE",
-    "COMBAT_LOG_EVENT_UNFILTERED",
-    "UNIT_AURA",
+    --"COMBAT_LOG_EVENT_UNFILTERED",
+    --"UNIT_AURA",
 }
 
 local adjustableFrames = {
@@ -59,50 +60,6 @@ local defaults = {
     },
 }
 
--- Options table for the settings page
-local options = {
-    name = "Melee Utils",
-    handler = MeleeUtils,
-    type = "group",
-    childGroups = "tab",
-    args = {
-        enabled = {
-            type = "toggle",
-            name = "Enable",
-            desc = "Enable or disable the addon",
-            get = function(info) return MeleeUtils.db.profile.enabled end,
-            set = function(info, value) MeleeUtils:Options_ToggleEnabled(value) end,
-        },
-        harryPaste = {
-            type = "toggle",
-            name = "Harry Paste",
-            desc = "Warn when a mob parries your attack while being tanked",
-            get = function(info) return MeleeUtils.db.profile.harryPaste end,
-            set = function(info, value) MeleeUtils.db.profile.harryPaste = value end,
-        },
-        spellProgress = {
-            type = "toggle",
-            name = "Spell Progress",
-            desc = "Show a progress bar with time left on important spells",
-            get = function(info) return MeleeUtils.db.profile.spellProgress end,
-            set = function(info, value) MeleeUtils.db.profile.spellProgress = value end,
-        },
-        rogueUtils = {
-            type = "group",
-            name = "Rogue Utils",
-            args = {
-                rogue5Combo = {
-                    type = "toggle",
-                    name = "5 Combo Points",
-                    desc = "Shows a visible indication when you have 5 combo points.",
-                    get = function(info) return MeleeUtils.db.profile.rogue5combo end,
-                    set = function(info, value) MeleeUtils.db.profile.rogue5combo = value end,
-                },
-            }
-        },
-    },
-}
-
 local function out(text, ...)
     print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
 end
@@ -124,7 +81,7 @@ MeleeUtils.Colors = c
 
 function MeleeUtils:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("MeleeUtilsDB", defaults, true)
-    AceConfig:RegisterOptionsTable("MeleeUtils", options)
+    AceConfig:RegisterOptionsTable("MeleeUtils", MeleeUtils.options)
     self.optionsFrame = AceConfigDialog:AddToBlizOptions("MeleeUtils", "Melee Utils")
     self:RegisterChatCommand("mu", "HandleSlashCommand")
     MeleeUtils.events:SetScript("OnEvent", function(self, event, unit, powerType)
@@ -192,8 +149,8 @@ end
 
 function MeleeUtils:InitUI()
     debug("Initializing UI")
-    MeleeUtils_UI:InitGeneralUI()
-    MeleeUtils_UI:InitRogueUI()
+    MeleeUtils:InitGeneralUI()
+    MeleeUtils:InitRogueUI()
 end
 
 function MeleeUtils:LoadConfig()
@@ -223,8 +180,8 @@ end
 
 function MeleeUtils:ResetWidgets()
     debug("Resetting widgets")
-    MeleeUtils_UI:ResetGeneralWidgets()
-    MeleeUtils_UI:ResetRogueWidgets()
+    MeleeUtils:ResetGeneralWidgets()
+    MeleeUtils:ResetRogueWidgets()
 end
 
 -- Events
@@ -240,7 +197,7 @@ function MeleeUtils:CheckAuras()
         if progressSpell then
             --debug("Aura", name, icon, duration, expTime)
             local onUpdate = function(timer)
-                return MeleeUtils_UI:UpdateProgress(timer)
+                return MeleeUtils:UpdateProgress(timer)
             end
             MeleeUtils:AddTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
         end
@@ -254,7 +211,7 @@ function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
     if _isRogue and MeleeUtils.db.profile.rogue5combo then
         if unit == "player" and powerType == "COMBO_POINTS" then
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
-            MeleeUtils_UI:Rogue_SetCombo(comboPoints)
+            MeleeUtils:Rogue_SetCombo(comboPoints)
         end
     end
 end
@@ -272,24 +229,24 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
         not UnitIsPlayer("target") and
         IsInInstance()
     then
-        MeleeUtils_UI:ShowParry()
+        MeleeUtils:ShowParry()
     end
 end
 
 function MeleeUtils:ZONE_CHANGED()
-    MeleeUtils_UI:UpdateZone()
+    MeleeUtils:UpdateZone()
 end
 
 function MeleeUtils:ZONE_CHANGED_INDOORS()
-    MeleeUtils_UI:UpdateZone()
+    MeleeUtils:UpdateZone()
 end
 
 function MeleeUtils:ZONE_CHANGED_NEW_AREA()
-    MeleeUtils_UI:UpdateZone()
+    MeleeUtils:UpdateZone()
 end
 
 function MeleeUtils:PLAYER_ENTERING_WORLD()
-    MeleeUtils_UI:UpdateZone()
+    MeleeUtils:UpdateZone()
 end
 
 function MeleeUtils:UNIT_AURA(unit)

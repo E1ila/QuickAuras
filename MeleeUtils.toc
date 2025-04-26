@@ -11,6 +11,7 @@
 ## SavedVariablesPerCharacter: MeleeUtilsDB
 
 Libs\libs.xml
-MeleeUtils.xml
 MeleeUtils.lua
+MeleeUtils.xml
+Options.lua
 Timers.lua

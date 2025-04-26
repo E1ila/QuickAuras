@@ -19,18 +19,21 @@ MeleeUtils.watchBarAuras = {
         icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
         color = {246/256, 122/256, 0},
         list = MeleeUtils.watchBars,
+        option = "rogueFlurryBar",
     },
     [13750] = {
         name = "Adrenaline Rush",
         icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
         color = {246/256, 220/256, 0},
         list = MeleeUtils.watchBars,
+        option = "rogueArBar",
     },
     [6774] = {
         name = "Slice and Dice",
         icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
         color = {0, 0.9, 0.2},
         list = MeleeUtils.watchBars,
+        option = "rogueSndBar",
     },
 }
 

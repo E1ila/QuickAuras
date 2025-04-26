@@ -10,7 +10,7 @@ function MeleeUtils:CheckAuras()
         --debug(UnitAura("player", i, "HELPFUL"))
         if not name then break end -- Exit the loop when no more auras are found
         local progressSpell = self.watchBarAuras[spellID]
-        if progressSpell then
+        if progressSpell and (not progressSpell.option or self.db.profile[progressSpell.option]) then
             --debug("Aura", name, icon, duration, expTime)
             self:SetProgressTimer(progressSpell, duration, expTime, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
         end
@@ -47,7 +47,7 @@ local exporeArmor = {
 
 function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
-    debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
+    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
         self.db.profile.harryPaste and
@@ -62,7 +62,7 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
         self:ShowParry()
     end
 
-    if self.db.profile.watchBars then
+    if self.db.profile.watchBars and self.db.profile.rogueEaBar then
         if  -- IEA apply
             (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
             and sourceGUID == self.playerGuid

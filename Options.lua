@@ -7,9 +7,12 @@ MeleeUtils.defaultOptions = {
         enabled = true,
         someSetting = 50,
         rogue5combo = true,
+        rogueEaBar = true,
+        rogueSndBar = true,
+        rogueFlurryBar = true,
+        rogueArBar = true,
         harryPaste = true,
         watchBars = true,
-        eaAnnounce = true,
     },
 }
 
@@ -50,6 +53,34 @@ MeleeUtils.options = {
                     desc = "Shows a visible indication when you have 5 combo points.",
                     get = function(info) return MeleeUtils.db.profile.rogue5combo end,
                     set = function(info, value) MeleeUtils.db.profile.rogue5combo = value end,
+                },
+                rogueEaBar = {
+                    type = "toggle",
+                    name = "Watch Expose Armor",
+                    desc = "Shows a watch bar for Expose Armor.",
+                    get = function(info) return MeleeUtils.db.profile.rogueEaBar end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueEaBar = value end,
+                },
+                rogueSndBar = {
+                    type = "toggle",
+                    name = "Watch Slice and Dice",
+                    desc = "Shows a watch bar for Slice and Dice.",
+                    get = function(info) return MeleeUtils.db.profile.rogueSndBar end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueSndBar = value end,
+                },
+                rogueFlurryBar = {
+                    type = "toggle",
+                    name = "Watch Flurry Bar",
+                    desc = "Shows a watch bar for Flurry.",
+                    get = function(info) return MeleeUtils.db.profile.rogueFlurryBar end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueFlurryBar = value end,
+                },
+                rogueArBar = {
+                    type = "toggle",
+                    name = "Watch Adrenaline Rush",
+                    desc = "Shows a watch bar for Adrenaline Rush.",
+                    get = function(info) return MeleeUtils.db.profile.rogueArBar end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueArBar = value end,
                 },
                 --eaAnnounce = {
                 --    type = "toggle",

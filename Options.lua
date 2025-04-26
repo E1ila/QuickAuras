@@ -35,8 +35,8 @@ MeleeUtils.options = {
         },
         spellProgress = {
             type = "toggle",
-            name = "Spell Progress",
-            desc = "Show a progress bar with time left on important spells",
+            name = "Watch Progress Bars",
+            desc = "Show a progress bar with time left on important abilities",
             get = function(info) return MeleeUtils.db.profile.spellProgress end,
             set = function(info, value) MeleeUtils.db.profile.spellProgress = value end,
         },

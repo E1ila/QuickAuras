@@ -3,13 +3,13 @@ local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 local pbId = 0
 
-function MeleeUtils:CreateProgressBar(parent, list, height, padding, color, icon, gap)
+function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, color, icon, gap)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), parent, "MeleeUtils_StatusBar")
-    debug("Created progress bar", "name", frame:GetName(), "index", #list)
-    if #list > 0 then
-        local lastFrame = list[#list].frame
+    debug("Created progress bar", "name", frame:GetName(), "index", index)
+    if index > 0 then
+        local lastFrame = list[index].frame
         frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -gap)
     else
         frame:SetPoint("TOP", parent, "TOP", 0, 0)
@@ -73,10 +73,9 @@ function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate,
         index = existingTimer.index
     else
         debug("Adding timer", "name", progressSpell.name, "expTime", expTime)
-        index = #list
     end
 
-    local frame = self:CreateProgressBar(MeleeUtils_BuffProgress, list, 25, 2, progressSpell.color, progressSpell.icon, 0)
+    local frame = self:CreateProgressBar(MeleeUtils_BuffProgress, list, index, 25, 2, progressSpell.color, progressSpell.icon, 0)
     local timer = {
         frame = frame,
         index = index,

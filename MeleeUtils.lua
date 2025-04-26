@@ -12,7 +12,7 @@ local MeleeUtils = addon.root
 MeleeUtils.events = CreateFrame("Frame")
 MeleeUtils.timers = {}
 MeleeUtils.timerByName = {}
-MeleeUtils.buffBars = {}
+MeleeUtils.watchBars = {}
 MeleeUtils.offensiveBars = {}
 MUGLOBAL = MeleeUtils
 

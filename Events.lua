@@ -75,7 +75,6 @@ function MeleeUtils:ZONE_CHANGED_NEW_AREA()
 end
 
 function MeleeUtils:PLAYER_ENTERING_WORLD()
-    debug("EVENT Entering world")
     self:UpdateZone()
 end
 

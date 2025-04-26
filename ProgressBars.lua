@@ -30,7 +30,7 @@ function MeleeUtils:InitStatusBar(frame, height, padding, color, icon)
 end
 
 function MeleeUtils:UpdateProgress(timer)
-    debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
+    --debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
     if timer.duration > 0 and timer.expTime > GetTime() then
         MeleeUtils_Flurry:Show()
         local progress = (timer.expTime - GetTime()) / timer.duration

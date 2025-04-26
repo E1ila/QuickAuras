@@ -3,8 +3,8 @@ local MeleeUtils = addon.root
 
 function MeleeUtils:AddTimer(progressSpell, duration, expTime, onUpdate, onEnd)
     --MUGLOBAL.Debug("Adding timer", "name", name, "expTime", expTime)
-    if MeleeUtils.timerByName[progressSpell.name] then
-        MeleeUtils:RemoveTimer(MeleeUtils.timerByName[progressSpell.name])
+    if self.timerByName[progressSpell.name] then
+        self:RemoveTimer(self.timerByName[progressSpell.name])
     end
     local timer = {
         name = progressSpell.name,
@@ -16,8 +16,8 @@ function MeleeUtils:AddTimer(progressSpell, duration, expTime, onUpdate, onEnd)
         onEnd = onEnd,
     }
     local key = progressSpell.name..tostring(expTime)
-    MeleeUtils.timers[key] = timer
-    MeleeUtils.timerByName[progressSpell.name] = timer
+    self.timers[key] = timer
+    self.timerByName[progressSpell.name] = timer
 end
 
 function MeleeUtils:RemoveTimer(timer)
@@ -25,17 +25,17 @@ function MeleeUtils:RemoveTimer(timer)
     if timer.onEnd then
         timer:onEnd(timer)
     end
-    if MeleeUtils.timers[key] then
-        MeleeUtils.timers[key] = nil
-        MeleeUtils.timerByName[timer.name] = nil
+    if self.timers[key] then
+        self.timers[key] = nil
+        self.timerByName[timer.name] = nil
     end
 end
 
 function MeleeUtils:CheckTimers()
-    for key, timer in pairs(MeleeUtils.timers) do
+    for key, timer in pairs(self.timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then
-                MeleeUtils:RemoveTimer(timer)
+                self:RemoveTimer(timer)
             end
         end
     end

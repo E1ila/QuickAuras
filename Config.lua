@@ -21,7 +21,7 @@ MeleeUtils.progressSpells = {
     },
     [13750] = {
         name = "Adrenaline Rush",
-        icon = "Interface\\Icons\\Ability_Rogue_AdrenalineRush",
+        icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
         color = {246/256, 220/256, 0},
     },
     [6774] = {

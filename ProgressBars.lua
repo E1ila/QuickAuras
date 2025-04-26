@@ -5,10 +5,15 @@ local pbId = 0
 local pbCount = 0
 
 function MeleeUtils:CreateStatusBar(index, height, padding, color, icon)
-    pbId = pbId + 1
-    local frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), UIParent, "MeleeUtils_StatusBar")
-    debug("Created progress bar", "name", frame:GetName(), "index", index)
-    frame:SetPoint("CENTER", UIParent, "CENTER", 0, -180 - (index * (height + padding)))
+    local frame
+    if type(index) == "table" then
+        frame = index
+    else
+        pbId = pbId + 1
+        frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), UIParent, "MeleeUtils_StatusBar")
+        debug("Created progress bar", "name", frame:GetName(), "index", index)
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, -180 - (index * (height + padding)))
+    end
     frame:SetBackdrop({
         bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -22,10 +27,9 @@ function MeleeUtils:CreateStatusBar(index, height, padding, color, icon)
     local barFrame  = _G[frame:GetName().."_Progress_Bar"]
     local progFrame = _G[frame:GetName().."_Progress"]
 
+    progFrame:ClearAllPoints()
     progFrame:SetPoint("TOPLEFT", iconFrame, "TOPRIGHT", 0, 0)
-    progFrame:SetPoint("BOTTOMLEFT", iconFrame, "BOTTOMRIGHT", 0, 0)
-    progFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT", padding, 0)
-    progFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", padding, 0)
+    progFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -padding, 2)
 
     barFrame:SetStatusBarColor(unpack(color))
 

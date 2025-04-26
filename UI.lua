@@ -7,6 +7,10 @@ function MeleeUtils:InitUI()
     MeleeUtils_Parry_Texture:SetVertexColor(1, 0, 0)
     MeleeUtils_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
+
+    --self:CreateStatusBar(MeleeUtils_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
+    --MeleeUtils_Flurry:Show()
+    --MeleeUtils_Flurry_Progress_Bar:SetValue(1)
 end
 
 function MeleeUtils:ResetRogueWidgets()

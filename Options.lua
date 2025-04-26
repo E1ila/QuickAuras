@@ -8,7 +8,7 @@ MeleeUtils.defaultOptions = {
         someSetting = 50,
         rogue5combo = true,
         harryPaste = true,
-        spellProgress = true,
+        watchBars = true,
         eaAnnounce = true,
     },
 }
@@ -33,12 +33,12 @@ MeleeUtils.options = {
             get = function(info) return MeleeUtils.db.profile.harryPaste end,
             set = function(info, value) MeleeUtils.db.profile.harryPaste = value end,
         },
-        spellProgress = {
+        watchBars = {
             type = "toggle",
-            name = "Watch Progress Bars",
+            name = "Watch Bars",
             desc = "Show a progress bar with time left on important abilities",
-            get = function(info) return MeleeUtils.db.profile.spellProgress end,
-            set = function(info, value) MeleeUtils.db.profile.spellProgress = value end,
+            get = function(info) return MeleeUtils.db.profile.watchBars end,
+            set = function(info, value) MeleeUtils.db.profile.watchBars = value end,
         },
         rogueUtils = {
             type = "group",

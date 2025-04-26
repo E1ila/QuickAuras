@@ -3,6 +3,10 @@ local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 local pbId = 0
 
+function MeleeUtils_Timer_OnUpdate(timer)
+    return MeleeUtils:UpdateProgressBar(timer)
+end
+
 function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, color, icon, gap)
     local frame
     pbId = pbId + 1
@@ -93,6 +97,7 @@ function MeleeUtils:SetProgressTimer(progressSpell, duration, expTime, onUpdate,
     self.timers[timer.key] = timer
     self.timerByName[progressSpell.name] = timer
     onUpdate(timer)
+    return timer
 end
 
 function MeleeUtils:GetTimerKey(timer)

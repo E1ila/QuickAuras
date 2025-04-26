@@ -2,21 +2,17 @@ local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 
-
 function MeleeUtils:CheckAuras()
-    if not self.db.profile.spellProgress then return end
+    if not self.db.profile.watchBars then return end
     local i = 1
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL")
         --debug(UnitAura("player", i, "HELPFUL"))
         if not name then break end -- Exit the loop when no more auras are found
-        local progressSpell = self.progressSpells[spellID]
+        local progressSpell = self.watchBarAuras[spellID]
         if progressSpell then
             --debug("Aura", name, icon, duration, expTime)
-            local onUpdate = function(timer)
-                return MeleeUtils:UpdateProgressBar(timer)
-            end
-            self:SetProgressTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
+            self:SetProgressTimer(progressSpell, duration, expTime, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
         end
         i = i + 1
     end
@@ -45,8 +41,13 @@ function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
     end
 end
 
+local exporeArmor = {
+
+}
+
 function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
+    debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
         self.db.profile.harryPaste and
@@ -61,17 +62,36 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
         self:ShowParry()
     end
 
-    --if  -- IEA announce
-    --    self.db.profile.eaAnnounce
-    --    and subevent == "SPELL_AURA_APPLIED"
-    --    and sourceGUID == self.playerGuid
-    --    and p1 == 11198 -- IEA
-    --    and destGUID == UnitGUID("target")
-    --    and not UnitIsPlayer("target")
-    --    --and IsInInstance()
-    --then
-    --    SendChatMessage(">> EXPORE ARMOR <<", "SAY")
-    --end
+    if self.db.profile.watchBars then
+        if  -- IEA apply
+            (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+            and sourceGUID == self.playerGuid
+            and p1 == 11198 -- IEA
+            and destGUID == UnitGUID("target")
+        then
+            local progressSpell = self.watchBarOffensive[p1]
+            local timer = self:SetProgressTimer(progressSpell, 30, GetTime()+30, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
+            exporeArmor[destGUID] = timer
+        end
+
+        if  -- IEA remove
+            subevent == "SPELL_AURA_REMOVED"
+            and sourceGUID == self.playerGuid
+            and p1 == 11198 -- IEA
+            and exporeArmor[destGUID]
+        then
+            self:RemoveProgressTimer(exporeArmor[destGUID])
+            exporeArmor[destGUID] = nil
+        end
+
+        if -- IEA remove
+            subevent == "UNIT_DIED"
+            and exporeArmor[destGUID]
+        then
+            self:RemoveProgressTimer(exporeArmor[destGUID])
+            exporeArmor[destGUID] = nil
+        end
+    end
 end
 
 function MeleeUtils:ZONE_CHANGED()
@@ -102,7 +122,7 @@ local updateInterval = 0.1 -- Execute every 0.1 seconds
 
 function MeleeUtils:OnUpdate()
     local currentTime = GetTime()
-    if self.db.profile.spellProgress and currentTime - lastUpdate >= updateInterval then
+    if self.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime
         self:CheckProgressTimers()
     end

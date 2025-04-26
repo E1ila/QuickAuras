@@ -13,7 +13,7 @@ MeleeUtils.adjustableFrames = {
     "MeleeUtils_Flurry",
 }
 
-MeleeUtils.progressSpells = {
+MeleeUtils.watchBarAuras = {
     [13877] = {
         name = "Blade Flurry",
         icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
@@ -30,6 +30,15 @@ MeleeUtils.progressSpells = {
         name = "Slice and Dice",
         icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
         color = {0, 0.9, 0.2},
+        list = MeleeUtils.watchBars,
+    },
+}
+
+MeleeUtils.watchBarOffensive = {
+    [11198] = {
+        name = "Expose Armor",
+        icon = "Interface\\Icons\\Ability_Warrior_Riposte",
+        color = {0.0, 0.0, 1.0},
         list = MeleeUtils.watchBars,
     },
 }

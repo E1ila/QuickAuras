@@ -40,7 +40,7 @@ function MeleeUtils:OnInitialize()
     self.optionsFrame = AceConfigDialog:AddToBlizOptions("MeleeUtils", "Melee Utils")
     self:RegisterChatCommand("mu", "HandleSlashCommand")
     self.events:SetScript("OnEvent", function(self, event, unit, powerType)
-        MeleeUtils[event](self, unit, powerType)
+        MeleeUtils[event](MeleeUtils, unit, powerType)
     end)
     self.events:SetScript("OnUpdate", function()
         MeleeUtils:OnUpdate()
@@ -78,12 +78,6 @@ function MeleeUtils:UnregisterOptionalEvents()
     for _, event in ipairs(self.optionalEvents) do
         self.events:UnregisterEvent(event)
     end
-end
-
-function MeleeUtils:InitUI()
-    debug("Initializing UI")
-    self:InitGeneralUI()
-    self:InitRogueUI()
 end
 
 function MeleeUtils:LoadConfig()

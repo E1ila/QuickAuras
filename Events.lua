@@ -22,6 +22,17 @@ function MeleeUtils:CheckAuras()
     end
 end
 
+function MeleeUtils:UpdateZone()
+    local inInstance, instanceType = IsInInstance()
+    self.InstanceName = nil
+    if inInstance and (instanceType == "raid" or instanceType == "party") then
+        self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
+    end
+    self.ZoneName = GetRealZoneText()
+    debug("Updating Zone:", MUGLOBAL.ZoneName)
+end
+
+
 
 -- WoW Events
 
@@ -65,7 +76,7 @@ end
 
 function MeleeUtils:PLAYER_ENTERING_WORLD()
     debug("EVENT Entering world")
-    MeleeUtils:UpdateZone()
+    self:UpdateZone()
 end
 
 function MeleeUtils:UNIT_AURA(unit)

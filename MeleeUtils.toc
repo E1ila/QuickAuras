@@ -13,6 +13,8 @@
 Libs\libs.xml
 MeleeUtils.lua
 MeleeUtils.xml
+UI.lua
+ProgressBars.lua
 Config.lua
 Options.lua
 Timers.lua

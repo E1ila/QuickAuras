@@ -2,35 +2,6 @@ local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
 
-function MeleeUtils:InitGeneralUI()
-    debug("Initializing General UI")
-    MeleeUtils_Parry_Texture:SetVertexColor(1, 0, 0)
-    self:InitStatusBar(MeleeUtils_Flurry, 25, 2, {246/256, 122/256, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
-end
-
-function MeleeUtils:ResetGeneralWidgets()
-    --MeleeUtils_Parry_Texture:ClearAllPoints()
-    --MeleeUtils_Parry_Texture:SetSize(128, 128)
-    --MeleeUtils_Parry_Texture:SetPoint("CENTER", UIParent, "CENTER", 0, 100)
-end
-
-function MeleeUtils:UpdateZone()
-    local inInstance, instanceType = IsInInstance()
-    self.InstanceName = nil
-    if inInstance and (instanceType == "raid" or instanceType == "party") then
-        self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
-    end
-    self.ZoneName = GetRealZoneText()
-    debug("Updating Zone:", MUGLOBAL.ZoneName)
-end
-
-function MeleeUtils:ShowParry()
-    MeleeUtils_Parry:Show()
-    C_Timer.After(1, function()
-        MeleeUtils_Parry:Hide()
-    end)
-end
-
 function MeleeUtils:InitStatusBar(frame, height, padding, color, icon)
     frame:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",

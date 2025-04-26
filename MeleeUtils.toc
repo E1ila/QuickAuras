@@ -16,3 +16,4 @@ MeleeUtils.xml
 Config.lua
 Options.lua
 Timers.lua
+Events.lua

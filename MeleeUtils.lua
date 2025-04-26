@@ -14,9 +14,9 @@ MeleeUtils.timers = {}
 MeleeUtils.timerByName = {}
 MUGLOBAL = MeleeUtils
 
-local _class = select(2, UnitClass("player"))
-local _playerGuid = UnitGUID("player")
-local _isRogue = _class == "ROGUE"
+MeleeUtils.playerClass = select(2, UnitClass("player"))
+MeleeUtils.playerGuid = UnitGUID("player")
+MeleeUtils.isRogue = MeleeUtils.playerClass == "ROGUE"
 local _uiLocked = true
 local _c
 

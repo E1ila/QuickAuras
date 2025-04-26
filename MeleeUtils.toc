@@ -17,5 +17,4 @@ UI.lua
 ProgressBars.lua
 Config.lua
 Options.lua
-Timers.lua
 Events.lua

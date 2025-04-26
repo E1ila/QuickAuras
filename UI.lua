@@ -5,7 +5,6 @@ local debug = MeleeUtils.Debug
 function MeleeUtils:InitUI()
     debug("Initializing UI")
     MeleeUtils_Parry_Texture:SetVertexColor(1, 0, 0)
-    self:InitStatusBar(MeleeUtils_Flurry, 25, 2, {246/256, 122/256, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     MeleeUtils_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
 end

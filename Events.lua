@@ -16,7 +16,7 @@ function MeleeUtils:CheckAuras()
             local onUpdate = function(timer)
                 return MeleeUtils:UpdateProgress(timer)
             end
-            self:AddTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
+            self:AddProgressTimer(progressSpell, duration, expTime, onUpdate, onUpdate)
         end
         i = i + 1
     end
@@ -37,7 +37,7 @@ end
 -- WoW Events
 
 function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
-    if _isRogue and self.db.profile.rogue5combo then
+    if self.isRogue and self.db.profile.rogue5combo then
         if unit == "player" and powerType == "COMBO_POINTS" then
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
             self:Rogue_SetCombo(comboPoints)
@@ -51,10 +51,10 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     if  -- parry haste
     self.db.profile.harryPaste and
             subevent == "SWING_MISSED" and
-            sourceGUID == _playerGuid and
+            sourceGUID == self.playerGuid and
             p1 == "PARRY" and -- missType
             destGUID == UnitGUID("target") and
-            _playerGuid ~= UnitGUID("targettarget") and
+            self.playerGuid ~= UnitGUID("targettarget") and
             not UnitIsPlayer("target") and
             IsInInstance()
     then
@@ -92,6 +92,6 @@ function MeleeUtils:OnUpdate()
     local currentTime = GetTime()
     if self.db.profile.spellProgress and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime
-        self:CheckTimers()
+        self:CheckProgressTimers()
     end
 end

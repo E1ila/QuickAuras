@@ -18,47 +18,7 @@ local _class = select(2, UnitClass("player"))
 local _playerGuid = UnitGUID("player")
 local _isRogue = _class == "ROGUE"
 local _uiLocked = true
-
-local optionalEvents = {
-    "UNIT_POWER_UPDATE",
-    --"COMBAT_LOG_EVENT_UNFILTERED",
-    --"UNIT_AURA",
-}
-
-local adjustableFrames = {
-    "MeleeUtils_Parry",
-    "MeleeUtils_Combo",
-    "MeleeUtils_Flurry",
-}
-
-local progressSpells = {
-    [13877] = {
-        name = "Blade Flurry",
-        icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
-        color = {246/256, 122/256, 0},
-    },
-    [13750] = {
-        name = "Adrenaline Rush",
-        icon = "Interface\\Icons\\Ability_Rogue_AdrenalineRush",
-        color = {246/256, 220/256, 0},
-    },
-    [6774] = {
-        name = "Slice and Dice",
-        icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
-        color = {0, 0.9, 0.2},
-    },
-}
-
--- Default settings
-local defaults = {
-    profile = {
-        enabled = true,
-        someSetting = 50,
-        rogue5combo = true,
-        harryPaste = true,
-        spellProgress = true,
-    },
-}
+local _c
 
 local function out(text, ...)
     print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
@@ -72,32 +32,26 @@ local function debug(text, ...)
 end
 MeleeUtils.Debug = debug
 
-local c = {
-    bold = "|cffff77aa",
-    enabled = "|cff00ff00",
-    disabled = "|cffffff00",
-}
-MeleeUtils.Colors = c
-
 function MeleeUtils:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("MeleeUtilsDB", defaults, true)
+    _c = MeleeUtils.colors
+    self.db = LibStub("AceDB-3.0"):New("MeleeUtilsDB", self.defaultOptions, true)
     AceConfig:RegisterOptionsTable("MeleeUtils", MeleeUtils.options)
     self.optionsFrame = AceConfigDialog:AddToBlizOptions("MeleeUtils", "Melee Utils")
     self:RegisterChatCommand("mu", "HandleSlashCommand")
-    MeleeUtils.events:SetScript("OnEvent", function(self, event, unit, powerType)
+    self.events:SetScript("OnEvent", function(self, event, unit, powerType)
         MeleeUtils[event](self, unit, powerType)
     end)
-    MeleeUtils.events:SetScript("OnUpdate", function()
+    self.events:SetScript("OnUpdate", function()
         MeleeUtils:OnUpdate()
     end)
-    MeleeUtils:RegisterMandatoryEvents()
+    self:RegisterMandatoryEvents()
     C_Timer.After(0.2, function()
         debug("Init delay ended")
         MeleeUtils:InitUI()
         MeleeUtils:LoadConfig()
         MeleeUtils:RegisterOptionalEvents()
         MeleeUtils:CheckAuras()
-        out("MeleeUtils loaded. Type " .. c.bold .. "/mu|r for options.")
+        out("MeleeUtils loaded. Type " .. _c.bold .. "/mu|r for options.")
     end)
 end
 
@@ -112,7 +66,7 @@ end
 function MeleeUtils:RegisterOptionalEvents()
     if MeleeUtils.db.profile.enabled  then
         debug("Registering events")
-        for _, event in ipairs(optionalEvents) do
+        for _, event in ipairs(self.optionalEvents) do
             MeleeUtils.events:RegisterEvent(event)
         end
     end
@@ -120,7 +74,7 @@ end
 
 function MeleeUtils:UnregisterOptionalEvents()
     debug("Unregistering events")
-    for _, event in ipairs(optionalEvents) do
+    for _, event in ipairs(self.optionalEvents) do
         MeleeUtils.events:UnregisterEvent(event)
     end
 end
@@ -133,9 +87,9 @@ function MeleeUtils:HandleSlashCommand(input)
         if cmd == "debug" then
             MeleeUtilsDB.debug = not MeleeUtilsDB.debug
             if MeleeUtilsDB.debug then
-                out("Debug mode "..c.enabled.."enabled|r") -- Green text
+                out("Debug mode ".._c.enabled.."enabled|r") -- Green text
             else
-                out("Debug mode "..c.disabled.."disabled|r") -- Orange text
+                out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
         elseif cmd == "lock" then
             MeleeUtils:ToggleLockedState()
@@ -168,14 +122,14 @@ end
 
 function MeleeUtils:ToggleLockedState()
     _uiLocked = not _uiLocked
-    for _, frame in ipairs(adjustableFrames) do
+    for _, frame in ipairs(self.adjustableFrames) do
         local f = _G[frame]
         if f then
             f:EnableMouse(not _uiLocked)
             if _uiLocked then f:Hide() else f:Show() end
         end
     end
-    out("Frames are now "..(_uiLocked and c.disabled.."locked|r" or c.enabled.."unlocked|r"))
+    out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 end
 
 function MeleeUtils:ResetWidgets()
@@ -193,7 +147,7 @@ function MeleeUtils:CheckAuras()
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL")
         --debug(UnitAura("player", i, "HELPFUL"))
         if not name then break end -- Exit the loop when no more auras are found
-        local progressSpell = progressSpells[spellID]
+        local progressSpell = self.progressSpells[spellID]
         if progressSpell then
             --debug("Aura", name, icon, duration, expTime)
             local onUpdate = function(timer)

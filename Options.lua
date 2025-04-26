@@ -1,6 +1,16 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 
+MeleeUtils.defaultOptions = {
+    profile = {
+        enabled = true,
+        someSetting = 50,
+        rogue5combo = true,
+        harryPaste = true,
+        spellProgress = true,
+    },
+}
+
 MeleeUtils.options = {
     name = "Melee Utils",
     handler = MeleeUtils,

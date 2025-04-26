@@ -1,8 +1,9 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
+local debug = MeleeUtils.Debug
 
 function MeleeUtils:InitRogueUI()
-    MUGLOBAL.Debug("Initializing Rogue UI")
+    debug("Initializing Rogue UI")
     MeleeUtils_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
 end

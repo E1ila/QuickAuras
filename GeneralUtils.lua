@@ -1,10 +1,11 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
+local debug = MeleeUtils.Debug
 
 function MeleeUtils:InitGeneralUI()
-    MUGLOBAL.Debug("Initializing General UI")
+    debug("Initializing General UI")
     MeleeUtils_Parry_Texture:SetVertexColor(1, 0, 0)
-    MeleeUtils:InitStatusBar(MeleeUtils_Flurry, 25, 2, {246/256, 122/256, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
+    self:InitStatusBar(MeleeUtils_Flurry, 25, 2, {246/256, 122/256, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
 end
 
 function MeleeUtils:ResetGeneralWidgets()
@@ -15,12 +16,12 @@ end
 
 function MeleeUtils:UpdateZone()
     local inInstance, instanceType = IsInInstance()
-    MUGLOBAL.InstanceName = nil
+    self.InstanceName = nil
     if inInstance and (instanceType == "raid" or instanceType == "party") then
-        MUGLOBAL.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
+        self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
     end
-    MUGLOBAL.ZoneName = GetRealZoneText()
-    MUGLOBAL.Debug("Updating Zone:", MUGLOBAL.ZoneName)
+    self.ZoneName = GetRealZoneText()
+    debug("Updating Zone:", MUGLOBAL.ZoneName)
 end
 
 function MeleeUtils:ShowParry()
@@ -58,7 +59,7 @@ function MeleeUtils:InitStatusBar(frame, height, padding, color, icon)
 end
 
 function MeleeUtils:UpdateProgress(timer)
-    MUGLOBAL.Debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
+    debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
     if timer.duration > 0 and timer.expTime > GetTime() then
         MeleeUtils_Flurry:Show()
         local progress = (timer.expTime - GetTime()) / timer.duration

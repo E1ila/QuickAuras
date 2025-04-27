@@ -7,6 +7,7 @@ MeleeUtils.optionalEvents = {
     "COMBAT_LOG_EVENT_UNFILTERED",
     "UNIT_AURA",
     "UI_ERROR_MESSAGE",
+    "SPELL_UPDATE_COOLDOWN",
 }
 
 MeleeUtils.adjustableFrames = {
@@ -26,6 +27,8 @@ MeleeUtils.watchBarAuras = {
     [13877] = abilities.bladeFlurry,
     [13750] = abilities.adrenalineRush,
     [6774] = abilities.sliceAndDice,
+    [5277] = abilities.evasion,
+    [11305] = abilities.sprint,
 }
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
@@ -43,4 +46,18 @@ MeleeUtils.watchBarCombatLog = {
     [1833] = abilities.cheapShot,
     [408] = abilities.kidneyShot,  -- r1
     [8643] = abilities.kidneyShot, -- r2
+    [2094] = abilities.blind,
+}
+
+MeleeUtils.trackedCooldowns = {
+    [13750] = abilities.adrenalineRush,
+    [13877] = abilities.bladeFlurry,
+    [11286] = abilities.gouge,
+    [1857] = abilities.vanish,
+    [11305] = abilities.sprint,
+    [1785] = abilities.stealth,
+    [1766] = abilities.kick,
+    [20572] = abilities.bloodFury,
+    [2094] = abilities.blind,
+    [5277] = abilities.evasion,
 }

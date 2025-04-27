@@ -1,28 +1,34 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
-local pbId = 0
 
-function MeleeUtils:SetProgressTimer(conf, duration, expTime, onUpdate, onEnd)
-    local existingTimer = self.timerByName[conf.name]
-    local index = #conf.list
+function MeleeUtils:SetProgressTimer(uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
+    local existingTimer = self.timerByName[conf.name..uiType]
+    if not list then list = conf.list end
+    if not parent then parent = conf.parent end
+    local index = #list
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             return -- already exists
         end
         -- different timer, remove old
         self:RemoveProgressTimer(existingTimer)
-        debug("Replacing timer", "name", conf.name, "expTime", expTime)
+        debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug("Adding timer", "name", conf.name, "expTime", expTime)
+        debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime)
     end
 
-    local frame = self:CreateProgressBar(conf.parent, conf.list, index, 25, 2, conf.color, conf.icon, 0)
+    local frame
+    if uiType == "button" then
+        frame = self:CreateProgressBar(parent, list, index, 25, 2, conf.color, conf.icon, 0)
+    else
+        frame = self:CreateProgressBar(parent, list, index, 25, 2, conf.color, conf.icon, 0)
+    end
     local timer = {
         frame = frame,
         index = index,
-        list = conf.list,
+        list = list,
         name = conf.name,
         icon = conf.icon,
         color = conf.color,
@@ -30,21 +36,22 @@ function MeleeUtils:SetProgressTimer(conf, duration, expTime, onUpdate, onEnd)
         duration = duration,
         onUpdate = onUpdate,
         onEnd = onEnd,
+        uiType = uiType
     }
     timer.key = self:GetTimerKey(timer)
-    table.insert(conf.list, timer)
+    table.insert(list, timer)
     self.timers[timer.key] = timer
-    self.timerByName[conf.name] = timer
+    self.timerByName[conf.name..uiType] = timer
     onUpdate(timer)
     return timer
 end
 
 function MeleeUtils:GetTimerKey(timer)
-    return timer.name..tostring(timer.expTime)
+    return timer.name..tostring(timer.expTime)..tostring(timer.uiType)
 end
 
 function MeleeUtils:RemoveProgressTimer(timer)
-    debug("Removing timer", "name", timer.name, "expTime", timer.expTime)
+    debug("Removing timer", "name", timer.name, "type", timer.uiType, "expTime", timer.expTime)
     if timer.onEnd then
         timer:onEnd(timer)
     end
@@ -59,7 +66,7 @@ function MeleeUtils:RemoveProgressTimer(timer)
     timer.frame:SetParent(nil)
     timer.frame:ClearAllPoints()
     timer.frame = nil
-    self.timerByName[timer.name] = nil
+    self.timerByName[timer.name..timer.uiType] = nil
     self.timers[timer.key] = nil
 end
 

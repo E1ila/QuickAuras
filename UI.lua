@@ -1,6 +1,7 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
 local debug = MeleeUtils.Debug
+local pbId = 0
 
 -- General -----------------------------------------------------------
 
@@ -18,9 +19,9 @@ function MeleeUtils:InitUI()
     --self:DisableDarkBackdrop(MeleeUtils_OffensiveBars)
     MeleeUtils_OffensiveBars_Text:Hide()
 
-    self:SetDarkBackdrop(MeleeUtils_Cooldowns)
-    --self:DisableDarkBackdrop(MeleeUtils_OffensiveBars)
-    --MeleeUtils_OffensiveBars_Text:Hide()
+    --self:SetDarkBackdrop(MeleeUtils_Cooldowns)
+    --self:DisableDarkBackdrop(MeleeUtils_Cooldowns)
+    MeleeUtils_Cooldowns_Text:Hide()
 
     --self:CreateProgressBar(MeleeUtils_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     --MeleeUtils_Flurry:Show()
@@ -55,7 +56,7 @@ function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, colo
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), parent, "MeleeUtils_StatusBar")
-    debug("Created progress bar", "name", frame:GetName(), "index", index)
+    debug("Created progress bar", "name", frame:GetName(), "index", index, "parent", parent)
     if index > 0 then
         local lastFrame = list[index].frame
         frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -gap)

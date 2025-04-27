@@ -156,7 +156,7 @@
 
     <Frame name="MeleeUtils_Cooldowns" parent="UIParent" inherits="BackdropTemplate" hidden="false">
         <Size>
-            <AbsDimension x="300" y="60" />
+            <AbsDimension x="150" y="60" />
         </Size>
         <Anchors>
             <Anchor point="LEFT" relativePoint="CENTER" relativeTo="UIParent" x="200" y="20" />

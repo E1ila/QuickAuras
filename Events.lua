@@ -9,6 +9,17 @@ local enemyDebuffs = {
 local lastUpdate = 0
 local updateInterval = 0.1 -- Execute every 0.1 seconds
 
+function MeleeUtils:CheckCooldowns()
+    for spellID, conf in pairs(self.trackedCooldowns) do
+        local start, duration, enabled = GetSpellCooldown(spellID)
+        if start > 0 and duration > 2 then
+            --debug("Cooldown", spellID, conf.name, start, duration, enabled)
+            local updatedDuration = duration - (GetTime() - start)
+            self:SetProgressTimer("button", self.cooldowns, MeleeUtils_Cooldowns, conf, updatedDuration, start + duration, conf.onUpdate, conf.onUpdate)
+        end
+    end
+end
+
 function MeleeUtils:CheckAuras()
     if not self.db.profile.watchBars then return end
     local i = 1
@@ -19,7 +30,7 @@ function MeleeUtils:CheckAuras()
         local conf = self.watchBarAuras[spellID]
         if conf and (not conf.option or self.db.profile[conf.option]) then
             --debug("Aura", name, icon, duration, expTime)
-            self:SetProgressTimer(conf, duration, expTime, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("progress", nil, nil, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
         end
         i = i + 1
     end
@@ -82,7 +93,7 @@ end
 
 function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
-    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
+    debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
         self.db.profile.harryPaste and
@@ -98,15 +109,15 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if type(p1) == "number" and p1 > 0 then
-        for spellID, conf in pairs(MeleeUtils.watchBarCombatLog) do
+        for spellID, conf in pairs(self.watchBarCombatLog) do
             if p1 == spellID then
                 if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                     and sourceGUID == self.playerGuid
-                    and destGUID == UnitGUID("target")
+                    --and destGUID == UnitGUID("target")
                     and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
-                    local timer = self:SetProgressTimer(conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)
+                    local timer = self:SetProgressTimer("progress", nil, nil, conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)
                     if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
                     enemyDebuffs[p1][destGUID] = timer
                 end
@@ -130,37 +141,10 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
             end
         end
     end
+end
 
-        --if self.db.profile.offensiveBars then
-    --    if  -- IEA apply
-    --        (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-    --        and sourceGUID == self.playerGuid
-    --        and p1 == 11198 -- IEA
-    --        and destGUID == UnitGUID("target")
-    --    then
-    --        local progressSpell = self.watchBarCombatLog[p1]
-    --        local timer = self:SetProgressTimer(progressSpell, 30, GetTime()+30, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
-    --        exporeArmor[destGUID] = timer
-    --    end
-    --
-    --    if  -- IEA remove
-    --        subevent == "SPELL_AURA_REMOVED"
-    --        and sourceGUID == self.playerGuid
-    --        and p1 == 11198 -- IEA
-    --        and exporeArmor[destGUID]
-    --    then
-    --        self:RemoveProgressTimer(exporeArmor[destGUID])
-    --        exporeArmor[destGUID] = nil
-    --    end
-    --
-    --    if -- IEA remove
-    --        subevent == "UNIT_DIED"
-    --        and exporeArmor[destGUID]
-    --    then
-    --        self:RemoveProgressTimer(exporeArmor[destGUID])
-    --        exporeArmor[destGUID] = nil
-    --    end
-    --end
+function MeleeUtils:SPELL_UPDATE_COOLDOWN(...)
+    self:CheckCooldowns()
 end
 
 

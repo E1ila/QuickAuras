@@ -20,6 +20,13 @@ MeleeUtils.defaultOptions = {
         outOfRange = true,
         outOfRangeSound = true,
         offensiveBars = true,
+        rogueVanish = true,
+        rogueSprint = true,
+        rogueStealth = true,
+        rogueKick = true,
+        bloodFury = true,
+        rogueBlind = true,
+        rogueEvasion = true,
     },
 }
 
@@ -76,6 +83,13 @@ MeleeUtils.options = {
                 MeleeUtils.db.profile.outOfRangeSound = value
                 if value then MeleeUtils.db.profile.outOfRange = true end
             end,
+        },
+        bloodFury = {
+            type = "toggle",
+            name = "Blood Fury",
+            desc = "Show a cooldown for Blood Fury.",
+            get = function(info) return MeleeUtils.db.profile.bloodFury end,
+            set = function(info, value) MeleeUtils.db.profile.bloodFury = value end,
         },
         rogueUtils = {
             type = "group",
@@ -136,7 +150,49 @@ MeleeUtils.options = {
                     desc = "Shows time bar for Kidney Shot.",
                     get = function(info) return MeleeUtils.db.profile.rogueKidneyShot end,
                     set = function(info, value) MeleeUtils.db.profile.rogueKidneyShot = value end,
-                }
+                },
+                rogueVanish = {
+                    type = "toggle",
+                    name = "Vanish Cooldown",
+                    desc = "Shows cooldown for Vanish.",
+                    get = function(info) return MeleeUtils.db.profile.rogueVanish end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueVanish = value end,
+                },
+                rogueSprint = {
+                    type = "toggle",
+                    name = "Sprint Cooldown",
+                    desc = "Shows cooldown for Sprint.",
+                    get = function(info) return MeleeUtils.db.profile.rogueSprint end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueSprint = value end,
+                },
+                rogueStealth = {
+                    type = "toggle",
+                    name = "Stealth Cooldown",
+                    desc = "Shows cooldown for Stealth.",
+                    get = function(info) return MeleeUtils.db.profile.rogueStealth end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueStealth = value end,
+                },
+                rogueKick = {
+                    type = "toggle",
+                    name = "Kick Cooldown",
+                    desc = "Shows cooldown for Kick.",
+                    get = function(info) return MeleeUtils.db.profile.rogueKick end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueKick = value end,
+                },
+                rogueBlind = {
+                    type = "toggle",
+                    name = "Blind Cooldown",
+                    desc = "Shows cooldown for Blind.",
+                    get = function(info) return MeleeUtils.db.profile.rogueBlind end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueBlind = value end,
+                },
+                rogueEvasion = {
+                    type = "toggle",
+                    name = "Evasion Cooldown",
+                    desc = "Shows cooldown for Evasion.",
+                    get = function(info) return MeleeUtils.db.profile.rogueEvasion end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueEvasion = value end,
+                },
                 --eaAnnounce = {
                 --    type = "toggle",
                 --    name = "IEA Announce",

@@ -14,7 +14,9 @@ MeleeUtils.timers = {}
 MeleeUtils.timerByName = {}
 MeleeUtils.watchBars = {}
 MeleeUtils.offensiveBars = {}
+MeleeUtils.cooldowns = {}
 MUGLOBAL = MeleeUtils
+MU = MeleeUtils
 
 MeleeUtils.playerClass = select(2, UnitClass("player"))
 MeleeUtils.playerGuid = UnitGUID("player")
@@ -53,6 +55,7 @@ function MeleeUtils:OnInitialize()
         MeleeUtils:LoadConfig()
         MeleeUtils:RegisterOptionalEvents()
         MeleeUtils:CheckAuras()
+        MeleeUtils:CheckCooldowns()
         out("MeleeUtils loaded. Type " .. _c.bold .. "/mu|r for options.")
     end)
 end

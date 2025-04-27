@@ -80,3 +80,70 @@ abilities.kidneyShot = {
     parent = MeleeUtils_OffensiveBars,
     cooldown = 20,
 }
+
+abilities.vanish = {
+    name = "Vanish",
+    icon = "Interface\\Icons\\Ability_Vanish",
+    color = {0.5, 0.5, 0.5},
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueVanish",
+}
+
+abilities.sprint = {
+    name = "Sprint",
+    icon = "Interface\\Icons\\Ability_Rogue_Sprint",
+    color = {1.0, 0.4195, 0.0000},
+    list = MeleeUtils.watchBars,
+    duration = 15,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueSprint",
+    parent = MeleeUtils_WatchBars,
+}
+
+abilities.stealth = {
+    name = "Stealth",
+    icon = "Interface\\Icons\\Ability_Stealth",
+    color = {0.4451, 0.7882, 0.8000},
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueStealth",
+}
+
+abilities.kick = {
+    name = "Kick",
+    icon = "Interface\\Icons\\Ability_Kick",
+    color = {0.7, 0.7, 0.7},
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueKick",
+}
+
+abilities.bloodFury = {
+    name = "Blood Fury",
+    icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
+    color = {0.5, 0.5, 0.5},
+    list = MeleeUtils.watchBars,
+    duration = 15,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "bloodFury",
+    parent = MeleeUtils_WatchBars,
+}
+
+abilities.blind = {
+    name = "Blind",
+    icon = "Interface\\Icons\\Spell_Shadow_MindSteal",
+    color = {0.9059, 0.7451, 0.5804},
+    duration = 10,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueBlind",
+    parent = MeleeUtils_OffensiveBars,
+}
+
+abilities.evasion = {
+    name = "Evasion",
+    icon = "Interface\\Icons\\Spell_Shadow_ShadowWard",
+    color = {1.0, 0.0606, 1.0},
+    list = MeleeUtils.watchBars,
+    duration = 15,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueEvasion",
+    parent = MeleeUtils_WatchBars,
+}

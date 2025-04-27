@@ -15,6 +15,7 @@ MeleeUtils.lua
 MeleeUtils.xml
 UI.lua
 ProgressBars.lua
+Abilities.lua
 Config.lua
 Options.lua
 Events.lua

@@ -84,3 +84,7 @@ end
 function MeleeUtils:LoadConfig()
     debug("Loading config")
 end
+
+function MeleeUtils_Timer_OnUpdate(timer)
+    return MeleeUtils:UpdateProgressBar(timer)
+end

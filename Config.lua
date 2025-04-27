@@ -14,36 +14,45 @@ MeleeUtils.adjustableFrames = {
     "MeleeUtils_Flurry",
 }
 
-MeleeUtils.watchBarAuras = {
-    [13877] = {
-        name = "Blade Flurry",
-        icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
-        color = {246/256, 122/256, 0},
-        list = MeleeUtils.watchBars,
-        option = "rogueFlurryBar",
-        parent = MeleeUtils_WatchBars,
-    },
-    [13750] = {
-        name = "Adrenaline Rush",
-        icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
-        color = {246/256, 220/256, 0},
-        list = MeleeUtils.watchBars,
-        option = "rogueArBar",
-        parent = MeleeUtils_WatchBars,
-    },
-    [6774] = {
-        name = "Slice and Dice",
-        icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
-        color = {0, 0.9, 0.2},
-        list = MeleeUtils.watchBars,
-        option = "rogueSndBar",
-        parent = MeleeUtils_WatchBars,
-    },
+MeleeUtils.colors = {
+    bold = "|cffff77aa",
+    enabled = "|cff00ff00",
+    disabled = "|cffffff00",
 }
 
 function MeleeUtils_Timer_OnUpdate(timer)
     return MeleeUtils:UpdateProgressBar(timer)
 end
+
+local _bladeFlurry = {
+    name = "Blade Flurry",
+    icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
+    color = {246/256, 122/256, 0},
+    list = MeleeUtils.watchBars,
+    option = "rogueFlurryBar",
+    parent = MeleeUtils_WatchBars,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+}
+
+local _adrenalineRush = {
+    name = "Adrenaline Rush",
+    icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
+    color = {246/256, 220/256, 0},
+    list = MeleeUtils.watchBars,
+    option = "rogueArBar",
+    parent = MeleeUtils_WatchBars,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+}
+
+local _sliceAndDice = {
+    name = "Slice and Dice",
+    icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
+    color = {0, 0.9, 0.2},
+    list = MeleeUtils.watchBars,
+    option = "rogueSndBar",
+    parent = MeleeUtils_WatchBars,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+}
 
 local _exposeArmor = {
     name = "Expose Armor",
@@ -55,6 +64,7 @@ local _exposeArmor = {
     option = "rogueEaBar",
     parent = MeleeUtils_WatchBars,
 }
+
 local _gouge = {
     name = "Gouge",
     icon = "Interface\\Icons\\Ability_Gouge",
@@ -65,6 +75,7 @@ local _gouge = {
     option = "rogueGouge",
     parent = MeleeUtils_OffensiveBars,
 }
+
 local _cheapShot = {
     name = "Cheap Shot",
     icon = "Interface\\Icons\\Ability_CheapShot",
@@ -75,6 +86,7 @@ local _cheapShot = {
     option = "rogueCheapShot",
     parent = MeleeUtils_OffensiveBars,
 }
+
 local _kidneyShot = {
     name = "Kidney Shot",
     icon = "Interface\\Icons\\Ability_Rogue_KidneyShot",
@@ -86,7 +98,15 @@ local _kidneyShot = {
     parent = MeleeUtils_OffensiveBars,
 }
 
-MeleeUtils.watchBarOffensive = {
+-- these will be detected through UNIT_AURA event
+MeleeUtils.watchBarAuras = {
+    [13877] = _bladeFlurry,
+    [13750] = _adrenalineRush,
+    [6774] = _sliceAndDice,
+}
+
+-- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
+MeleeUtils.watchBarCombatLog = {
     [8647] = _exposeArmor, -- 1
     [8649] = _exposeArmor, -- 2
     [8650] = _exposeArmor, -- 3
@@ -100,10 +120,4 @@ MeleeUtils.watchBarOffensive = {
     [1833] = _cheapShot,
     [408] = _kidneyShot,  -- r1
     [8643] = _kidneyShot, -- r2
-}
-
-MeleeUtils.colors = {
-    bold = "|cffff77aa",
-    enabled = "|cff00ff00",
-    disabled = "|cffffff00",
 }

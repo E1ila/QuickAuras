@@ -16,10 +16,10 @@ function MeleeUtils:CheckAuras()
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL")
         --debug(UnitAura("player", i, "HELPFUL"))
         if not name then break end -- Exit the loop when no more auras are found
-        local progressSpell = self.watchBarAuras[spellID]
-        if progressSpell and (not progressSpell.option or self.db.profile[progressSpell.option]) then
+        local conf = self.watchBarAuras[spellID]
+        if conf and (not conf.option or self.db.profile[conf.option]) then
             --debug("Aura", name, icon, duration, expTime)
-            self:SetProgressTimer(progressSpell, duration, expTime, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
+            self:SetProgressTimer(conf, duration, expTime, conf.onUpdate, conf.onUpdate)
         end
         i = i + 1
     end
@@ -98,7 +98,7 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if type(p1) == "number" and p1 > 0 then
-        for spellID, conf in pairs(MeleeUtils.watchBarOffensive) do
+        for spellID, conf in pairs(MeleeUtils.watchBarCombatLog) do
             if p1 == spellID then
                 if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                     and sourceGUID == self.playerGuid
@@ -123,7 +123,7 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if subevent == "UNIT_DIED" then
-        for spellID, conf in pairs(MeleeUtils.watchBarOffensive) do
+        for spellID, conf in pairs(MeleeUtils.watchBarCombatLog) do
             if enemyDebuffs[spellID] and enemyDebuffs[spellID][destGUID] then
                 self:RemoveProgressTimer(enemyDebuffs[spellID][destGUID])
                 enemyDebuffs[spellID][destGUID] = nil
@@ -138,7 +138,7 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     --        and p1 == 11198 -- IEA
     --        and destGUID == UnitGUID("target")
     --    then
-    --        local progressSpell = self.watchBarOffensive[p1]
+    --        local progressSpell = self.watchBarCombatLog[p1]
     --        local timer = self:SetProgressTimer(progressSpell, 30, GetTime()+30, MeleeUtils_Timer_OnUpdate, MeleeUtils_Timer_OnUpdate)
     --        exporeArmor[destGUID] = timer
     --    end

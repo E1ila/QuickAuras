@@ -16,6 +16,10 @@ function MeleeUtils:InitUI()
     --self:DisableDarkBackdrop(MeleeUtils_OffensiveBars)
     MeleeUtils_OffensiveBars_Text:Hide()
 
+    self:SetDarkBackdrop(MeleeUtils_Cooldowns)
+    --self:DisableDarkBackdrop(MeleeUtils_OffensiveBars)
+    --MeleeUtils_OffensiveBars_Text:Hide()
+
     --self:CreateProgressBar(MeleeUtils_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     --MeleeUtils_Flurry:Show()
     --MeleeUtils_Flurry_Progress_Bar:SetValue(1)

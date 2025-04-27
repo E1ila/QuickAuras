@@ -46,6 +46,32 @@ MeleeUtils.options = {
             get = function(info) return MeleeUtils.db.profile.enabled end,
             set = function(info, value) MeleeUtils:Options_ToggleEnabled(value) end,
         },
+        barHeight = {
+            type = "range",
+            name = "Bar Height",
+            desc = "Set the height of the bars",
+            min = 10,
+            max = 100,
+            step = 1,
+            get = function(info) return MeleeUtils.db.profile.barHeight end,
+            set = function(info, value)
+                MeleeUtils.db.profile.barHeight = value
+                MeleeUtils:TestWatchBars()
+            end,
+        },
+        buttonHeight = {
+            type = "range",
+            name = "Cooldown Size",
+            desc = "Set the size of the cooldown icons",
+            min = 10,
+            max = 100,
+            step = 1,
+            get = function(info) return MeleeUtils.db.profile.buttonHeight end,
+            set = function(info, value)
+                MeleeUtils.db.profile.buttonHeight = value
+                MeleeUtils:TestButtons()
+            end,
+        },
         harryPaste = {
             type = "toggle",
             name = "Harry Paste",

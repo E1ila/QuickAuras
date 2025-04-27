@@ -10,9 +10,10 @@ local lastUpdate = 0
 local updateInterval = 0.01 -- Execute every 0.1 seconds
 
 function MeleeUtils:CheckCooldowns()
+    if not self.db.profile.cooldowns then return end
     for spellID, conf in pairs(self.trackedCooldowns) do
         local start, duration, enabled = GetSpellCooldown(spellID)
-        if start > 0 and duration > 2 then
+        if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."CD"]) then
             --debug("Cooldown", spellID, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
             self:SetProgressTimer("button", self.cooldowns, MeleeUtils_Cooldowns, conf, updatedDuration, start + duration, conf.onUpdate, conf.onUpdate)

@@ -9,6 +9,7 @@ local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
 local MeleeUtils = addon.root
+MeleeUtils.version = "1.0"
 MeleeUtils.events = CreateFrame("Frame")
 MeleeUtils.timers = {}
 MeleeUtils.timerByName = {}

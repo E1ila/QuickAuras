@@ -64,7 +64,11 @@
         </Scripts>
     </Frame>
 
-    <Frame name="MeleeUtils_StatusBar" inherits="BackdropTemplate" virtual="true">
+    <Frame name="MeleeUtils_ProgressButton" virtual="true">
+        <Size><AbsDimension x="60" y="60" /></Size>
+    </Frame>
+
+    <Frame name="MeleeUtils_ProgressBar" inherits="BackdropTemplate" virtual="true">
         <Size>
             <AbsDimension x="128" y="25" /> <!-- Frame size -->
         </Size>

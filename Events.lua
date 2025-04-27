@@ -30,7 +30,7 @@ function MeleeUtils:CheckAuras()
         local conf = self.watchBarAuras[spellID]
         if conf and (not conf.option or self.db.profile[conf.option]) then
             --debug("Aura", name, icon, duration, expTime)
-            self:SetProgressTimer("progress", nil, nil, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("bar", nil, nil, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
         end
         i = i + 1
     end
@@ -118,7 +118,7 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
                     and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
-                    local timer = self:SetProgressTimer("progress", nil, nil, conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)
+                    local timer = self:SetProgressTimer("bar", nil, nil, conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)
                     if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
                     enemyDebuffs[p1][destGUID] = timer
                 end

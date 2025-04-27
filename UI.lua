@@ -52,10 +52,10 @@ end
 
 -- Progress Bar -----------------------------------------------------------
 
-function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, color, icon)
+function MeleeUtils:CreateProgressBar(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
-    frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), parent, "MeleeUtils_StatusBar")
+    frame = CreateFrame("Frame", "MeleeUtils_PBAR"..tostring(pbId), parent, "MeleeUtils_ProgressBar")
     debug("Created progress bar", "name", frame:GetName(), "index", index, "parent", parent)
     frame:SetBackdrop({
         bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -76,6 +76,7 @@ function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, colo
 
     barFrame:SetStatusBarColor(unpack(color))
 
+    local height = self.db.profile.barHeight or 25
     iconFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", padding, -padding)
     iconFrame.icon:SetTexture(icon)
     iconFrame:SetSize(height-padding*2, height-padding*2)
@@ -84,18 +85,46 @@ function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, colo
     return frame
 end
 
-function MeleeUtils:ArrangeProgressBars(list, parent, height, gap)
+function MeleeUtils:CreateProgressButton(parent, index, padding, color, icon)
+    local frame
+    pbId = pbId + 1
+    frame = CreateFrame("Frame", "MeleeUtils_PBTN"..tostring(pbId), parent, "MeleeUtils_ProgressButton")
+    debug("Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
+
+    frame.icon = frame:CreateTexture(nil, "ARTWORK")
+    frame.icon:SetAllPoints(frame)
+    frame.icon:SetTexture(icon)
+
+    frame.cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
+    frame.cooldown:SetAllPoints(frame)
+
+    return frame
+end
+
+function MeleeUtils:ArrangeProgressFrames(list, parent, gap)
     local lastFrame = nil
     for i, timer in ipairs(list) do
         timer.frame:ClearAllPoints()
-        if lastFrame then
-            timer.frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -(gap or -2))
-        else
-            timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
+        if timer.uiType == "bar" then
+            if lastFrame then
+                timer.frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -(gap or -2))
+            else
+                timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
+            end
+            timer.frame:SetPoint("LEFT", parent, "LEFT", 0, 0)
+            timer.frame:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
+            local height = self.db.profile.barHeight or 25
+            timer.frame:SetHeight(height)
+
+        elseif timer.uiType == "button" then
+            if lastFrame then
+                timer.frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", -(gap or -2), 0)
+            else
+                timer.frame:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
+            end
+            local height = self.db.profile.buttonHeight or 50
+            timer.frame:SetSize(height, height)
         end
-        timer.frame:SetPoint("LEFT", parent, "LEFT", 0, 0)
-        timer.frame:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
-        timer.frame:SetHeight(height)
         lastFrame = timer.frame
     end
 end
@@ -105,7 +134,11 @@ function MeleeUtils:UpdateProgressBar(timer)
     if timer.duration > 0 and timer.expTime > GetTime() then
         timer.frame:Show()
         local progress = (timer.expTime - GetTime()) / timer.duration
-        _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
+        if timer.uiType == "bar" then
+            _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
+        elseif timer.uiType == "button" then
+            timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
+        end
         return true
     else
         timer.frame:Hide()
@@ -160,7 +193,7 @@ function MeleeUtils:TestProgressBar(abilities)
         if conf.list then
             local duration = math.min(conf.duration or 10, 15)
             local expTime = GetTime() + duration
-            self:SetProgressTimer("progress", conf.list, conf.parent, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("bar", conf.list, conf.parent, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
         end
     end
 end

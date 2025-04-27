@@ -1,9 +1,9 @@
 local ADDON_NAME, addon = ...
 local MeleeUtils = addon.root
-MeleeUtils.abilities = {}
+MeleeUtils.abilities = { rogue = {}, warrior = {} }
 local abilities = MeleeUtils.abilities
 
-abilities.bladeFlurry = {
+abilities.rogue.bladeFlurry = {
     name = "Blade Flurry",
     icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
     color = {246/256, 122/256, 0},
@@ -12,9 +12,10 @@ abilities.bladeFlurry = {
     parent = MeleeUtils_WatchBars,
     onUpdate = MeleeUtils_Timer_OnUpdate,
     cooldown = 120,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.adrenalineRush = {
+abilities.rogue.adrenalineRush = {
     name = "Adrenaline Rush",
     icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
     color = {246/256, 220/256, 0},
@@ -22,10 +23,11 @@ abilities.adrenalineRush = {
     option = "rogueAdrenalineRush",
     parent = MeleeUtils_WatchBars,
     onUpdate = MeleeUtils_Timer_OnUpdate,
-    cooldown = 300
+    cooldown = 300,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.sliceAndDice = {
+abilities.rogue.sliceAndDice = {
     name = "Slice and Dice",
     icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
     color = {0, 0.9, 0.2},
@@ -33,9 +35,10 @@ abilities.sliceAndDice = {
     option = "rogueSndBar",
     parent = MeleeUtils_WatchBars,
     onUpdate = MeleeUtils_Timer_OnUpdate,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.exposeArmor = {
+abilities.rogue.exposeArmor = {
     name = "Expose Armor",
     icon = "Interface\\Icons\\Ability_Warrior_Riposte",
     color = {0.6784, 0.6706, 0.8706},
@@ -44,9 +47,10 @@ abilities.exposeArmor = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueEaBar",
     parent = MeleeUtils_WatchBars,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.gouge = {
+abilities.rogue.gouge = {
     name = "Gouge",
     icon = "Interface\\Icons\\Ability_Gouge",
     color = {0.9333, 0.1255, 0.2941},
@@ -56,9 +60,10 @@ abilities.gouge = {
     option = "rogueGouge",
     parent = MeleeUtils_OffensiveBars,
     cooldown = 10,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.cheapShot = {
+abilities.rogue.cheapShot = {
     name = "Cheap Shot",
     icon = "Interface\\Icons\\Ability_CheapShot",
     color = {0.7961, 0.5922, 0.3529},
@@ -67,9 +72,10 @@ abilities.cheapShot = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueCheapShot",
     parent = MeleeUtils_OffensiveBars,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.kidneyShot = {
+abilities.rogue.kidneyShot = {
     name = "Kidney Shot",
     icon = "Interface\\Icons\\Ability_Rogue_KidneyShot",
     color = {0.7961, 0.2784, 0.0980},
@@ -79,17 +85,19 @@ abilities.kidneyShot = {
     option = "rogueKidneyShot",
     parent = MeleeUtils_OffensiveBars,
     cooldown = 20,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.vanish = {
+abilities.rogue.vanish = {
     name = "Vanish",
     icon = "Interface\\Icons\\Ability_Vanish",
     color = {0.5, 0.5, 0.5},
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueVanish",
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.sprint = {
+abilities.rogue.sprint = {
     name = "Sprint",
     icon = "Interface\\Icons\\Ability_Rogue_Sprint",
     color = {1.0, 0.4195, 0.0000},
@@ -98,25 +106,28 @@ abilities.sprint = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueSprint",
     parent = MeleeUtils_WatchBars,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.stealth = {
+abilities.rogue.stealth = {
     name = "Stealth",
     icon = "Interface\\Icons\\Ability_Stealth",
     color = {0.4451, 0.7882, 0.8000},
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueStealth",
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.kick = {
+abilities.rogue.kick = {
     name = "Kick",
     icon = "Interface\\Icons\\Ability_Kick",
     color = {0.7, 0.7, 0.7},
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueKick",
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.bloodFury = {
+abilities.rogue.bloodFury = {
     name = "Blood Fury",
     icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
     color = {0.5, 0.5, 0.5},
@@ -125,9 +136,10 @@ abilities.bloodFury = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "bloodFury",
     parent = MeleeUtils_WatchBars,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.blind = {
+abilities.rogue.blind = {
     name = "Blind",
     icon = "Interface\\Icons\\Spell_Shadow_MindSteal",
     color = {0.9059, 0.7451, 0.5804},
@@ -136,9 +148,10 @@ abilities.blind = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueBlind",
     parent = MeleeUtils_OffensiveBars,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.evasion = {
+abilities.rogue.evasion = {
     name = "Evasion",
     icon = "Interface\\Icons\\Spell_Shadow_ShadowWard",
     color = {1.0, 0.0606, 1.0},
@@ -147,9 +160,10 @@ abilities.evasion = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueEvasion",
     parent = MeleeUtils_WatchBars,
+    visible = MeleeUtils.isRogue,
 }
 
-abilities.sap = {
+abilities.rogue.sap = {
     name = "Sap",
     icon = "Interface\\Icons\\Ability_Sap",
     color = {0.8941, 0.2157, 0.0627},
@@ -158,4 +172,5 @@ abilities.sap = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueSap",
     parent = MeleeUtils_OffensiveBars,
+    visible = MeleeUtils.isRogue,
 }

@@ -47,6 +47,9 @@ MeleeUtils.watchBarCombatLog = {
     [408] = abilities.kidneyShot,  -- r1
     [8643] = abilities.kidneyShot, -- r2
     [2094] = abilities.blind,
+    [6770] = abilities.sap,
+    [2070] = abilities.sap,
+    [11297] = abilities.sap,
 }
 
 MeleeUtils.trackedCooldowns = {

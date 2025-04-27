@@ -7,7 +7,7 @@ local enemyDebuffs = {
 }
 
 local lastUpdate = 0
-local updateInterval = 0.1 -- Execute every 0.1 seconds
+local updateInterval = 0.01 -- Execute every 0.1 seconds
 
 function MeleeUtils:CheckCooldowns()
     for spellID, conf in pairs(self.trackedCooldowns) do
@@ -93,7 +93,8 @@ end
 
 function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
-    debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
+
+    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
         self.db.profile.harryPaste and

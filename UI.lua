@@ -52,20 +52,11 @@ end
 
 -- Progress Bar -----------------------------------------------------------
 
-function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, color, icon, gap)
+function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "MeleeUtils_PB"..tostring(pbId), parent, "MeleeUtils_StatusBar")
     debug("Created progress bar", "name", frame:GetName(), "index", index, "parent", parent)
-    if index > 0 then
-        local lastFrame = list[index].frame
-        frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -gap)
-    else
-        frame:SetPoint("TOP", parent, "TOP", 0, 0)
-    end
-    frame:SetPoint("LEFT", parent, "LEFT", 0, 0)
-    frame:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
-    frame:SetHeight(height)
     frame:SetBackdrop({
         bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -91,6 +82,22 @@ function MeleeUtils:CreateProgressBar(parent, list, index, height, padding, colo
     iconFrame.icon:SetSize(height-padding*2, height-padding*2)
 
     return frame
+end
+
+function MeleeUtils:ArrangeProgressBars(list, parent, height, gap)
+    local lastFrame = nil
+    for i, timer in ipairs(list) do
+        timer.frame:ClearAllPoints()
+        if lastFrame then
+            timer.frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -(gap or -2))
+        else
+            timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
+        end
+        timer.frame:SetPoint("LEFT", parent, "LEFT", 0, 0)
+        timer.frame:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
+        timer.frame:SetHeight(height)
+        lastFrame = timer.frame
+    end
 end
 
 function MeleeUtils:UpdateProgressBar(timer)
@@ -144,4 +151,29 @@ function MeleeUtils:ShowNoticableError(text)
     C_Timer.After(1, function()
         MeleeUtils_OutOfRange:Hide()
     end)
+end
+
+-- Test UI -----------------------------------------------------------
+
+function MeleeUtils:TestProgressBar(abilities)
+    for i, conf in pairs(abilities) do
+        if conf.list then
+            local duration = math.min(conf.duration or 10, 15)
+            local expTime = GetTime() + duration
+            self:SetProgressTimer("progress", conf.list, conf.parent, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
+        end
+    end
+end
+
+function MeleeUtils:TestWatchBars()
+    self:TestProgressBar(self.watchBarAuras)
+    self:TestProgressBar(self.watchBarCombatLog)
+end
+
+function MeleeUtils:TestButtons()
+    local t = 0
+    for i, conf in pairs(self.trackedCooldowns) do
+        self:SetProgressTimer("button", self.cooldowns, MeleeUtils_Cooldowns, conf, 15-t, GetTime()+15-t, conf.onUpdate, conf.onUpdate)
+        t = t + 1
+    end
 end

@@ -27,6 +27,7 @@ MeleeUtils.defaultOptions = {
         bloodFury = true,
         rogueBlind = true,
         rogueEvasion = true,
+        rogueSap = true,
     },
 }
 
@@ -193,6 +194,13 @@ MeleeUtils.options = {
                     get = function(info) return MeleeUtils.db.profile.rogueEvasion end,
                     set = function(info, value) MeleeUtils.db.profile.rogueEvasion = value end,
                 },
+                rogueSap = {
+                    type = "toggle",
+                    name = "Sap Cooldown",
+                    desc = "Shows cooldown for Sap.",
+                    get = function(info) return MeleeUtils.db.profile.rogueSap end,
+                    set = function(info, value) MeleeUtils.db.profile.rogueSap = value end,
+                },
                 --eaAnnounce = {
                 --    type = "toggle",
                 --    name = "IEA Announce",
@@ -244,6 +252,9 @@ function MeleeUtils:HandleSlashCommand(input)
             else
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
+        elseif cmd == "test" then
+            self:TestWatchBars()
+            self:TestButtons()
         elseif cmd == "lock" then
             self:ToggleLockedState()
         elseif cmd == "reset" then

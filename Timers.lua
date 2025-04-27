@@ -6,9 +6,11 @@ function MeleeUtils:SetProgressTimer(uiType, list, parent, conf, duration, expTi
     local existingTimer = self.timerByName[conf.name..uiType]
     if not list then list = conf.list end
     if not parent then parent = conf.parent end
+    local height = 25
     local index = #list
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
+            debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
             return -- already exists
         end
         -- different timer, remove old
@@ -21,9 +23,9 @@ function MeleeUtils:SetProgressTimer(uiType, list, parent, conf, duration, expTi
 
     local frame
     if uiType == "button" then
-        frame = self:CreateProgressBar(parent, list, index, 25, 2, conf.color, conf.icon, 0)
+        frame = self:CreateProgressBar(parent, list, index, height, 2, conf.color, conf.icon)
     else
-        frame = self:CreateProgressBar(parent, list, index, 25, 2, conf.color, conf.icon, 0)
+        frame = self:CreateProgressBar(parent, list, index, height, 2, conf.color, conf.icon)
     end
     local timer = {
         frame = frame,
@@ -36,13 +38,16 @@ function MeleeUtils:SetProgressTimer(uiType, list, parent, conf, duration, expTi
         duration = duration,
         onUpdate = onUpdate,
         onEnd = onEnd,
-        uiType = uiType
+        uiType = uiType,
+        height = height,
+        parent = parent,
     }
     timer.key = self:GetTimerKey(timer)
     table.insert(list, timer)
     self.timers[timer.key] = timer
     self.timerByName[conf.name..uiType] = timer
     onUpdate(timer)
+    self:ArrangeProgressBars(list, parent, height)
     return timer
 end
 
@@ -68,6 +73,7 @@ function MeleeUtils:RemoveProgressTimer(timer)
     timer.frame = nil
     self.timerByName[timer.name..timer.uiType] = nil
     self.timers[timer.key] = nil
+    self:ArrangeProgressBars(timer.list, timer.parent, timer.height)
 end
 
 function MeleeUtils:CheckProgressTimers()

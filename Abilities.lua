@@ -38,7 +38,7 @@ abilities.sliceAndDice = {
 abilities.exposeArmor = {
     name = "Expose Armor",
     icon = "Interface\\Icons\\Ability_Warrior_Riposte",
-    color = {0.0, 0.0, 1.0},
+    color = {0.6784, 0.6706, 0.8706},
     list = MeleeUtils.watchBars,
     duration = 30,
     onUpdate = MeleeUtils_Timer_OnUpdate,
@@ -131,6 +131,7 @@ abilities.blind = {
     name = "Blind",
     icon = "Interface\\Icons\\Spell_Shadow_MindSteal",
     color = {0.9059, 0.7451, 0.5804},
+    list = MeleeUtils.offensiveBars,
     duration = 10,
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueBlind",
@@ -146,4 +147,15 @@ abilities.evasion = {
     onUpdate = MeleeUtils_Timer_OnUpdate,
     option = "rogueEvasion",
     parent = MeleeUtils_WatchBars,
+}
+
+abilities.sap = {
+    name = "Sap",
+    icon = "Interface\\Icons\\Ability_Sap",
+    color = {0.8941, 0.2157, 0.0627},
+    list = MeleeUtils.offensiveBars,
+    duration = 45,
+    onUpdate = MeleeUtils_Timer_OnUpdate,
+    option = "rogueSap",
+    parent = MeleeUtils_OffensiveBars,
 }

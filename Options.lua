@@ -327,6 +327,7 @@ function QuickAuras:AddGearWarningOptions()
             end,
             set = function(info, value)
                 QuickAuras.db.profile[obj.option] = value
+                QuickAuras:ClearIconWarnings()
                 QuickAuras:CheckGear()
             end,
             order = order,

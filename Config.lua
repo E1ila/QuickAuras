@@ -35,15 +35,14 @@ QuickAuras.trackedGear = {
         name = "Mark of the Champion",
         targetDependant = true,
         shouldShow = function(equipped)
-            --if not equipped then
-                -- warn: need to use trinket
-                return  UnitExists("target")
-                        and not UnitIsDead("target")
-                        and UnitCreatureType("target") ~= "Undead"
-                        and UnitCreatureType("target") ~= "Demon"
-                        and not UnitPlayerControlled("target")
-                        and UnitIsEnemy("target","player")
-            --end
+            local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")
+            local isUndeadOrDemon = UnitCreatureType("target") == "Undead" or UnitCreatureType("target") == "Demon"
+
+            if equipped then
+                return targetExists and not isUndeadOrDemon
+            else
+                return targetExists and isUndeadOrDemon
+            end
         end,
     },
     [17067] = {

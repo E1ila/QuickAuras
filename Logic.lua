@@ -7,26 +7,24 @@ function QuickAuras:CheckGear(eventType, ...)
         local equippedItems = {}
         local changed = false
 
-        -- Track all currently equipped items
         for slotId = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
             local equippedItemId = GetInventoryItemID("player", slotId)
             if equippedItemId then
                 equippedItems[equippedItemId] = true
-                local conf = self.trackedGear[equippedItemId]
-                if  conf and (not conf.option or self.db.profile[conf.option])
-                    and (not conf.condition or conf.shouldShow(true)) then
-                    if QuickAuras:AddIconWarning(equippedItemId, conf) then
-                        changed = true
-                    end
-                end
             end
         end
 
-        -- Remove icon warnings for items no longer equipped
-        for itemId, _ in pairs(QuickAuras.iconWarnings) do
-            if not equippedItems[itemId] then
-                QuickAuras:RemoveIconWarning(itemId)
-                changed = true
+        for itemId, conf in pairs(QuickAuras.trackedGear) do
+            if not conf.option or self.db.profile[conf.option] then
+                local isEquipped = equippedItems[itemId]
+                local shouldShow = isEquipped
+                if conf.shouldShow then shouldShow = conf.shouldShow(isEquipped) end
+                --debug("Checking gear", itemId, self.colors.bold, conf.name, "|r", "isEquipped", isEquipped, "shouldShow", shouldShow)
+                if shouldShow then
+                    if QuickAuras:AddIconWarning(itemId, conf) then changed = true end
+                else
+                    if QuickAuras:RemoveIconWarning(itemId) then changed = true end
+                end
             end
         end
 

@@ -1,6 +1,7 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local abilities = QuickAuras.abilities
+local debug = QuickAuras.Debug
 
 QuickAuras.optionalEvents = {
     "UNIT_POWER_UPDATE",
@@ -34,7 +35,6 @@ end
 
 -- these will be detected through UNIT_AURA event
 QuickAuras.trackedAuras = removeNonVisible({
-    [13877] = abilities.rogue.bladeFlurry,
     [13750] = abilities.rogue.adrenalineRush,
     [6774] = abilities.rogue.sliceAndDice,
     [5277] = abilities.rogue.evasion,
@@ -66,7 +66,6 @@ QuickAuras.trackedCombatLog = removeNonVisible({
 QuickAuras.trackedCooldowns = removeNonVisible({
     [20572] = abilities.orc.bloodFury,
     [13750] = abilities.rogue.adrenalineRush,
-    [13877] = abilities.rogue.bladeFlurry,
     [1776] = abilities.rogue.gouge,
     [1777] = abilities.rogue.gouge,
     [8629] = abilities.rogue.gouge,
@@ -90,3 +89,23 @@ QuickAuras.trackedCooldowns = removeNonVisible({
     [408] = abilities.rogue.kidneyShot,  -- r1
     [8643] = abilities.rogue.kidneyShot, -- r2
 })
+
+function QuickAuras:BuildConfig()
+    debug("Building config...")
+    for classLower, classAbilities in pairs(QuickAuras.abilities) do
+        for abilityId, ability in pairs(classAbilities) do
+            if ability.spellId and ability.visible then
+                for _, spellId in ipairs(ability.spellId) do
+                    if ability.aura then
+                        QuickAuras.trackedAuras[spellId] = ability
+                    else
+                        QuickAuras.trackedCombatLog[spellId] = ability
+                    end
+                    if ability.cooldown then
+                        QuickAuras.trackedCooldowns[spellId] = ability
+                    end
+                end
+            end
+        end
+    end
+end

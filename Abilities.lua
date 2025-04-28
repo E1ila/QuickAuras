@@ -13,6 +13,8 @@ abilities.orc.bloodFury = {
 }
 
 abilities.rogue.bladeFlurry = {
+    spellId = { 13877 },
+    aura = true,
     name = "Blade Flurry",
     icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
     color = {246/256, 122/256, 0},

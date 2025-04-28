@@ -46,6 +46,7 @@ QuickAuras.Debug = debug
 function QuickAuras:OnInitialize()
     debug("Initializing...")
     _c = self.colors
+    QuickAuras:BuildConfig()
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
     AceConfig:RegisterOptionsTable("QuickAuras", self.options)
     self.optionsFrame = AceConfigDialog:AddToBlizOptions("QuickAuras", "QuickAuras")

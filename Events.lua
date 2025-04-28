@@ -110,7 +110,11 @@ function QuickAuras:SPELL_UPDATE_COOLDOWN(...)
 end
 
 function QuickAuras:PLAYER_EQUIPMENT_CHANGED(...)
-    self:CheckGear(...)
+    self:CheckGear("equip", ...)
+end
+
+function QuickAuras:PLAYER_TARGET_CHANGED(...)
+    self:CheckGear("target", ...)
 end
 
 

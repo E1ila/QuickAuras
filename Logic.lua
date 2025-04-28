@@ -2,7 +2,7 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-function QuickAuras:CheckGear()
+function QuickAuras:CheckGear(eventType, ...)
     if self.db.profile.trackedGear then
         local equippedItems = {}
         local changed = false
@@ -11,9 +11,10 @@ function QuickAuras:CheckGear()
         for slotId = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
             local equippedItemId = GetInventoryItemID("player", slotId)
             if equippedItemId then
+                equippedItems[equippedItemId] = true
                 local conf = self.trackedGear[equippedItemId]
-                if conf and (not conf.option or self.db.profile[conf.option]) then
-                    equippedItems[equippedItemId] = true
+                if  conf and (not conf.option or self.db.profile[conf.option])
+                    and (not conf.condition or conf.shouldShow(true)) then
                     if QuickAuras:AddIconWarning(equippedItemId, conf) then
                         changed = true
                     end

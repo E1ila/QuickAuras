@@ -107,6 +107,7 @@ function QuickAuras:RemoveIconWarning(itemId)
         frame:SetParent(nil)
         frame:ClearAllPoints()
         self.iconWarnings[itemId] = nil
+        return true
     end
 end
 

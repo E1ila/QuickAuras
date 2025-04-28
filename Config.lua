@@ -9,6 +9,7 @@ QuickAuras.optionalEvents = {
     "UI_ERROR_MESSAGE",
     "SPELL_UPDATE_COOLDOWN",
     "PLAYER_EQUIPMENT_CHANGED",
+    "PLAYER_TARGET_CHANGED",
 }
 
 QuickAuras.adjustableFrames = {
@@ -32,6 +33,18 @@ QuickAuras.trackedGear = {
     },
     [23206] = {
         name = "Mark of the Champion",
+        targetDependant = true,
+        shouldShow = function(equipped)
+            --if not equipped then
+                -- warn: need to use trinket
+                return  UnitExists("target")
+                        and not UnitIsDead("target")
+                        and UnitCreatureType("target") ~= "Undead"
+                        and UnitCreatureType("target") ~= "Demon"
+                        and not UnitPlayerControlled("target")
+                        and UnitIsEnemy("target","player")
+            --end
+        end,
     },
     [17067] = {
         name = "Ancient Cornerstone Grimoire",

@@ -16,12 +16,19 @@ QuickAuras.timerByName = {}
 QuickAuras.watchBars = {}
 QuickAuras.offensiveBars = {}
 QuickAuras.cooldowns = {}
-MUGLOBAL = QuickAuras
-MU = QuickAuras
+QAG = QuickAuras
 
 QuickAuras.playerClass = select(2, UnitClass("player"))
 QuickAuras.playerGuid = UnitGUID("player")
 QuickAuras.isRogue = QuickAuras.playerClass == "ROGUE"
+QuickAuras.isWarrior = QuickAuras.playerClass == "WARRIOR"
+QuickAuras.isPaladin = QuickAuras.playerClass == "PALADIN"
+QuickAuras.isShaman = QuickAuras.playerClass == "SHAMAN"
+QuickAuras.isMage = QuickAuras.playerClass == "MAGE"
+QuickAuras.isWarlock = QuickAuras.playerClass == "WARLOCK"
+QuickAuras.isHunter = QuickAuras.playerClass == "HUNTER"
+QuickAuras.isDruid = QuickAuras.playerClass == "DRUID"
+QuickAuras.isPriest = QuickAuras.playerClass == "PRIEST"
 local _c
 
 local function out(text, ...)

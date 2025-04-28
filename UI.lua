@@ -89,7 +89,7 @@ end
 
 function QuickAuras:AddIconWarning(itemId, conf)
     if not self.iconWarnings[itemId] then
-        debug("AddIconWarning", itemId)
+        --debug("AddIconWarning", itemId)
         local frame = self:CreateWarningIcon(itemId, QuickAuras_IconWarnings, "GearWarning"..itemId)
         self.iconWarnings[itemId] = {
             name = conf.name,
@@ -101,7 +101,7 @@ end
 
 function QuickAuras:RemoveIconWarning(itemId)
     if self.iconWarnings[itemId] then
-        debug("RemoveIconWarning", itemId)
+        --debug("RemoveIconWarning", itemId)
         local frame = self.iconWarnings[itemId].frame
         frame:Hide()
         frame:SetParent(nil)
@@ -111,14 +111,14 @@ function QuickAuras:RemoveIconWarning(itemId)
 end
 
 function QuickAuras:ClearIconWarnings()
-    debug("Clearing icon warnings")
+    --debug("Clearing icon warnings")
     for itemId, obj in pairs(self.iconWarnings) do
         self:RemoveIconWarning(itemId)
     end
 end
 
 function QuickAuras:ArrangeIconWarnings()
-    debug("Arranging icon warnings")
+    --debug("Arranging icon warnings")
     local lastFrame = nil
     for itemId, obj in pairs(self.iconWarnings) do
         local frame = obj.frame
@@ -162,7 +162,7 @@ function QuickAuras:CreateProgressBar(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBAR"..tostring(pbId), parent, "QuickAuras_ProgressBar")
-    debug("Created progress bar", "name", frame:GetName(), "index", index, "parent", parent)
+    --debug("Created progress bar", "name", frame:GetName(), "index", index, "parent", parent)
     frame:SetBackdrop({
         bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -195,7 +195,7 @@ function QuickAuras:CreateProgressButton(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
-    debug("Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
+    --debug("Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
 
     frame.icon = frame:CreateTexture(nil, "ARTWORK")
     frame.icon:SetAllPoints(frame)
@@ -319,6 +319,7 @@ function QuickAuras:TestCooldowns()
     end
 end
 
+local TestIconWarnings_Timer_Id = 0
 function QuickAuras:TestIconWarnings()
     self:ClearIconWarnings()
     for i, conf in pairs(self.trackedGear) do
@@ -326,7 +327,12 @@ function QuickAuras:TestIconWarnings()
         if i == 3 then break end
     end
     QuickAuras:ArrangeIconWarnings()
+
+    TestIconWarnings_Timer_Id = TestIconWarnings_Timer_Id + 1
+    local timerId = TestIconWarnings_Timer_Id
     C_Timer.After(2, function()
+        if timerId ~= TestIconWarnings_Timer_Id then return end
+        debug("TestIconWarnings timer ended")
         QuickAuras:ClearIconWarnings()
         QuickAuras:CheckGear()
     end)

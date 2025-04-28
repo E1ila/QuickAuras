@@ -74,6 +74,7 @@ function QuickAuras:OnInitialize()
         QuickAuras:RegisterOptionalEvents()
         QuickAuras:CheckAuras()
         QuickAuras:CheckCooldowns()
+        QuickAuras:CheckGear()
         out("QuickAuras loaded. Type " .. _c.bold .. "/qa|r for options.")
     end)
 end

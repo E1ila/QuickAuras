@@ -54,7 +54,7 @@ QuickAuras.options = {
             set = function(info, value) QuickAuras:Options_ToggleEnabled(value) end,
             order = 4,
         },
-        watchBars = {
+        watchBarsEnabled = {
             type = "toggle",
             name = "Watch Bars",
             desc = "Enables progress bars for player's auras",
@@ -67,7 +67,7 @@ QuickAuras.options = {
             end,
             order = 5,
         },
-        offensiveBars = {
+        offensiveBarsEnabled = {
             type = "toggle",
             name = "Offensive Bars",
             desc = "Show a progress bar with time left on important abilities",
@@ -80,7 +80,7 @@ QuickAuras.options = {
             end,
             order = 6,
         },
-        cooldowns = {
+        cooldownsEnabled = {
             type = "toggle",
             name = "Cooldown Timers",
             desc = "Enables cooldown timers",
@@ -93,13 +93,18 @@ QuickAuras.options = {
             end,
             order = 7,
         },
-        cooldowns = {
+        iconWarningEnabled = {
             type = "toggle",
             name = "Gear Warnings",
             desc = "Enables gear warnings",
             get = function(info) return QuickAuras.db.profile.trackedGear end,
             set = function(info, value)
                 QuickAuras.db.profile.trackedGear = value
+                if value then
+                    QuickAuras:CheckGear()
+                else
+                    QuickAuras:ClearIconWarnings()
+                end
             end,
             order = 8,
         },
@@ -322,6 +327,7 @@ function QuickAuras:AddGearWarningOptions()
             end,
             set = function(info, value)
                 QuickAuras.db.profile[obj.option] = value
+                QuickAuras:CheckGear()
             end,
             order = order,
         }

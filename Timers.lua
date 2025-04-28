@@ -19,7 +19,7 @@ function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTi
     local index = #list
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
-            debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
+            --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
             return -- already exists
         end
         -- different timer, remove old
@@ -27,7 +27,7 @@ function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTi
         debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime)
+        --debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime)
     end
 
     local frame

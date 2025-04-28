@@ -35,7 +35,17 @@ QuickAuras.options = {
             fontSize = "large",
             order = 1,
         },
-        enabled = {
+        spacer2 = {
+            type = "description",
+            name = "",
+            order = 2,
+        },
+        spacer3 = {
+            type = "description",
+            name = "",
+            order = 3,
+        },
+        addonEnabled = {
             type = "toggle",
             name = "Enable",
             desc = "Enable or disable the addon",
@@ -43,10 +53,59 @@ QuickAuras.options = {
             set = function(info, value) QuickAuras:Options_ToggleEnabled(value) end,
             order = 4,
         },
+        watchBars = {
+            type = "toggle",
+            name = "Watch Bars",
+            desc = "Enables progress bars for player's auras",
+            get = function(info) return QuickAuras.db.profile.watchBars end,
+            set = function(info, value)
+                QuickAuras.db.profile.watchBars = value
+                if value then
+                    QuickAuras:TestProgressBar(QuickAuras.trackedAuras)
+                end
+            end,
+            order = 5,
+        },
+        offensiveBars = {
+            type = "toggle",
+            name = "Offensive Bars",
+            desc = "Show a progress bar with time left on important abilities",
+            get = function(info) return QuickAuras.db.profile.offensiveBars end,
+            set = function(info, value)
+                QuickAuras.db.profile.offensiveBars = value
+                if value then
+                    QuickAuras:TestProgressBar(QuickAuras.trackedCombatLog)
+                end
+            end,
+            order = 6,
+        },
+        cooldowns = {
+            type = "toggle",
+            name = "Cooldown Timers",
+            desc = "Enables cooldown timers",
+            get = function(info) return QuickAuras.db.profile.cooldowns end,
+            set = function(info, value)
+                QuickAuras.db.profile.cooldowns = value
+                if value then
+                    QuickAuras:TestCooldowns()
+                end
+            end,
+            order = 7,
+        },
+        spacer99 = {
+            type = "description",
+            name = "",
+            order = 99,
+        },
         lookAndFeelHeader = {
             type = "header",
             name = "Look and Feel",
             order = 100,
+        },
+        spacer101 = {
+            type = "description",
+            name = "",
+            order = 101,
         },
         barHeight = {
             type = "range",
@@ -60,7 +119,7 @@ QuickAuras.options = {
                 QuickAuras.db.profile.barHeight = value
                 QuickAuras:TestWatchBars()
             end,
-            order = 101,
+            order = 102,
         },
         buttonHeight = {
             type = "range",
@@ -72,52 +131,29 @@ QuickAuras.options = {
             get = function(info) return QuickAuras.db.profile.buttonHeight end,
             set = function(info, value)
                 QuickAuras.db.profile.buttonHeight = value
-                QuickAuras:TestButtons()
+                QuickAuras:TestCooldowns()
             end,
-            order = 101,
+            order = 103,
+        },
+        spacer198 = {
+            type = "description",
+            name = "",
+            order = 198,
+        },
+        spacer199 = {
+            type = "description",
+            name = "",
+            order = 199,
         },
         commonUtilsHeader = {
             type = "header",
             name = "Common Utils",
             order = 200,
         },
-        harryPaste = {
-            type = "toggle",
-            name = "Harry Paste",
-            desc = "Warn when a mob parries your attack while being tanked",
-            get = function(info) return QuickAuras.db.profile.harryPaste end,
-            set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
-            order = 202,
-        },
-        offensiveBars = {
-            type = "toggle",
-            name = "Offensive Bars",
-            desc = "Show a progress bar with time left on important abilities",
-            get = function(info) return QuickAuras.db.profile.offensiveBars end,
-            set = function(info, value) QuickAuras.db.profile.offensiveBars = value end,
-            order = 203,
-        },
-        outOfRange = {
-            type = "toggle",
-            name = "Out of Range",
-            desc = "Show a noticable warning when you are out of range of your target in combat",
-            get = function(info) return QuickAuras.db.profile.outOfRange end,
-            set = function(info, value)
-                QuickAuras.db.profile.outOfRange = value
-                if not value then QuickAuras.db.profile.outOfRangeSound = false end
-            end,
-            order = 204,
-        },
-        outOfRangeSound = {
-            type = "toggle",
-            name = "Out of Range Sound",
-            desc = "Play a warning when you are out of range of your target in combat",
-            get = function(info) return QuickAuras.db.profile.outOfRangeSound end,
-            set = function(info, value)
-                QuickAuras.db.profile.outOfRangeSound = value
-                if value then QuickAuras.db.profile.outOfRange = true end
-            end,
-            order = 204,
+        spacer201 = {
+            type = "description",
+            name = "",
+            order = 201,
         },
         bloodFury = {
             type = "toggle",
@@ -126,11 +162,50 @@ QuickAuras.options = {
             get = function(info) return QuickAuras.db.profile.bloodFury end,
             set = function(info, value) QuickAuras.db.profile.bloodFury = value end,
             order = 205,
+            hidden = not QuickAuras.isOrc,
+        },
+        meleeUtils = {
+            type = "group",
+            name = "Melee Utils",
+            order = 1000,
+            hidden = not QuickAuras.isRogue,
+            args = {
+                harryPaste = {
+                    type = "toggle",
+                    name = "Harry Paste",
+                    desc = "Warn when a mob parries your attack while being tanked",
+                    get = function(info) return QuickAuras.db.profile.harryPaste end,
+                    set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
+                    order = 202,
+                },
+                outOfRange = {
+                    type = "toggle",
+                    name = "Out of Range",
+                    desc = "Show a noticable warning when you are out of range of your target in combat",
+                    get = function(info) return QuickAuras.db.profile.outOfRange end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.outOfRange = value
+                        if not value then QuickAuras.db.profile.outOfRangeSound = false end
+                    end,
+                    order = 204,
+                },
+                outOfRangeSound = {
+                    type = "toggle",
+                    name = "Out of Range Sound",
+                    desc = "Play a warning when you are out of range of your target in combat",
+                    get = function(info) return QuickAuras.db.profile.outOfRangeSound end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.outOfRangeSound = value
+                        if value then QuickAuras.db.profile.outOfRange = true end
+                    end,
+                    order = 204,
+                },
+            },
         },
         rogueUtils = {
             type = "group",
-            name = "Utils",
-            order = 1000,
+            name = "Rogue Utils",
+            order = 1001,
             hidden = not QuickAuras.isRogue,
             args = {
                 rogue5Combo = {
@@ -149,22 +224,9 @@ QuickAuras.options = {
         rogueBars = {
             type = "group",
             name = "Buffs / Debuffs",
-            order = 1001,
+            order = 1002,
             hidden = not QuickAuras.isRogue,
             args = {
-                watchBars = {
-                    type = "toggle",
-                    name = "Enabled",
-                    desc = "Enables progress bars for buffs/debuffs",
-                    get = function(info) return QuickAuras.db.profile.watchBars end,
-                    set = function(info, value) QuickAuras.db.profile.watchBars = value end,
-                    order = 1,
-                },
-                separatorHeader = {
-                    type = "header",
-                    name = "Tracked Abilities",
-                    order = 10,
-                },
             },
         },
         rogueCooldowns = {
@@ -173,19 +235,6 @@ QuickAuras.options = {
             order = 1002,
             hidden = not QuickAuras.isRogue,
             args = {
-                enabled = {
-                    type = "toggle",
-                    name = "Enabled",
-                    desc = "Enables cooldown timers",
-                    get = function(info) return QuickAuras.db.profile.cooldowns end,
-                    set = function(info, value) QuickAuras.db.profile.cooldowns = value end,
-                    order = 1,
-                },
-                separatorHeader = {
-                    type = "header",
-                    name = "Tracked Abilities",
-                    order = 10,
-                },
             }
         },
     },
@@ -232,7 +281,7 @@ function QuickAuras:HandleSlashCommand(input)
             end
         elseif cmd == "test" then
             self:TestWatchBars()
-            self:TestButtons()
+            self:TestCooldowns()
         elseif cmd == "lock" then
             self:ToggleLockedState()
         elseif cmd == "reset" then

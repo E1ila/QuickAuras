@@ -203,7 +203,7 @@ function QuickAuras:TestWatchBars()
     self:TestProgressBar(self.trackedCombatLog)
 end
 
-function QuickAuras:TestButtons()
+function QuickAuras:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedCooldowns) do
         self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)

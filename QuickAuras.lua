@@ -19,6 +19,7 @@ QuickAuras.cooldowns = {}
 QAG = QuickAuras
 
 QuickAuras.playerClass = select(2, UnitClass("player"))
+QuickAuras.playerRace = select(1, UnitRace("player"))
 QuickAuras.playerGuid = UnitGUID("player")
 QuickAuras.isRogue = QuickAuras.playerClass == "ROGUE"
 QuickAuras.isWarrior = QuickAuras.playerClass == "WARRIOR"
@@ -29,6 +30,7 @@ QuickAuras.isWarlock = QuickAuras.playerClass == "WARLOCK"
 QuickAuras.isHunter = QuickAuras.playerClass == "HUNTER"
 QuickAuras.isDruid = QuickAuras.playerClass == "DRUID"
 QuickAuras.isPriest = QuickAuras.playerClass == "PRIEST"
+QuickAuras.isOrc = QuickAuras.playerRace == "Orc"
 local _c
 
 local function out(text, ...)

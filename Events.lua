@@ -13,7 +13,7 @@ function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellID, conf in pairs(self.trackedCooldowns) do
         local start, duration, enabled = GetSpellCooldown(spellID)
-        if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."CD"]) then
+        if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
             --debug("Cooldown", spellID, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
             self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration, conf.onUpdate, conf.onUpdate)

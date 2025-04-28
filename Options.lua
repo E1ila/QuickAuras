@@ -20,30 +20,6 @@ QuickAuras.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         bloodFury = true,
-        rogueEaBar = true,
-        rogueSndBar = true,
-        rogueFlurryBar = true,
-        rogueAdrenalineRush = true,
-        rogueGouge = true,
-        rogueCheapShot = true,
-        rogueKidneyShot = true,
-        rogueVanish = true,
-        rogueSprint = true,
-        rogueStealth = true,
-        rogueKick = true,
-        rogueBlind = true,
-        rogueEvasion = true,
-        rogueSap = true,
-        rogueFlurryBarCD = true,
-        rogueAdrenalineRushCD = true,
-        rogueGougeCD = true,
-        rogueKidneyShotCD = true,
-        rogueVanishCD = true,
-        rogueSprintCD = true,
-        rogueStealthCD = true,
-        rogueKickCD = true,
-        rogueBlindCD = true,
-        rogueEvasionCD = true,
     },
 }
 
@@ -189,107 +165,6 @@ QuickAuras.options = {
                     name = "Tracked Abilities",
                     order = 10,
                 },
-                rogueEaBar = {
-                    type = "toggle",
-                    name = "Expose Armor",
-                    desc = "Shows debuff time for Expose Armor.",
-                    get = function(info)
-                        return QuickAuras.db.profile.rogueEaBar
-                    end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.rogueEaBar = value
-                    end,
-                    order = 100,
-                },
-                rogueSndBar = {
-                    type = "toggle",
-                    name = "Slice and Dice",
-                    desc = "Shows buff time for Slice and Dice.",
-                    get = function(info)
-                        return QuickAuras.db.profile.rogueSndBar
-                    end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.rogueSndBar = value
-                    end,
-                    order = 101,
-                },
-                rogueFlurryBar = {
-                    type = "toggle",
-                    name = "Blade Flurry",
-                    desc = "Shows buff time for Blade Flurry.",
-                    get = function(info)
-                        return QuickAuras.db.profile.rogueFlurryBar
-                    end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.rogueFlurryBar = value
-                    end,
-                    order = 102,
-                },
-                rogueAdrenalineRush = {
-                    type = "toggle",
-                    name = "Adrenaline Rush",
-                    desc = "Shows buff time for Adrenaline Rush.",
-                    get = function(info)
-                        return QuickAuras.db.profile.rogueAdrenalineRush
-                    end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.rogueAdrenalineRush = value
-                    end,
-                    order = 103,
-                },
-                rogueSap = {
-                    type = "toggle",
-                    name = "Sap",
-                    desc = "Shows debuff time for Sap.",
-                    get = function(info) return QuickAuras.db.profile.rogueSap end,
-                    set = function(info, value) QuickAuras.db.profile.rogueSap = value end,
-                    order = 104,
-                },
-                rogueGouge = {
-                    type = "toggle",
-                    name = "Gauge",
-                    desc = "Shows debuff time for Gauge.",
-                    get = function(info) return QuickAuras.db.profile.rogueGouge end,
-                    set = function(info, value) QuickAuras.db.profile.rogueGouge = value end,
-                    order = 105,
-                },
-                rogueCheapShot = {
-                    type = "toggle",
-                    name = "Cheap Shot",
-                    desc = "Shows debuff time for Cheap Shot.",
-                    get = function(info) return QuickAuras.db.profile.rogueCheapShot end,
-                    set = function(info, value) QuickAuras.db.profile.rogueCheapShot = value end,
-                    order = 106,
-                },
-                rogueKidneyShot = {
-                    type = "toggle",
-                    name = "Kidney Shot",
-                    desc = "Shows debuff time for Kidney Shot.",
-                    get = function(info) return QuickAuras.db.profile.rogueKidneyShot end,
-                    set = function(info, value) QuickAuras.db.profile.rogueKidneyShot = value end,
-                    order = 107,
-                },
-                rogueSprint = {
-                    type = "toggle",
-                    name = "Sprint",
-                    desc = "Shows buff time for Sprint.",
-                    get = function(info) return QuickAuras.db.profile.rogueSprint end,
-                    set = function(info, value) QuickAuras.db.profile.rogueSprint = value end,
-                },
-                rogueBlind = {
-                    type = "toggle",
-                    name = "Blind",
-                    desc = "Shows debuff time for Blind.",
-                    get = function(info) return QuickAuras.db.profile.rogueBlind end,
-                    set = function(info, value) QuickAuras.db.profile.rogueBlind = value end,
-                },
-                rogueEvasion = {
-                    type = "toggle",
-                    name = "Evasion",
-                    desc = "Shows buff time for Evasion.",
-                    get = function(info) return QuickAuras.db.profile.rogueEvasion end,
-                    set = function(info, value) QuickAuras.db.profile.rogueEvasion = value end,
-                },
             },
         },
         rogueCooldowns = {
@@ -311,71 +186,6 @@ QuickAuras.options = {
                     name = "Tracked Abilities",
                     order = 10,
                 },
-                rogueGougeCD = {
-                    type = "toggle",
-                    name = "Gauge",
-                    desc = "Shows time bar for Gauge.",
-                    get = function(info) return QuickAuras.db.profile.rogueGougeCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueGougeCD = value end,
-                    order = 100,
-                },
-                rogueKidneyShotCD = {
-                    type = "toggle",
-                    name = "Kidney Shot",
-                    desc = "Shows time bar for Kidney Shot.",
-                    get = function(info) return QuickAuras.db.profile.rogueKidneyShotCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueKidneyShotCD = value end,
-                    order = 101,
-                },
-                rogueVanishCD = {
-                    type = "toggle",
-                    name = "Vanish",
-                    desc = "Shows cooldown for Vanish.",
-                    get = function(info) return QuickAuras.db.profile.rogueVanishCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueVanishCD = value end,
-                },
-                rogueSprintCD = {
-                    type = "toggle",
-                    name = "Sprint",
-                    desc = "Shows cooldown for Sprint.",
-                    get = function(info) return QuickAuras.db.profile.rogueSprintCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueSprintCD = value end,
-                },
-                rogueStealthCD = {
-                    type = "toggle",
-                    name = "Stealth",
-                    desc = "Shows cooldown for Stealth.",
-                    get = function(info) return QuickAuras.db.profile.rogueStealthCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueStealthCD = value end,
-                },
-                rogueKickCD = {
-                    type = "toggle",
-                    name = "Kick",
-                    desc = "Shows cooldown for Kick.",
-                    get = function(info) return QuickAuras.db.profile.rogueKickCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueKickCD = value end,
-                },
-                rogueBlindCD = {
-                    type = "toggle",
-                    name = "Blind",
-                    desc = "Shows cooldown for Blind.",
-                    get = function(info) return QuickAuras.db.profile.rogueBlindCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueBlindCD = value end,
-                },
-                rogueEvasionCD = {
-                    type = "toggle",
-                    name = "Evasion",
-                    desc = "Shows cooldown for Evasion.",
-                    get = function(info) return QuickAuras.db.profile.rogueEvasionCD end,
-                    set = function(info, value) QuickAuras.db.profile.rogueEvasionCD = value end,
-                },
-                --eaAnnounce = {
-                --    type = "toggle",
-                --    name = "IEA Announce",
-                --    desc = "Informs the raid in /s once you've applied IEA.",
-                --    get = function(info) return QuickAuras.db.profile.eaAnnounce end,
-                --    set = function(info, value) QuickAuras.db.profile.eaAnnounce = value end,
-                --},
             }
         },
     },
@@ -428,7 +238,39 @@ function QuickAuras:HandleSlashCommand(input)
         elseif cmd == "reset" then
             self:ResetWidgets()
         else
-            out("Unknown command. Use '/mu' to open the options or '/mu debug' to toggle debug mode.")
+            out("Unknown command. Use '/qa' to open the options or '/mu debug' to toggle debug mode.")
         end
+    end
+end
+
+local order = 1000
+local lowerClass = string.lower(QuickAuras.playerClass)
+for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
+    order = order + 1
+    QuickAuras.defaultOptions.profile[obj.option] = true
+    QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
+    if obj.list then
+        QuickAuras.options.args[lowerClass.."Bars"].args[ability] = {
+            type = "toggle",
+            name = obj.name,
+            desc = "Shows "..(obj.debuff and "debuff" or "buff").." time for "..obj.name..".",
+            get = function(info)
+                return QuickAuras.db.profile[obj.option]
+            end,
+            set = function(info, value)
+                QuickAuras.db.profile[obj.option] = value
+            end,
+            order = order,
+        }
+    end
+    if obj.cooldown then
+        QuickAuras.options.args[lowerClass.."Cooldowns"].args[ability] = {
+            type = "toggle",
+            name = obj.name,
+            desc = "Shows cooldown for "..obj.name..".",
+            get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
+            set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value end,
+            order = order + 1000,
+        }
     end
 end

@@ -39,6 +39,7 @@ QuickAuras.watchBarAuras = removeNonVisible({
     [6774] = abilities.rogue.sliceAndDice,
     [5277] = abilities.rogue.evasion,
     [11305] = abilities.rogue.sprint,
+    [20572] = abilities.orc.bloodFury,
 })
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
@@ -70,7 +71,7 @@ QuickAuras.trackedCooldowns = removeNonVisible({
     [11305] = abilities.rogue.sprint,
     [1785] = abilities.rogue.stealth,
     [1766] = abilities.rogue.kick,
-    [20572] = abilities.rogue.bloodFury,
+    [20572] = abilities.orc.bloodFury,
     [2094] = abilities.rogue.blind,
     [5277] = abilities.rogue.evasion,
 })

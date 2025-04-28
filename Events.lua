@@ -1,6 +1,6 @@
 local ADDON_NAME, addon = ...
-local MeleeUtils = addon.root
-local debug = MeleeUtils.Debug
+local QuickAuras = addon.root
+local debug = QuickAuras.Debug
 
 local enemyDebuffs = {
     exporeArmor = {},
@@ -9,19 +9,19 @@ local enemyDebuffs = {
 local lastUpdate = 0
 local updateInterval = 0.01 -- Execute every 0.1 seconds
 
-function MeleeUtils:CheckCooldowns()
+function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellID, conf in pairs(self.trackedCooldowns) do
         local start, duration, enabled = GetSpellCooldown(spellID)
         if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."CD"]) then
             --debug("Cooldown", spellID, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
-            self:SetProgressTimer("button", self.cooldowns, MeleeUtils_Cooldowns, conf, updatedDuration, start + duration, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration, conf.onUpdate, conf.onUpdate)
         end
     end
 end
 
-function MeleeUtils:CheckAuras()
+function QuickAuras:CheckAuras()
     if not self.db.profile.watchBars then return end
     local i = 1
     while true do
@@ -37,7 +37,7 @@ function MeleeUtils:CheckAuras()
     end
 end
 
-function MeleeUtils:UpdateZone()
+function QuickAuras:UpdateZone()
     local inInstance, instanceType = IsInInstance()
     self.InstanceName = nil
     if inInstance and (instanceType == "raid" or instanceType == "party") then
@@ -51,7 +51,7 @@ end
 
 -- WoW Events
 
-function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
+function QuickAuras:UNIT_POWER_UPDATE(unit, powerType)
     if self.isRogue and self.db.profile.rogue5combo then
         if unit == "player" and powerType == "COMBO_POINTS" then
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
@@ -60,28 +60,28 @@ function MeleeUtils:UNIT_POWER_UPDATE(unit, powerType)
     end
 end
 
-function MeleeUtils:ZONE_CHANGED()
+function QuickAuras:ZONE_CHANGED()
     self:UpdateZone()
 end
 
-function MeleeUtils:ZONE_CHANGED_INDOORS()
+function QuickAuras:ZONE_CHANGED_INDOORS()
     self:UpdateZone()
 end
 
-function MeleeUtils:ZONE_CHANGED_NEW_AREA()
+function QuickAuras:ZONE_CHANGED_NEW_AREA()
     self:UpdateZone()
 end
 
-function MeleeUtils:PLAYER_ENTERING_WORLD()
+function QuickAuras:PLAYER_ENTERING_WORLD()
     self:UpdateZone()
 end
 
-function MeleeUtils:UNIT_AURA(unit)
+function QuickAuras:UNIT_AURA(unit)
     if unit ~= "player" then return end
     self:CheckAuras()
 end
 
-function MeleeUtils:UI_ERROR_MESSAGE(errorType, errorMessage)
+function QuickAuras:UI_ERROR_MESSAGE(errorType, errorMessage)
     if self.db.profile.outOfRange and UnitAffectingCombat("player") then
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
         if  errorMessage == ERR_OUT_OF_RANGE
@@ -92,7 +92,7 @@ function MeleeUtils:UI_ERROR_MESSAGE(errorType, errorMessage)
     end
 end
 
-function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
+function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
 
     --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
@@ -136,7 +136,7 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if subevent == "UNIT_DIED" then
-        for spellID, conf in pairs(MeleeUtils.watchBarCombatLog) do
+        for spellID, conf in pairs(QuickAuras.watchBarCombatLog) do
             if enemyDebuffs[spellID] and enemyDebuffs[spellID][destGUID] then
                 self:RemoveProgressTimer(enemyDebuffs[spellID][destGUID])
                 enemyDebuffs[spellID][destGUID] = nil
@@ -145,14 +145,14 @@ function MeleeUtils:COMBAT_LOG_EVENT_UNFILTERED()
     end
 end
 
-function MeleeUtils:SPELL_UPDATE_COOLDOWN(...)
+function QuickAuras:SPELL_UPDATE_COOLDOWN(...)
     self:CheckCooldowns()
 end
 
 
 -- OnUpdate
 
-function MeleeUtils:OnUpdate()
+function QuickAuras:OnUpdate()
     local currentTime = GetTime()
     if self.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime

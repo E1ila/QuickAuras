@@ -1,8 +1,8 @@
 local ADDON_NAME, addon = ...
-local MeleeUtils = addon.root
-local debug = MeleeUtils.Debug
+local QuickAuras = addon.root
+local debug = QuickAuras.Debug
 
-function MeleeUtils:SetProgressTimer(uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
+function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
     local existingTimer = self.timerByName[conf.name..uiType]
     if not list then list = conf.list end
     if not parent then parent = conf.parent end
@@ -49,11 +49,11 @@ function MeleeUtils:SetProgressTimer(uiType, list, parent, conf, duration, expTi
     return timer
 end
 
-function MeleeUtils:GetTimerKey(timer)
+function QuickAuras:GetTimerKey(timer)
     return timer.name..tostring(timer.expTime)..tostring(timer.uiType)
 end
 
-function MeleeUtils:RemoveProgressTimer(timer)
+function QuickAuras:RemoveProgressTimer(timer)
     debug("Removing timer", "name", timer.name, "type", timer.uiType, "expTime", timer.expTime)
     if timer.onEnd then
         timer:onEnd(timer)
@@ -74,7 +74,7 @@ function MeleeUtils:RemoveProgressTimer(timer)
     self:ArrangeProgressFrames(timer.list, timer.parent)
 end
 
-function MeleeUtils:CheckProgressTimers()
+function QuickAuras:CheckProgressTimers()
     for _, timer in pairs(self.timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then

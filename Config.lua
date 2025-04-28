@@ -1,8 +1,8 @@
 local ADDON_NAME, addon = ...
-local MeleeUtils = addon.root
-local abilities = MeleeUtils.abilities
+local QuickAuras = addon.root
+local abilities = QuickAuras.abilities
 
-MeleeUtils.optionalEvents = {
+QuickAuras.optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",
     "UNIT_AURA",
@@ -10,13 +10,13 @@ MeleeUtils.optionalEvents = {
     "SPELL_UPDATE_COOLDOWN",
 }
 
-MeleeUtils.adjustableFrames = {
-    "MeleeUtils_Parry",
-    "MeleeUtils_Combo",
-    "MeleeUtils_Flurry",
+QuickAuras.adjustableFrames = {
+    "QuickAuras_Parry",
+    "QuickAuras_Combo",
+    "QuickAuras_Flurry",
 }
 
-MeleeUtils.colors = {
+QuickAuras.colors = {
     bold = "|cffff77aa",
     enabled = "|cff00ff00",
     disabled = "|cffffff00",
@@ -33,7 +33,7 @@ local function removeNonVisible(list)
 end
 
 -- these will be detected through UNIT_AURA event
-MeleeUtils.watchBarAuras = removeNonVisible({
+QuickAuras.watchBarAuras = removeNonVisible({
     [13877] = abilities.rogue.bladeFlurry,
     [13750] = abilities.rogue.adrenalineRush,
     [6774] = abilities.rogue.sliceAndDice,
@@ -42,7 +42,7 @@ MeleeUtils.watchBarAuras = removeNonVisible({
 })
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
-MeleeUtils.watchBarCombatLog = removeNonVisible({
+QuickAuras.watchBarCombatLog = removeNonVisible({
     [8647] = abilities.rogue.exposeArmor, -- 1
     [8649] = abilities.rogue.exposeArmor, -- 2
     [8650] = abilities.rogue.exposeArmor, -- 3
@@ -62,7 +62,7 @@ MeleeUtils.watchBarCombatLog = removeNonVisible({
     [11297] = abilities.rogue.sap,
 })
 
-MeleeUtils.trackedCooldowns = removeNonVisible({
+QuickAuras.trackedCooldowns = removeNonVisible({
     [13750] = abilities.rogue.adrenalineRush,
     [13877] = abilities.rogue.bladeFlurry,
     [11286] = abilities.rogue.gouge,

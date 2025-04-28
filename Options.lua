@@ -1,12 +1,12 @@
 local ADDON_NAME, addon = ...
-local MeleeUtils = addon.root
+local QuickAuras = addon.root
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local _uiLocked = true
-local out = MeleeUtils.Print
-local debug = MeleeUtils.Debug
-local _c = MeleeUtils.colors
+local out = QuickAuras.Print
+local debug = QuickAuras.Debug
+local _c = QuickAuras.colors
 
-MeleeUtils.defaultOptions = {
+QuickAuras.defaultOptions = {
     profile = {
         enabled = true,
         cooldowns = true,
@@ -47,15 +47,15 @@ MeleeUtils.defaultOptions = {
     },
 }
 
-MeleeUtils.options = {
-    name = "Melee Utils",
-    handler = MeleeUtils,
+QuickAuras.options = {
+    name = "QuickAuras",
+    handler = QuickAuras,
     type = "group",
     childGroups = "tab",
     args = {
         titleText = {
             type = "description",
-            name = "  " .. ADDON_NAME .. " (v" .. MeleeUtils.version .. ")",
+            name = "  " .. ADDON_NAME .. " (v" .. QuickAuras.version .. ")",
             fontSize = "large",
             order = 1,
         },
@@ -63,8 +63,8 @@ MeleeUtils.options = {
             type = "toggle",
             name = "Enable",
             desc = "Enable or disable the addon",
-            get = function(info) return MeleeUtils.db.profile.enabled end,
-            set = function(info, value) MeleeUtils:Options_ToggleEnabled(value) end,
+            get = function(info) return QuickAuras.db.profile.enabled end,
+            set = function(info, value) QuickAuras:Options_ToggleEnabled(value) end,
             order = 4,
         },
         lookAndFeelHeader = {
@@ -79,10 +79,10 @@ MeleeUtils.options = {
             min = 10,
             max = 100,
             step = 1,
-            get = function(info) return MeleeUtils.db.profile.barHeight end,
+            get = function(info) return QuickAuras.db.profile.barHeight end,
             set = function(info, value)
-                MeleeUtils.db.profile.barHeight = value
-                MeleeUtils:TestWatchBars()
+                QuickAuras.db.profile.barHeight = value
+                QuickAuras:TestWatchBars()
             end,
             order = 101,
         },
@@ -93,10 +93,10 @@ MeleeUtils.options = {
             min = 10,
             max = 100,
             step = 1,
-            get = function(info) return MeleeUtils.db.profile.buttonHeight end,
+            get = function(info) return QuickAuras.db.profile.buttonHeight end,
             set = function(info, value)
-                MeleeUtils.db.profile.buttonHeight = value
-                MeleeUtils:TestButtons()
+                QuickAuras.db.profile.buttonHeight = value
+                QuickAuras:TestButtons()
             end,
             order = 101,
         },
@@ -109,26 +109,26 @@ MeleeUtils.options = {
             type = "toggle",
             name = "Harry Paste",
             desc = "Warn when a mob parries your attack while being tanked",
-            get = function(info) return MeleeUtils.db.profile.harryPaste end,
-            set = function(info, value) MeleeUtils.db.profile.harryPaste = value end,
+            get = function(info) return QuickAuras.db.profile.harryPaste end,
+            set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
             order = 202,
         },
         offensiveBars = {
             type = "toggle",
             name = "Offensive Bars",
             desc = "Show a progress bar with time left on important abilities",
-            get = function(info) return MeleeUtils.db.profile.offensiveBars end,
-            set = function(info, value) MeleeUtils.db.profile.offensiveBars = value end,
+            get = function(info) return QuickAuras.db.profile.offensiveBars end,
+            set = function(info, value) QuickAuras.db.profile.offensiveBars = value end,
             order = 203,
         },
         outOfRange = {
             type = "toggle",
             name = "Out of Range",
             desc = "Show a noticable warning when you are out of range of your target in combat",
-            get = function(info) return MeleeUtils.db.profile.outOfRange end,
+            get = function(info) return QuickAuras.db.profile.outOfRange end,
             set = function(info, value)
-                MeleeUtils.db.profile.outOfRange = value
-                if not value then MeleeUtils.db.profile.outOfRangeSound = false end
+                QuickAuras.db.profile.outOfRange = value
+                if not value then QuickAuras.db.profile.outOfRangeSound = false end
             end,
             order = 204,
         },
@@ -136,10 +136,10 @@ MeleeUtils.options = {
             type = "toggle",
             name = "Out of Range Sound",
             desc = "Play a warning when you are out of range of your target in combat",
-            get = function(info) return MeleeUtils.db.profile.outOfRangeSound end,
+            get = function(info) return QuickAuras.db.profile.outOfRangeSound end,
             set = function(info, value)
-                MeleeUtils.db.profile.outOfRangeSound = value
-                if value then MeleeUtils.db.profile.outOfRange = true end
+                QuickAuras.db.profile.outOfRangeSound = value
+                if value then QuickAuras.db.profile.outOfRange = true end
             end,
             order = 204,
         },
@@ -147,25 +147,25 @@ MeleeUtils.options = {
             type = "toggle",
             name = "Blood Fury",
             desc = "Show a cooldown for Blood Fury.",
-            get = function(info) return MeleeUtils.db.profile.bloodFury end,
-            set = function(info, value) MeleeUtils.db.profile.bloodFury = value end,
+            get = function(info) return QuickAuras.db.profile.bloodFury end,
+            set = function(info, value) QuickAuras.db.profile.bloodFury = value end,
             order = 205,
         },
         rogueUtils = {
             type = "group",
             name = "Utils",
             order = 1000,
-            hidden = not MeleeUtils.isRogue,
+            hidden = not QuickAuras.isRogue,
             args = {
                 rogue5Combo = {
                     type = "toggle",
                     name = "5 Combo Points",
                     desc = "Shows a visible indication when you have 5 combo points.",
                     get = function(info)
-                        return MeleeUtils.db.profile.rogue5combo
+                        return QuickAuras.db.profile.rogue5combo
                     end,
                     set = function(info, value)
-                        MeleeUtils.db.profile.rogue5combo = value
+                        QuickAuras.db.profile.rogue5combo = value
                     end,
                 },
             },
@@ -174,14 +174,14 @@ MeleeUtils.options = {
             type = "group",
             name = "Buffs / Debuffs",
             order = 1001,
-            hidden = not MeleeUtils.isRogue,
+            hidden = not QuickAuras.isRogue,
             args = {
                 watchBars = {
                     type = "toggle",
                     name = "Enabled",
                     desc = "Enables progress bars for buffs/debuffs",
-                    get = function(info) return MeleeUtils.db.profile.watchBars end,
-                    set = function(info, value) MeleeUtils.db.profile.watchBars = value end,
+                    get = function(info) return QuickAuras.db.profile.watchBars end,
+                    set = function(info, value) QuickAuras.db.profile.watchBars = value end,
                     order = 1,
                 },
                 separatorHeader = {
@@ -194,10 +194,10 @@ MeleeUtils.options = {
                     name = "Expose Armor",
                     desc = "Shows debuff time for Expose Armor.",
                     get = function(info)
-                        return MeleeUtils.db.profile.rogueEaBar
+                        return QuickAuras.db.profile.rogueEaBar
                     end,
                     set = function(info, value)
-                        MeleeUtils.db.profile.rogueEaBar = value
+                        QuickAuras.db.profile.rogueEaBar = value
                     end,
                     order = 100,
                 },
@@ -206,10 +206,10 @@ MeleeUtils.options = {
                     name = "Slice and Dice",
                     desc = "Shows buff time for Slice and Dice.",
                     get = function(info)
-                        return MeleeUtils.db.profile.rogueSndBar
+                        return QuickAuras.db.profile.rogueSndBar
                     end,
                     set = function(info, value)
-                        MeleeUtils.db.profile.rogueSndBar = value
+                        QuickAuras.db.profile.rogueSndBar = value
                     end,
                     order = 101,
                 },
@@ -218,10 +218,10 @@ MeleeUtils.options = {
                     name = "Blade Flurry",
                     desc = "Shows buff time for Blade Flurry.",
                     get = function(info)
-                        return MeleeUtils.db.profile.rogueFlurryBar
+                        return QuickAuras.db.profile.rogueFlurryBar
                     end,
                     set = function(info, value)
-                        MeleeUtils.db.profile.rogueFlurryBar = value
+                        QuickAuras.db.profile.rogueFlurryBar = value
                     end,
                     order = 102,
                 },
@@ -230,10 +230,10 @@ MeleeUtils.options = {
                     name = "Adrenaline Rush",
                     desc = "Shows buff time for Adrenaline Rush.",
                     get = function(info)
-                        return MeleeUtils.db.profile.rogueAdrenalineRush
+                        return QuickAuras.db.profile.rogueAdrenalineRush
                     end,
                     set = function(info, value)
-                        MeleeUtils.db.profile.rogueAdrenalineRush = value
+                        QuickAuras.db.profile.rogueAdrenalineRush = value
                     end,
                     order = 103,
                 },
@@ -241,54 +241,54 @@ MeleeUtils.options = {
                     type = "toggle",
                     name = "Sap",
                     desc = "Shows debuff time for Sap.",
-                    get = function(info) return MeleeUtils.db.profile.rogueSap end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueSap = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueSap end,
+                    set = function(info, value) QuickAuras.db.profile.rogueSap = value end,
                     order = 104,
                 },
                 rogueGouge = {
                     type = "toggle",
                     name = "Gauge",
                     desc = "Shows debuff time for Gauge.",
-                    get = function(info) return MeleeUtils.db.profile.rogueGouge end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueGouge = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueGouge end,
+                    set = function(info, value) QuickAuras.db.profile.rogueGouge = value end,
                     order = 105,
                 },
                 rogueCheapShot = {
                     type = "toggle",
                     name = "Cheap Shot",
                     desc = "Shows debuff time for Cheap Shot.",
-                    get = function(info) return MeleeUtils.db.profile.rogueCheapShot end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueCheapShot = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueCheapShot end,
+                    set = function(info, value) QuickAuras.db.profile.rogueCheapShot = value end,
                     order = 106,
                 },
                 rogueKidneyShot = {
                     type = "toggle",
                     name = "Kidney Shot",
                     desc = "Shows debuff time for Kidney Shot.",
-                    get = function(info) return MeleeUtils.db.profile.rogueKidneyShot end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueKidneyShot = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueKidneyShot end,
+                    set = function(info, value) QuickAuras.db.profile.rogueKidneyShot = value end,
                     order = 107,
                 },
                 rogueSprint = {
                     type = "toggle",
                     name = "Sprint",
                     desc = "Shows buff time for Sprint.",
-                    get = function(info) return MeleeUtils.db.profile.rogueSprint end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueSprint = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueSprint end,
+                    set = function(info, value) QuickAuras.db.profile.rogueSprint = value end,
                 },
                 rogueBlind = {
                     type = "toggle",
                     name = "Blind",
                     desc = "Shows debuff time for Blind.",
-                    get = function(info) return MeleeUtils.db.profile.rogueBlind end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueBlind = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueBlind end,
+                    set = function(info, value) QuickAuras.db.profile.rogueBlind = value end,
                 },
                 rogueEvasion = {
                     type = "toggle",
                     name = "Evasion",
                     desc = "Shows buff time for Evasion.",
-                    get = function(info) return MeleeUtils.db.profile.rogueEvasion end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueEvasion = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueEvasion end,
+                    set = function(info, value) QuickAuras.db.profile.rogueEvasion = value end,
                 },
             },
         },
@@ -296,14 +296,14 @@ MeleeUtils.options = {
             type = "group",
             name = "Cooldowns",
             order = 1002,
-            hidden = not MeleeUtils.isRogue,
+            hidden = not QuickAuras.isRogue,
             args = {
                 enabled = {
                     type = "toggle",
                     name = "Enabled",
                     desc = "Enables cooldown timers",
-                    get = function(info) return MeleeUtils.db.profile.cooldowns end,
-                    set = function(info, value) MeleeUtils.db.profile.cooldowns = value end,
+                    get = function(info) return QuickAuras.db.profile.cooldowns end,
+                    set = function(info, value) QuickAuras.db.profile.cooldowns = value end,
                     order = 1,
                 },
                 separatorHeader = {
@@ -315,73 +315,73 @@ MeleeUtils.options = {
                     type = "toggle",
                     name = "Gauge",
                     desc = "Shows time bar for Gauge.",
-                    get = function(info) return MeleeUtils.db.profile.rogueGougeCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueGougeCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueGougeCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueGougeCD = value end,
                     order = 100,
                 },
                 rogueKidneyShotCD = {
                     type = "toggle",
                     name = "Kidney Shot",
                     desc = "Shows time bar for Kidney Shot.",
-                    get = function(info) return MeleeUtils.db.profile.rogueKidneyShotCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueKidneyShotCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueKidneyShotCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueKidneyShotCD = value end,
                     order = 101,
                 },
                 rogueVanishCD = {
                     type = "toggle",
                     name = "Vanish",
                     desc = "Shows cooldown for Vanish.",
-                    get = function(info) return MeleeUtils.db.profile.rogueVanishCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueVanishCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueVanishCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueVanishCD = value end,
                 },
                 rogueSprintCD = {
                     type = "toggle",
                     name = "Sprint",
                     desc = "Shows cooldown for Sprint.",
-                    get = function(info) return MeleeUtils.db.profile.rogueSprintCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueSprintCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueSprintCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueSprintCD = value end,
                 },
                 rogueStealthCD = {
                     type = "toggle",
                     name = "Stealth",
                     desc = "Shows cooldown for Stealth.",
-                    get = function(info) return MeleeUtils.db.profile.rogueStealthCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueStealthCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueStealthCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueStealthCD = value end,
                 },
                 rogueKickCD = {
                     type = "toggle",
                     name = "Kick",
                     desc = "Shows cooldown for Kick.",
-                    get = function(info) return MeleeUtils.db.profile.rogueKickCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueKickCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueKickCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueKickCD = value end,
                 },
                 rogueBlindCD = {
                     type = "toggle",
                     name = "Blind",
                     desc = "Shows cooldown for Blind.",
-                    get = function(info) return MeleeUtils.db.profile.rogueBlindCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueBlindCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueBlindCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueBlindCD = value end,
                 },
                 rogueEvasionCD = {
                     type = "toggle",
                     name = "Evasion",
                     desc = "Shows cooldown for Evasion.",
-                    get = function(info) return MeleeUtils.db.profile.rogueEvasionCD end,
-                    set = function(info, value) MeleeUtils.db.profile.rogueEvasionCD = value end,
+                    get = function(info) return QuickAuras.db.profile.rogueEvasionCD end,
+                    set = function(info, value) QuickAuras.db.profile.rogueEvasionCD = value end,
                 },
                 --eaAnnounce = {
                 --    type = "toggle",
                 --    name = "IEA Announce",
                 --    desc = "Informs the raid in /s once you've applied IEA.",
-                --    get = function(info) return MeleeUtils.db.profile.eaAnnounce end,
-                --    set = function(info, value) MeleeUtils.db.profile.eaAnnounce = value end,
+                --    get = function(info) return QuickAuras.db.profile.eaAnnounce end,
+                --    set = function(info, value) QuickAuras.db.profile.eaAnnounce = value end,
                 --},
             }
         },
     },
 }
 
-function MeleeUtils:Options_ToggleEnabled(value)
+function QuickAuras:Options_ToggleEnabled(value)
     self.db.profile.enabled = value
     if self.db.profile.enabled then
         self:RegisterOptionalEvents()
@@ -390,7 +390,7 @@ function MeleeUtils:Options_ToggleEnabled(value)
     end
 end
 
-function MeleeUtils:ToggleLockedState()
+function QuickAuras:ToggleLockedState()
     _uiLocked = not _uiLocked
     for _, frame in ipairs(self.adjustableFrames) do
         local f = _G[frame]
@@ -402,20 +402,20 @@ function MeleeUtils:ToggleLockedState()
     out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 end
 
-function MeleeUtils:ResetWidgets()
+function QuickAuras:ResetWidgets()
     debug("Resetting widgets")
     self:ResetGeneralWidgets()
     self:ResetRogueWidgets()
 end
 
-function MeleeUtils:HandleSlashCommand(input)
+function QuickAuras:HandleSlashCommand(input)
     if not input or input:trim() == "" then
-        AceConfigDialog:Open("MeleeUtils")
+        AceConfigDialog:Open("QuickAuras")
     else
         local cmd = input:trim():lower()
         if cmd == "debug" then
-            MeleeUtilsDB.debug = not MeleeUtilsDB.debug
-            if MeleeUtilsDB.debug then
+            QuickAurasDB.debug = not QuickAurasDB.debug
+            if QuickAurasDB.debug then
                 out("Debug mode ".._c.enabled.."enabled|r") -- Green text
             else
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text

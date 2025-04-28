@@ -1,0 +1,21 @@
+﻿## Interface: 90207
+## Interface-Retail: 100107
+## Interface-Classic: 11507
+## Interface-BCC: 20504
+## Interface-Wrath: 30402
+## Title: QuickAuras
+## Notes: Lightweight addon that implements many common WAs, with a fraction of the CPU and FPS impact.
+## Author: Kof
+## Version: v1.0.0
+## SavedVariables: QuickAurasDBG
+## SavedVariablesPerCharacter: QuickAurasDB
+
+Libs\libs.xml
+QuickAuras.lua
+QuickAuras.xml
+UI.lua
+Timers.lua
+Abilities.lua
+Config.lua
+Options.lua
+Events.lua

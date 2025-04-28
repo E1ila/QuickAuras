@@ -1,11 +1,11 @@
 cd ..
-rm -rf ~/tmp/MeleeUtils
-#mkdir ~/tmp/MeleeUtils
-cp -r MeleeUtils ~/tmp/
-rm ~/tmp/MeleeUtils/pack
-rm -rf ~/tmp/MeleeUtils/.git
-rm -rf ~/tmp/MeleeUtils/.idea
-rm ~/tmp/MeleeUtils/Preview*
+rm -rf ~/tmp/QuickAuras
+#mkdir ~/tmp/QuickAuras
+cp -r QuickAuras ~/tmp/
+rm ~/tmp/QuickAuras/pack
+rm -rf ~/tmp/QuickAuras/.git
+rm -rf ~/tmp/QuickAuras/.idea
+rm ~/tmp/QuickAuras/Preview*
 cd ~/tmp
-zip -9r MeleeUtils_$1.zip MeleeUtils -x \*.DS_Store -x \_MACOSX
-rm -rf ~/tmp/MeleeUtils
+zip -9r QuickAuras_$1.zip QuickAuras -x \*.DS_Store -x \_MACOSX
+rm -rf ~/tmp/QuickAuras

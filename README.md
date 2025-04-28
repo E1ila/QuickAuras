@@ -1,10 +1,10 @@
-# MeleeUtils
+# QuickAuras
 World of Warcraft Classic addon that logs loot, monster kills, honor and instances. Know exactly what your farm session has yielded.
 
 ### What it is for
 You can track your farming session and know how much gold/hour you make. Good for general grinding, instance item farming, rep farm, tradeskill work, honor farm, know how many you killed in a rare BoE farm, etc etc.
 
-MeleeUtils now tracks Black Lotus picking and shows respawn timers! (need DBM addon for timer bars)
+QuickAuras now tracks Black Lotus picking and shows respawn timers! (need DBM addon for timer bars)
 
 ### What it does
 * Tracks 
@@ -31,7 +31,7 @@ MeleeUtils now tracks Black Lotus picking and shows respawn timers! (need DBM ad
 ### How to install
 * Download, extract (if zipped)
 * Make sure folder doesn't have `-master` surffix
-* Copy `MeleeUtils` folder to your `WoW\Interface\AddOns` folder
+* Copy `QuickAuras` folder to your `WoW\Interface\AddOns` folder
 
 ### How to use
 * `/fl` - toggle logging on/off
@@ -51,13 +51,13 @@ Another thing is that the more time & data you have per session, the more accura
  This may also happen if you have addons like "Leatrix Plus" with "Fast loot" option enabled. This causes loot to be received before loot window is opened, so the addon doesn't know where it came from.
 
 
-![Preview 1](https://github.com/E1ila/MeleeUtils/blob/master/Preview7.png)
-![Preview 2](https://github.com/E1ila/MeleeUtils/blob/master/Preview5.png)
-![Preview 3](https://github.com/E1ila/MeleeUtils/blob/master/Preview6.png)
-![Preview 4](https://github.com/E1ila/MeleeUtils/blob/master/Preview2.png)
-![Preview 5](https://github.com/E1ila/MeleeUtils/blob/master/Preview.png)
-![Preview 6](https://github.com/E1ila/MeleeUtils/blob/master/Preview3.png)
-![Preview 7](https://github.com/E1ila/MeleeUtils/blob/master/Preview4.png)
+![Preview 1](https://github.com/E1ila/QuickAuras/blob/master/Preview7.png)
+![Preview 2](https://github.com/E1ila/QuickAuras/blob/master/Preview5.png)
+![Preview 3](https://github.com/E1ila/QuickAuras/blob/master/Preview6.png)
+![Preview 4](https://github.com/E1ila/QuickAuras/blob/master/Preview2.png)
+![Preview 5](https://github.com/E1ila/QuickAuras/blob/master/Preview.png)
+![Preview 6](https://github.com/E1ila/QuickAuras/blob/master/Preview3.png)
+![Preview 7](https://github.com/E1ila/QuickAuras/blob/master/Preview4.png)
 
 ### Changes 
 * 1.20
@@ -82,9 +82,9 @@ Another thing is that the more time & data you have per session, the more accura
     * Added option for AH min quality, this will allow choosing for which item quality price will be taken from an AH scan. For instance, if min quality is Rare+, vendor price will be used for green items and below.
     * Fixed HUD positioning issue, it should now show correctly.
 * 1.18
-    * Consumes tracking! Will now log all (hopefully) consumes you've been using in your session. Their value will be deducted from the vendor price, thus affecting GPH. You can disable it from the options screen (`/fl`), or manually adjust consumes prices with `/fl set [Item Link] 1` to set an item's price to 1 gold, it'll try to use Auctionator or TSM price first. If you find any missing consume, feel free to report in https://github.com/E1ila/MeleeUtils
+    * Consumes tracking! Will now log all (hopefully) consumes you've been using in your session. Their value will be deducted from the vendor price, thus affecting GPH. You can disable it from the options screen (`/fl`), or manually adjust consumes prices with `/fl set [Item Link] 1` to set an item's price to 1 gold, it'll try to use Auctionator or TSM price first. If you find any missing consume, feel free to report in https://github.com/E1ila/QuickAuras
 * 1.17.9
-    * With Auto Instance Switch enabled, MeleeUtils will now resume a session if current farm is an instance farm. When choosing a farm that's used in an instance, it'll bind the farm session to that instance and from that moment on, when you enter that instance while on this farm session, the addon will just resume it, instead of switching to "Dire Maul" farm. If MeleeUtils is set to another session, not related to DM, it will switch to "Dire Maul" farm session once you go into DM. Hope I explained it well, if not - just try and see how it works.
+    * With Auto Instance Switch enabled, QuickAuras will now resume a session if current farm is an instance farm. When choosing a farm that's used in an instance, it'll bind the farm session to that instance and from that moment on, when you enter that instance while on this farm session, the addon will just resume it, instead of switching to "Dire Maul" farm. If QuickAuras is set to another session, not related to DM, it will switch to "Dire Maul" farm session once you go into DM. Hope I explained it well, if not - just try and see how it works.
     * Added `/farm` command to toggle session active/paused.
     * Starting a new session will enable Current session view
     * Diminishing returns reset is checked upon login as well, for Honor % tooltip
@@ -113,7 +113,7 @@ Another thing is that the more time & data you have per session, the more accura
     * PvP mode! You can now switch between viewing honor or drops for each farm.
     * Added option to pause session on login, so it won't run after logging back in
 * 1.16
-    * Options screen! You can now configure MeleeUtils to your liking. Write `/fl` or Shift+Click the minimap button to see the option screen.
+    * Options screen! You can now configure QuickAuras to your liking. Write `/fl` or Shift+Click the minimap button to see the option screen.
 * 1.15.2
     * Counting rank kill count, instead of player names. This will reduce overload on the log and display more relevant information in later weeks, when we have higher ranks.
     * Starting  a new session now resets session time
@@ -140,7 +140,7 @@ Another thing is that the more time & data you have per session, the more accura
     * Fixed error shown when entering an instance
     * Counting instance IDs now even if Auto Switch Instance is disabled
 * 1.13
-    * Black Lotus Timers! MeleeUtils now logs Black Lotus picks and if you have DBM addon, it'll show a timer until next spawn, per map.
+    * Black Lotus Timers! QuickAuras now logs Black Lotus picks and if you have DBM addon, it'll show a timer until next spawn, per map.
 * 1.12.5
     * Fixed bug when loading a session without instance count
 * 1.12.4
@@ -171,7 +171,7 @@ Another thing is that the more time & data you have per session, the more accura
     * Fixed a bug causing AH scan to set 0 price for items with bid only
     * Fixed auto resume not working
 * 1.9
-    * You can now scan the auction house by opening the AH interface and writing `/fl ah`. MeleeUtils will record the minimal price per item and will use it to calculate AH profits. You can override item's price by setting price manually `/fl set [Arcane Crystal] 50`, then your manual entry will be used instead.
+    * You can now scan the auction house by opening the AH interface and writing `/fl ah`. QuickAuras will record the minimal price per item and will use it to calculate AH profits. You can override item's price by setting price manually `/fl set [Arcane Crystal] 50`, then your manual entry will be used instead.
     * Fixed stored links - remove player level from link, so you don't get the duplicate items once you level up. 
     * Removed redundant level of array in database's drops.mob.item lists
 * 1.8.1

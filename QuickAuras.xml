@@ -2,9 +2,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 
-    <FontFamily name="MeleeUtils_HugeFont" virtual="true">
+    <FontFamily name="QuickAuras_HugeFont" virtual="true">
         <Member alphabet="roman">
-            <Font font="Interface\AddOns\MeleeUtils\assets\i_fink_u_freeky.ttf" height="220"/>
+            <Font font="Interface\AddOns\QuickAuras\assets\i_fink_u_freeky.ttf" height="220"/>
         </Member>
         <Member alphabet="korean">
             <Font font="Fonts\2002.TTF" height="240" spacing="1"/>
@@ -19,7 +19,7 @@
             <Font font="Fonts\FRIZQT___CYR.TTF" height="220"/>
         </Member>
     </FontFamily>
-    <FontFamily name="MeleeUtils_NormalFont" virtual="true">
+    <FontFamily name="QuickAuras_NormalFont" virtual="true">
         <Member alphabet="roman">
             <Font font="Fonts\FRIZQT__.TTF" height="11"/>
         </Member>
@@ -36,7 +36,7 @@
             <Font font="Fonts\FRIZQT___CYR.TTF" height="11"/>
         </Member>
     </FontFamily>
-    <FontFamily name="MeleeUtils_SmallFont" virtual="true">
+    <FontFamily name="QuickAuras_SmallFont" virtual="true">
         <Member alphabet="roman">
             <Font font="Fonts\FRIZQT__.TTF" height="9"/>
         </Member>
@@ -54,7 +54,7 @@
         </Member>
     </FontFamily>
 
-    <Frame name="MeleeUtils_CustomizableWidget" virtual="true" hidden="true" movable="true" enableMouse="false">
+    <Frame name="QuickAuras_CustomizableWidget" virtual="true" hidden="true" movable="true" enableMouse="false">
         <Scripts>
             <OnLoad>
                 self:RegisterForDrag("LeftButton");
@@ -64,11 +64,11 @@
         </Scripts>
     </Frame>
 
-    <Frame name="MeleeUtils_ProgressButton" virtual="true">
+    <Frame name="QuickAuras_ProgressButton" virtual="true">
         <Size><AbsDimension x="60" y="60" /></Size>
     </Frame>
 
-    <Frame name="MeleeUtils_ProgressBar" inherits="BackdropTemplate" virtual="true">
+    <Frame name="QuickAuras_ProgressBar" inherits="BackdropTemplate" virtual="true">
         <Size>
             <AbsDimension x="128" y="25" /> <!-- Frame size -->
         </Size>
@@ -120,7 +120,7 @@
         </Frames>
     </Frame>
 
-    <Frame name="MeleeUtils_WatchBars" parent="UIParent" inherits="BackdropTemplate" hidden="false">
+    <Frame name="QuickAuras_WatchBars" parent="UIParent" inherits="BackdropTemplate" hidden="false">
         <Size>
             <AbsDimension x="128" y="80" />
         </Size>
@@ -129,7 +129,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="MeleeUtils_NormalFont" text="Watch Bars">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Watch Bars">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />
@@ -139,7 +139,7 @@
         </Layers>
     </Frame>
 
-    <Frame name="MeleeUtils_OffensiveBars" parent="UIParent" inherits="BackdropTemplate" hidden="false">
+    <Frame name="QuickAuras_OffensiveBars" parent="UIParent" inherits="BackdropTemplate" hidden="false">
         <Size>
             <AbsDimension x="200" y="80" />
         </Size>
@@ -148,7 +148,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="MeleeUtils_NormalFont" text="Offensive Bars">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Offensive Bars">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />
@@ -158,7 +158,7 @@
         </Layers>
     </Frame>
 
-    <Frame name="MeleeUtils_Cooldowns" parent="UIParent" inherits="BackdropTemplate" hidden="false">
+    <Frame name="QuickAuras_Cooldowns" parent="UIParent" inherits="BackdropTemplate" hidden="false">
         <Size>
             <AbsDimension x="150" y="60" />
         </Size>
@@ -167,7 +167,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="MeleeUtils_NormalFont" text="Cooldowns">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Cooldowns">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />
@@ -177,7 +177,7 @@
         </Layers>
     </Frame>
 
-    <Frame name="MeleeUtils_Parry" parent="UIParent" inherits="MeleeUtils_CustomizableWidget">
+    <Frame name="QuickAuras_Parry" parent="UIParent" inherits="QuickAuras_CustomizableWidget">
         <Size>
             <AbsDimension x="128" y="128" /> <!-- Frame size -->
         </Size>
@@ -186,7 +186,7 @@
         </Anchors>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture name="$parent_Texture" file="Interface\AddOns\MeleeUtils\assets\PowerAura19.tga">
+                <Texture name="$parent_Texture" file="Interface\AddOns\QuickAuras\assets\PowerAura19.tga">
                     <Size>
                         <AbsDimension x="128" y="128" /> <!-- Texture size -->
                     </Size>
@@ -198,7 +198,7 @@
         </Layers>
     </Frame>
 
-    <Frame name="MeleeUtils_Combo" parent="UIParent" inherits="MeleeUtils_CustomizableWidget">
+    <Frame name="QuickAuras_Combo" parent="UIParent" inherits="QuickAuras_CustomizableWidget">
         <Size>
             <AbsDimension x="384" y="384" /> <!-- Frame size -->
         </Size>
@@ -207,7 +207,7 @@
         </Anchors>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture name="$parent_Texture" file="Interface\AddOns\MeleeUtils\assets\PowerAura33.tga">
+                <Texture name="$parent_Texture" file="Interface\AddOns\QuickAuras\assets\PowerAura33.tga">
                     <Size>
                         <AbsDimension x="384" y="384" /> <!-- Texture size -->
                     </Size>
@@ -219,7 +219,7 @@
         </Layers>
     </Frame>
 
-    <Frame name="MeleeUtils_OutOfRange" parent="UIParent" inherits="MeleeUtils_CustomizableWidget">
+    <Frame name="QuickAuras_OutOfRange" parent="UIParent" inherits="QuickAuras_CustomizableWidget">
         <Size>
             <AbsDimension x="400" y="600" /> <!-- Frame size -->
         </Size>
@@ -228,7 +228,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="MeleeUtils_HugeFont" text="OUT OF RANGE">
+                <FontString name="$parent_Text" inherits="QuickAuras_HugeFont" text="OUT OF RANGE">
                     <Color r="0.9258" g="0.5195" b="0.0391"/>
                     <Shadow>
                         <Offset>

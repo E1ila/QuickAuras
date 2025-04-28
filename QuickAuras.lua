@@ -1,4 +1,4 @@
-﻿-- MeleeUtils.lua
+﻿-- QuickAuras.lua
 local ADDON_NAME, addon = ...
 
 -- Load Ace3 libraries
@@ -7,61 +7,61 @@ local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local _ = LibStub("AceConsole-3.0")
 
-addon.root = AceAddon:NewAddon("MeleeUtils", "AceConsole-3.0")
-local MeleeUtils = addon.root
-MeleeUtils.version = "1.0"
-MeleeUtils.events = CreateFrame("Frame")
-MeleeUtils.timers = {}
-MeleeUtils.timerByName = {}
-MeleeUtils.watchBars = {}
-MeleeUtils.offensiveBars = {}
-MeleeUtils.cooldowns = {}
-MUGLOBAL = MeleeUtils
-MU = MeleeUtils
+addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
+local QuickAuras = addon.root
+QuickAuras.version = "1.0"
+QuickAuras.events = CreateFrame("Frame")
+QuickAuras.timers = {}
+QuickAuras.timerByName = {}
+QuickAuras.watchBars = {}
+QuickAuras.offensiveBars = {}
+QuickAuras.cooldowns = {}
+MUGLOBAL = QuickAuras
+MU = QuickAuras
 
-MeleeUtils.playerClass = select(2, UnitClass("player"))
-MeleeUtils.playerGuid = UnitGUID("player")
-MeleeUtils.isRogue = MeleeUtils.playerClass == "ROGUE"
+QuickAuras.playerClass = select(2, UnitClass("player"))
+QuickAuras.playerGuid = UnitGUID("player")
+QuickAuras.isRogue = QuickAuras.playerClass == "ROGUE"
 local _c
 
 local function out(text, ...)
     print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
 end
-MeleeUtils.Print = out
+QuickAuras.Print = out
 
 local function debug(text, ...)
-    if MeleeUtilsDB and MeleeUtilsDB.debug then
+    if QuickAurasDB and QuickAurasDB.debug then
         print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cff009999DEBUG|cff999999", text, ...)
     end
 end
-MeleeUtils.Debug = debug
+QuickAuras.Debug = debug
 
-function MeleeUtils:OnInitialize()
+function QuickAuras:OnInitialize()
     debug("Initializing...")
     _c = self.colors
-    self.db = LibStub("AceDB-3.0"):New("MeleeUtilsDB", self.defaultOptions, true)
-    AceConfig:RegisterOptionsTable("MeleeUtils", self.options)
-    self.optionsFrame = AceConfigDialog:AddToBlizOptions("MeleeUtils", "Melee Utils")
+    self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
+    AceConfig:RegisterOptionsTable("QuickAuras", self.options)
+    self.optionsFrame = AceConfigDialog:AddToBlizOptions("QuickAuras", "QuickAuras")
     self:RegisterChatCommand("mu", "HandleSlashCommand")
     self.events:SetScript("OnEvent", function(self, event, unit, powerType)
-        MeleeUtils[event](MeleeUtils, unit, powerType)
+        QuickAuras[event](QuickAuras, unit, powerType)
     end)
     self.events:SetScript("OnUpdate", function()
-        MeleeUtils:OnUpdate()
+        QuickAuras:OnUpdate()
     end)
     self:RegisterMandatoryEvents()
     C_Timer.After(0.2, function()
         debug("Init delay ended")
-        MeleeUtils:InitUI()
-        MeleeUtils:LoadConfig()
-        MeleeUtils:RegisterOptionalEvents()
-        MeleeUtils:CheckAuras()
-        MeleeUtils:CheckCooldowns()
-        out("MeleeUtils loaded. Type " .. _c.bold .. "/mu|r for options.")
+        QuickAuras:InitUI()
+        QuickAuras:LoadConfig()
+        QuickAuras:RegisterOptionalEvents()
+        QuickAuras:CheckAuras()
+        QuickAuras:CheckCooldowns()
+        out("QuickAuras loaded. Type " .. _c.bold .. "/mu|r for options.")
     end)
 end
 
-function MeleeUtils:RegisterMandatoryEvents()
+function QuickAuras:RegisterMandatoryEvents()
     debug("Registering mandatory events")
     self.events:RegisterEvent("ZONE_CHANGED")
     self.events:RegisterEvent("ZONE_CHANGED_INDOORS")
@@ -69,7 +69,7 @@ function MeleeUtils:RegisterMandatoryEvents()
     self.events:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
-function MeleeUtils:RegisterOptionalEvents()
+function QuickAuras:RegisterOptionalEvents()
     if self.db.profile.enabled  then
         debug("Registering events")
         for _, event in ipairs(self.optionalEvents) do
@@ -78,17 +78,17 @@ function MeleeUtils:RegisterOptionalEvents()
     end
 end
 
-function MeleeUtils:UnregisterOptionalEvents()
+function QuickAuras:UnregisterOptionalEvents()
     debug("Unregistering events")
     for _, event in ipairs(self.optionalEvents) do
         self.events:UnregisterEvent(event)
     end
 end
 
-function MeleeUtils:LoadConfig()
+function QuickAuras:LoadConfig()
     debug("Loading config")
 end
 
-function MeleeUtils_Timer_OnUpdate(timer)
-    return MeleeUtils:UpdateProgressBar(timer)
+function QuickAuras_Timer_OnUpdate(timer)
+    return QuickAuras:UpdateProgressBar(timer)
 end

@@ -4,6 +4,8 @@ QuickAuras.abilities = { rogue = {}, warrior = {}, orc = {} }
 local abilities = QuickAuras.abilities
 
 abilities.orc.bloodFury = {
+    spellId = { 20572 },
+    aura = true,
     name = "Blood Fury",
     icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
     color = {0.5, 0.5, 0.5},
@@ -24,6 +26,8 @@ abilities.rogue.bladeFlurry = {
 }
 
 abilities.rogue.adrenalineRush = {
+    spellId = { 13750 },
+    aura = true,
     name = "Adrenaline Rush",
     icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
     color = {246/256, 220/256, 0},
@@ -33,6 +37,8 @@ abilities.rogue.adrenalineRush = {
 }
 
 abilities.rogue.sliceAndDice = {
+    spellId = { 6774 },
+    aura = true,
     name = "Slice and Dice",
     icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
     color = {0, 0.9, 0.2},
@@ -41,6 +47,7 @@ abilities.rogue.sliceAndDice = {
 }
 
 abilities.rogue.exposeArmor = {
+    spellId = { 8647, 8649, 8650, 11197, 11198 },
     name = "Expose Armor",
     icon = "Interface\\Icons\\Ability_Warrior_Riposte",
     color = {0.6784, 0.6706, 0.8706},
@@ -50,6 +57,7 @@ abilities.rogue.exposeArmor = {
 }
 
 abilities.rogue.gouge = {
+    spellId = { 1776, 1777, 8629, 11285, 11286 },
     name = "Gouge",
     icon = "Interface\\Icons\\Ability_Gouge",
     color = {0.9333, 0.1255, 0.2941},
@@ -60,6 +68,7 @@ abilities.rogue.gouge = {
 }
 
 abilities.rogue.cheapShot = {
+    spellId = { 1833 },
     name = "Cheap Shot",
     icon = "Interface\\Icons\\Ability_CheapShot",
     color = {0.7961, 0.5922, 0.3529},
@@ -69,6 +78,7 @@ abilities.rogue.cheapShot = {
 }
 
 abilities.rogue.kidneyShot = {
+    spellId = { 408, 8643 },
     name = "Kidney Shot",
     icon = "Interface\\Icons\\Ability_Rogue_KidneyShot",
     color = {0.7961, 0.2784, 0.0980},
@@ -79,6 +89,7 @@ abilities.rogue.kidneyShot = {
 }
 
 abilities.rogue.vanish = {
+    spellId = { 1856, 1857 },
     name = "Vanish",
     icon = "Interface\\Icons\\Ability_Vanish",
     color = {0.5, 0.5, 0.5},
@@ -87,6 +98,8 @@ abilities.rogue.vanish = {
 }
 
 abilities.rogue.sprint = {
+    spellId = { 2983, 8696, 11305 },
+    aura = true,
     name = "Sprint",
     icon = "Interface\\Icons\\Ability_Rogue_Sprint",
     color = {1.0, 0.4195, 0.0000},
@@ -97,6 +110,7 @@ abilities.rogue.sprint = {
 }
 
 abilities.rogue.stealth = {
+    spellId = { 1784, 1785, 1786, 1787 },
     name = "Stealth",
     icon = "Interface\\Icons\\Ability_Stealth",
     color = {0.4451, 0.7882, 0.8000},
@@ -105,6 +119,7 @@ abilities.rogue.stealth = {
 }
 
 abilities.rogue.kick = {
+    spellId = { 1766, 1767, 1768, 1769 },
     name = "Kick",
     icon = "Interface\\Icons\\Ability_Kick",
     color = {0.7, 0.7, 0.7},
@@ -113,6 +128,7 @@ abilities.rogue.kick = {
 }
 
 abilities.rogue.blind = {
+    spellId = { 2094 },
     name = "Blind",
     icon = "Interface\\Icons\\Spell_Shadow_MindSteal",
     color = {0.9059, 0.7451, 0.5804},
@@ -123,6 +139,8 @@ abilities.rogue.blind = {
 }
 
 abilities.rogue.evasion = {
+    spellId = { 5277 },
+    aura = true,
     name = "Evasion",
     icon = "Interface\\Icons\\Spell_Shadow_ShadowWard",
     color = {1.0, 0.0606, 1.0},
@@ -133,6 +151,7 @@ abilities.rogue.evasion = {
 }
 
 abilities.rogue.sap = {
+    spellId = { 6770, 2070, 11297 },
     name = "Sap",
     icon = "Interface\\Icons\\Ability_Sap",
     color = {0.8941, 0.2157, 0.0627},

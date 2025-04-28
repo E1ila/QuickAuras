@@ -31,7 +31,7 @@ QuickAuras.trackedCombatLog = {}
 -- these will be detected through SPELL_UPDATE_COOLDOWN
 QuickAuras.trackedCooldowns = {}
 
-function QuickAuras:BuildConfig()
+function QuickAuras:BuildTrackedSpells()
     debug("Building config...")
     for classLower, classAbilities in pairs(QuickAuras.abilities) do
         for abilityId, ability in pairs(classAbilities) do

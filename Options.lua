@@ -253,7 +253,7 @@ for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
         QuickAuras.options.args[lowerClass.."Bars"].args[ability] = {
             type = "toggle",
             name = obj.name,
-            desc = "Shows "..(obj.debuff and "debuff" or "buff").." time for "..obj.name..".",
+            desc = "Shows "..(obj.offensive and "debuff" or "buff").." time for "..obj.name..".",
             get = function(info)
                 return QuickAuras.db.profile[obj.option]
             end,

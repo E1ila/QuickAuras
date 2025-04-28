@@ -33,7 +33,7 @@ local function removeNonVisible(list)
 end
 
 -- these will be detected through UNIT_AURA event
-QuickAuras.watchBarAuras = removeNonVisible({
+QuickAuras.trackedAuras = removeNonVisible({
     [13877] = abilities.rogue.bladeFlurry,
     [13750] = abilities.rogue.adrenalineRush,
     [6774] = abilities.rogue.sliceAndDice,
@@ -43,7 +43,7 @@ QuickAuras.watchBarAuras = removeNonVisible({
 })
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
-QuickAuras.watchBarCombatLog = removeNonVisible({
+QuickAuras.trackedCombatLog = removeNonVisible({
     [8647] = abilities.rogue.exposeArmor, -- 1
     [8649] = abilities.rogue.exposeArmor, -- 2
     [8650] = abilities.rogue.exposeArmor, -- 3
@@ -64,14 +64,29 @@ QuickAuras.watchBarCombatLog = removeNonVisible({
 })
 
 QuickAuras.trackedCooldowns = removeNonVisible({
+    [20572] = abilities.orc.bloodFury,
     [13750] = abilities.rogue.adrenalineRush,
     [13877] = abilities.rogue.bladeFlurry,
+    [1776] = abilities.rogue.gouge,
+    [1777] = abilities.rogue.gouge,
+    [8629] = abilities.rogue.gouge,
+    [11285] = abilities.rogue.gouge,
     [11286] = abilities.rogue.gouge,
+    [1856] = abilities.rogue.vanish,
     [1857] = abilities.rogue.vanish,
+    [2983] = abilities.rogue.sprint,
+    [8696] = abilities.rogue.sprint,
     [11305] = abilities.rogue.sprint,
+    [1784] = abilities.rogue.stealth,
     [1785] = abilities.rogue.stealth,
+    [1786] = abilities.rogue.stealth,
+    [1787] = abilities.rogue.stealth,
     [1766] = abilities.rogue.kick,
-    [20572] = abilities.orc.bloodFury,
+    [1767] = abilities.rogue.kick,
+    [1768] = abilities.rogue.kick,
+    [1769] = abilities.rogue.kick,
     [2094] = abilities.rogue.blind,
     [5277] = abilities.rogue.evasion,
+    [408] = abilities.rogue.kidneyShot,  -- r1
+    [8643] = abilities.rogue.kidneyShot, -- r2
 })

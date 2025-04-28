@@ -16,7 +16,7 @@ function QuickAuras:CheckCooldowns()
         if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
             --debug("Cooldown", spellID, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
-            self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
         end
     end
 end
@@ -28,10 +28,10 @@ function QuickAuras:CheckAuras()
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL")
         --debug(UnitAura("player", i, "HELPFUL"))
         if not name then break end -- Exit the loop when no more auras are found
-        local conf = self.watchBarAuras[spellID]
+        local conf = self.trackedAuras[spellID]
         if conf and (not conf.option or self.db.profile[conf.option]) then
             --debug("Aura", name, icon, duration, expTime)
-            self:SetProgressTimer("bar", nil, nil, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("bar", nil, nil, conf, duration, expTime)
         end
         i = i + 1
     end
@@ -111,7 +111,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if type(p1) == "number" and p1 > 0 then
-        for spellID, conf in pairs(self.watchBarCombatLog) do
+        for spellID, conf in pairs(self.trackedCombatLog) do
             if p1 == spellID then
                 if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                     and sourceGUID == self.playerGuid
@@ -119,7 +119,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                     and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
-                    local timer = self:SetProgressTimer("bar", nil, nil, conf, conf.duration, GetTime()+conf.duration, conf.onUpdate, conf.onUpdate)
+                    local timer = self:SetProgressTimer("bar", nil, nil, conf, conf.duration, GetTime()+conf.duration)
                     if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
                     enemyDebuffs[p1][destGUID] = timer
                 end
@@ -136,7 +136,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if subevent == "UNIT_DIED" then
-        for spellID, conf in pairs(QuickAuras.watchBarCombatLog) do
+        for spellID, conf in pairs(QuickAuras.trackedCombatLog) do
             if enemyDebuffs[spellID] and enemyDebuffs[spellID][destGUID] then
                 self:RemoveProgressTimer(enemyDebuffs[spellID][destGUID])
                 enemyDebuffs[spellID][destGUID] = nil

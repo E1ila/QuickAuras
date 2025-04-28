@@ -193,20 +193,20 @@ function QuickAuras:TestProgressBar(abilities)
         if conf.list then
             local duration = math.min(conf.duration or 10, 15)
             local expTime = GetTime() + duration
-            self:SetProgressTimer("bar", conf.list, conf.parent, conf, duration, expTime, conf.onUpdate, conf.onUpdate)
+            self:SetProgressTimer("bar", nil, nil, conf, duration, expTime)
         end
     end
 end
 
 function QuickAuras:TestWatchBars()
-    self:TestProgressBar(self.watchBarAuras)
-    self:TestProgressBar(self.watchBarCombatLog)
+    self:TestProgressBar(self.trackedAuras)
+    self:TestProgressBar(self.trackedCombatLog)
 end
 
 function QuickAuras:TestButtons()
     local t = 0
     for i, conf in pairs(self.trackedCooldowns) do
-        self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t, conf.onUpdate, conf.onUpdate)
+        self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
         t = t + 1
     end
 end

@@ -4,8 +4,18 @@ local debug = QuickAuras.Debug
 
 function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
     local existingTimer = self.timerByName[conf.name..uiType]
-    if not list then list = conf.list end
-    if not parent then parent = conf.parent end
+    if not list then
+        if conf.list == "watch" then
+            list = self.watchBars
+            parent = QuickAuras_WatchBars
+        elseif conf.list == "offensive" then
+            list = self.offensiveBars
+            parent = QuickAuras_OffensiveBars
+        end
+    end
+    if not parent then parent = UIParent end
+    if not onUpdate then onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate end
+    if not onEnd then onEnd = conf.onEnd or QuickAuras_Timer_OnUpdate end
     local index = #list
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then

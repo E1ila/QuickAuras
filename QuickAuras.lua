@@ -48,18 +48,24 @@ QuickAuras.Debug = debug
 function QuickAuras:OnInitialize()
     debug("Initializing...")
     _c = self.colors
+
     QuickAuras:BuildTrackedSpells()
+    QuickAuras:BuildOptions()
+
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
     AceConfig:RegisterOptionsTable("QuickAuras", self.options)
     self.optionsFrame = AceConfigDialog:AddToBlizOptions("QuickAuras", "QuickAuras")
     self:RegisterChatCommand("qa", "HandleSlashCommand")
+
     self.events:SetScript("OnEvent", function(self, event, ...)
         QuickAuras[event](QuickAuras, ...)
     end)
     self.events:SetScript("OnUpdate", function()
         QuickAuras:OnUpdate()
     end)
+
     self:RegisterMandatoryEvents()
+
     C_Timer.After(0.2, function()
         debug("Init delay ended")
         QuickAuras:InitUI()
@@ -97,6 +103,40 @@ end
 
 function QuickAuras:LoadConfig()
     debug("Loading config")
+end
+
+function QuickAuras:Options_ToggleEnabled(value)
+    self.db.profile.enabled = value
+    if self.db.profile.enabled then
+        self:RegisterOptionalEvents()
+    else
+        self:UnregisterOptionalEvents()
+    end
+end
+
+function QuickAuras:HandleSlashCommand(input)
+    if not input or input:trim() == "" then
+        AceConfigDialog:Open("QuickAuras")
+    else
+        local cmd = input:trim():lower()
+        if cmd == "debug" then
+            QuickAurasDB.debug = not QuickAurasDB.debug
+            if QuickAurasDB.debug then
+                out("Debug mode ".._c.enabled.."enabled|r") -- Green text
+            else
+                out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
+            end
+        elseif cmd == "test" then
+            self:TestWatchBars()
+            self:TestCooldowns()
+        elseif cmd == "lock" then
+            self:ToggleLockedState()
+        elseif cmd == "reset" then
+            self:ResetWidgets()
+        else
+            out("Unknown command. Use '/qa' to open the options or '/mu debug' to toggle debug mode.")
+        end
+    end
 end
 
 function QuickAuras_Timer_OnUpdate(timer)

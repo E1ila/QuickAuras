@@ -22,6 +22,24 @@ QuickAuras.colors = {
     disabled = "|cffffff00",
 }
 
+QuickAuras.gearWarnings = {
+    [15138] = {
+        name = "Onyxia Scale Cloak",
+    },
+    [4984] = {
+        name = "Skull of Impending Doom",
+    },
+    [23206] = {
+        name = "Mark of the Champion",
+    },
+    [17067] = {
+        name = "Ancient Cornerstone Grimoire",
+    },
+    [10588] = {
+        name = "Goblin Rocket Helmet",
+    },
+}
+
 -- these will be detected through UNIT_AURA event
 QuickAuras.trackedAuras = {}
 

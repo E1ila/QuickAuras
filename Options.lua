@@ -1,7 +1,6 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local _uiLocked = true
 local out = QuickAuras.Print
 local debug = QuickAuras.Debug
 local _c = QuickAuras.colors
@@ -240,86 +239,36 @@ QuickAuras.options = {
     },
 }
 
-function QuickAuras:Options_ToggleEnabled(value)
-    self.db.profile.enabled = value
-    if self.db.profile.enabled then
-        self:RegisterOptionalEvents()
-    else
-        self:UnregisterOptionalEvents()
-    end
-end
-
-function QuickAuras:ToggleLockedState()
-    _uiLocked = not _uiLocked
-    for _, frame in ipairs(self.adjustableFrames) do
-        local f = _G[frame]
-        if f then
-            f:EnableMouse(not _uiLocked)
-            if _uiLocked then f:Hide() else f:Show() end
+function QuickAuras:BuildOptions()
+    local order = 1000
+    local lowerClass = string.lower(QuickAuras.playerClass)
+    for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
+        order = order + 1
+        QuickAuras.defaultOptions.profile[obj.option] = true
+        QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
+        if obj.list then
+            QuickAuras.options.args[lowerClass.."Bars"].args[ability] = {
+                type = "toggle",
+                name = obj.name,
+                desc = "Shows "..(obj.offensive and "debuff" or "buff").." time for "..obj.name..".",
+                get = function(info)
+                    return QuickAuras.db.profile[obj.option]
+                end,
+                set = function(info, value)
+                    QuickAuras.db.profile[obj.option] = value
+                end,
+                order = order,
+            }
         end
-    end
-    out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
-end
-
-function QuickAuras:ResetWidgets()
-    debug("Resetting widgets")
-    self:ResetGeneralWidgets()
-    self:ResetRogueWidgets()
-end
-
-function QuickAuras:HandleSlashCommand(input)
-    if not input or input:trim() == "" then
-        AceConfigDialog:Open("QuickAuras")
-    else
-        local cmd = input:trim():lower()
-        if cmd == "debug" then
-            QuickAurasDB.debug = not QuickAurasDB.debug
-            if QuickAurasDB.debug then
-                out("Debug mode ".._c.enabled.."enabled|r") -- Green text
-            else
-                out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
-            end
-        elseif cmd == "test" then
-            self:TestWatchBars()
-            self:TestCooldowns()
-        elseif cmd == "lock" then
-            self:ToggleLockedState()
-        elseif cmd == "reset" then
-            self:ResetWidgets()
-        else
-            out("Unknown command. Use '/qa' to open the options or '/mu debug' to toggle debug mode.")
+        if obj.cooldown then
+            QuickAuras.options.args[lowerClass.."Cooldowns"].args[ability] = {
+                type = "toggle",
+                name = obj.name,
+                desc = "Shows cooldown for "..obj.name..".",
+                get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
+                set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value end,
+                order = order + 1000,
+            }
         end
-    end
-end
-
-local order = 1000
-local lowerClass = string.lower(QuickAuras.playerClass)
-for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
-    order = order + 1
-    QuickAuras.defaultOptions.profile[obj.option] = true
-    QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
-    if obj.list then
-        QuickAuras.options.args[lowerClass.."Bars"].args[ability] = {
-            type = "toggle",
-            name = obj.name,
-            desc = "Shows "..(obj.offensive and "debuff" or "buff").." time for "..obj.name..".",
-            get = function(info)
-                return QuickAuras.db.profile[obj.option]
-            end,
-            set = function(info, value)
-                QuickAuras.db.profile[obj.option] = value
-            end,
-            order = order,
-        }
-    end
-    if obj.cooldown then
-        QuickAuras.options.args[lowerClass.."Cooldowns"].args[ability] = {
-            type = "toggle",
-            name = obj.name,
-            desc = "Shows cooldown for "..obj.name..".",
-            get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
-            set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value end,
-            order = order + 1000,
-        }
     end
 end

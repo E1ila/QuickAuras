@@ -2,6 +2,7 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 local pbId = 0
+local _uiLocked = true
 
 -- General -----------------------------------------------------------
 
@@ -22,6 +23,10 @@ function QuickAuras:InitUI()
     --self:SetDarkBackdrop(QuickAuras_Cooldowns)
     --self:DisableDarkBackdrop(QuickAuras_Cooldowns)
     QuickAuras_Cooldowns_Text:Hide()
+
+    --self:SetDarkBackdrop(QuickAuras_IconWarnings)
+    --self:DisableDarkBackdrop(QuickAuras_IconWarnings)
+    QuickAuras_IconWarnings_Text:Hide()
 
     --self:CreateProgressBar(QuickAuras_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     --QuickAuras_Flurry:Show()
@@ -48,6 +53,28 @@ end
 function QuickAuras:DisableDarkBackdrop(frame)
     frame:SetBackdrop (nil)
 end
+
+
+-- Widget Positioning -----------------------------------------------------------
+
+function QuickAuras:ToggleLockedState()
+    _uiLocked = not _uiLocked
+    for _, frame in ipairs(self.adjustableFrames) do
+        local f = _G[frame]
+        if f then
+            f:EnableMouse(not _uiLocked)
+            if _uiLocked then f:Hide() else f:Show() end
+        end
+    end
+    out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
+end
+
+function QuickAuras:ResetWidgets()
+    debug("Resetting widgets")
+    self:ResetGeneralWidgets()
+    self:ResetRogueWidgets()
+end
+
 
 
 -- Progress Bar -----------------------------------------------------------
@@ -185,6 +212,8 @@ function QuickAuras:ShowNoticableError(text)
         QuickAuras_OutOfRange:Hide()
     end)
 end
+
+
 
 -- Test UI -----------------------------------------------------------
 

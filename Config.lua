@@ -8,6 +8,7 @@ QuickAuras.optionalEvents = {
     "UNIT_AURA",
     "UI_ERROR_MESSAGE",
     "SPELL_UPDATE_COOLDOWN",
+    "PLAYER_EQUIPMENT_CHANGED",
 }
 
 QuickAuras.adjustableFrames = {
@@ -22,7 +23,7 @@ QuickAuras.colors = {
     disabled = "|cffffff00",
 }
 
-QuickAuras.gearWarnings = {
+QuickAuras.trackedGear = {
     [15138] = {
         name = "Onyxia Scale Cloak",
     },

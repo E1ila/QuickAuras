@@ -10,9 +10,11 @@ QuickAuras.defaultOptions = {
         enabled = true,
         cooldowns = true,
         watchBars = true,
+        trackedGear = true,
         someSetting = 50,
         barHeight = 25,
         buttonHeight = 50,
+        iconWarningSize = 80,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -91,6 +93,16 @@ QuickAuras.options = {
             end,
             order = 7,
         },
+        cooldowns = {
+            type = "toggle",
+            name = "Gear Warnings",
+            desc = "Enables gear warnings",
+            get = function(info) return QuickAuras.db.profile.trackedGear end,
+            set = function(info, value)
+                QuickAuras.db.profile.trackedGear = value
+            end,
+            order = 8,
+        },
         spacer99 = {
             type = "description",
             name = "",
@@ -131,6 +143,20 @@ QuickAuras.options = {
             set = function(info, value)
                 QuickAuras.db.profile.buttonHeight = value
                 QuickAuras:TestCooldowns()
+            end,
+            order = 103,
+        },
+        iconWarningSize = {
+            type = "range",
+            name = "Warning Icon Size",
+            desc = "Set the size of the warning icons",
+            min = 10,
+            max = 200,
+            step = 1,
+            get = function(info) return QuickAuras.db.profile.iconWarningSize end,
+            set = function(info, value)
+                QuickAuras.db.profile.iconWarningSize = value
+                QuickAuras:TestIconWarnings()
             end,
             order = 103,
         },
@@ -236,14 +262,22 @@ QuickAuras.options = {
             args = {
             }
         },
+        iconWarnings = {
+            type = "group",
+            name = "Icon Warnings",
+            order = 10000,
+            args = {
+            }
+        },
     },
 }
 
-function QuickAuras:BuildOptions()
-    local order = 1000
+function QuickAuras:AddAbilitiesOptions()
+    local order = 1
     local lowerClass = string.lower(QuickAuras.playerClass)
     for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
         order = order + 1
+        -- obj.option in format of class_abilityName
         QuickAuras.defaultOptions.profile[obj.option] = true
         QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
         if obj.list then
@@ -271,4 +305,30 @@ function QuickAuras:BuildOptions()
             }
         end
     end
+end
+
+function QuickAuras:AddGearWarningOptions()
+    local order = 1
+    for itemId, obj in pairs(QuickAuras.trackedGear) do
+        order = order + 1
+        obj.option = "gw_"..obj.name:gsub("%s+", "")
+        QuickAuras.defaultOptions.profile[obj.option] = true
+        QuickAuras.options.args.iconWarnings.args[obj.option] = {
+            type = "toggle",
+            name = obj.name,
+            desc = "Shows a warning when "..obj.name.." is worn.",
+            get = function(info)
+                return QuickAuras.db.profile[obj.option]
+            end,
+            set = function(info, value)
+                QuickAuras.db.profile[obj.option] = value
+            end,
+            order = order,
+        }
+    end
+end
+
+function QuickAuras:BuildOptions()
+    self:AddAbilitiesOptions()
+    self:AddGearWarningOptions()
 end

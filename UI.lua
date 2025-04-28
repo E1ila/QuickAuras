@@ -55,6 +55,85 @@ function QuickAuras:DisableDarkBackdrop(frame)
 end
 
 
+-- Icon warnings ------------------------------------
+
+function QuickAuras:CreateWarningIcon(itemId, parentFrame, frameName)
+    -- Create a button frame
+    local frame = CreateFrame("Frame", frameName, parentFrame)
+
+    -- Get the item's icon texture
+    local itemIcon = GetItemIcon(itemId)
+    if not itemIcon then
+        print("Invalid itemId:", itemId)
+        return nil
+    end
+
+    -- Set the button's normal texture to the item's icon
+    local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
+    iconTexture:SetTexture(itemIcon)
+    iconTexture:SetAllPoints(frame)
+    frame.icon = iconTexture
+
+    -- Add a tooltip to show the item's name
+    frame:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetItemByID(itemId)
+        GameTooltip:Show()
+    end)
+    frame:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+
+    return frame
+end
+
+function QuickAuras:AddIconWarning(itemId, conf)
+    if not self.iconWarnings[itemId] then
+        debug("AddIconWarning", itemId)
+        local frame = self:CreateWarningIcon(itemId, QuickAuras_IconWarnings, "GearWarning"..itemId)
+        self.iconWarnings[itemId] = {
+            name = conf.name,
+            frame = frame,
+        }
+        return true
+    end
+end
+
+function QuickAuras:RemoveIconWarning(itemId)
+    if self.iconWarnings[itemId] then
+        debug("RemoveIconWarning", itemId)
+        local frame = self.iconWarnings[itemId].frame
+        frame:Hide()
+        frame:SetParent(nil)
+        frame:ClearAllPoints()
+        self.iconWarnings[itemId] = nil
+    end
+end
+
+function QuickAuras:ClearIconWarnings()
+    debug("Clearing icon warnings")
+    for itemId, obj in pairs(self.iconWarnings) do
+        self:RemoveIconWarning(itemId)
+    end
+end
+
+function QuickAuras:ArrangeIconWarnings()
+    debug("Arranging icon warnings")
+    local lastFrame = nil
+    for itemId, obj in pairs(self.iconWarnings) do
+        local frame = obj.frame
+        frame:ClearAllPoints()
+        if lastFrame then
+            frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+        else
+            frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+        end
+        frame:SetSize(self.db.profile.iconWarningSize, self.db.profile.iconWarningSize) -- Width, Height
+        lastFrame = frame
+    end
+end
+
+
 -- Widget Positioning -----------------------------------------------------------
 
 function QuickAuras:ToggleLockedState()
@@ -238,4 +317,17 @@ function QuickAuras:TestCooldowns()
         self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
         t = t + 1
     end
+end
+
+function QuickAuras:TestIconWarnings()
+    self:ClearIconWarnings()
+    for i, conf in pairs(self.trackedGear) do
+        self:AddIconWarning(i, conf)
+        if i == 3 then break end
+    end
+    QuickAuras:ArrangeIconWarnings()
+    C_Timer.After(2, function()
+        QuickAuras:ClearIconWarnings()
+        QuickAuras:CheckGear()
+    end)
 end

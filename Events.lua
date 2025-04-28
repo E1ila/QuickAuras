@@ -9,6 +9,24 @@ local enemyDebuffs = {
 local lastUpdate = 0
 local updateInterval = 0.01 -- Execute every 0.1 seconds
 
+function QuickAuras:CheckGear()
+    if self.db.profile.trackedGear then
+        local changed = false
+        for slotId = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+            local equippedItemId = GetInventoryItemID("player", slotId)
+            local conf = self.trackedGear[equippedItemId]
+            if conf and (not conf.option or self.db.profile[conf.option]) then
+                if QuickAuras:AddIconWarning(equippedItemId, conf) then
+                    changed = true
+                end
+            end
+        end
+        if changed then
+            self:ArrangeIconWarnings()
+        end
+    end
+end
+
 function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellID, conf in pairs(self.trackedCooldowns) do
@@ -147,6 +165,10 @@ end
 
 function QuickAuras:SPELL_UPDATE_COOLDOWN(...)
     self:CheckCooldowns()
+end
+
+function QuickAuras:PLAYER_EQUIPMENT_CHANGED(...)
+    self:CheckGear(...)
 end
 
 

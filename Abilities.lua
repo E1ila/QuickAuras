@@ -161,6 +161,38 @@ abilities.shaman = {
         cooldown = 180,
         visible = QuickAuras.isShaman,
     },
+    manaTide = {
+        spellId = { 16190 },
+        name = "Mana Tide",
+        icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
+        color = {0.5, 0.5, 0.5},
+        cooldown = 300,
+        visible = QuickAuras.isShaman,
+    },
+    frostShock = {
+        spellId = { 8056, 8058, 10472, 10473 },
+        name = "Frost Shock",
+        icon = "Interface\\Icons\\Spell_Frost_FrostShock",
+        color = {0.5, 0.5, 0.5},
+        visible = QuickAuras.isShaman,
+        cooldown = 6
+    },
+    reincarnation = {
+        spellId = { 20608 },
+        name = "Reincarnation",
+        icon = "Interface\\Icons\\Spell_Nature_Reincarnation",
+        color = {0.5, 0.5, 0.5},
+        cooldown = 1800,
+        visible = QuickAuras.isShaman,
+    },
+    elementalMastery = {
+        spellId = { 16166 },
+        name = "Elemental Mastery",
+        icon = "Interface\\Icons\\Spell_Nature_WispHeal",
+        color = {0.3, 0.6, 0.9},
+        cooldown = 180,
+        visible = QuickAuras.isShaman,
+    },
 }
 
 function QuickAuras:InitAbilities()

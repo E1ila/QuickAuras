@@ -9,7 +9,7 @@ local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
 local QuickAuras = addon.root
-QuickAuras.version = "1.0"
+QuickAuras.version = "0.1"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.timers = {}
 QuickAuras.timerByName = {}
@@ -50,8 +50,9 @@ function QuickAuras:OnInitialize()
     debug("Initializing...")
     _c = self.colors
 
-    QuickAuras:BuildTrackedSpells()
-    QuickAuras:BuildOptions()
+    self:InitAbilities()
+    self:BuildTrackedSpells()
+    self:BuildOptions()
 
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
     AceConfig:RegisterOptionsTable("QuickAuras", self.options)

@@ -152,8 +152,21 @@ abilities.rogue = {
     },
 }
 
-for class, cabilities in pairs(abilities) do
-    for ability, obj in pairs(cabilities) do
-        obj.option = class.."_"..ability
+abilities.shaman = {
+    naturesSwiftness = {
+        spellId = { 16188 },
+        name = "Nature's Swiftness",
+        icon = "Interface\\Icons\\Spell_nature_ravenform",
+        color = {0.5, 0.5, 0.5},
+        cooldown = 180,
+        visible = QuickAuras.isShaman,
+    },
+}
+
+function QuickAuras:InitAbilities()
+    for class, cabilities in pairs(abilities) do
+        for ability, obj in pairs(cabilities) do
+            obj.option = class.."_"..ability
+        end
     end
 end

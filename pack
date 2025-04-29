@@ -5,6 +5,7 @@ cp -r QuickAuras ~/tmp/
 rm ~/tmp/QuickAuras/pack
 rm -rf ~/tmp/QuickAuras/.git
 rm -rf ~/tmp/QuickAuras/.idea
+rm -rf ~/tmp/QuickAuras/media
 rm ~/tmp/QuickAuras/Preview*
 cd ~/tmp
 zip -9r QuickAuras_$1.zip QuickAuras -x \*.DS_Store -x \_MACOSX

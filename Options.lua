@@ -267,6 +267,134 @@ QuickAuras.options = {
             args = {
             }
         },
+        shamanBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isRogue,
+            args = {
+            },
+        },
+        shamanCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isShaman,
+            args = {
+            }
+        },
+        mageBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isMage,
+            args = {
+            },
+        },
+        mageCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isMage,
+            args = {
+            }
+        },
+        priestBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isPriest,
+            args = {
+            },
+        },
+        priestCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isPriest,
+            args = {
+            }
+        },
+        warriorBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isWarrior,
+            args = {
+            },
+        },
+        warriorCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isWarrior,
+            args = {
+            }
+        },
+        hunterBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isHunter,
+            args = {
+            },
+        },
+        hunterCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isHunter,
+            args = {
+            }
+        },
+        warlockBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isWarlock,
+            args = {
+            },
+        },
+        warlockCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isWarlock,
+            args = {
+            }
+        },
+        druidBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isDruid,
+            args = {
+            },
+        },
+        druidCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isDruid,
+            args = {
+            }
+        },
+        paladinBars = {
+            type = "group",
+            name = "Buffs / Debuffs",
+            order = 1002,
+            hidden = not QuickAuras.isPaladin,
+            args = {
+            },
+        },
+        paladinCooldowns = {
+            type = "group",
+            name = "Cooldowns",
+            order = 1002,
+            hidden = not QuickAuras.isPaladin,
+            args = {
+            }
+        },
         iconWarnings = {
             type = "group",
             name = "Icon Warnings",
@@ -280,6 +408,7 @@ QuickAuras.options = {
 function QuickAuras:AddAbilitiesOptions()
     local order = 1
     local lowerClass = string.lower(QuickAuras.playerClass)
+    if not QuickAuras.abilities[lowerClass] then return end
     for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
         order = order + 1
         -- obj.option in format of class_abilityName
@@ -321,7 +450,7 @@ function QuickAuras:AddGearWarningOptions()
         QuickAuras.options.args.iconWarnings.args[obj.option] = {
             type = "toggle",
             name = obj.name,
-            desc = "Shows a warning when "..obj.name.." is worn.",
+            desc = obj.desc or "Shows a warning when "..obj.name.." is worn.",
             get = function(info)
                 return QuickAuras.db.profile[obj.option]
             end,

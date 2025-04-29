@@ -33,6 +33,7 @@ QuickAuras.trackedGear = {
     },
     [23206] = {
         name = "Mark of the Champion",
+        desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
         targetDependant = true,
         shouldShow = function(equipped)
             local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")

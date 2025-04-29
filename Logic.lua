@@ -21,7 +21,7 @@ function QuickAuras:CheckGear(eventType, ...)
                 if conf.shouldShow then shouldShow = conf.shouldShow(isEquipped) end
                 --debug("Checking gear", itemId, self.colors.bold, conf.name, "|r", "isEquipped", isEquipped, "shouldShow", shouldShow)
                 if shouldShow then
-                    if QuickAuras:AddIconWarning(itemId, conf) then changed = true end
+                    if QuickAuras:AddIconGearWarning(itemId, conf) then changed = true end
                 else
                     if QuickAuras:RemoveIconWarning(itemId) then changed = true end
                 end
@@ -41,7 +41,7 @@ function QuickAuras:CheckCooldowns()
         if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
             --debug("Cooldown", spellID, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
-            self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
+            self:SetProgressTimer("cooldowns", "button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
         end
     end
 end
@@ -49,16 +49,26 @@ end
 function QuickAuras:CheckAuras()
     if not self.db.profile.watchBars then return end
     local i = 1
+    local seen = {}
     while true do
-        local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i, "HELPFUL")
-        --debug(UnitAura("player", i, "HELPFUL"))
+        local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
         local conf = self.trackedAuras[spellID]
+        --debug("CheckAuras", "(pre)", "spellID", spellID, name, "option", (conf or {}).option, self.db.profile[(conf or {}).option])
         if conf and (not conf.option or self.db.profile[conf.option]) then
-            --debug("Aura", name, icon, duration, expTime)
-            self:SetProgressTimer("bar", nil, nil, conf, duration, expTime)
+            debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime)
+            local timer = self:SetProgressTimer("auras", "bar", nil, nil, conf, duration, expTime)
+            if timer then
+                seen[timer.key] = true
+            end
         end
         i = i + 1
+    end
+    -- remove missing auras
+    for _, timer in pairs(self.timers) do
+        if not seen[timer.key] and timer.source == "auras" then
+            self:RemoveProgressTimer(timer, "unseen")
+        end
     end
 end
 

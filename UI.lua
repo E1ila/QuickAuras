@@ -28,6 +28,10 @@ function QuickAuras:InitUI()
     --self:DisableDarkBackdrop(QuickAuras_IconWarnings)
     QuickAuras_IconWarnings_Text:Hide()
 
+    --self:SetDarkBackdrop(QuickAuras_IconAlerts)
+    --self:DisableDarkBackdrop(QuickAuras_IconAlerts)
+    QuickAuras_IconAlerts_Text:Hide()
+
     --self:CreateProgressBar(QuickAuras_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
     --QuickAuras_Flurry:Show()
     --QuickAuras_Flurry_Progress_Bar:SetValue(1)
@@ -87,9 +91,9 @@ function QuickAuras:CreateWarningIcon(itemId, parentFrame, frameName)
     return frame
 end
 
-function QuickAuras:AddIconWarning(itemId, conf)
+function QuickAuras:AddIconGearWarning(itemId, conf)
     if not self.iconWarnings[itemId] then
-        --debug("AddIconWarning", itemId)
+        --debug("AddIconGearWarning", itemId)
         local frame = self:CreateWarningIcon(itemId, QuickAuras_IconWarnings, "GearWarning"..itemId)
         self.iconWarnings[itemId] = {
             name = conf.name,
@@ -107,6 +111,30 @@ function QuickAuras:RemoveIconWarning(itemId)
         frame:SetParent(nil)
         frame:ClearAllPoints()
         self.iconWarnings[itemId] = nil
+        return true
+    end
+end
+
+function QuickAuras:AddIconAuraAlert(spellId, conf)
+    if not self.iconAlerts[spellId] then
+        --debug("AddIconGearWarning", itemId)
+        local frame = self:CreateWarningIcon(spellId, QuickAuras_IconAlerts, "AuraAlert"..spellId)
+        self.iconAlerts[spellId] = {
+            name = conf.name,
+            frame = frame,
+        }
+        return true
+    end
+end
+
+function QuickAuras:RemoveIconAlert(spellId)
+    if self.iconAlerts[spellId] then
+        --debug("RemoveIconAlert", itemId)
+        local frame = self.iconAlerts[spellId].frame
+        frame:Hide()
+        frame:SetParent(nil)
+        frame:ClearAllPoints()
+        self.iconAlerts[spellId] = nil
         return true
     end
 end
@@ -238,13 +266,15 @@ end
 
 function QuickAuras:UpdateProgressBar(timer)
     --debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
-    if timer.duration > 0 and timer.expTime > GetTime() then
+    if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
         timer.frame:Show()
-        local progress = (timer.expTime - GetTime()) / timer.duration
-        if timer.uiType == "bar" then
-            _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
-        elseif timer.uiType == "button" then
-            timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
+        if timer.duration then
+            local progress = (timer.expTime - GetTime()) / timer.duration
+            if timer.uiType == "bar" then
+                _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
+            elseif timer.uiType == "button" then
+                timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
+            end
         end
         return true
     else
@@ -302,7 +332,7 @@ function QuickAuras:TestProgressBar(abilities)
         if conf.list then
             local duration = math.min(conf.duration or 10, 15)
             local expTime = GetTime() + duration
-            self:SetProgressTimer("bar", nil, nil, conf, duration, expTime)
+            self:SetProgressTimer("test", "bar", nil, nil, conf, duration, expTime)
         end
     end
 end
@@ -315,7 +345,7 @@ end
 function QuickAuras:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedCooldowns) do
-        self:SetProgressTimer("button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
+        self:SetProgressTimer("test", "button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
         t = t + 1
     end
 end
@@ -324,7 +354,7 @@ local TestIconWarnings_Timer_Id = 0
 function QuickAuras:TestIconWarnings()
     self:ClearIconWarnings()
     for i, conf in pairs(self.trackedGear) do
-        self:AddIconWarning(i, conf)
+        self:AddIconGearWarning(i, conf)
         if i == 3 then break end
     end
     QuickAuras:ArrangeIconWarnings()

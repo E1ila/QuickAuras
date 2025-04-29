@@ -17,6 +17,7 @@ QuickAuras.watchBars = {}
 QuickAuras.offensiveBars = {}
 QuickAuras.cooldowns = {}
 QuickAuras.iconWarnings = {}
+QuickAuras.iconAlerts = {}
 QAG = QuickAuras
 
 QuickAuras.playerClass = select(2, UnitClass("player"))

@@ -2,7 +2,7 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
+function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
     local existingTimer = self.timerByName[conf.name..uiType]
     if not list then
         if conf.list == "watch" then
@@ -11,6 +11,10 @@ function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTi
         elseif conf.list == "offensive" then
             list = self.offensiveBars
             parent = QuickAuras_OffensiveBars
+        elseif conf.list == "alert" then
+            list = self.iconAlerts
+            parent = QuickAuras_IconAlerts
+            uiType = "button" -- override
         end
     end
     if not parent then parent = UIParent end
@@ -23,8 +27,8 @@ function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTi
             return -- already exists
         end
         -- different timer, remove old
-        self:RemoveProgressTimer(existingTimer)
-        debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
+        self:RemoveProgressTimer(existingTimer, "replaced")
+        --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
         --debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime)
@@ -42,16 +46,18 @@ function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTi
         list = list,
         name = conf.name,
         icon = conf.icon,
-        color = conf.color,
+        color = conf.color or {0.5, 0.5, 0.5},
         expTime = expTime,
         duration = duration,
         onUpdate = onUpdate,
         onEnd = onEnd,
         uiType = uiType,
         parent = parent,
+        source = source,
     }
-    timer.key = self:GetTimerKey(timer)
+    timer.key = self:GetTimerKey(conf.name, expTime, uiType)
     table.insert(list, timer)
+    --debug(" ++ ", timer.key, source)
     self.timers[timer.key] = timer
     self.timerByName[conf.name..uiType] = timer
     onUpdate(timer)
@@ -59,12 +65,12 @@ function QuickAuras:SetProgressTimer(uiType, list, parent, conf, duration, expTi
     return timer
 end
 
-function QuickAuras:GetTimerKey(timer)
-    return timer.name..tostring(timer.expTime)..tostring(timer.uiType)
+function QuickAuras:GetTimerKey(name, expTime, uiType)
+    return name..tostring(expTime)..tostring(uiType)
 end
 
-function QuickAuras:RemoveProgressTimer(timer)
-    debug("Removing timer", "name", timer.name, "type", timer.uiType, "expTime", timer.expTime)
+function QuickAuras:RemoveProgressTimer(timer, reason)
+    debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]", "name", timer.name, "type", timer.uiType, "expTime", timer.expTime)
     if timer.onEnd then
         timer:onEnd(timer)
     end
@@ -81,6 +87,7 @@ function QuickAuras:RemoveProgressTimer(timer)
     timer.frame = nil
     self.timerByName[timer.name..timer.uiType] = nil
     self.timers[timer.key] = nil
+    --debug(" -- ", timer.key)
     self:ArrangeProgressFrames(timer.list, timer.parent)
 end
 
@@ -88,7 +95,7 @@ function QuickAuras:CheckProgressTimers()
     for _, timer in pairs(self.timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then
-                self:RemoveProgressTimer(timer)
+                self:RemoveProgressTimer(timer, "expired")
             end
         end
     end

@@ -21,6 +21,7 @@ QuickAuras.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         bloodFury = true,
+        manaTideAura = QuickAuras.isManaClass,
     },
 }
 
@@ -395,12 +396,28 @@ QuickAuras.options = {
             args = {
             }
         },
-        iconWarnings = {
+        gearWarnings = {
             type = "group",
-            name = "Icon Warnings",
+            name = "Gear Warnings",
             order = 10000,
             args = {
             }
+        },
+        iconAlerts = {
+            type = "group",
+            name = "Icon Alerts",
+            order = 10001,
+            args = {
+                manaTideAura = {
+                    type = "toggle",
+                    name = "Mana Tide",
+                    desc = "Notify when Mana Tide is up.",
+                    get = function(info) return QuickAuras.db.profile.manaTideAura end,
+                    set = function(info, value) QuickAuras.db.profile.manaTideAura = value end,
+                    order = 1,
+                    hidden = not QuickAuras.isManaClass,
+                },
+            },
         },
     },
 }
@@ -447,7 +464,7 @@ function QuickAuras:AddGearWarningOptions()
         order = order + 1
         obj.option = "gw_"..obj.name:gsub("%s+", "")
         QuickAuras.defaultOptions.profile[obj.option] = true
-        QuickAuras.options.args.iconWarnings.args[obj.option] = {
+        QuickAuras.options.args.gearWarnings.args[obj.option] = {
             type = "toggle",
             name = obj.name,
             desc = obj.desc or "Shows a warning when "..obj.name.." is worn.",

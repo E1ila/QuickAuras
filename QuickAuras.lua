@@ -20,19 +20,21 @@ QuickAuras.iconWarnings = {}
 QuickAuras.iconAlerts = {}
 QAG = QuickAuras
 
-QuickAuras.playerClass = select(2, UnitClass("player"))
+local pclass = select(2, UnitClass("player"))
+QuickAuras.playerClass = pclass
 QuickAuras.playerRace = select(1, UnitRace("player"))
 QuickAuras.playerGuid = UnitGUID("player")
-QuickAuras.isRogue = QuickAuras.playerClass == "ROGUE"
-QuickAuras.isWarrior = QuickAuras.playerClass == "WARRIOR"
-QuickAuras.isPaladin = QuickAuras.playerClass == "PALADIN"
-QuickAuras.isShaman = QuickAuras.playerClass == "SHAMAN"
-QuickAuras.isMage = QuickAuras.playerClass == "MAGE"
-QuickAuras.isWarlock = QuickAuras.playerClass == "WARLOCK"
-QuickAuras.isHunter = QuickAuras.playerClass == "HUNTER"
-QuickAuras.isDruid = QuickAuras.playerClass == "DRUID"
-QuickAuras.isPriest = QuickAuras.playerClass == "PRIEST"
+QuickAuras.isRogue = pclass == "ROGUE"
+QuickAuras.isWarrior = pclass == "WARRIOR"
+QuickAuras.isPaladin = pclass == "PALADIN"
+QuickAuras.isShaman = pclass == "SHAMAN"
+QuickAuras.isMage = pclass == "MAGE"
+QuickAuras.isWarlock = pclass == "WARLOCK"
+QuickAuras.isHunter = pclass == "HUNTER"
+QuickAuras.isDruid = pclass == "DRUID"
+QuickAuras.isPriest = pclass == "PRIEST"
 QuickAuras.isOrc = QuickAuras.playerRace == "Orc"
+QuickAuras.isManaClass = QuickAuras.isPriest or QuickAuras.isMage or QuickAuras.isWarlock or QuickAuras.isDruid or QuickAuras.isPaladin or QuickAuras.isShaman or QuickAuras.isHunter
 local _c
 
 local function out(text, ...)

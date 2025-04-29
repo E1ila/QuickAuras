@@ -172,6 +172,7 @@ abilities.shaman = {
         spellId = { 17360 },
         aura = true,
         list = "alert",
+        option = "manaTideAura",
         name = "Mana Tide Aura",
         icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
         visible = QuickAuras.isShaman,

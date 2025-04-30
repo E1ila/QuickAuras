@@ -21,7 +21,6 @@ QuickAuras.defaultOptions = {
         outOfRange = true,
         outOfRangeSound = true,
         offensiveBars = true,
-        bloodFury = true,
         showTimeOnBars = true,
         manaTideAura = QuickAuras.isManaClass,
         innervateAura = QuickAuras.isManaClass,
@@ -331,7 +330,11 @@ local function AddAbilities(abilities, lowerClass)
                 name = obj.name,
                 desc = obj.desc or "Shows cooldown for "..obj.name..".",
                 get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
-                set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value self:CheckAuras() end,
+                set = function(info, value)
+                    QuickAuras.db.profile[obj.option.."_cd"] = value
+                    QuickAuras:CheckCooldowns()
+                    if obj.aura then QuickAuras:CheckAuras() end
+                end,
                 order = order + 1000,
             }
         end

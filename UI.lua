@@ -1,41 +1,22 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
+local out = QuickAuras.Print
 local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
+local _c
 
 -- General -----------------------------------------------------------
 
 function QuickAuras:InitUI()
     debug("Initializing UI")
+    _c = self.colors
+    self:ParentFramesNormalState()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
-
-    --self:SetDarkBackdrop(QuickAuras_WatchBars)
-    --self:DisableDarkBackdrop(QuickAuras_WatchBars)
-    QuickAuras_WatchBars_Text:Hide()
-
-    --self:SetDarkBackdrop(QuickAuras_OffensiveBars)
-    --self:DisableDarkBackdrop(QuickAuras_OffensiveBars)
-    QuickAuras_OffensiveBars_Text:Hide()
-
-    --self:SetDarkBackdrop(QuickAuras_Cooldowns)
-    --self:DisableDarkBackdrop(QuickAuras_Cooldowns)
-    QuickAuras_Cooldowns_Text:Hide()
-
-    --self:SetDarkBackdrop(QuickAuras_IconWarnings)
-    --self:DisableDarkBackdrop(QuickAuras_IconWarnings)
-    QuickAuras_IconWarnings_Text:Hide()
-
-    --self:SetDarkBackdrop(QuickAuras_IconAlerts)
-    --self:DisableDarkBackdrop(QuickAuras_IconAlerts)
-    QuickAuras_IconAlerts_Text:Hide()
-
-    --self:CreateProgressBar(QuickAuras_Flurry, 25, 2, {0.9, 0.6, 0}, "Interface\\Icons\\Ability_Warrior_PunishingBlow")
-    --QuickAuras_Flurry:Show()
-    --QuickAuras_Flurry_Progress_Bar:SetValue(1)
 end
+
 
 function QuickAuras:ResetRogueWidgets()
     --QuickAuras_Combo_Texture:ClearAllPoints()
@@ -208,13 +189,48 @@ end
 
 -- Widget Positioning -----------------------------------------------------------
 
+function QuickAuras:ParentFramesNormalState()
+    self:DisableDarkBackdrop(QuickAuras_WatchBars)
+    self:DisableDarkBackdrop(QuickAuras_OffensiveBars)
+    self:DisableDarkBackdrop(QuickAuras_Cooldowns)
+    self:DisableDarkBackdrop(QuickAuras_IconWarnings)
+    self:DisableDarkBackdrop(QuickAuras_IconAlerts)
+    QuickAuras_WatchBars_Text:Hide()
+    QuickAuras_OffensiveBars_Text:Hide()
+    QuickAuras_Cooldowns_Text:Hide()
+    QuickAuras_IconWarnings_Text:Hide()
+    QuickAuras_IconAlerts_Text:Hide()
+end
+
+function QuickAuras:ParentFramesEditState()
+    self:SetDarkBackdrop(QuickAuras_WatchBars)
+    self:SetDarkBackdrop(QuickAuras_OffensiveBars)
+    self:SetDarkBackdrop(QuickAuras_Cooldowns)
+    self:SetDarkBackdrop(QuickAuras_IconWarnings)
+    self:SetDarkBackdrop(QuickAuras_IconAlerts)
+    QuickAuras_WatchBars_Text:Show()
+    QuickAuras_OffensiveBars_Text:Show()
+    QuickAuras_Cooldowns_Text:Show()
+    QuickAuras_IconWarnings_Text:Show()
+    QuickAuras_IconAlerts_Text:Show()
+end
+
 function QuickAuras:ToggleLockedState()
     _uiLocked = not _uiLocked
-    for _, frame in ipairs(self.adjustableFrames) do
-        local f = _G[frame]
-        if f then
-            f:EnableMouse(not _uiLocked)
-            if _uiLocked then f:Hide() else f:Show() end
+
+    if  _uiLocked then
+        self:ParentFramesNormalState()
+    else
+        self:ParentFramesEditState()
+    end
+
+    for name, obj in ipairs(self.adjustableFrames) do
+        if not obj.visible or obj.visible() then
+            local f = _G[frame]
+            if f then
+                f:EnableMouse(not _uiLocked)
+                if _uiLocked then f:Hide() else f:Show() end
+            end
         end
     end
     out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))

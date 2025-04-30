@@ -23,6 +23,7 @@ QuickAuras.defaultOptions = {
         offensiveBars = true,
         bloodFury = true,
         manaTideAura = QuickAuras.isManaClass,
+        graceOfAirAura = true,
     },
 }
 
@@ -431,6 +432,15 @@ QuickAuras.options = {
                     set = function(info, value) QuickAuras.db.profile.manaTideAura = value end,
                     order = 1,
                     hidden = not QuickAuras.isManaClass,
+                },
+                graceOfAirAura = {
+                    type = "toggle",
+                    name = "Grace of Air",
+                    desc = "Notify when Grace of Air is up.",
+                    get = function(info) return QuickAuras.db.profile.graceOfAirAura end,
+                    set = function(info, value) QuickAuras.db.profile.graceOfAirAura = value end,
+                    order = 1,
+                    hidden = not QuickAuras.abilities.shaman.graceOfAirAura,
                 },
             },
         },

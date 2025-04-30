@@ -3,7 +3,6 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
 function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
-    local existingTimer = self.timerByName[conf.name..uiType]
     if not list then
         if conf.list == "watch" then
             list = self.watchBars
@@ -21,10 +20,11 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
     if not onUpdate then onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate end
     if not onEnd then onEnd = conf.onEnd or QuickAuras_Timer_OnUpdate end
     local index = #list
+    local existingTimer = self.timerByName[conf.name.."-"..uiType]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
-            return -- already exists
+            return existingTimer -- already exists
         end
         -- different timer, remove old
         self:RemoveProgressTimer(existingTimer, "replaced")
@@ -59,14 +59,30 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
     table.insert(list, timer)
     --debug(" ++ ", timer.key, source)
     self.timers[timer.key] = timer
-    self.timerByName[conf.name..uiType] = timer
+    self.timerByName[conf.name.."-"..uiType] = timer
     onUpdate(timer)
     self:ArrangeProgressFrames(list, parent)
     return timer
 end
 
 function QuickAuras:GetTimerKey(name, expTime, uiType)
-    return name..tostring(expTime)..tostring(uiType)
+    return name.."-"..tostring(expTime).."-"..tostring(uiType)
+end
+
+function QuickAuras:DebugPrintTimers()
+    debug("timers")
+    for _, timer in pairs(self.timers) do
+        debug("  - ", timer.key, "source", timer.source, "expTime", timer.expTime, "duration", timer.duration)
+    end
+    debug("timerByName")
+    for _, timer in pairs(self.timerByName) do
+        debug("  - ", timer.key, "source", timer.source, "expTime", timer.expTime, "duration", timer.duration)
+    end
+    debug("lists")
+    debug("  - watchBars", #self.watchBars)
+    debug("  - offensiveBars", #self.offensiveBars)
+    debug("  - iconWarnings", #self.iconWarnings)
+    debug("  - iconAlerts", #self.iconAlerts)
 end
 
 function QuickAuras:RemoveProgressTimer(timer, reason)
@@ -85,7 +101,7 @@ function QuickAuras:RemoveProgressTimer(timer, reason)
     timer.frame:SetParent(nil)
     timer.frame:ClearAllPoints()
     timer.frame = nil
-    self.timerByName[timer.name..timer.uiType] = nil
+    self.timerByName[timer.name.."-"..timer.uiType] = nil
     self.timers[timer.key] = nil
     --debug(" -- ", timer.key)
     self:ArrangeProgressFrames(timer.list, timer.parent)

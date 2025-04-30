@@ -177,14 +177,13 @@ abilities.shaman = {
         icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
         visible = QuickAuras.isShaman,
     },
-    --graceOfAir = {
+    --graceOfAirAura = { -- test
     --    spellId = { 25360 },
     --    aura = true,
     --    list = "alert",
-    --    name = "Grace of Air",
+    --    option = "graceOfAirAura",
+    --    name = "Grace of Air Aura",
     --    icon = "Interface\\Icons\\Spell_nature_invisibilitytotem",
-    --    color = {0.5, 0.5, 0.5},
-    --    cooldown = 300,
     --    visible = QuickAuras.isShaman,
     --},
     frostShock = {

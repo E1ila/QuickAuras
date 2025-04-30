@@ -1,6 +1,6 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
-QuickAuras.abilities = { orc = {} }
+QuickAuras.abilities = { }
 local abilities = QuickAuras.abilities
 
 abilities.warrior = {
@@ -194,15 +194,30 @@ abilities.shaman = {
 }
 
 abilities.other = {
-    bloodFury = {
+    potion = {
+        spellId = { 13444 },
+        aura = true,
+        name = "Blood Fury",
+        icon = "Interface\\Icons\\inv_potion_76",
+        color = {0.5, 0.5, 0.5},
+        cooldown = true,
+    },
+    bloodFury = { -- ability
         spellId = { 20572 },
+        name = "Blood Fury",
+        icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
+        cooldown = true,
+        visible = QuickAuras.isOrc,
+    },
+    bloodFuryBuff = { -- buff
+        spellId = { 23234 },
         aura = true,
         name = "Blood Fury",
         icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
-        color = {0.5, 0.5, 0.5},
+        color = {0.9451, 0.6863, 0.5333},
         list = "watch",
         duration = 15,
-        cooldown = true,
+        visible = QuickAuras.isOrc,
     },
     manaTideAura = {
         spellId = { 17360 },

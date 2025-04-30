@@ -54,7 +54,7 @@ function QuickAuras:CheckAuras()
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
         local conf = self.trackedAuras[spellID]
-        --debug("CheckAuras", "(pre)", "spellID", spellID, name, "option", (conf or {}).option, self.db.profile[(conf or {}).option])
+        debug("CheckAuras", "(pre)", "spellID", spellID, name, "option", (conf or {}).option, self.db.profile[(conf or {}).option])
         if conf and (not conf.option or self.db.profile[conf.option]) then
             debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])
             local timer = self:SetProgressTimer("auras", "bar", nil, nil, conf, duration, expTime)

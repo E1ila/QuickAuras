@@ -57,7 +57,6 @@ function QuickAuras:OnInitialize()
     self:InitAbilities()
     self:BuildTrackedSpells()
     self:BuildOptions()
-    self:ScanBags()
 
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
     AceConfig:RegisterOptionsTable("QuickAuras", self.options)
@@ -75,6 +74,7 @@ function QuickAuras:OnInitialize()
 
     C_Timer.After(0.2, function()
         debug("Init delay ended")
+        QuickAuras:ScanBags()
         QuickAuras:InitUI()
         QuickAuras:LoadConfig()
         QuickAuras:RegisterOptionalEvents()
@@ -150,14 +150,16 @@ end
 function QuickAuras:ScanBag(bag)
     for slot = 1, C_Container.GetContainerNumSlots(bag) do -- Iterate through all slots in the bag
         local id = C_Container.GetContainerItemID(bag, slot)
-        self.bags[id] = { bag, slot }
+        if id ~= nil then
+            self.bags[id] = { bag = bag, slot = slot }
+        end
     end
 end
 
 function QuickAuras:ScanBags()
     self.bags = {}
     for bag = 0, NUM_BAG_SLOTS do -- Iterate through all bags (0 is the backpack)
-        self.ScanBag(bag)
+        self:ScanBag(bag)
     end
 end
 

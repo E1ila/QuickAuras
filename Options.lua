@@ -201,25 +201,16 @@ QuickAuras.options = {
             name = "",
             order = 199,
         },
-        commonUtilsHeader = {
-            type = "header",
-            name = "Common Utils",
-            order = 200,
-        },
-        spacer201 = {
-            type = "description",
-            name = "",
-            order = 201,
-        },
-        bloodFury = {
-            type = "toggle",
-            name = "Blood Fury",
-            desc = "Show a cooldown for Blood Fury.",
-            get = function(info) return QuickAuras.db.profile.bloodFury end,
-            set = function(info, value) QuickAuras.db.profile.bloodFury = value end,
-            order = 205,
-            hidden = not QuickAuras.isOrc,
-        },
+        --commonUtilsHeader = {
+        --    type = "header",
+        --    name = "Common Utils",
+        --    order = 200,
+        --},
+        --spacer201 = {
+        --    type = "description",
+        --    name = "",
+        --    order = 201,
+        --},
         meleeUtils = {
             type = "group",
             name = "Melee Utils",
@@ -277,147 +268,17 @@ QuickAuras.options = {
                 },
             },
         },
-        rogueBars = {
+        bars = {
             type = "group",
             name = "Buffs / Debuffs",
             order = 1002,
-            hidden = not QuickAuras.isRogue,
             args = {
             },
         },
-        rogueCooldowns = {
+        cooldowns = {
             type = "group",
             name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isRogue,
-            args = {
-            }
-        },
-        shamanBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isRogue,
-            args = {
-            },
-        },
-        shamanCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isShaman,
-            args = {
-            }
-        },
-        mageBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isMage,
-            args = {
-            },
-        },
-        mageCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isMage,
-            args = {
-            }
-        },
-        priestBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isPriest,
-            args = {
-            },
-        },
-        priestCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isPriest,
-            args = {
-            }
-        },
-        warriorBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isWarrior,
-            args = {
-            },
-        },
-        warriorCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isWarrior,
-            args = {
-            }
-        },
-        hunterBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isHunter,
-            args = {
-            },
-        },
-        hunterCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isHunter,
-            args = {
-            }
-        },
-        warlockBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isWarlock,
-            args = {
-            },
-        },
-        warlockCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isWarlock,
-            args = {
-            }
-        },
-        druidBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isDruid,
-            args = {
-            },
-        },
-        druidCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isDruid,
-            args = {
-            }
-        },
-        paladinBars = {
-            type = "group",
-            name = "Buffs / Debuffs",
-            order = 1002,
-            hidden = not QuickAuras.isPaladin,
-            args = {
-            },
-        },
-        paladinCooldowns = {
-            type = "group",
-            name = "Cooldowns",
-            order = 1002,
-            hidden = not QuickAuras.isPaladin,
+            order = 1003,
             args = {
             }
         },
@@ -446,10 +307,8 @@ local function AddAbilities(abilities, lowerClass)
         if QuickAuras.defaultOptions.profile[obj.option] == nil then
             QuickAuras.defaultOptions.profile[obj.option] = true
         end
-        local category = obj.category or ((lowerClass or "").."Bars")
-        local categoryOptions = QuickAuras.options.args[category]
+        local categoryOptions = QuickAuras.options.args[obj.category or "bars"]
         if categoryOptions and obj.list then
-            debug("Adding", category, ability, obj.name, "   option", obj.option)
             categoryOptions.args[ability] = {
                 type = "toggle",
                 name = obj.name,
@@ -462,8 +321,7 @@ local function AddAbilities(abilities, lowerClass)
                 order = order,
             }
         end
-        category = obj.category or ((lowerClass or "").."Cooldowns")
-        categoryOptions = QuickAuras.options.args[category]
+        categoryOptions = QuickAuras.options.args[obj.category or "cooldowns"]
         if categoryOptions and obj.cooldown then
             if QuickAuras.defaultOptions.profile[obj.option.."_cd"] == nil then
                 QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
@@ -473,7 +331,7 @@ local function AddAbilities(abilities, lowerClass)
                 name = obj.name,
                 desc = obj.desc or "Shows cooldown for "..obj.name..".",
                 get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
-                set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value end,
+                set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value self:CheckAuras() end,
                 order = order + 1000,
             }
         end
@@ -481,11 +339,12 @@ local function AddAbilities(abilities, lowerClass)
 end
 
 function QuickAuras:AddAbilitiesOptions()
-    AddAbilities(QuickAuras.abilities.orc)
     AddAbilities(QuickAuras.abilities.other)
     local lowerClass = string.lower(QuickAuras.playerClass)
-    if not QuickAuras.abilities[lowerClass] then return end
-    AddAbilities(QuickAuras.abilities[lowerClass], lowerClass)
+    local classAbilities = QuickAuras.abilities[lowerClass]
+    if classAbilities then
+        AddAbilities(classAbilities, lowerClass)
+    end
 end
 
 function QuickAuras:AddGearWarningOptions()

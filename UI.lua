@@ -276,6 +276,11 @@ function QuickAuras:CreateProgressButton(parent, index, padding, color, icon)
     frame.cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
     frame.cooldown:SetAllPoints(frame)
 
+    local cooldownText = frame.cooldown:GetRegions() -- Get the font region
+    if cooldownText and cooldownText.SetFont then
+        cooldownText:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE") -- Set font, size, and style
+    end
+
     return frame
 end
 
@@ -414,13 +419,16 @@ end
 
 local TestIconAlerts_Timer_Id = 0
 function QuickAuras:TestIconAlerts()
+    local seconds = 6
     self:ClearIconAlerts()
-    self:AddIconAuraAlert(self.abilities.shaman.manaTideAura.spellId[1], self.abilities.shaman.manaTideAura)
+    --self:AddIconAuraAlert(self.abilities.other.manaTideAura.spellId[1], self.abilities.other.manaTideAura)
+    self:SetProgressTimer("auras", "button", nil, nil, self.abilities.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    --self:AddIconAuraAlert(self.abilities.other.innervateAura.spellId[1], self.abilities.other.innervateAura)
     self:ArrangeIconAlerts()
 
     TestIconAlerts_Timer_Id = TestIconAlerts_Timer_Id + 1
     local timerId = TestIconAlerts_Timer_Id
-    C_Timer.After(2, function()
+    C_Timer.After(seconds, function()
         if timerId ~= TestIconAlerts_Timer_Id then return end
         debug("TestIconAlerts timer ended")
         QuickAuras:ClearIconAlerts()

@@ -244,7 +244,7 @@ abilities.other = {
         name = "LIP Active",
         desc = "Shows when Limited Invulnerability Potion is active.",
         duration = 6,
-        icon = "Interface\\Icons\\Spell_Holy_PowerInfusion",
+        icon = "Interface\\Icons\\spell_holy_divineintervention",
     }
 }
 

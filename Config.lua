@@ -10,6 +10,7 @@ QuickAuras.optionalEvents = {
     "SPELL_UPDATE_COOLDOWN",
     "PLAYER_EQUIPMENT_CHANGED",
     "PLAYER_TARGET_CHANGED",
+    "BAG_UPDATE",
 }
 
 QuickAuras.adjustableFrames = {
@@ -31,21 +32,7 @@ QuickAuras.trackedGear = {
     [4984] = {
         name = "Skull of Impending Doom",
     },
-    [23206] = {
-        name = "Mark of the Champion",
-        desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
-        targetDependant = true,
-        shouldShow = function(equipped)
-            local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")
-            local isUndeadOrDemon = UnitCreatureType("target") == "Undead" or UnitCreatureType("target") == "Demon"
-
-            if equipped then
-                return targetExists and not isUndeadOrDemon
-            else
-                return targetExists and isUndeadOrDemon
-            end
-        end,
-    },
+    [23206] = markOfTheChampion,
     [17067] = {
         name = "Ancient Cornerstone Grimoire",
     },
@@ -62,6 +49,29 @@ QuickAuras.trackedCombatLog = {}
 
 -- these will be detected through SPELL_UPDATE_COOLDOWN
 QuickAuras.trackedCooldowns = {}
+
+-- custom events
+
+local MARK_OF_THE_CHAMPION_ITEM_ID = { 23206, 23207 }
+for _, itemId in ipairs(MARK_OF_THE_CHAMPION_ITEM_ID) do
+    QuickAuras.trackedGear[itemId] = {
+        name = "Mark of the Champion",
+        desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
+        targetDependant = true,
+        shouldShow = function(equipped)
+            local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")
+            local isUndeadOrDemon = UnitCreatureType("target") == "Undead" or UnitCreatureType("target") == "Demon"
+
+            if equipped then
+                return targetExists and not isUndeadOrDemon
+            else
+                return targetExists and isUndeadOrDemon and QuickAuras.bags[itemId]
+            end
+        end,
+    }
+end
+
+--
 
 function QuickAuras:BuildTrackedSpells()
     debug("Building config...")

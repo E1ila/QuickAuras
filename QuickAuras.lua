@@ -18,6 +18,7 @@ QuickAuras.offensiveBars = {}
 QuickAuras.cooldowns = {}
 QuickAuras.iconWarnings = {}
 QuickAuras.iconAlerts = {}
+QuickAuras.bags = {}
 QAG = QuickAuras
 
 local pclass = select(2, UnitClass("player"))
@@ -56,6 +57,7 @@ function QuickAuras:OnInitialize()
     self:InitAbilities()
     self:BuildTrackedSpells()
     self:BuildOptions()
+    self:ScanBags()
 
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
     AceConfig:RegisterOptionsTable("QuickAuras", self.options)
@@ -142,6 +144,20 @@ function QuickAuras:HandleSlashCommand(input)
         else
             out("Unknown command. Use '/qa' to open the options or '/mu debug' to toggle debug mode.")
         end
+    end
+end
+
+function QuickAuras:ScanBag(bag)
+    for slot = 1, C_Container.GetContainerNumSlots(bag) do -- Iterate through all slots in the bag
+        local id = C_Container.GetContainerItemID(bag, slot)
+        self.bags[id] = { bag, slot }
+    end
+end
+
+function QuickAuras:ScanBags()
+    self.bags = {}
+    for bag = 0, NUM_BAG_SLOTS do -- Iterate through all bags (0 is the backpack)
+        self.ScanBag(bag)
     end
 end
 

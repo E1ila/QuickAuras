@@ -245,6 +245,17 @@ abilities.other = {
         desc = "Shows when Limited Invulnerability Potion is active.",
         duration = 6,
         icon = "Interface\\Icons\\spell_holy_divineintervention",
+    },
+    itchDebuff = {
+        spellId = { 26077 },
+        aura = true,
+        list = "alert",
+        option = "itchDebuff",
+        category = "iconAlerts",
+        name = "AQ40 Itch",
+        desc = "Shows when you have the itch debuff from AQ40, before the lethal poison. Poison needs to be instantly cleansed.",
+        duration = 6,
+        icon = "Interface\\Icons\\spell_nature_naturetouchdecay",
     }
 }
 

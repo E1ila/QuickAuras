@@ -25,7 +25,6 @@ QuickAuras.defaultOptions = {
         showTimeOnBars = true,
         manaTideAura = QuickAuras.isManaClass,
         innervateAura = QuickAuras.isManaClass,
-        limitedInvulnerabilityPotion = true,
     },
 }
 
@@ -444,8 +443,9 @@ local function AddAbilities(abilities, lowerClass)
     for ability, obj in pairs(abilities) do
         order = order + 1
         -- obj.option in format of class_abilityName
-        QuickAuras.defaultOptions.profile[obj.option] = true
-        QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
+        if QuickAuras.defaultOptions.profile[obj.option] == nil then
+            QuickAuras.defaultOptions.profile[obj.option] = true
+        end
         local category = obj.category or ((lowerClass or "").."Bars")
         local categoryOptions = QuickAuras.options.args[category]
         if categoryOptions and obj.list then
@@ -465,6 +465,9 @@ local function AddAbilities(abilities, lowerClass)
         category = obj.category or ((lowerClass or "").."Cooldowns")
         categoryOptions = QuickAuras.options.args[category]
         if categoryOptions and obj.cooldown then
+            if QuickAuras.defaultOptions.profile[obj.option.."_cd"] == nil then
+                QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
+            end
             categoryOptions.args[ability] = {
                 type = "toggle",
                 name = obj.name,

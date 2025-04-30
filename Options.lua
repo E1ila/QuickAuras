@@ -23,7 +23,8 @@ QuickAuras.defaultOptions = {
         offensiveBars = true,
         bloodFury = true,
         manaTideAura = QuickAuras.isManaClass,
-        graceOfAirAura = true,
+        innervateAura = QuickAuras.isManaClass,
+        limitedInvulnerabilityPotion = true,
     },
 }
 
@@ -424,63 +425,55 @@ QuickAuras.options = {
             name = "Icon Alerts",
             order = 10001,
             args = {
-                manaTideAura = {
-                    type = "toggle",
-                    name = "Mana Tide",
-                    desc = "Notify when Mana Tide is up.",
-                    get = function(info) return QuickAuras.db.profile.manaTideAura end,
-                    set = function(info, value) QuickAuras.db.profile.manaTideAura = value end,
-                    order = 1,
-                    hidden = not QuickAuras.isManaClass,
-                },
-                graceOfAirAura = {
-                    type = "toggle",
-                    name = "Grace of Air",
-                    desc = "Notify when Grace of Air is up.",
-                    get = function(info) return QuickAuras.db.profile.graceOfAirAura end,
-                    set = function(info, value) QuickAuras.db.profile.graceOfAirAura = value end,
-                    order = 1,
-                    hidden = not QuickAuras.abilities.shaman.graceOfAirAura,
-                },
             },
         },
     },
 }
 
-function QuickAuras:AddAbilitiesOptions()
+local function AddAbilities(abilities, lowerClass)
     local order = 1
-    local lowerClass = string.lower(QuickAuras.playerClass)
-    if not QuickAuras.abilities[lowerClass] then return end
-    for ability, obj in pairs(QuickAuras.abilities[lowerClass]) do
+    for ability, obj in pairs(abilities) do
         order = order + 1
         -- obj.option in format of class_abilityName
         QuickAuras.defaultOptions.profile[obj.option] = true
         QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
-        if obj.list then
-            QuickAuras.options.args[lowerClass.."Bars"].args[ability] = {
+        local category = obj.category or ((lowerClass or "").."Bars")
+        local categoryOptions = QuickAuras.options.args[category]
+        if categoryOptions and obj.list then
+            debug("Adding", category, ability, obj.name, "   option", obj.option)
+            categoryOptions.args[ability] = {
                 type = "toggle",
                 name = obj.name,
-                desc = "Shows "..(obj.offensive and "debuff" or "buff").." time for "..obj.name..".",
-                get = function(info)
-                    return QuickAuras.db.profile[obj.option]
-                end,
+                desc = obj.desc or "Shows "..(obj.offensive and "debuff" or "buff").." time for "..obj.name..".",
+                get = function(info) return QuickAuras.db.profile[obj.option] end,
                 set = function(info, value)
                     QuickAuras.db.profile[obj.option] = value
+                    if obj.aura then QuickAuras:CheckAuras() end
                 end,
                 order = order,
             }
         end
-        if obj.cooldown then
-            QuickAuras.options.args[lowerClass.."Cooldowns"].args[ability] = {
+        category = obj.category or ((lowerClass or "").."Cooldowns")
+        categoryOptions = QuickAuras.options.args[category]
+        if categoryOptions and obj.cooldown then
+            categoryOptions.args[ability] = {
                 type = "toggle",
                 name = obj.name,
-                desc = "Shows cooldown for "..obj.name..".",
+                desc = obj.desc or "Shows cooldown for "..obj.name..".",
                 get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
                 set = function(info, value) QuickAuras.db.profile[obj.option.."_cd"] = value end,
                 order = order + 1000,
             }
         end
     end
+end
+
+function QuickAuras:AddAbilitiesOptions()
+    AddAbilities(QuickAuras.abilities.orc)
+    AddAbilities(QuickAuras.abilities.other)
+    local lowerClass = string.lower(QuickAuras.playerClass)
+    if not QuickAuras.abilities[lowerClass] then return end
+    AddAbilities(QuickAuras.abilities[lowerClass], lowerClass)
 end
 
 function QuickAuras:AddGearWarningOptions()

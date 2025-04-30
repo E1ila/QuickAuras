@@ -3,17 +3,6 @@ local QuickAuras = addon.root
 QuickAuras.abilities = { orc = {} }
 local abilities = QuickAuras.abilities
 
-abilities.orc.bloodFury = {
-    spellId = { 20572 },
-    aura = true,
-    name = "Blood Fury",
-    icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
-    color = {0.5, 0.5, 0.5},
-    list = "watch",
-    duration = 15,
-    cooldown = true,
-}
-
 abilities.warrior = {
 }
 
@@ -166,15 +155,7 @@ abilities.shaman = {
         name = "Mana Tide",
         icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
         cooldown = 300,
-        visible = QuickAuras.isShaman,
-    },
-    manaTideAura = {
-        spellId = { 17360 },
-        aura = true,
-        list = "alert",
-        option = "manaTideAura",
-        name = "Mana Tide Aura",
-        icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
+        duration = 12,
         visible = QuickAuras.isShaman,
     },
     --graceOfAirAura = { -- test
@@ -212,10 +193,67 @@ abilities.shaman = {
     },
 }
 
+abilities.other = {
+    bloodFury = {
+        spellId = { 20572 },
+        aura = true,
+        name = "Blood Fury",
+        icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
+        color = {0.5, 0.5, 0.5},
+        list = "watch",
+        duration = 15,
+        cooldown = true,
+    },
+    manaTideAura = {
+        spellId = { 17360 },
+        aura = true,
+        list = "alert",
+        option = "manaTideAura",
+        category = "iconAlerts",
+        name = "Mana Tide Aura",
+        desc = "Notify when you or someone in your group uses a Mana Tide. Useful to know since they don't stack.",
+        icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
+        visible = QuickAuras.isManaClass,
+    },
+    innervateAura = {
+        spellId = { 29166 },
+        aura = true,
+        list = "alert",
+        option = "innervateAura",
+        category = "iconAlerts",
+        name = "Innervate Buff",
+        icon = "Interface\\Icons\\spell_nature_lightning",
+        visible = QuickAuras.isManaClass,
+    },
+    powerInfusion = {
+        spellId = { 10060 },
+        aura = true,
+        list = "alert",
+        option = "powerInfusionAura",
+        category = "iconAlerts",
+        name = "Power Infusion Buff",
+        duration = 15,
+        icon = "Interface\\Icons\\Spell_Holy_PowerInfusion",
+    },
+    limitedInvulnerabilityPotion = {
+        spellId = { 3169 },
+        aura = true,
+        list = "alert",
+        option = "limitedInvulnerabilityPotion",
+        category = "iconAlerts",
+        name = "LIP Active",
+        desc = "Shows when Limited Invulnerability Potion is active.",
+        duration = 6,
+        icon = "Interface\\Icons\\Spell_Holy_PowerInfusion",
+    }
+}
+
 function QuickAuras:InitAbilities()
     for class, cabilities in pairs(abilities) do
         for ability, obj in pairs(cabilities) do
-            obj.option = class.."_"..ability
+            if not obj.option then
+                obj.option = class.."_"..ability
+            end
         end
     end
 end

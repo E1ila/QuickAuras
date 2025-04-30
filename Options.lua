@@ -14,7 +14,8 @@ QuickAuras.defaultOptions = {
         someSetting = 50,
         barHeight = 25,
         buttonHeight = 50,
-        iconWarningSize = 80,
+        gearWarningSize = 80,
+        iconAlertSize = 80,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -152,19 +153,33 @@ QuickAuras.options = {
             end,
             order = 103,
         },
-        iconWarningSize = {
+        gearWarningSize = {
             type = "range",
             name = "Warning Icon Size",
             desc = "Set the size of the warning icons",
             min = 10,
-            max = 200,
+            max = 100,
             step = 1,
-            get = function(info) return QuickAuras.db.profile.iconWarningSize end,
+            get = function(info) return QuickAuras.db.profile.gearWarningSize end,
             set = function(info, value)
-                QuickAuras.db.profile.iconWarningSize = value
+                QuickAuras.db.profile.gearWarningSize = value
                 QuickAuras:TestIconWarnings()
             end,
-            order = 103,
+            order = 104,
+        },
+        iconAlertSize = {
+            type = "range",
+            name = "Alert Icon Size",
+            desc = "Set the size of the alert icons",
+            min = 10,
+            max = 100,
+            step = 1,
+            get = function(info) return QuickAuras.db.profile.iconAlertSize end,
+            set = function(info, value)
+                QuickAuras.db.profile.iconAlertSize = value
+                QuickAuras:TestIconAlerts()
+            end,
+            order = 105,
         },
         spacer198 = {
             type = "description",

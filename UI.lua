@@ -59,7 +59,7 @@ function QuickAuras:DisableDarkBackdrop(frame)
 end
 
 
--- Icon warnings ------------------------------------
+-- frame creation -----------------------------------
 
 function QuickAuras:CreateWarningIcon(itemId, parentFrame, frameName)
     -- Create a button frame
@@ -91,6 +91,22 @@ function QuickAuras:CreateWarningIcon(itemId, parentFrame, frameName)
     return frame
 end
 
+function QuickAuras:CreateTextureIcon(texture, parentFrame, frameName)
+    -- Create a button frame
+    local frame = CreateFrame("Frame", frameName, parentFrame)
+
+    -- Set the button's normal texture to the item's icon
+    local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
+    iconTexture:SetTexture(texture)
+    iconTexture:SetAllPoints(frame)
+    frame.icon = iconTexture
+
+    return frame
+end
+
+
+-- Icon warnings ------------------------------------
+
 function QuickAuras:AddIconGearWarning(itemId, conf)
     if not self.iconWarnings[itemId] then
         --debug("AddIconGearWarning", itemId)
@@ -115,10 +131,36 @@ function QuickAuras:RemoveIconWarning(itemId)
     end
 end
 
+function QuickAuras:ClearIconWarnings()
+    --debug("Clearing icon warnings")
+    for itemId, obj in pairs(self.iconWarnings) do
+        self:RemoveIconWarning(itemId)
+    end
+end
+
+function QuickAuras:ArrangeIconWarnings()
+    --debug("Arranging icon warnings")
+    local lastFrame = nil
+    for itemId, obj in pairs(self.iconWarnings) do
+        local frame = obj.frame
+        frame:ClearAllPoints()
+        if lastFrame then
+            frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+        else
+            frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+        end
+        frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
+        lastFrame = frame
+    end
+end
+
+
+-- icon alerts
+
 function QuickAuras:AddIconAuraAlert(spellId, conf)
     if not self.iconAlerts[spellId] then
-        --debug("AddIconGearWarning", itemId)
-        local frame = self:CreateWarningIcon(spellId, QuickAuras_IconAlerts, "AuraAlert"..spellId)
+        --debug("AddIconGearWarning", spellId)
+        local frame = self:CreateTextureIcon(conf.icon, QuickAuras_IconAlerts, "AuraAlert"..spellId)
         self.iconAlerts[spellId] = {
             name = conf.name,
             frame = frame,
@@ -139,25 +181,26 @@ function QuickAuras:RemoveIconAlert(spellId)
     end
 end
 
-function QuickAuras:ClearIconWarnings()
+function QuickAuras:ClearIconAlerts()
     --debug("Clearing icon warnings")
-    for itemId, obj in pairs(self.iconWarnings) do
-        self:RemoveIconWarning(itemId)
+    for spellId, obj in pairs(self.iconAlerts) do
+        self:RemoveIconAlert(spellId)
     end
 end
 
-function QuickAuras:ArrangeIconWarnings()
+function QuickAuras:ArrangeIconAlerts()
     --debug("Arranging icon warnings")
     local lastFrame = nil
-    for itemId, obj in pairs(self.iconWarnings) do
+    for spellId, obj in pairs(self.iconAlerts) do
         local frame = obj.frame
         frame:ClearAllPoints()
         if lastFrame then
-            frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+            frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
         else
-            frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+            frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
         end
-        frame:SetSize(self.db.profile.iconWarningSize, self.db.profile.iconWarningSize) -- Width, Height
+        frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+        frame:SetSize(self.db.profile.iconAlertSize, self.db.profile.iconAlertSize) -- Width, Height
         lastFrame = frame
     end
 end
@@ -366,5 +409,21 @@ function QuickAuras:TestIconWarnings()
         debug("TestIconWarnings timer ended")
         QuickAuras:ClearIconWarnings()
         QuickAuras:CheckGear()
+    end)
+end
+
+local TestIconAlerts_Timer_Id = 0
+function QuickAuras:TestIconAlerts()
+    self:ClearIconAlerts()
+    self:AddIconAuraAlert(self.abilities.shaman.manaTideAura.spellId[1], self.abilities.shaman.manaTideAura)
+    self:ArrangeIconAlerts()
+
+    TestIconAlerts_Timer_Id = TestIconAlerts_Timer_Id + 1
+    local timerId = TestIconAlerts_Timer_Id
+    C_Timer.After(2, function()
+        if timerId ~= TestIconAlerts_Timer_Id then return end
+        debug("TestIconAlerts timer ended")
+        QuickAuras:ClearIconAlerts()
+        --QuickAuras:CheckAura()
     end)
 end

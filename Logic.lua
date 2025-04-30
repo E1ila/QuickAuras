@@ -79,5 +79,5 @@ function QuickAuras:UpdateZone()
         self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
     end
     self.ZoneName = GetRealZoneText()
-    debug("Updating Zone:", QAG.ZoneName)
+    --debug("Updating Zone:", QAG.ZoneName)
 end

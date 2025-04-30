@@ -70,7 +70,7 @@ function QuickAuras:GetTimerKey(name, expTime, uiType)
 end
 
 function QuickAuras:RemoveProgressTimer(timer, reason)
-    debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]", "name", timer.name, "type", timer.uiType, "expTime", timer.expTime)
+    debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
         timer:onEnd(timer)
     end

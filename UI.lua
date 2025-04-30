@@ -157,17 +157,17 @@ end
 
 -- icon alerts
 
-function QuickAuras:AddIconAuraAlert(spellId, conf)
-    if not self.iconAlerts[spellId] then
-        --debug("AddIconGearWarning", spellId)
-        local frame = self:CreateTextureIcon(conf.icon, QuickAuras_IconAlerts, "AuraAlert"..spellId)
-        self.iconAlerts[spellId] = {
-            name = conf.name,
-            frame = frame,
-        }
-        return true
-    end
-end
+--function QuickAuras:AddIconAuraAlert(spellId, conf)
+--    if not self.iconAlerts[spellId] then
+--        --debug("AddIconGearWarning", spellId)
+--        local frame = self:CreateTextureIcon(conf.icon, QuickAuras_IconAlerts, "AuraAlert"..spellId)
+--        self.iconAlerts[spellId] = {
+--            name = conf.name,
+--            frame = frame,
+--        }
+--        return true
+--    end
+--end
 
 function QuickAuras:RemoveIconAlert(spellId)
     if self.iconAlerts[spellId] then
@@ -420,11 +420,8 @@ end
 local TestIconAlerts_Timer_Id = 0
 function QuickAuras:TestIconAlerts()
     local seconds = 6
-    self:ClearIconAlerts()
-    --self:AddIconAuraAlert(self.abilities.other.manaTideAura.spellId[1], self.abilities.other.manaTideAura)
     self:SetProgressTimer("auras", "button", nil, nil, self.abilities.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
-    --self:AddIconAuraAlert(self.abilities.other.innervateAura.spellId[1], self.abilities.other.innervateAura)
-    self:ArrangeIconAlerts()
+    self:SetProgressTimer("auras", "button", nil, nil, self.abilities.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
     TestIconAlerts_Timer_Id = TestIconAlerts_Timer_Id + 1
     local timerId = TestIconAlerts_Timer_Id

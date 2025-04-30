@@ -3,6 +3,7 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
 function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
+    local arrangeFunc = self.ArrangeProgressFrames
     if not list then
         if conf.list == "watch" then
             list = self.watchBars
@@ -14,6 +15,7 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
             list = self.iconAlerts
             parent = QuickAuras_IconAlerts
             uiType = "button" -- override
+            arrangeFunc = self.ArrangeIconAlerts
         end
     end
     if not parent then parent = UIParent end
@@ -61,7 +63,7 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
     self.timers[timer.key] = timer
     self.timerByName[conf.name.."-"..uiType] = timer
     onUpdate(timer)
-    self:ArrangeProgressFrames(list, parent)
+    arrangeFunc(self, list, parent)
     return timer
 end
 

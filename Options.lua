@@ -222,7 +222,7 @@ QuickAuras.options = {
                     desc = "Warn when a mob parries your attack while being tanked",
                     get = function(info) return QuickAuras.db.profile.harryPaste end,
                     set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
-                    order = 202,
+                    order = 102,
                 },
                 outOfRange = {
                     type = "toggle",
@@ -233,7 +233,7 @@ QuickAuras.options = {
                         QuickAuras.db.profile.outOfRange = value
                         if not value then QuickAuras.db.profile.outOfRangeSound = false end
                     end,
-                    order = 204,
+                    order = 104,
                 },
                 outOfRangeSound = {
                     type = "toggle",
@@ -244,16 +244,18 @@ QuickAuras.options = {
                         QuickAuras.db.profile.outOfRangeSound = value
                         if value then QuickAuras.db.profile.outOfRange = true end
                     end,
-                    order = 204,
+                    order = 104,
                 },
-            },
-        },
-        rogueUtils = {
-            type = "group",
-            name = "Rogue Utils",
-            order = 1001,
-            hidden = not QuickAuras.isRogue,
-            args = {
+                rogueUtilsHeader = {
+                    type = "header",
+                    name = "Rogue Utils",
+                    order = 298,
+                },
+                spacer201 = {
+                    type = "description",
+                    name = "",
+                    order = 299,
+                },
                 rogue5Combo = {
                     type = "toggle",
                     name = "5 Combo Points",
@@ -264,6 +266,8 @@ QuickAuras.options = {
                     set = function(info, value)
                         QuickAuras.db.profile.rogue5combo = value
                     end,
+                    hidden = not QuickAuras.isRogue,
+                    order = 304,
                 },
             },
         },
@@ -307,7 +311,7 @@ local function AddAbilities(abilities, lowerClass)
             QuickAuras.defaultOptions.profile[obj.option] = true
         end
         local categoryOptions = QuickAuras.options.args[obj.category or "bars"]
-        if categoryOptions and obj.list then
+        if categoryOptions and obj.list and (obj.visible == nil or obj.visible) then
             categoryOptions.args[ability] = {
                 type = "toggle",
                 name = obj.name,
@@ -321,7 +325,7 @@ local function AddAbilities(abilities, lowerClass)
             }
         end
         categoryOptions = QuickAuras.options.args[obj.category or "cooldowns"]
-        if categoryOptions and obj.cooldown then
+        if categoryOptions and obj.cooldown and (obj.visible == nil or obj.visible) then
             if QuickAuras.defaultOptions.profile[obj.option.."_cd"] == nil then
                 QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
             end

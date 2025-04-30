@@ -177,6 +177,25 @@
         </Layers>
     </Frame>
 
+    <Frame name="QuickAuras_Missing" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
+        <Size>
+            <AbsDimension x="150" y="60" />
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativePoint="CENTER" relativeTo="UIParent" x="400" y="250" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Missing Buffs">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
     <Frame name="QuickAuras_IconWarnings" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
             <AbsDimension x="150" y="80" />

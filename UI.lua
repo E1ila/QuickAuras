@@ -193,11 +193,13 @@ function QuickAuras:ParentFramesNormalState()
     self:DisableDarkBackdrop(QuickAuras_WatchBars)
     self:DisableDarkBackdrop(QuickAuras_OffensiveBars)
     self:DisableDarkBackdrop(QuickAuras_Cooldowns)
+    self:DisableDarkBackdrop(QuickAuras_Missing)
     self:DisableDarkBackdrop(QuickAuras_IconWarnings)
     self:DisableDarkBackdrop(QuickAuras_IconAlerts)
     QuickAuras_WatchBars_Text:Hide()
     QuickAuras_OffensiveBars_Text:Hide()
     QuickAuras_Cooldowns_Text:Hide()
+    QuickAuras_Missing_Text:Hide()
     QuickAuras_IconWarnings_Text:Hide()
     QuickAuras_IconAlerts_Text:Hide()
 end
@@ -206,11 +208,13 @@ function QuickAuras:ParentFramesEditState()
     self:SetDarkBackdrop(QuickAuras_WatchBars)
     self:SetDarkBackdrop(QuickAuras_OffensiveBars)
     self:SetDarkBackdrop(QuickAuras_Cooldowns)
+    self:SetDarkBackdrop(QuickAuras_Missing)
     self:SetDarkBackdrop(QuickAuras_IconWarnings)
     self:SetDarkBackdrop(QuickAuras_IconAlerts)
     QuickAuras_WatchBars_Text:Show()
     QuickAuras_OffensiveBars_Text:Show()
     QuickAuras_Cooldowns_Text:Show()
+    QuickAuras_Missing_Text:Show()
     QuickAuras_IconWarnings_Text:Show()
     QuickAuras_IconAlerts_Text:Show()
 end
@@ -225,7 +229,7 @@ function QuickAuras:ToggleLockedState()
     end
 
     for name, obj in ipairs(self.adjustableFrames) do
-        if not obj.visible or obj.visible() then
+        if obj.visible == nil or obj.visible then
             local f = _G[frame]
             if f then
                 f:EnableMouse(not _uiLocked)

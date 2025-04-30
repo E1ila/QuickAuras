@@ -15,13 +15,13 @@ QuickAuras.optionalEvents = {
 
 QuickAuras.adjustableFrames = {
     ["QuickAuras_Parry"] = {
-        visible = function() return QuickAuras.isRogue end,
+        visible = QuickAuras.isRogue,
     },
     ["QuickAuras_Combo"] = {
-        visible = function() return QuickAuras.isRogue end,
+        visible = QuickAuras.isRogue,
     },
     ["QuickAuras_Flurry"] = {
-        visible = function() return QuickAuras.isRogue end,
+        visible = QuickAuras.isRogue,
     },
 }
 

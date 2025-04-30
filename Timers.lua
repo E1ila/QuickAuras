@@ -40,7 +40,8 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
     if uiType == "button" then
         frame = self:CreateProgressButton(parent, index, 2, conf.color, conf.icon)
     else
-        frame = self:CreateProgressBar(parent, index, 2, conf.color, conf.icon)
+        local text = self.db.profile.showTimeOnBars and tostring(duration) or nil
+        frame = self:CreateProgressBar(parent, index, 2, conf.color, conf.icon, text)
     end
     local timer = {
         frame = frame,

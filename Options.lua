@@ -22,6 +22,7 @@ QuickAuras.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         bloodFury = true,
+        showTimeOnBars = true,
         manaTideAura = QuickAuras.isManaClass,
         innervateAura = QuickAuras.isManaClass,
         limitedInvulnerabilityPotion = true,
@@ -110,6 +111,14 @@ QuickAuras.options = {
                     QuickAuras:ClearIconWarnings()
                 end
             end,
+            order = 8,
+        },
+        showTimeOnBars = {
+            type = "toggle",
+            name = "Show Time Left",
+            desc = "Enables showing of time left on progress bars",
+            get = function(info) return QuickAuras.db.profile.showTimeOnBars end,
+            set = function(info, value) QuickAuras.db.profile.showTimeOnBars = value end,
             order = 8,
         },
         spacer99 = {

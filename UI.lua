@@ -230,7 +230,7 @@ end
 
 -- Progress Bar -----------------------------------------------------------
 
-function QuickAuras:CreateProgressBar(parent, index, padding, color, icon)
+function QuickAuras:CreateProgressBar(parent, index, padding, color, icon, text)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBAR"..tostring(pbId), parent, "QuickAuras_ProgressBar")
@@ -247,6 +247,7 @@ function QuickAuras:CreateProgressBar(parent, index, padding, color, icon)
     local iconFrame = _G[frame:GetName().."_Icon"]
     local barFrame  = _G[frame:GetName().."_Progress_Bar"]
     local progFrame = _G[frame:GetName().."_Progress"]
+    frame.icon = iconFrame.icon
 
     progFrame:ClearAllPoints()
     progFrame:SetPoint("TOPLEFT", iconFrame, "TOPRIGHT", 0, 0)
@@ -259,6 +260,14 @@ function QuickAuras:CreateProgressBar(parent, index, padding, color, icon)
     iconFrame.icon:SetTexture(icon)
     iconFrame:SetSize(height-padding*2, height-padding*2)
     iconFrame.icon:SetSize(height-padding*2, height-padding*2)
+
+    local textLayer = _G[frame:GetName().."_Progress_Bar_Text"];
+    if text then
+        frame.text = textLayer
+        textLayer:SetText(text)
+    else
+        textLayer:SetText("")
+    end
 
     return frame
 end
@@ -320,6 +329,9 @@ function QuickAuras:UpdateProgressBar(timer)
             local progress = (timer.expTime - GetTime()) / timer.duration
             if timer.uiType == "bar" then
                 _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
+                if timer.frame.text then
+                    timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
+                end
             elseif timer.uiType == "button" then
                 timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
             end

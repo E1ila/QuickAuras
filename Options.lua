@@ -353,9 +353,9 @@ local function AddAbilities(abilities, lowerClass)
 end
 
 function QuickAuras:AddAbilitiesOptions()
-    AddAbilities(QuickAuras.abilities.other)
+    AddAbilities(QuickAuras.spells.other)
     local lowerClass = string.lower(QuickAuras.playerClass)
-    local classAbilities = QuickAuras.abilities[lowerClass]
+    local classAbilities = QuickAuras.spells[lowerClass]
     if classAbilities then
         AddAbilities(classAbilities, lowerClass)
     end

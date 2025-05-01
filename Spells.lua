@@ -1,12 +1,12 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
-QuickAuras.abilities = { }
-local abilities = QuickAuras.abilities
+QuickAuras.spells = { }
+local spells = QuickAuras.spells
 
-abilities.warrior = {
+spells.warrior = {
 }
 
-abilities.rogue = {
+spells.rogue = {
     bladeFlurry = {
         spellId = { 13877 },
         aura = true,
@@ -141,7 +141,7 @@ abilities.rogue = {
     },
 }
 
-abilities.shaman = {
+spells.shaman = {
     naturesSwiftness = {
         spellId = { 16188 },
         name = "Nature's Swiftness",
@@ -193,7 +193,7 @@ abilities.shaman = {
     },
 }
 
-abilities.other = {
+spells.other = {
     potion = {
         spellId = { 13444 },
         aura = true,
@@ -210,7 +210,16 @@ abilities.other = {
         color = {0.8039, 0.6667, 0.4000},
         list = "watch",
         duration = 20,
-        cooldown = true,
+        manualExpTime = true,
+    },
+    kissOfTheSpider = {
+        spellId = { 28866 },
+        aura = true,
+        name = "Kill of the Spider",
+        icon = "Interface\\Icons\\inv_trinket_naxxramas04",
+        color = {0.6627, 0.5137, 0.2275},
+        list = "watch",
+        duration = 15,
     },
     earthStrike = {
         spellId = { 25891 },
@@ -295,8 +304,8 @@ abilities.other = {
 }
 
 function QuickAuras:InitAbilities()
-    for class, cabilities in pairs(abilities) do
-        for ability, obj in pairs(cabilities) do
+    for class, cspells in pairs(spells) do
+        for ability, obj in pairs(cspells) do
             if not obj.option then
                 obj.option = class.."_"..ability
             end

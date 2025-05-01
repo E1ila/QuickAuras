@@ -11,7 +11,7 @@ QuickAuras.lua
 QuickAuras.xml
 UI.lua
 Timers.lua
-Abilities.lua
+Spells.lua
 Consumes.lua
 Config.lua
 Options.lua

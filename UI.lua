@@ -323,7 +323,7 @@ function QuickAuras:UpdateProgressBar(timer)
     --debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
     if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
         timer.frame:Show()
-        if timer.duration then
+        if timer.duration > 1 then
             local progress = (timer.expTime - GetTime()) / timer.duration
             if timer.uiType == "bar" then
                 _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
@@ -430,8 +430,8 @@ end
 local TestIconAlerts_Timer_Id = 0
 function QuickAuras:TestIconAlerts()
     local seconds = 6
-    self:SetProgressTimer("auras", "button", nil, nil, self.abilities.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
-    self:SetProgressTimer("auras", "button", nil, nil, self.abilities.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:SetProgressTimer("auras", "button", nil, nil, self.spells.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:SetProgressTimer("auras", "button", nil, nil, self.spells.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
     TestIconAlerts_Timer_Id = TestIconAlerts_Timer_Id + 1
     local timerId = TestIconAlerts_Timer_Id

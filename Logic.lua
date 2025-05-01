@@ -46,6 +46,22 @@ function QuickAuras:CheckCooldowns()
     end
 end
 
+local manualExpTime = {}
+local function FixAuraExpTime(duration, expTime, aura, spellID)
+    if aura.manualExpTime then
+        duration = aura.duration
+        local _exp = manualExpTime[spellID]
+        local now = GetTime()
+        if _exp and _exp > now + 1 then
+            expTime = manualExpTime[spellID]
+        else
+            expTime = now + duration
+            manualExpTime[spellID] = expTime
+        end
+    end
+    return duration, expTime
+end
+
 function QuickAuras:CheckAuras()
     if not self.db.profile.watchBars then return end
     local i = 1
@@ -53,11 +69,12 @@ function QuickAuras:CheckAuras()
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        debug("CheckAuras", "(pre)", "spellID", spellID, name)
         -- bar auras -----------------------------------------
         local aura = self.trackedAuras[spellID]
+        --debug("CheckAuras", "(scan)", "spellID", spellID, name, "aura", aura, "option", aura and aura.option)
         if aura and (not aura.option or self.db.profile[aura.option]) then
-            debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])
+            duration, expTime = FixAuraExpTime(duration, expTime, aura, spellID)
+            debug("CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
             local timer = self:SetProgressTimer("auras", "bar", nil, nil, aura, duration, expTime)
             if timer then
                 seen[timer.key] = true

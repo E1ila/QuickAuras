@@ -83,17 +83,20 @@ end
 
 function QuickAuras:BuildTrackedSpells()
     debug("Building config...")
-    for classLower, classAbilities in pairs(QuickAuras.abilities) do
-        for abilityId, ability in pairs(classAbilities) do
-            if ability.spellId and ability.visible then
-                for _, spellId in ipairs(ability.spellId) do
-                    if ability.aura then
-                        QuickAuras.trackedAuras[spellId] = ability
-                    elseif ability.duration then -- combat log ability has to have duration
-                        QuickAuras.trackedCombatLog[spellId] = ability
+    for category, cspells in pairs(QuickAuras.spells) do
+        --debug("BuildTrackedSpells", "*", category, "----------------")
+        for key, spell in pairs(cspells) do
+            --debug("BuildTrackedSpells", "  - ", category, key)
+            if spell.spellId and (spell.visible == nil or spell.visible) then
+                for _, spellId in ipairs(spell.spellId) do
+                    --debug("BuildTrackedSpells", "    -- ", category, spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
+                    if spell.aura then
+                        self.trackedAuras[spellId] = spell
+                    elseif spell.duration then -- combat log ability has to have duration
+                        self.trackedCombatLog[spellId] = spell
                     end
-                    if ability.cooldown then
-                        QuickAuras.trackedCooldowns[spellId] = ability
+                    if spell.cooldown then
+                        self.trackedCooldowns[spellId] = spell
                     end
                 end
             end

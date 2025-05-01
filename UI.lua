@@ -430,8 +430,8 @@ end
 local TestIconAlerts_Timer_Id = 0
 function QuickAuras:TestIconAlerts()
     local seconds = 6
-    self:SetProgressTimer("auras", "button", nil, nil, self.spells.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
-    self:SetProgressTimer("auras", "button", nil, nil, self.spells.other.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:SetProgressTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:SetProgressTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
     TestIconAlerts_Timer_Id = TestIconAlerts_Timer_Id + 1
     local timerId = TestIconAlerts_Timer_Id

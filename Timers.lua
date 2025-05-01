@@ -89,7 +89,7 @@ function QuickAuras:DebugPrintTimers()
 end
 
 function QuickAuras:RemoveProgressTimer(timer, reason)
-    debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
+    --debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
         timer:onEnd(timer)
     end

@@ -386,7 +386,7 @@ end
 
 function QuickAuras:AddMissingBuffsOptions()
     local order = 0
-    for _, buff in ipairs(self.buffs) do
+    for _, buff in ipairs(self.consumes) do
         order = order + 1
         --debug("Adding missing buff option", buff.name, buff.option, buff.default)
         QuickAuras.defaultOptions.profile[buff.option] = buff.default

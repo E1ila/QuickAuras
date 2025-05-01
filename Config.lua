@@ -102,7 +102,7 @@ function QuickAuras:BuildTrackedSpells()
 end
 
 function QuickAuras:BuildTrackedMissingBuffs()
-    for _, buff in ipairs(self.buffs) do
+    for _, buff in ipairs(self.consumes) do
         for _, spellId in ipairs(buff.spellIds) do
             local spellName = GetSpellInfo(spellId)
             buff.name = spellName

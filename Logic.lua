@@ -53,17 +53,17 @@ function QuickAuras:CheckAuras()
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        --debug("CheckAuras", "(pre)", "spellID", spellID, name)
+        debug("CheckAuras", "(pre)", "spellID", spellID, name)
         -- bar auras -----------------------------------------
         local aura = self.trackedAuras[spellID]
         if aura and (not aura.option or self.db.profile[aura.option]) then
-            --debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])
+            debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])
             local timer = self:SetProgressTimer("auras", "bar", nil, nil, aura, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end
         end
-        -- missing buffs -----------------------------------------
+        -- missing consumes -----------------------------------------
         local buff = self.trackedMissingBuffs[spellID]
         if buff and (not buff.option or self.db.profile[buff.option]) then
             --debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])

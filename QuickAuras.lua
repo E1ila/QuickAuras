@@ -36,6 +36,7 @@ QuickAuras.isHunter = pclass == "HUNTER"
 QuickAuras.isDruid = pclass == "DRUID"
 QuickAuras.isPriest = pclass == "PRIEST"
 QuickAuras.isOrc = QuickAuras.playerRace == "Orc"
+QuickAuras.isUndead = QuickAuras.playerRace == "Undead"
 QuickAuras.isManaClass = QuickAuras.isPriest or QuickAuras.isMage or QuickAuras.isWarlock or QuickAuras.isDruid or QuickAuras.isPaladin or QuickAuras.isShaman or QuickAuras.isHunter
 local _c
 

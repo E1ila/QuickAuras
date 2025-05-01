@@ -193,15 +193,7 @@ spells.shaman = {
     },
 }
 
-spells.other = {
-    potion = {
-        spellId = { 13444 },
-        aura = true,
-        name = "Blood Fury",
-        icon = "Interface\\Icons\\inv_potion_76",
-        color = {0.5, 0.5, 0.5},
-        cooldown = true,
-    },
+spells.trinkets = {
     jomGabbar = {
         spellId = { 29604 },
         aura = true,
@@ -217,7 +209,7 @@ spells.other = {
         aura = true,
         name = "Kill of the Spider",
         icon = "Interface\\Icons\\inv_trinket_naxxramas04",
-        color = {0.6627, 0.5137, 0.2275},
+        color = {0.8745, 0.7373, 0.4745},
         list = "watch",
         duration = 15,
     },
@@ -229,24 +221,29 @@ spells.other = {
         color = {0.3686, 0.8824, 0.7608},
         list = "watch",
         duration = 20,
-        cooldown = true,
     },
-    bloodFury = { -- ability
-        spellId = { 20572 },
-        name = "Blood Fury",
-        icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
-        cooldown = true,
-        visible = QuickAuras.isOrc,
-    },
-    bloodFuryBuff = { -- buff
-        spellId = { 23234 },
+    slayersCrest = {
+        spellId = { 28777 },
         aura = true,
-        name = "Blood Fury",
-        icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
-        color = {0.9451, 0.6863, 0.5333},
+        name = "Slayer's Crest",
+        icon = "Interface\\Icons\\inv_trinket_naxxramas03",
+        color = {0.4314, 0.8745, 0.5373},
         list = "watch",
-        duration = 15,
-        visible = QuickAuras.isOrc,
+        duration = 20,
+    },
+}
+
+spells.iconAlerts = {
+    limitedInvulnerabilityPotion = {
+        spellId = { 3169 },
+        aura = true,
+        list = "alert",
+        option = "limitedInvulnerabilityPotion",
+        category = "iconAlerts",
+        name = "LIP Active",
+        desc = "Shows when Limited Invulnerability Potion is active.",
+        duration = 6,
+        icon = "Interface\\Icons\\spell_holy_divineintervention",
     },
     manaTideAura = {
         spellId = { 17360 },
@@ -279,17 +276,6 @@ spells.other = {
         duration = 15,
         icon = "Interface\\Icons\\Spell_Holy_PowerInfusion",
     },
-    limitedInvulnerabilityPotion = {
-        spellId = { 3169 },
-        aura = true,
-        list = "alert",
-        option = "limitedInvulnerabilityPotion",
-        category = "iconAlerts",
-        name = "LIP Active",
-        desc = "Shows when Limited Invulnerability Potion is active.",
-        duration = 6,
-        icon = "Interface\\Icons\\spell_holy_divineintervention",
-    },
     itchDebuff = {
         spellId = { 26077 },
         aura = true,
@@ -300,7 +286,46 @@ spells.other = {
         desc = "Shows when you have the itch debuff from AQ40, before the lethal poison. Poison needs to be instantly cleansed.",
         duration = 6,
         icon = "Interface\\Icons\\spell_nature_naturetouchdecay",
-    }
+    },
+}
+
+spells.racials = {
+    wotf = { -- ability
+        spellId = { 7744 },
+        name = "Will of the Forsaken",
+        icon = "Interface\\Icons\\spell_shadow_raisedead",
+        cooldown = true,
+        visible = QuickAuras.isUndead,
+    },
+    bloodFury = { -- ability
+        spellId = { 20572 },
+        name = "Blood Fury",
+        icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
+        cooldown = true,
+        visible = QuickAuras.isOrc,
+    },
+    bloodFuryBuff = { -- buff
+        spellId = { 23234 },
+        aura = true,
+        name = "Blood Fury",
+        icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
+        color = {0.9451, 0.6863, 0.5333},
+        list = "watch",
+        duration = 15,
+        visible = QuickAuras.isOrc,
+        subCategory = "abilities"
+    },
+}
+
+spells.other = {
+    potion = {
+        spellId = { 13444 },
+        aura = true,
+        name = "Potion",
+        icon = "Interface\\Icons\\inv_potion_76",
+        color = {0.5, 0.5, 0.5},
+        cooldown = true,
+    },
 }
 
 function QuickAuras:InitAbilities()

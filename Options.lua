@@ -276,6 +276,20 @@ QuickAuras.options = {
             name = "Buffs / Debuffs",
             order = 1002,
             args = {
+                abilities = {
+                    type = "group",
+                    name = "Abilities",
+                    order = 1000,
+                    args = {
+                    },
+                },
+                trinkets = {
+                    type = "group",
+                    name = "Trinkets",
+                    order = 1001,
+                    args = {
+                    },
+                },
             },
         },
         cooldowns = {
@@ -309,55 +323,66 @@ QuickAuras.options = {
     },
 }
 
-local function AddAbilities(abilities, lowerClass)
+local function AddSpells(cspells, subCategory)
     local order = 1
-    for ability, obj in pairs(abilities) do
+    for spellKey, spell in pairs(cspells) do
         order = order + 1
-        -- obj.option in format of class_abilityName
-        if QuickAuras.defaultOptions.profile[obj.option] == nil then
-            QuickAuras.defaultOptions.profile[obj.option] = true
-        end
-        local categoryOptions = QuickAuras.options.args[obj.category or "bars"]
-        if categoryOptions and obj.list and (obj.visible == nil or obj.visible) then
-            categoryOptions.args[ability] = {
-                type = "toggle",
-                name = obj.name,
-                desc = obj.desc or "Shows "..(obj.offensive and "debuff" or "buff").." time for "..obj.name..".",
-                get = function(info) return QuickAuras.db.profile[obj.option] end,
-                set = function(info, value)
-                    QuickAuras.db.profile[obj.option] = value
-                    if obj.aura then QuickAuras:CheckAuras() end
-                end,
-                order = order,
-            }
-        end
-        categoryOptions = QuickAuras.options.args[obj.category or "cooldowns"]
-        if categoryOptions and obj.cooldown and (obj.visible == nil or obj.visible) then
-            if QuickAuras.defaultOptions.profile[obj.option.."_cd"] == nil then
-                QuickAuras.defaultOptions.profile[obj.option.."_cd"] = true
+        --debug("Adding spell option", spellKey, spell.name, spell.spellId, spell.visible)
+        if spell.visible == nil or spell.visible == true then
+            -- obj.option in format of class_abilityName
+            if QuickAuras.defaultOptions.profile[spell.option] == nil then
+                QuickAuras.defaultOptions.profile[spell.option] = true
             end
-            categoryOptions.args[ability] = {
-                type = "toggle",
-                name = obj.name,
-                desc = obj.desc or "Shows cooldown for "..obj.name..".",
-                get = function(info) return QuickAuras.db.profile[obj.option.."_cd"] end,
-                set = function(info, value)
-                    QuickAuras.db.profile[obj.option.."_cd"] = value
-                    QuickAuras:CheckCooldowns()
-                    if obj.aura then QuickAuras:CheckAuras() end
-                end,
-                order = order + 1000,
-            }
+            local categoryOptions = QuickAuras.options.args[spell.category or "bars"]
+            if categoryOptions and spell.list then
+                local args = categoryOptions.args
+                local sub = subCategory or spell.subCategory
+                if sub and args[sub] then
+                    args = args[sub].args
+                end
+                args[spellKey] = {
+                    type = "toggle",
+                    name = spell.name,
+                    desc = spell.desc or "Shows "..(spell.offensive and "debuff" or "buff").." time for ".. spell.name..".",
+                    get = function(info) return QuickAuras.db.profile[spell.option] end,
+                    set = function(info, value)
+                        QuickAuras.db.profile[spell.option] = value
+                        if spell.aura then QuickAuras:CheckAuras() end
+                    end,
+                    order = order,
+                }
+            end
+            categoryOptions = QuickAuras.options.args[spell.category or "cooldowns"]
+            if categoryOptions and spell.cooldown then
+                if QuickAuras.defaultOptions.profile[spell.option.."_cd"] == nil then
+                    QuickAuras.defaultOptions.profile[spell.option.."_cd"] = true
+                end
+                categoryOptions.args[spellKey] = {
+                    type = "toggle",
+                    name = spell.name,
+                    desc = spell.desc or "Shows cooldown for ".. spell.name..".",
+                    get = function(info) return QuickAuras.db.profile[spell.option.."_cd"] end,
+                    set = function(info, value)
+                        QuickAuras.db.profile[spell.option.."_cd"] = value
+                        QuickAuras:CheckCooldowns()
+                        if spell.aura then QuickAuras:CheckAuras() end
+                    end,
+                    order = order + 1000,
+                }
+            end
         end
     end
 end
 
 function QuickAuras:AddAbilitiesOptions()
-    AddAbilities(QuickAuras.spells.other)
+    AddSpells(QuickAuras.spells.racials)
+    AddSpells(QuickAuras.spells.iconAlerts)
+    AddSpells(QuickAuras.spells.other)
+    AddSpells(QuickAuras.spells.trinkets, "trinkets")
     local lowerClass = string.lower(QuickAuras.playerClass)
     local classAbilities = QuickAuras.spells[lowerClass]
     if classAbilities then
-        AddAbilities(classAbilities, lowerClass)
+        AddSpells(classAbilities, "abilities")
     end
 end
 

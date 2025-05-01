@@ -15,7 +15,7 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
             list = self.iconAlerts
             parent = QuickAuras_IconAlerts
             uiType = "button" -- override
-            arrangeFunc = self.ArrangeIconAlerts
+            arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert", _list, _parent) end
         end
     end
     if not parent then parent = UIParent end

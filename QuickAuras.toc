@@ -2,7 +2,7 @@
 ## Title: QuickAuras
 ## Notes: Lightweight addon that implements many common WAs, with a fraction of the CPU and FPS impact.
 ## Author: Kof
-## Version: v0.1
+## Version: v0.2
 ## SavedVariables: QuickAurasDBG
 ## SavedVariablesPerCharacter: QuickAurasDB
 
@@ -12,6 +12,7 @@ QuickAuras.xml
 UI.lua
 Timers.lua
 Abilities.lua
+Buffs.lua
 Config.lua
 Options.lua
 Events.lua

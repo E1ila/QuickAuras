@@ -9,7 +9,7 @@ local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
 local QuickAuras = addon.root
-QuickAuras.version = "0.1"
+QuickAuras.version = "0.2"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.timers = {}
 QuickAuras.timerByName = {}
@@ -18,6 +18,7 @@ QuickAuras.offensiveBars = {}
 QuickAuras.cooldowns = {}
 QuickAuras.iconWarnings = {}
 QuickAuras.iconAlerts = {}
+QuickAuras.missingBuffs = {}
 QuickAuras.bags = {}
 QAG = QuickAuras
 
@@ -55,7 +56,9 @@ function QuickAuras:OnInitialize()
     _c = self.colors
 
     self:InitAbilities()
+    self:BuildTrackedGear()
     self:BuildTrackedSpells()
+    self:BuildTrackedMissingBuffs()
     self:BuildOptions()
 
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)

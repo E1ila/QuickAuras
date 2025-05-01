@@ -56,28 +56,30 @@ QuickAuras.trackedCombatLog = {}
 -- these will be detected through SPELL_UPDATE_COOLDOWN
 QuickAuras.trackedCooldowns = {}
 
+QuickAuras.trackedMissingBuffs = {}
+
 -- custom events
 
-local MARK_OF_THE_CHAMPION_ITEM_ID = { 23206, 23207 }
-for _, itemId in ipairs(MARK_OF_THE_CHAMPION_ITEM_ID) do
-    QuickAuras.trackedGear[itemId] = {
-        name = "Mark of the Champion",
-        desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
-        targetDependant = true,
-        shouldShow = function(equipped)
-            local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")
-            local isUndeadOrDemon = UnitCreatureType("target") == "Undead" or UnitCreatureType("target") == "Demon"
+function QuickAuras:BuildTrackedGear()
+    local MARK_OF_THE_CHAMPION_ITEM_ID = { 23206, 23207 }
+    for _, itemId in ipairs(MARK_OF_THE_CHAMPION_ITEM_ID) do
+        QuickAuras.trackedGear[itemId] = {
+            name = "Mark of the Champion",
+            desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
+            targetDependant = true,
+            shouldShow = function(equipped)
+                local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")
+                local isUndeadOrDemon = UnitCreatureType("target") == "Undead" or UnitCreatureType("target") == "Demon"
 
-            if equipped then
-                return targetExists and not isUndeadOrDemon
-            else
-                return targetExists and isUndeadOrDemon and QuickAuras.bags[itemId]
-            end
-        end,
-    }
+                if equipped then
+                    return targetExists and not isUndeadOrDemon
+                else
+                    return targetExists and isUndeadOrDemon and QuickAuras.bags[itemId]
+                end
+            end,
+        }
+    end
 end
-
---
 
 function QuickAuras:BuildTrackedSpells()
     debug("Building config...")
@@ -95,6 +97,17 @@ function QuickAuras:BuildTrackedSpells()
                     end
                 end
             end
+        end
+    end
+end
+
+function QuickAuras:BuildTrackedMissingBuffs()
+    for _, buff in ipairs(self.buffs) do
+        for _, spellId in ipairs(buff.spellIds) do
+            local spellName = GetSpellInfo(spellId)
+            buff.name = spellName
+            buff.option = "mb_"..spellName:gsub("%s+", "")
+            self.trackedMissingBuffs[spellId] = buff
         end
     end
 end

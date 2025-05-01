@@ -106,7 +106,7 @@ QuickAuras.options = {
                 if value then
                     QuickAuras:CheckGear()
                 else
-                    QuickAuras:ClearIconWarnings()
+                    QuickAuras:ClearIcons("warning")
                 end
             end,
             order = 8,
@@ -299,6 +299,13 @@ QuickAuras.options = {
             args = {
             },
         },
+        missingBuffs = {
+            type = "group",
+            name = "Consumes",
+            order = 10002,
+            args = {
+            },
+        }
     },
 }
 
@@ -355,7 +362,7 @@ function QuickAuras:AddAbilitiesOptions()
 end
 
 function QuickAuras:AddGearWarningOptions()
-    local order = 1
+    local order = 0
     for itemId, obj in pairs(QuickAuras.trackedGear) do
         order = order + 1
         obj.option = "gw_"..obj.name:gsub("%s+", "")
@@ -369,8 +376,30 @@ function QuickAuras:AddGearWarningOptions()
             end,
             set = function(info, value)
                 QuickAuras.db.profile[obj.option] = value
-                QuickAuras:ClearIconWarnings()
+                QuickAuras:ClearIcons("warning")
                 QuickAuras:CheckGear()
+            end,
+            order = order,
+        }
+    end
+end
+
+function QuickAuras:AddMissingBuffsOptions()
+    local order = 0
+    for _, buff in ipairs(self.buffs) do
+        order = order + 1
+        --debug("Adding missing buff option", buff.name, buff.option, buff.default)
+        QuickAuras.defaultOptions.profile[buff.option] = buff.default
+        QuickAuras.options.args.missingBuffs.args[buff.option] = {
+            type = "toggle",
+            name = buff.name,
+            desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
+            get = function(info)
+                return QuickAuras.db.profile[buff.option]
+            end,
+            set = function(info, value)
+                QuickAuras.db.profile[buff.option] = value
+                QuickAuras:CheckAuras()
             end,
             order = order,
         }
@@ -380,4 +409,5 @@ end
 function QuickAuras:BuildOptions()
     self:AddAbilitiesOptions()
     self:AddGearWarningOptions()
+    self:AddMissingBuffsOptions()
 end

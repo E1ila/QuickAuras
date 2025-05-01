@@ -42,7 +42,7 @@ end
 
 -- frame creation -----------------------------------
 
-function QuickAuras:CreateWarningIcon(itemId, parentFrame, frameName)
+function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -88,100 +88,78 @@ end
 
 -- Icon warnings ------------------------------------
 
-function QuickAuras:AddIconGearWarning(itemId, conf)
-    if not self.iconWarnings[itemId] then
-        --debug("AddIconGearWarning", itemId)
-        local frame = self:CreateWarningIcon(itemId, QuickAuras_IconWarnings, "GearWarning"..itemId)
-        self.iconWarnings[itemId] = {
+local function GetIconList(type)
+    local list, parent, Create
+    if type == "warning" then
+        list = QuickAuras.iconWarnings
+        parent = QuickAuras_IconWarnings
+        Create = QuickAuras.CreateItemWarningIcon
+    elseif type == "alert" then
+        list = QuickAuras.iconAlerts
+        parent = QuickAuras_IconAlerts
+    end
+    return list, parent, Create
+end
+
+function QuickAuras:AddItemIcon(type, itemId, conf)
+    local list, parent, Create = GetIconList(type)
+    if not list[itemId] then
+        --debug("AddItemIcon", itemId)
+        local frame = Create(self, itemId, parent, type.."-"..itemId)
+        list[itemId] = {
             name = conf.name,
             frame = frame,
+            list = list,
+            parent = parent,
         }
         return true
     end
 end
 
-function QuickAuras:RemoveIconWarning(itemId)
-    if self.iconWarnings[itemId] then
+function QuickAuras:RemoveIcon(type, id)
+    local list = GetIconList(type)
+    if list[id] then
         --debug("RemoveIconWarning", itemId)
-        local frame = self.iconWarnings[itemId].frame
+        local frame = list[id].frame
         frame:Hide()
         frame:SetParent(nil)
         frame:ClearAllPoints()
-        self.iconWarnings[itemId] = nil
+        list[id] = nil
         return true
     end
 end
 
-function QuickAuras:ClearIconWarnings()
+function QuickAuras:ClearIcons(type)
     --debug("Clearing icon warnings")
-    for itemId, obj in pairs(self.iconWarnings) do
-        self:RemoveIconWarning(itemId)
+    local list = GetIconList(type)
+    for id, obj in pairs(list) do
+        self:RemoveIcon(type, id)
     end
 end
 
-function QuickAuras:ArrangeIconWarnings()
+function QuickAuras:ArrangeIcons(type)
     --debug("Arranging icon warnings")
+    local list, parent, Create = GetIconList(type)
     local lastFrame = nil
-    for itemId, obj in pairs(self.iconWarnings) do
+    for _, obj in pairs(list) do
         local frame = obj.frame
         frame:ClearAllPoints()
-        if lastFrame then
-            frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
-        else
-            frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+        if type == "warning" then
+            if lastFrame then
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+            else
+                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+            end
+            frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
+        elseif type == "alert" then
+            if lastFrame then
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
+            else
+                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+            end
+            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+            frame:SetSize(self.db.profile.iconAlertSize, self.db.profile.iconAlertSize) -- Width, Height
         end
-        frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
-        lastFrame = frame
-    end
-end
-
-
--- icon alerts
-
---function QuickAuras:AddIconAuraAlert(spellId, conf)
---    if not self.iconAlerts[spellId] then
---        --debug("AddIconGearWarning", spellId)
---        local frame = self:CreateTextureIcon(conf.icon, QuickAuras_IconAlerts, "AuraAlert"..spellId)
---        self.iconAlerts[spellId] = {
---            name = conf.name,
---            frame = frame,
---        }
---        return true
---    end
---end
-
-function QuickAuras:RemoveIconAlert(spellId)
-    if self.iconAlerts[spellId] then
-        --debug("RemoveIconAlert", itemId)
-        local frame = self.iconAlerts[spellId].frame
-        frame:Hide()
-        frame:SetParent(nil)
-        frame:ClearAllPoints()
-        self.iconAlerts[spellId] = nil
-        return true
-    end
-end
-
-function QuickAuras:ClearIconAlerts()
-    --debug("Clearing icon warnings")
-    for spellId, obj in pairs(self.iconAlerts) do
-        self:RemoveIconAlert(spellId)
-    end
-end
-
-function QuickAuras:ArrangeIconAlerts()
-    --debug("Arranging icon warnings")
-    local lastFrame = nil
-    for spellId, obj in pairs(self.iconAlerts) do
-        local frame = obj.frame
-        frame:ClearAllPoints()
-        if lastFrame then
-            frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
-        else
-            frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
-        end
-        frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-        frame:SetSize(self.db.profile.iconAlertSize, self.db.profile.iconAlertSize) -- Width, Height
         lastFrame = frame
     end
 end
@@ -432,19 +410,19 @@ end
 
 local TestIconWarnings_Timer_Id = 0
 function QuickAuras:TestIconWarnings()
-    self:ClearIconWarnings()
+    self:ClearIcons("warning")
     for i, conf in pairs(self.trackedGear) do
-        self:AddIconGearWarning(i, conf)
+        self:AddItemIcon("warning", i, conf)
         if i == 3 then break end
     end
-    QuickAuras:ArrangeIconWarnings()
+    self:ArrangeIcons("warning")
 
     TestIconWarnings_Timer_Id = TestIconWarnings_Timer_Id + 1
     local timerId = TestIconWarnings_Timer_Id
     C_Timer.After(2, function()
         if timerId ~= TestIconWarnings_Timer_Id then return end
         debug("TestIconWarnings timer ended")
-        QuickAuras:ClearIconWarnings()
+        QuickAuras:ClearIcons("warning")
         QuickAuras:CheckGear()
     end)
 end
@@ -460,7 +438,7 @@ function QuickAuras:TestIconAlerts()
     C_Timer.After(seconds, function()
         if timerId ~= TestIconAlerts_Timer_Id then return end
         debug("TestIconAlerts timer ended")
-        QuickAuras:ClearIconAlerts()
+        QuickAuras:ClearIcons("alert")
         --QuickAuras:CheckAura()
     end)
 end

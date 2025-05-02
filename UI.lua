@@ -92,13 +92,10 @@ end
 
 local function GetIconList(type)
     local list, parent, Create
+    Create = QuickAuras.CreateItemWarningIcon
     if type == "warning" then
         list = QuickAuras.iconWarnings
         parent = QuickAuras_IconWarnings
-        Create = QuickAuras.CreateItemWarningIcon
-    elseif type == "alert" then
-        list = QuickAuras.iconAlerts
-        parent = QuickAuras_IconAlerts
     end
     return list, parent, Create
 end
@@ -110,6 +107,7 @@ function QuickAuras:AddItemIcon(type, itemId, conf)
         local frame = Create(self, itemId, parent, type.."-"..itemId)
         list[itemId] = {
             name = conf.name,
+            itemId = itemId,
             frame = frame,
             list = list,
             parent = parent,
@@ -230,7 +228,7 @@ end
 
 -- Progress Bar -----------------------------------------------------------
 
-function QuickAuras:CreateProgressBar(parent, index, padding, color, icon, text)
+function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBAR"..tostring(pbId), parent, "QuickAuras_ProgressBar")
@@ -272,7 +270,7 @@ function QuickAuras:CreateProgressBar(parent, index, padding, color, icon, text)
     return frame
 end
 
-function QuickAuras:CreateProgressButton(parent, index, padding, color, icon)
+function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
@@ -398,7 +396,7 @@ function QuickAuras:TestProgressBar(abilities, limit)
             seen[conf.name] = true
             local duration = math.min(conf.duration or 10, 15)
             local expTime = GetTime() + duration
-            self:SetProgressTimer("test", "bar", nil, nil, conf, duration, expTime)
+            self:AddTimer("test", "bar", nil, nil, conf, duration, expTime)
             if i == limit then break end
         end
     end
@@ -412,7 +410,7 @@ end
 function QuickAuras:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedCooldowns) do
-        self:SetProgressTimer("test", "button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
+        self:AddTimer("test", "button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
         t = t + 1
     end
 end
@@ -439,8 +437,8 @@ end
 
 function QuickAuras:TestIconAlerts()
     local seconds = 6
-    self:SetProgressTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
-    self:SetProgressTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:AddTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:AddTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
     _testIconAlerts_Timer_Id = _testIconAlerts_Timer_Id + 1
     local timerId = _testIconAlerts_Timer_Id

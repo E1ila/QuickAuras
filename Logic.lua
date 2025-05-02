@@ -41,7 +41,7 @@ function QuickAuras:CheckCooldowns()
         if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
             --debug("Cooldown", spellID, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
-            self:SetProgressTimer("cooldowns", "button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
+            self:AddTimer("cooldowns", "button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
         end
     end
 end
@@ -75,7 +75,7 @@ function QuickAuras:CheckAuras()
         if aura and (not aura.option or self.db.profile[aura.option]) then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellID)
             debug("CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
-            local timer = self:SetProgressTimer("auras", "bar", nil, nil, aura, duration, expTime)
+            local timer = self:AddTimer("auras", "bar", nil, nil, aura, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end
@@ -84,7 +84,7 @@ function QuickAuras:CheckAuras()
         local buff = self.trackedMissingBuffs[spellID]
         if buff and (not buff.option or self.db.profile[buff.option]) then
             --debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])
-            local timer = self:SetProgressTimer("auras", "button", nil, nil, buff, duration, expTime)
+            local timer = self:AddTimer("auras", "button", nil, nil, buff, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end
@@ -94,7 +94,7 @@ function QuickAuras:CheckAuras()
     -- remove missing auras
     for _, timer in pairs(self.timers) do
         if not seen[timer.key] and timer.source == "auras" then
-            self:RemoveProgressTimer(timer, "unseen")
+            self:RemoveTimer(timer, "unseen")
         end
     end
 end

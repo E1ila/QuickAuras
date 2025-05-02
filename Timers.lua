@@ -2,7 +2,7 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
+function QuickAuras:AddTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
     local arrangeFunc = self.ArrangeProgressFrames
     if not list then
         if conf.list == "watch" then
@@ -29,7 +29,7 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
             return existingTimer -- already exists
         end
         -- different timer, remove old
-        self:RemoveProgressTimer(existingTimer, "replaced")
+        self:RemoveTimer(existingTimer, "replaced")
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
@@ -38,10 +38,10 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
 
     local frame
     if uiType == "button" then
-        frame = self:CreateProgressButton(parent, index, 2, conf.color, conf.icon)
+        frame = self:CreateTimerButton(parent, index, 2, conf.color, conf.icon)
     else
         local text = self.db.profile.showTimeOnBars and tostring(duration) or nil
-        frame = self:CreateProgressBar(parent, index, 2, conf.color, conf.icon, text)
+        frame = self:CreateTimerBar(parent, index, 2, conf.color, conf.icon, text)
     end
     local timer = {
         frame = frame,
@@ -89,7 +89,7 @@ function QuickAuras:DebugPrintTimers()
     debug("  - iconAlerts", #self.iconAlerts)
 end
 
-function QuickAuras:RemoveProgressTimer(timer, reason)
+function QuickAuras:RemoveTimer(timer, reason)
     --debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
         timer:onEnd(timer)
@@ -115,11 +115,11 @@ function QuickAuras:RemoveProgressTimer(timer, reason)
     end
 end
 
-function QuickAuras:CheckProgressTimers()
+function QuickAuras:CheckTimers()
     for _, timer in pairs(self.timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then
-                self:RemoveProgressTimer(timer, "expired")
+                self:RemoveTimer(timer, "expired")
             end
         end
     end

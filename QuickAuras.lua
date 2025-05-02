@@ -11,16 +11,19 @@ addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
 local QuickAuras = addon.root
 QuickAuras.version = "0.3"
 QuickAuras.events = CreateFrame("Frame")
-QuickAuras.timers = {}
-QuickAuras.timerByName = {}
-QuickAuras.watchBars = {}
-QuickAuras.offensiveBars = {}
-QuickAuras.cooldowns = {}
-QuickAuras.iconWarnings = {}
-QuickAuras.iconAlerts = {}
-QuickAuras.missingBuffs = {}
-QuickAuras.bags = {}
+QuickAuras.bags = {} -- items in bags
 QAG = QuickAuras
+
+-- managed timers
+QuickAuras.timers = {} -- all active timers
+QuickAuras.timerByName = {}
+-- managed timers by frame type
+QuickAuras.watchBars = {} -- timer obj
+QuickAuras.offensiveBars = {} -- timer obj
+QuickAuras.cooldowns = {} -- timer obj
+QuickAuras.iconWarnings = {} -- item obj
+QuickAuras.iconAlerts = {} -- timer obj
+QuickAuras.missingBuffs = {} -- spell obj
 
 local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass

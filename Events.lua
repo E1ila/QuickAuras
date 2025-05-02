@@ -79,7 +79,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                     and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
-                    local timer = self:SetProgressTimer("combatlog", "bar", nil, nil, conf, conf.duration, GetTime()+conf.duration)
+                    local timer = self:AddTimer("combatlog", "bar", nil, nil, conf, conf.duration, GetTime()+conf.duration)
                     if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
                     enemyDebuffs[p1][destGUID] = timer
                 end
@@ -88,7 +88,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                     and sourceGUID == self.playerGuid
                     and enemyDebuffs[p1] and enemyDebuffs[p1][destGUID]
                 then
-                    self:RemoveProgressTimer(enemyDebuffs[p1][destGUID], "combatlog")
+                    self:RemoveTimer(enemyDebuffs[p1][destGUID], "combatlog")
                     enemyDebuffs[p1][destGUID] = nil
                 end
             end
@@ -98,7 +98,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     if subevent == "UNIT_DIED" then
         for spellID, conf in pairs(QuickAuras.trackedCombatLog) do
             if enemyDebuffs[spellID] and enemyDebuffs[spellID][destGUID] then
-                self:RemoveProgressTimer(enemyDebuffs[spellID][destGUID], "combatlog")
+                self:RemoveTimer(enemyDebuffs[spellID][destGUID], "combatlog")
                 enemyDebuffs[spellID][destGUID] = nil
             end
         end
@@ -127,6 +127,6 @@ function QuickAuras:OnUpdate()
     local currentTime = GetTime()
     if self.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime
-        self:CheckProgressTimers()
+        self:CheckTimers()
     end
 end

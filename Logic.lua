@@ -115,26 +115,26 @@ end
 function QuickAuras:CheckMissingBuffs()
     if not QuickAuras.db.profile.missingConsumes then return end
     local buffsChanged = false
-    --if IsInInstance() then
-    for _, buff in ipairs(self.trackedMissingBuffs) do
-        if not buff.option or self.db.profile[buff.option] then
-            local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)
-            local foundItemId = self:FindInBags(buff.itemIds or buff.itemId)
-            debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId, "option", buff.option, buff.option and self.db.profile[buff.option])
-            if  foundBuff
-                or buff.visibleFunc and not buff.visibleFunc()
-                or not foundItemId
-            then
-                if self:RemoveIcon("missing", buff.usedItemId or buff.itemId) then buffsChanged = true end
-            else
-                if self:AddItemIcon("missing", foundItemId, buff) then
-                    buffsChanged = true
-                    buff.usedItemId = foundItemId
+    if IsInInstance() then
+        for _, buff in ipairs(self.trackedMissingBuffs) do
+            if not buff.option or self.db.profile[buff.option] then
+                local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)
+                local foundItemId = self:FindInBags(buff.itemIds or buff.itemId)
+                debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId, "option", buff.option, buff.option and self.db.profile[buff.option])
+                if  foundBuff
+                    or buff.visibleFunc and not buff.visibleFunc()
+                    or not foundItemId
+                then
+                    if self:RemoveIcon("missing", buff.usedItemId or buff.itemId) then buffsChanged = true end
+                else
+                    if self:AddItemIcon("missing", foundItemId, buff) then
+                        buffsChanged = true
+                        buff.usedItemId = foundItemId
+                    end
                 end
             end
         end
     end
-    --end
     if buffsChanged then
         self:ArrangeIcons("missing")
     end

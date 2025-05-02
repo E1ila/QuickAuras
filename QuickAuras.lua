@@ -23,7 +23,7 @@ QuickAuras.offensiveBars = {} -- timer obj
 QuickAuras.cooldowns = {} -- timer obj
 QuickAuras.iconWarnings = {} -- item obj
 QuickAuras.iconAlerts = {} -- timer obj
-QuickAuras.missingBuffs = {} -- spell obj
+QuickAuras.missingBuffs = {} -- item obj
 
 local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass

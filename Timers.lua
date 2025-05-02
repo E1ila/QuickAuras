@@ -16,6 +16,11 @@ function QuickAuras:AddTimer(source, uiType, list, parent, conf, duration, expTi
             parent = QuickAuras_IconAlerts
             uiType = "button" -- override
             arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert") end
+        --elseif conf.list == "missing" then
+        --    list = self.missingBuffs
+        --    parent = QuickAuras_MissingBuffs
+        --    uiType = "button"
+        --    arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("missing") end
         end
     end
     if not parent then parent = UIParent end

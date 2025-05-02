@@ -177,7 +177,7 @@
         </Layers>
     </Frame>
 
-    <Frame name="QuickAuras_MissingConsumes" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
+    <Frame name="QuickAuras_MissingBuffs" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
             <AbsDimension x="150" y="60" />
         </Size>

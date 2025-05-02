@@ -103,14 +103,3 @@ function QuickAuras:BuildTrackedSpells()
         end
     end
 end
-
-function QuickAuras:BuildTrackedMissingBuffs()
-    for _, buff in ipairs(self.consumes) do
-        for _, spellId in ipairs(buff.spellIds) do
-            local spellName = GetSpellInfo(spellId)
-            buff.name = spellName
-            buff.option = "mb_"..spellName:gsub("%s+", "")
-            self.trackedMissingBuffs[spellId] = buff
-        end
-    end
-end

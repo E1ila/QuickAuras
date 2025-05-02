@@ -63,28 +63,19 @@ local function FixAuraExpTime(duration, expTime, aura, spellID)
 end
 
 function QuickAuras:CheckAuras()
-    if not self.db.profile.watchBars then return end
     local i = 1
     local seen = {}
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        -- bar auras -----------------------------------------
+        seen[spellID] = true
+        -- timer auras -----------------------------------------
         local aura = self.trackedAuras[spellID]
-        --debug("CheckAuras", "(scan)", "spellID", spellID, name, "aura", aura, "option", aura and aura.option)
-        if aura and (not aura.option or self.db.profile[aura.option]) then
+        debug(3, "CheckAuras", "(scan)", "spellID", spellID, name, "aura", aura, "option", aura and aura.option)
+        if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellID)
-            debug("CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
+            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
             local timer = self:AddTimer("auras", "bar", nil, nil, aura, duration, expTime)
-            if timer then
-                seen[timer.key] = true
-            end
-        end
-        -- missing consumes -----------------------------------------
-        local buff = self.trackedMissingBuffs[spellID]
-        if buff and (not buff.option or self.db.profile[buff.option]) then
-            --debug("CheckAuras", "conf", conf.name, "duration", duration, "expTime", expTime, "option", conf.option, self.db.profile[conf.option])
-            local timer = self:AddTimer("auras", "button", nil, nil, buff, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end
@@ -95,6 +86,13 @@ function QuickAuras:CheckAuras()
     for _, timer in pairs(self.timers) do
         if not seen[timer.key] and timer.source == "auras" then
             self:RemoveTimer(timer, "unseen")
+        end
+    end
+    -- missing consumes -----------------------------------------
+    for spellID, buff in pairs(self.trackedMissingBuffs) do
+        if not seen[spellID] and (not buff.option or self.db.profile[buff.option]) then
+            self:AddItemIcon("missing", buff.itemId, buff)
+            self:ArrangeIcons("missing")
         end
     end
 end

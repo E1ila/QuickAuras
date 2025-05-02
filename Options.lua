@@ -16,6 +16,7 @@ QuickAuras.defaultOptions = {
         buttonHeight = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
+        missingBuffsSize = 35,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -189,6 +190,20 @@ QuickAuras.options = {
                 QuickAuras:TestIconAlerts()
             end,
             order = 105,
+        },
+        missingBuffsSize = {
+            type = "range",
+            name = "Missing Consumes Size",
+            desc = "Set the size of the missing consumes icons",
+            min = 10,
+            max = 100,
+            step = 1,
+            get = function(info) return QuickAuras.db.profile.missingBuffsSize end,
+            set = function(info, value)
+                QuickAuras.db.profile.missingBuffsSize = value
+                QuickAuras:TestIconMissingBuffs()
+            end,
+            order = 106,
         },
         spacer198 = {
             type = "description",

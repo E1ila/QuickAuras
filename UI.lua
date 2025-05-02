@@ -5,6 +5,7 @@ local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
 local _c
+local _testIconMissing_Timer_Id = 0
 local _testIconWarnings_Timer_Id = 0
 local _testIconAlerts_Timer_Id = 0
 
@@ -44,7 +45,7 @@ end
 
 -- frame creation -----------------------------------
 
-function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName)
+function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -61,15 +62,17 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName)
     iconTexture:SetAllPoints(frame)
     frame.icon = iconTexture
 
-    -- Add a tooltip to show the item's name
-    frame:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetItemByID(itemId)
-        GameTooltip:Show()
-    end)
-    frame:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
+    if showTooltip then
+        -- Add a tooltip to show the item's name
+        frame:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetItemByID(itemId)
+            GameTooltip:Show()
+        end)
+        frame:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+    end
 
     return frame
 end
@@ -91,20 +94,22 @@ end
 -- Icon warnings ------------------------------------
 
 local function GetIconList(type)
-    local list, parent, Create
-    Create = QuickAuras.CreateItemWarningIcon
+    local list, parent
     if type == "warning" then
         list = QuickAuras.iconWarnings
         parent = QuickAuras_IconWarnings
+    elseif type == "missing" then
+        list = QuickAuras.missingBuffs
+        parent = QuickAuras_MissingBuffs
     end
-    return list, parent, Create
+    return list, parent
 end
 
 function QuickAuras:AddItemIcon(type, itemId, conf)
-    local list, parent, Create = GetIconList(type)
+    local list, parent = GetIconList(type)
     if not list[itemId] then
-        --debug("AddItemIcon", itemId)
-        local frame = Create(self, itemId, parent, type.."-"..itemId)
+        debug(2, "AddItemIcon", itemId, "parent", parent:GetName())
+        local frame = self.CreateItemWarningIcon(self, itemId, parent, type.."-"..itemId, conf.tooltip == nil or conf.tooltip)
         list[itemId] = {
             name = conf.name,
             itemId = itemId,
@@ -151,6 +156,13 @@ function QuickAuras:ArrangeIcons(type)
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
+        elseif type == "missing" then
+            if lastFrame then
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+            else
+                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+            end
+            frame:SetSize(self.db.profile.missingBuffsSize, self.db.profile.missingBuffsSize) -- Width, Height
         elseif type == "alert" then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
@@ -171,13 +183,13 @@ function QuickAuras:ParentFramesNormalState()
     self:DisableDarkBackdrop(QuickAuras_WatchBars)
     self:DisableDarkBackdrop(QuickAuras_OffensiveBars)
     self:DisableDarkBackdrop(QuickAuras_Cooldowns)
-    self:DisableDarkBackdrop(QuickAuras_MissingConsumes)
+    self:DisableDarkBackdrop(QuickAuras_MissingBuffs)
     self:DisableDarkBackdrop(QuickAuras_IconWarnings)
     self:DisableDarkBackdrop(QuickAuras_IconAlerts)
     QuickAuras_WatchBars_Text:Hide()
     QuickAuras_OffensiveBars_Text:Hide()
     QuickAuras_Cooldowns_Text:Hide()
-    QuickAuras_MissingConsumes_Text:Hide()
+    QuickAuras_MissingBuffs_Text:Hide()
     QuickAuras_IconWarnings_Text:Hide()
     QuickAuras_IconAlerts_Text:Hide()
 end
@@ -186,13 +198,13 @@ function QuickAuras:ParentFramesEditState()
     self:SetDarkBackdrop(QuickAuras_WatchBars)
     self:SetDarkBackdrop(QuickAuras_OffensiveBars)
     self:SetDarkBackdrop(QuickAuras_Cooldowns)
-    self:SetDarkBackdrop(QuickAuras_MissingConsumes)
+    self:SetDarkBackdrop(QuickAuras_MissingBuffs)
     self:SetDarkBackdrop(QuickAuras_IconWarnings)
     self:SetDarkBackdrop(QuickAuras_IconAlerts)
     QuickAuras_WatchBars_Text:Show()
     QuickAuras_OffensiveBars_Text:Show()
     QuickAuras_Cooldowns_Text:Show()
-    QuickAuras_Missing_Text:Show()
+    QuickAuras_MissingBuffs_Text:Show()
     QuickAuras_IconWarnings_Text:Show()
     QuickAuras_IconAlerts_Text:Show()
 end
@@ -413,6 +425,25 @@ function QuickAuras:TestCooldowns()
         self:AddTimer("test", "button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
         t = t + 1
     end
+end
+
+function QuickAuras:TestIconMissingBuffs()
+    self:ClearIcons("missing")
+    local count = 0
+    for itemId, conf in pairs(self.trackedMissingBuffs) do
+        count = count + 1
+        self:AddItemIcon("missing", conf.itemId, conf)
+    end
+    self:ArrangeIcons("missing")
+
+    _testIconMissing_Timer_Id = _testIconMissing_Timer_Id + 1
+    local timerId = _testIconMissing_Timer_Id
+    C_Timer.After(2, function()
+        if timerId ~= _testIconMissing_Timer_Id then return end
+        debug("TestIconMissingBuffs timer ended")
+        QuickAuras:ClearIcons("missing")
+        QuickAuras:CheckAuras()
+    end)
 end
 
 function QuickAuras:TestIconWarnings()

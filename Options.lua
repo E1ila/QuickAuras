@@ -7,11 +7,13 @@ local _c = QuickAuras.colors
 
 QuickAuras.defaultOptions = {
     profile = {
+        debug = 0,
         enabled = true,
         cooldowns = true,
         watchBars = true,
         trackedGear = true,
         missingConsumes = true,
+        remindersEnabled = true,
         someSetting = 50,
         barHeight = 25,
         barGap = 2,
@@ -19,6 +21,7 @@ QuickAuras.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         missingBuffsSize = 35,
+        remindersBuffsSize = 35,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -36,22 +39,6 @@ QuickAuras.options = {
     type = "group",
     childGroups = "tab",
     args = {
-        titleText = {
-            type = "description",
-            name = "  " .. ADDON_NAME .. " (v" .. QuickAuras.version .. ")",
-            fontSize = "large",
-            order = 1,
-        },
-        spacer2 = {
-            type = "description",
-            name = "",
-            order = 2,
-        },
-        spacer3 = {
-            type = "description",
-            name = "",
-            order = 3,
-        },
         addonEnabled = {
             type = "toggle",
             name = "Enable",
@@ -421,6 +408,7 @@ function QuickAuras:AddAbilitiesOptions()
     AddSpells(QuickAuras.spells.racials)
     AddSpells(QuickAuras.spells.iconAlerts)
     AddSpells(QuickAuras.spells.other)
+    AddSpells(QuickAuras.spells.reminders)
     AddSpells(QuickAuras.spells.trinkets, "trinkets")
     local lowerClass = string.lower(QuickAuras.playerClass)
     local classAbilities = QuickAuras.spells[lowerClass]

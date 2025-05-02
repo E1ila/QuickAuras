@@ -50,7 +50,7 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
     -- Get the item's icon texture
-    local itemIcon = GetItemIcon(itemId)
+    local itemIcon = GetItemIcon(itemId) or GetSpellTexture(itemId)
     if not itemIcon then
         print("Invalid itemId:", itemId)
         return nil
@@ -61,12 +61,48 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
     iconTexture:SetTexture(itemIcon)
     iconTexture:SetAllPoints(frame)
     frame.icon = iconTexture
+    debug(3, "CreateItemWarningIcon", frameName, "itemId", itemId, "icon", itemIcon)
 
     if showTooltip then
         -- Add a tooltip to show the item's name
         frame:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             GameTooltip:SetItemByID(itemId)
+            GameTooltip:Show()
+        end)
+        frame:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+    end
+
+    return frame
+end
+
+function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip)
+    -- Create a button frame
+    local frame = CreateFrame("Frame", frameName, parentFrame, "BackdropTemplate")
+    self:SetDarkBackdrop(frame)
+
+    -- Get the item's icon texture
+    local spellIcon = GetItemIcon(12457)
+    --local spellIcon = GetSpellTexture(spellId)
+    if not spellIcon then
+        print("Invalid spellId:", spellId)
+        return nil
+    end
+
+    -- Set the button's normal texture to the item's icon
+    local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
+    iconTexture:SetTexture(spellIcon)
+    iconTexture:SetAllPoints(frame)
+    frame.icon = iconTexture
+    debug(3, "CreateSpellWarningIcon", frameName, "spellId", spellId, "icon", spellIcon)
+
+    if showTooltip then
+        -- Add a tooltip to show the item's name
+        frame:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetSpellByID(spellId)
             GameTooltip:Show()
         end)
         frame:SetScript("OnLeave", function()
@@ -93,26 +129,34 @@ end
 
 -- Icon warnings ------------------------------------
 
-local function GetIconList(type)
+local function GetIconList(type, idType)
     local list, parent
+    local Create = idType == "item" and QuickAuras.CreateItemWarningIcon or QuickAuras.CreateSpellWarningIcon
     if type == "warning" then
         list = QuickAuras.iconWarnings
         parent = QuickAuras_IconWarnings
     elseif type == "missing" then
         list = QuickAuras.missingBuffs
         parent = QuickAuras_MissingBuffs
+    elseif type == "alert" then
+        list = QuickAuras.iconAlerts
+        parent = QuickAuras_IconAlerts
+    elseif type == "reminder" then
+        list = QuickAuras.reminders
+        parent = QuickAuras_Reminders
     end
-    return list, parent
+    return list, parent, Create
 end
 
-function QuickAuras:AddItemIcon(type, itemId, conf)
-    local list, parent = GetIconList(type)
-    if not list[itemId] then
-        --debug(2, "AddItemIcon", itemId, "parent", parent:GetName())
-        local frame = self.CreateItemWarningIcon(self, itemId, parent, type.."-"..itemId, conf.tooltip == nil or conf.tooltip)
-        list[itemId] = {
+function QuickAuras:AddIcon(type, idType, id, conf)
+    local list, parent, Create = GetIconList(type, idType)
+    if not list[id] then
+        debug(2, "AddIcon", id, "parent", parent:GetName())
+        local frame = self:CreateItemWarningIcon(id, parent, type.."-".. id, conf.tooltip == nil or conf.tooltip)
+        list[id] = {
             name = conf.name,
-            itemId = itemId,
+            id = id,
+            idType = idType,
             frame = frame,
             list = list,
             parent = parent,
@@ -163,6 +207,13 @@ function QuickAuras:ArrangeIcons(type)
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.missingBuffsSize, self.db.profile.missingBuffsSize) -- Width, Height
+        elseif type == "reminder" then
+            if lastFrame then
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
+            else
+                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+            end
+            frame:SetSize(self.db.profile.remindersBuffsSize, self.db.profile.remindersBuffsSize) -- Width, Height
         elseif type == "alert" then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
@@ -186,12 +237,14 @@ function QuickAuras:ParentFramesNormalState()
     self:DisableDarkBackdrop(QuickAuras_MissingBuffs)
     self:DisableDarkBackdrop(QuickAuras_IconWarnings)
     self:DisableDarkBackdrop(QuickAuras_IconAlerts)
+    self:DisableDarkBackdrop(QuickAuras_Reminders)
     QuickAuras_WatchBars_Text:Hide()
     QuickAuras_OffensiveBars_Text:Hide()
     QuickAuras_Cooldowns_Text:Hide()
     QuickAuras_MissingBuffs_Text:Hide()
     QuickAuras_IconWarnings_Text:Hide()
     QuickAuras_IconAlerts_Text:Hide()
+    QuickAuras_Reminders_Text:Hide()
 end
 
 function QuickAuras:ParentFramesEditState()
@@ -201,12 +254,14 @@ function QuickAuras:ParentFramesEditState()
     self:SetDarkBackdrop(QuickAuras_MissingBuffs)
     self:SetDarkBackdrop(QuickAuras_IconWarnings)
     self:SetDarkBackdrop(QuickAuras_IconAlerts)
+    self:SetDarkBackdrop(QuickAuras_Reminders)
     QuickAuras_WatchBars_Text:Show()
     QuickAuras_OffensiveBars_Text:Show()
     QuickAuras_Cooldowns_Text:Show()
     QuickAuras_MissingBuffs_Text:Show()
     QuickAuras_IconWarnings_Text:Show()
     QuickAuras_IconAlerts_Text:Show()
+    QuickAuras_Reminders_Text:Show()
 end
 
 function QuickAuras:ToggleLockedState()
@@ -398,17 +453,17 @@ end
 
 -- Test UI -----------------------------------------------------------
 
-function QuickAuras:TestProgressBar(abilities, limit)
+function QuickAuras:TestProgressBar(spells, limit)
     local i = 0
     local seen = {}
-    for _, conf in pairs(abilities) do
+    for _, conf in pairs(spells) do
         if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
-            --debug("TestProgressBar", "conf", conf.name, limit)
+            debug("TestProgressBar", "conf", conf.name, conf.list, limit)
             i = i + 1
             seen[conf.name] = true
             local duration = math.min(conf.duration or 10, 15)
             local expTime = GetTime() + duration
-            self:AddTimer("test", "bar", nil, nil, conf, duration, expTime)
+            self:AddTimer("test", conf, duration, expTime)
             if i == limit then break end
         end
     end
@@ -422,7 +477,7 @@ end
 function QuickAuras:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedCooldowns) do
-        self:AddTimer("test", "button", self.cooldowns, QuickAuras_Cooldowns, conf, 15-t, GetTime()+15-t)
+        self:AddTimer("test-cooldowns", conf, 15-t, GetTime()+15-t)
         t = t + 1
     end
 end
@@ -432,7 +487,7 @@ function QuickAuras:TestIconMissingBuffs()
     local count = 0
     for _, conf in ipairs(self.trackedMissingBuffs) do
         count = count + 1
-        self:AddItemIcon("missing", conf.itemId, conf)
+        self:AddIcon("missing", "item", conf.itemId, conf)
     end
     self:ArrangeIcons("missing")
 
@@ -451,7 +506,7 @@ function QuickAuras:TestIconWarnings()
     local count = 0
     for itemId, conf in pairs(self.trackedGear) do
         count = count + 1
-        self:AddItemIcon("warning", itemId, conf)
+        self:AddIcon("warning", "item", itemId, conf)
         if count == 3 then break end
     end
     self:ArrangeIcons("warning")
@@ -468,8 +523,8 @@ end
 
 function QuickAuras:TestIconAlerts()
     local seconds = 6
-    self:AddTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
-    self:AddTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
     _testIconAlerts_Timer_Id = _testIconAlerts_Timer_Id + 1
     local timerId = _testIconAlerts_Timer_Id

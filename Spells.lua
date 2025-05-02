@@ -328,6 +328,17 @@ spells.other = {
     },
 }
 
+spells.reminders = {
+    detectHerbs = {
+        spellId = { 2383 },
+        aura = true,
+        name = "Detect Herbs",
+        icon = "Interface\\Icons\\inv_misc_flower_02",
+        list = "reminder",
+        visible = IsSpellKnown(2383),
+    },
+}
+
 function QuickAuras:InitAbilities()
     for class, cspells in pairs(spells) do
         for ability, obj in pairs(cspells) do

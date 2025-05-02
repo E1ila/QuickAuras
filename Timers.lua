@@ -2,26 +2,31 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-function QuickAuras:AddTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
+function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
     local arrangeFunc = self.ArrangeTimerBars
-    if not list then
-        if conf.list == "watch" then
-            list = self.watchBars
-            parent = QuickAuras_WatchBars
-        elseif conf.list == "offensive" then
-            list = self.offensiveBars
-            parent = QuickAuras_OffensiveBars
-        elseif conf.list == "alert" then
-            list = self.iconAlerts
-            parent = QuickAuras_IconAlerts
-            uiType = "button" -- override
-            arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert") end
-        --elseif conf.list == "missing" then
-        --    list = self.missingBuffs
-        --    parent = QuickAuras_MissingBuffs
-        --    uiType = "button"
-        --    arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("missing") end
-        end
+    local uiType, list, parent
+    if source == "test-cooldowns" or source == "cooldowns" then
+        list = self.cooldowns
+        parent = QuickAuras_Cooldowns
+        uiType = "button"
+    elseif conf.list == "watch" then
+        list = self.watchBars
+        parent = QuickAuras_WatchBars
+        uiType = "bar"
+    elseif conf.list == "offensive" then
+        list = self.offensiveBars
+        parent = QuickAuras_OffensiveBars
+        uiType = "bar"
+    elseif conf.list == "alert" then
+        list = self.iconAlerts
+        parent = QuickAuras_IconAlerts
+        uiType = "button"
+        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert") end
+    elseif conf.list == "reminder" then
+        list = self.reminders
+        parent = QuickAuras_Reminders
+        uiType = "button"
+        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("reminder") end
     end
     if not parent then parent = UIParent end
     if not onUpdate then onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate end

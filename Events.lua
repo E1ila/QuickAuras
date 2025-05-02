@@ -79,7 +79,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                     and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
-                    local timer = self:AddTimer("combatlog", "bar", nil, nil, conf, conf.duration, GetTime()+conf.duration)
+                    local timer = self:AddTimer("combatlog", conf, conf.duration, GetTime()+conf.duration)
                     if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
                     enemyDebuffs[p1][destGUID] = timer
                 end
@@ -131,6 +131,18 @@ end
 function QuickAuras:ENCOUNTER_END()
     self.encounter = nil
     self:CheckMissingBuffs()
+end
+
+function QuickAuras:MINIMAP_UPDATE_TRACKING()
+    self:CheckTrackingStatus()
+end
+
+function QuickAuras:PLAYER_ALIVE()
+    self:CheckTrackingStatus()
+end
+
+function QuickAuras:PLAYER_UNGHOST()
+    self:CheckTrackingStatus()
 end
 
 -- OnUpdate

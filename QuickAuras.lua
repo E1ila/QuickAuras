@@ -14,6 +14,9 @@ QuickAuras.events = CreateFrame("Frame")
 QuickAuras.bags = {} -- items in bags
 QuickAuras.playerBuffs = {} -- items in bags
 QAG = QuickAuras
+QuickAurasDBG = QuickAurasDBG or {
+    debug = 0,
+}
 
 -- managed timers
 QuickAuras.timers = {} -- all active timers
@@ -25,6 +28,7 @@ QuickAuras.cooldowns = {} -- timer obj
 QuickAuras.iconWarnings = {} -- item obj
 QuickAuras.iconAlerts = {} -- timer obj
 QuickAuras.missingBuffs = {} -- item obj
+QuickAuras.reminders = {} -- spell obj
 
 local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass
@@ -51,16 +55,13 @@ QuickAuras.Print = out
 
 local function debug(text, ...)
     local minLevel = type(text) == "number" and text or 1
-    if QuickAurasDB and QuickAurasDB.debug >= minLevel then
+    if QuickAurasDBG.debug and QuickAurasDBG.debug >= minLevel then
         print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cff009999DEBUG|cff999999", text, ...)
     end
 end
 QuickAuras.Debug = debug
 
 function QuickAuras:OnInitialize()
-    if QuickAurasDB.debug and type(QuickAurasDB.debug) ~= "number" then
-        QuickAurasDB.debug = 1
-    end
     debug("Initializing...")
     _c = self.colors
 
@@ -141,20 +142,21 @@ function QuickAuras:HandleSlashCommand(input)
         local cmd, arg1 = strsplit(" ", input:trim():lower())
         if cmd == "debug" or cmd == "d" then
             local level
-            if QuickAurasDB.debug > 0 and not arg1 then
+            if QuickAurasDBG.debug and QuickAurasDBG.debug > 0 and not arg1 then
                 level = 0
             else
                 level = arg1 and tonumber(arg1) or 1
             end
-            QuickAurasDB.debug = level
+            QuickAurasDBG.debug = level
             if level > 0 then
                 out("Debug mode ".._c.enabled.."enabled|r", "("..tostring(level)..")") -- Green text
             else
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
         elseif cmd == "test" then
-            self:TestBars()
-            self:TestCooldowns()
+            self:DemoUI()
+        elseif cmd == "test2" then
+            self:DemoUI2()
         elseif cmd == "lock" then
             self:ToggleLockedState()
         elseif cmd == "reset" then

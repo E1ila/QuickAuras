@@ -2,6 +2,9 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
+local TRACKING_TEXTURE_HERBS = 133939
+local TRACKING_TEXTURE_MINING = 136025
+
 QuickAuras.optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",
@@ -13,6 +16,9 @@ QuickAuras.optionalEvents = {
     "BAG_UPDATE",
     "ENCOUNTER_START",
     "ENCOUNTER_END",
+    "MINIMAP_UPDATE_TRACKING",
+    "PLAYER_ALIVE",
+    "PLAYER_UNGHOST",
 }
 
 QuickAuras.adjustableFrames = {

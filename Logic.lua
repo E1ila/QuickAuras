@@ -2,6 +2,17 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
+function QuickAuras:CheckTrackingStatus()
+    debug(3, "CheckTrackingStatus")
+    if not self.db.profile.remindersEnabled then return end
+    local trackingType = GetTrackingTexture()
+    debug(3, "trackingType", trackingType)
+    self:AddIcon("warning", "item", 12457, self.trackedGear[23206])
+    if trackingType == TRACKING_TEXTURE_HERBS or trackingType == TRACKING_TEXTURE_MINING then
+        --self:AddTimer("tracking", self.spells.reminders.detectHerbs)
+    end
+end
+
 function QuickAuras:CheckGear(eventType, ...)
     if self.db.profile.trackedGear then
         local equippedItems = {}
@@ -21,7 +32,7 @@ function QuickAuras:CheckGear(eventType, ...)
                 if conf.visibleFunc then shouldShow = conf.visibleFunc(isEquipped) end
                 --debug("Checking gear", itemId, self.colors.bold, conf.name, "|r", "isEquipped", isEquipped, "shouldShow", shouldShow)
                 if shouldShow then
-                    if self:AddItemIcon("warning", itemId, conf) then changed = true end
+                    if self:AddIcon("warning", "item", itemId, conf) then changed = true end
                 else
                     if self:RemoveIcon("warning", itemId) then changed = true end
                 end
@@ -41,7 +52,7 @@ function QuickAuras:CheckCooldowns()
         if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
             --debug("Cooldown", spellId, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
-            self:AddTimer("cooldowns", "button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
+            self:AddTimer("cooldowns", conf, updatedDuration, start + duration)
         end
     end
 end
@@ -92,11 +103,11 @@ function QuickAuras:CheckAuras()
         seen[spellId] = true
         -- timer auras -----------------------------------------
         local aura = self.trackedAuras[spellId]
-        --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
+        debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
         if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
-            --debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
-            local timer = self:AddTimer("auras", "bar", nil, nil, aura, duration, expTime)
+            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
+            local timer = self:AddTimer("auras", aura, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end
@@ -127,7 +138,7 @@ function QuickAuras:CheckMissingBuffs()
                 then
                     if self:RemoveIcon("missing", buff.usedItemId or buff.itemId) then buffsChanged = true end
                 else
-                    if self:AddItemIcon("missing", foundItemId, buff) then
+                    if self:AddIcon("missing", "item", foundItemId, buff) then
                         buffsChanged = true
                         buff.usedItemId = foundItemId
                     end

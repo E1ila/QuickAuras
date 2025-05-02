@@ -3,7 +3,7 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
 function QuickAuras:AddTimer(source, uiType, list, parent, conf, duration, expTime, onUpdate, onEnd)
-    local arrangeFunc = self.ArrangeProgressFrames
+    local arrangeFunc = self.ArrangeTimerBars
     if not list then
         if conf.list == "watch" then
             list = self.watchBars
@@ -116,7 +116,7 @@ function QuickAuras:RemoveTimer(timer, reason)
     if timer.arrangeFunc then
         timer.arrangeFunc(self, timer.list, timer.parent)
     else
-        self:ArrangeProgressFrames(timer.list, timer.parent)
+        self:ArrangeTimerBars(timer.list, timer.parent)
     end
 end
 

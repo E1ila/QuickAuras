@@ -71,8 +71,8 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if type(p1) == "number" and p1 > 0 then
-        for spellID, conf in pairs(self.trackedCombatLog) do
-            if p1 == spellID then
+        for spellId, conf in pairs(self.trackedCombatLog) do
+            if p1 == spellId then
                 if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                     and sourceGUID == self.playerGuid
                     --and destGUID == UnitGUID("target")
@@ -96,10 +96,10 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     end
 
     if subevent == "UNIT_DIED" then
-        for spellID, conf in pairs(QuickAuras.trackedCombatLog) do
-            if enemyDebuffs[spellID] and enemyDebuffs[spellID][destGUID] then
-                self:RemoveTimer(enemyDebuffs[spellID][destGUID], "combatlog")
-                enemyDebuffs[spellID][destGUID] = nil
+        for spellId, conf in pairs(QuickAuras.trackedCombatLog) do
+            if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGUID] then
+                self:RemoveTimer(enemyDebuffs[spellId][destGUID], "combatlog")
+                enemyDebuffs[spellId][destGUID] = nil
             end
         end
     end

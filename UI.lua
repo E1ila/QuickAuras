@@ -158,7 +158,7 @@ function QuickAuras:ArrangeIcons(type)
             frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
         elseif type == "missing" then
             if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
@@ -303,14 +303,14 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     return frame
 end
 
-function QuickAuras:ArrangeProgressFrames(list, parent, gap)
+function QuickAuras:ArrangeTimerBars(list, parent)
     local lastFrame = nil
     for i, timer in ipairs(list) do
         --debug(3, "Arranging progress frames", timer.key, timer.uiType)
         timer.frame:ClearAllPoints()
         if timer.uiType == "bar" then
             if lastFrame then
-                timer.frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -(gap or -2))
+                timer.frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -self.db.profile.barGap+4)
             else
                 timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
             end
@@ -321,7 +321,7 @@ function QuickAuras:ArrangeProgressFrames(list, parent, gap)
 
         elseif timer.uiType == "button" then
             if lastFrame then
-                timer.frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", -(gap or -2), 0)
+                timer.frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", -self.db.profile.barGap+4, 0)
             else
                 timer.frame:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
             end

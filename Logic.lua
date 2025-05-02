@@ -36,10 +36,10 @@ end
 
 function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
-    for spellID, conf in pairs(self.trackedCooldowns) do
-        local start, duration, enabled = GetSpellCooldown(spellID)
+    for spellId, conf in pairs(self.trackedCooldowns) do
+        local start, duration, enabled = GetSpellCooldown(spellId)
         if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
-            --debug("Cooldown", spellID, conf.name, start, duration, enabled)
+            --debug("Cooldown", spellId, conf.name, start, duration, enabled)
             local updatedDuration = duration - (GetTime() - start)
             self:AddTimer("cooldowns", "button", self.cooldowns, QuickAuras_Cooldowns, conf, updatedDuration, start + duration)
         end
@@ -47,16 +47,16 @@ function QuickAuras:CheckCooldowns()
 end
 
 local manualExpTime = {}
-local function FixAuraExpTime(duration, expTime, aura, spellID)
+local function FixAuraExpTime(duration, expTime, aura, spellId)
     if aura.manualExpTime then
         duration = aura.duration
-        local _exp = manualExpTime[spellID]
+        local _exp = manualExpTime[spellId]
         local now = GetTime()
         if _exp and _exp > now + 1 then
-            expTime = manualExpTime[spellID]
+            expTime = manualExpTime[spellId]
         else
             expTime = now + duration
-            manualExpTime[spellID] = expTime
+            manualExpTime[spellId] = expTime
         end
     end
     return duration, expTime
@@ -66,14 +66,14 @@ function QuickAuras:CheckAuras()
     local i = 1
     local seen = {}
     while true do
-        local name, icon, _, _, duration, expTime, _, _, _, spellID = UnitAura("player", i)
+        local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        seen[spellID] = true
+        seen[spellId] = true
         -- timer auras -----------------------------------------
-        local aura = self.trackedAuras[spellID]
-        debug(3, "CheckAuras", "(scan)", "spellID", spellID, name, "aura", aura, "option", aura and aura.option)
+        local aura = self.trackedAuras[spellId]
+        --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
         if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
-            duration, expTime = FixAuraExpTime(duration, expTime, aura, spellID)
+            duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
             debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
             local timer = self:AddTimer("auras", "bar", nil, nil, aura, duration, expTime)
             if timer then
@@ -89,12 +89,28 @@ function QuickAuras:CheckAuras()
         end
     end
     -- missing consumes -----------------------------------------
-    for spellID, buff in pairs(self.trackedMissingBuffs) do
-        if not seen[spellID] and (not buff.option or self.db.profile[buff.option]) then
-            self:AddItemIcon("missing", buff.itemId, buff)
-            self:ArrangeIcons("missing")
+    --if IsInInstance() then
+        for _, buff in pairs(self.trackedMissingBuffs) do
+            if not buff.option or self.db.profile[buff.option] then
+                local found = false
+                for _, spellId in ipairs(buff.spellIds) do
+                    if seen[spellId] then
+                        found = true
+                        break
+                    end
+                end
+                debug(3, "CheckAuras", "(scan)", buff.name, "found", found, "option", buff.option, buff.option and self.db.profile[buff.option])
+                if found then
+                    self:RemoveIcon("missing", buff.itemId)
+                else
+                    self:AddItemIcon("missing", buff.itemId, buff)
+                    self:ArrangeIcons("missing")
+                end
+            else
+                self:RemoveIcon("missing", buff.itemId)
+            end
         end
-    end
+    --end
 end
 
 function QuickAuras:UpdateZone()
@@ -104,5 +120,6 @@ function QuickAuras:UpdateZone()
         self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
     end
     self.ZoneName = GetRealZoneText()
+    self:CheckAuras() -- trigger missing consumes
     --debug("Updating Zone:", QAG.ZoneName)
 end

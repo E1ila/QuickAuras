@@ -13,6 +13,7 @@ QuickAuras.defaultOptions = {
         trackedGear = true,
         someSetting = 50,
         barHeight = 25,
+        barGap = 2,
         buttonHeight = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
@@ -145,6 +146,20 @@ QuickAuras.options = {
             get = function(info) return QuickAuras.db.profile.barHeight end,
             set = function(info, value)
                 QuickAuras.db.profile.barHeight = value
+                QuickAuras:TestBars()
+            end,
+            order = 102,
+        },
+        barGap = {
+            type = "range",
+            name = "Bar Gap",
+            desc = "Set the spacing between bars",
+            min = 0,
+            max = 10,
+            step = 1,
+            get = function(info) return QuickAuras.db.profile.barGap end,
+            set = function(info, value)
+                QuickAuras.db.profile.barGap = value
                 QuickAuras:TestBars()
             end,
             order = 102,
@@ -429,7 +444,7 @@ function QuickAuras:AddMissingBuffsOptions()
     for _, buff in ipairs(self.consumes) do
         order = order + 1
         --debug("Adding missing buff option", buff.name, buff.option, buff.default)
-        QuickAuras.defaultOptions.profile[buff.option] = buff.default
+        QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
         QuickAuras.options.args.missingBuffs.args[buff.option] = {
             type = "toggle",
             name = buff.name,

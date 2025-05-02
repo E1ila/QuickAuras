@@ -5,6 +5,8 @@ local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
 local _c
+local _testIconWarnings_Timer_Id = 0
+local _testIconAlerts_Timer_Id = 0
 
 -- General -----------------------------------------------------------
 
@@ -294,6 +296,7 @@ end
 function QuickAuras:ArrangeProgressFrames(list, parent, gap)
     local lastFrame = nil
     for i, timer in ipairs(list) do
+        --debug(3, "Arranging progress frames", timer.key, timer.uiType)
         timer.frame:ClearAllPoints()
         if timer.uiType == "bar" then
             if lastFrame then
@@ -385,19 +388,25 @@ end
 
 -- Test UI -----------------------------------------------------------
 
-function QuickAuras:TestProgressBar(abilities)
-    for i, conf in pairs(abilities) do
-        if conf.list then
+function QuickAuras:TestProgressBar(abilities, limit)
+    local i = 0
+    local seen = {}
+    for _, conf in pairs(abilities) do
+        if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
+            --debug("TestProgressBar", "conf", conf.name, limit)
+            i = i + 1
+            seen[conf.name] = true
             local duration = math.min(conf.duration or 10, 15)
             local expTime = GetTime() + duration
             self:SetProgressTimer("test", "bar", nil, nil, conf, duration, expTime)
+            if i == limit then break end
         end
     end
 end
 
-function QuickAuras:TestWatchBars()
-    self:TestProgressBar(self.trackedAuras)
-    self:TestProgressBar(self.trackedCombatLog)
+function QuickAuras:TestBars()
+    self:TestProgressBar(self.trackedAuras, 5)
+    self:TestProgressBar(self.trackedCombatLog, 3)
 end
 
 function QuickAuras:TestCooldowns()
@@ -408,37 +417,55 @@ function QuickAuras:TestCooldowns()
     end
 end
 
-local TestIconWarnings_Timer_Id = 0
 function QuickAuras:TestIconWarnings()
     self:ClearIcons("warning")
-    for i, conf in pairs(self.trackedGear) do
-        self:AddItemIcon("warning", i, conf)
-        if i == 3 then break end
+    local count = 0
+    for itemId, conf in pairs(self.trackedGear) do
+        count = count + 1
+        self:AddItemIcon("warning", itemId, conf)
+        if count == 3 then break end
     end
     self:ArrangeIcons("warning")
 
-    TestIconWarnings_Timer_Id = TestIconWarnings_Timer_Id + 1
-    local timerId = TestIconWarnings_Timer_Id
+    _testIconWarnings_Timer_Id = _testIconWarnings_Timer_Id + 1
+    local timerId = _testIconWarnings_Timer_Id
     C_Timer.After(2, function()
-        if timerId ~= TestIconWarnings_Timer_Id then return end
+        if timerId ~= _testIconWarnings_Timer_Id then return end
         debug("TestIconWarnings timer ended")
         QuickAuras:ClearIcons("warning")
         QuickAuras:CheckGear()
     end)
 end
 
-local TestIconAlerts_Timer_Id = 0
 function QuickAuras:TestIconAlerts()
     local seconds = 6
     self:SetProgressTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
     self:SetProgressTimer("auras", "button", nil, nil, self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
-    TestIconAlerts_Timer_Id = TestIconAlerts_Timer_Id + 1
-    local timerId = TestIconAlerts_Timer_Id
+    _testIconAlerts_Timer_Id = _testIconAlerts_Timer_Id + 1
+    local timerId = _testIconAlerts_Timer_Id
     C_Timer.After(seconds, function()
-        if timerId ~= TestIconAlerts_Timer_Id then return end
+        if timerId ~= _testIconAlerts_Timer_Id then return end
         debug("TestIconAlerts timer ended")
         QuickAuras:ClearIcons("alert")
         --QuickAuras:CheckAura()
+    end)
+end
+
+function QuickAuras:DemoUI()
+    self:TestBars()
+    self:TestCooldowns()
+    self:TestIconWarnings()
+    self:TestIconAlerts()
+end
+
+function QuickAuras:DemoUI2()
+    QuickAuras_Parry:Show()
+    QuickAuras_Combo:Show()
+    QuickAuras_OutOfRange:Show()
+    C_Timer.After(3, function()
+        QuickAuras_Parry:Hide()
+        QuickAuras_Combo:Hide()
+        QuickAuras_OutOfRange:Hide()
     end)
 end

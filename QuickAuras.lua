@@ -9,7 +9,7 @@ local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
 local QuickAuras = addon.root
-QuickAuras.version = "0.2"
+QuickAuras.version = "0.3"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.timers = {}
 QuickAuras.timerByName = {}
@@ -46,7 +46,8 @@ end
 QuickAuras.Print = out
 
 local function debug(text, ...)
-    if QuickAurasDB and QuickAurasDB.debug then
+    local minLevel = type(text) == "number" and text or 1
+    if QuickAurasDB and QuickAurasDB.debug >= minLevel then
         print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cff009999DEBUG|cff999999", text, ...)
     end
 end
@@ -130,16 +131,22 @@ function QuickAuras:HandleSlashCommand(input)
     if not input or input:trim() == "" then
         AceConfigDialog:Open("QuickAuras")
     else
-        local cmd = input:trim():lower()
-        if cmd == "debug" then
-            QuickAurasDB.debug = not QuickAurasDB.debug
-            if QuickAurasDB.debug then
-                out("Debug mode ".._c.enabled.."enabled|r") -- Green text
+        local cmd, arg1 = strsplit(" ", input:trim():lower())
+        if cmd == "debug" or cmd == "d" then
+            local level
+            if QuickAurasDB.debug > 0 and not arg1 then
+                level = 0
+            else
+                level = arg1 and tonumber(arg1) or 1
+            end
+            QuickAurasDB.debug = level
+            if level > 0 then
+                out("Debug mode ".._c.enabled.."enabled|r", "("..tostring(level)..")") -- Green text
             else
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
         elseif cmd == "test" then
-            self:TestWatchBars()
+            self:TestBars()
             self:TestCooldowns()
         elseif cmd == "lock" then
             self:ToggleLockedState()

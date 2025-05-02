@@ -15,7 +15,7 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
             list = self.iconAlerts
             parent = QuickAuras_IconAlerts
             uiType = "button" -- override
-            arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert", _list, _parent) end
+            arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert") end
         end
     end
     if not parent then parent = UIParent end
@@ -57,6 +57,7 @@ function QuickAuras:SetProgressTimer(source, uiType, list, parent, conf, duratio
         uiType = uiType,
         parent = parent,
         source = source,
+        arrangeFunc = arrangeFunc,
     }
     timer.key = self:GetTimerKey(conf.name, expTime, uiType)
     table.insert(list, timer)
@@ -107,7 +108,11 @@ function QuickAuras:RemoveProgressTimer(timer, reason)
     self.timerByName[timer.name.."-"..timer.uiType] = nil
     self.timers[timer.key] = nil
     --debug(" -- ", timer.key)
-    self:ArrangeProgressFrames(timer.list, timer.parent)
+    if timer.arrangeFunc then
+        timer.arrangeFunc(self, timer.list, timer.parent)
+    else
+        self:ArrangeProgressFrames(timer.list, timer.parent)
+    end
 end
 
 function QuickAuras:CheckProgressTimers()

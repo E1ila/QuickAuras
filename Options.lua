@@ -144,7 +144,7 @@ QuickAuras.options = {
             get = function(info) return QuickAuras.db.profile.barHeight end,
             set = function(info, value)
                 QuickAuras.db.profile.barHeight = value
-                QuickAuras:TestWatchBars()
+                QuickAuras:TestBars()
             end,
             order = 102,
         },

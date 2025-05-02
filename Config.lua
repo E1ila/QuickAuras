@@ -84,12 +84,12 @@ end
 function QuickAuras:BuildTrackedSpells()
     debug("Building config...")
     for category, cspells in pairs(QuickAuras.spells) do
-        --debug("BuildTrackedSpells", "*", category, "----------------")
+        debug(2, "BuildTrackedSpells", ">>", string.upper(category))
         for key, spell in pairs(cspells) do
-            --debug("BuildTrackedSpells", "  - ", category, key)
+            debug(2, "BuildTrackedSpells", "  - ", key)
             if spell.spellId and (spell.visible == nil or spell.visible) then
                 for _, spellId in ipairs(spell.spellId) do
-                    --debug("BuildTrackedSpells", "    -- ", category, spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
+                    debug(2, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
                     if spell.aura then
                         self.trackedAuras[spellId] = spell
                     elseif spell.duration then -- combat log ability has to have duration

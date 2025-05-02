@@ -1,6 +1,15 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 
+local function InEncounters(ids)
+    if not QuickAuras.encounter then return false end
+    for _, id in ipairs(ids) do
+        if QuickAuras.encounter.id == id then
+            return true
+        end
+    end
+end
+
 QuickAuras.consumes = {
     {
         name = "Arcane Elixir",
@@ -39,6 +48,9 @@ QuickAuras.consumes = {
         name = "Juju Chill",
         spellIds = { 16325 },
         itemId = 12457,
+        visibleFunc = function()
+            return InEncounters({1119, 1114})
+        end
     },
     {
         name = "Juju Might",
@@ -51,8 +63,7 @@ QuickAuras.consumes = {
         spellIds = { 16326 },
         itemId = 12455,
         visibleFunc = function()
-            return QuickAuras.encounter and (QuickAuras.encounter.id == 613 -- firemaw
-                    or QuickAuras.encounter.id == 672) -- ragnaros
+            return InEncounters({613, 672})
         end
     },
     {

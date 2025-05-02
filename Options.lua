@@ -455,7 +455,8 @@ function QuickAuras:AddMissingBuffsOptions()
             set = function(info, value)
                 QuickAuras.db.profile[buff.option] = value
                 QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
-                QuickAuras:CheckAuras()
+                QuickAuras:CheckMissingBuffs()
+                --QuickAuras:CheckAuras()
             end,
             order = order,
         }

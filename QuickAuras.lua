@@ -12,6 +12,7 @@ local QuickAuras = addon.root
 QuickAuras.version = "0.3"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.bags = {} -- items in bags
+QuickAuras.playerBuffs = {} -- items in bags
 QAG = QuickAuras
 
 -- managed timers

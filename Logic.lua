@@ -85,6 +85,7 @@ end
 function QuickAuras:CheckAuras()
     local i = 1
     local seen = {}
+    self.playerBuffs = seen
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
@@ -108,24 +109,27 @@ function QuickAuras:CheckAuras()
             self:RemoveTimer(timer, "unseen")
         end
     end
-    -- missing consumes -----------------------------------------
+    self:CheckMissingBuffs()
+end
+
+function QuickAuras:CheckMissingBuffs()
     local buffsChanged = false
     --if IsInInstance() then
-        for _, buff in ipairs(self.trackedMissingBuffs) do
-            if not buff.option or self.db.profile[buff.option] then
-                local foundBuff = self:HasSeenAny(buff.spellIds, seen)
-                --debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "option", buff.option, buff.option and self.db.profile[buff.option])
-                if foundBuff then
-                    if self:RemoveIcon("missing", buff.itemId) then buffsChanged = true end
-                else
-                    local foundItemId, item = self:FindInBags(buff.itemIds or buff.itemId)
-                    --debug(3, "CheckAuras", "(scan)  -", buff.name, "foundItemId", foundItemId, "item", item and item.slot)
-                    if foundItemId then
-                        if self:AddItemIcon("missing", foundItemId, buff) then buffsChanged = true end
-                    end
+    for _, buff in ipairs(self.trackedMissingBuffs) do
+        if not buff.option or self.db.profile[buff.option] then
+            local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)
+            --debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "option", buff.option, buff.option and self.db.profile[buff.option])
+            if foundBuff then
+                if self:RemoveIcon("missing", buff.itemId) then buffsChanged = true end
+            else
+                local foundItemId, item = self:FindInBags(buff.itemIds or buff.itemId)
+                --debug(3, "CheckAuras", "(scan)  -", buff.name, "foundItemId", foundItemId, "item", item and item.slot)
+                if foundItemId then
+                    if self:AddItemIcon("missing", foundItemId, buff) then buffsChanged = true end
                 end
             end
         end
+    end
     --end
     if buffsChanged then
         self:ArrangeIcons("missing")
@@ -139,6 +143,6 @@ function QuickAuras:UpdateZone()
         self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
     end
     self.ZoneName = GetRealZoneText()
-    self:CheckAuras() -- trigger missing consumes
+    self:CheckMissingBuffs()
     --debug("Updating Zone:", QAG.ZoneName)
 end

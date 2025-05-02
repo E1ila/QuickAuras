@@ -119,7 +119,7 @@ end
 
 function QuickAuras:BAG_UPDATE(bagID)
     self:ScanBag(bagID)
-    self:CheckAuras()
+    self:CheckMissingBuffs()
 end
 
 -- OnUpdate

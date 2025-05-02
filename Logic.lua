@@ -62,6 +62,26 @@ local function FixAuraExpTime(duration, expTime, aura, spellId)
     return duration, expTime
 end
 
+function QuickAuras:FindInBags(itemIds)
+    if type(itemIds) ~= "table" then
+        return self.bags[itemIds] and itemIds, self.bags[itemIds]
+    end
+    for _, itemId in  ipairs(itemIds) do
+        local f = self.bags[itemId]
+        if f then
+            return itemId, f
+        end
+    end
+end
+
+function QuickAuras:HasSeenAny(ids, seenHash)
+    for _, id in ipairs(ids) do
+        if seenHash[id] then
+            return true
+        end
+    end
+end
+
 function QuickAuras:CheckAuras()
     local i = 1
     local seen = {}
@@ -89,28 +109,27 @@ function QuickAuras:CheckAuras()
         end
     end
     -- missing consumes -----------------------------------------
+    local buffsChanged = false
     --if IsInInstance() then
-        for _, buff in pairs(self.trackedMissingBuffs) do
+        for _, buff in ipairs(self.trackedMissingBuffs) do
             if not buff.option or self.db.profile[buff.option] then
-                local found = false
-                for _, spellId in ipairs(buff.spellIds) do
-                    if seen[spellId] then
-                        found = true
-                        break
+                local foundBuff = self:HasSeenAny(buff.spellIds, seen)
+                debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "option", buff.option, buff.option and self.db.profile[buff.option])
+                if foundBuff then
+                    if self:RemoveIcon("missing", buff.itemId) then buffsChanged = true end
+                else
+                    local foundItemId, item = self:FindInBags(buff.itemIds or buff.itemId)
+                    debug(3, "CheckAuras", "(scan)  -", buff.name, "foundItemId", foundItemId, "item", item and item.slot)
+                    if foundItemId then
+                        if self:AddItemIcon("missing", foundItemId, buff) then buffsChanged = true end
                     end
                 end
-                debug(3, "CheckAuras", "(scan)", buff.name, "found", found, "option", buff.option, buff.option and self.db.profile[buff.option])
-                if found then
-                    self:RemoveIcon("missing", buff.itemId)
-                else
-                    self:AddItemIcon("missing", buff.itemId, buff)
-                    self:ArrangeIcons("missing")
-                end
-            else
-                self:RemoveIcon("missing", buff.itemId)
             end
         end
     --end
+    if buffsChanged then
+        self:ArrangeIcons("missing")
+    end
 end
 
 function QuickAuras:UpdateZone()

@@ -3,26 +3,30 @@ local QuickAuras = addon.root
 
 QuickAuras.consumes = {
     {
-        name = "Greater Arcane Elixir",
+        name = "Arcane Elixir",
         spellIds = { 17539, 11390 },
+        itemIds = { 13454, 9155 },
         itemId = 13454,
         default = QuickAuras.isManaClass,
     },
     {
-        name = "Elixir of Greater Firepower",
+        name = "Firepower Elixir",
         spellIds = { 26276, 7844 },
+        itemIds = { 21546, 6373 },
         itemId = 21546,
         default = QuickAuras.isFireClass,
     },
     {
-        name = "Elixir of the Mongoose",
+        name = "Mongoose Elixir",
         spellIds = { 17538, 11334, 11328 },
+        itemIds = { 13452, 9187, 8949 },
         itemId = 13452,
         default = QuickAuras.isRogue or QuickAuras.isWarrior or QuickAuras.isHunter,
     },
     {
         name = "Zanza",
-        spellIds = { 24382, 24383, 27669, 20080, 10669, 10693, 10668, 10667 },
+        spellIds = { 24382, 24383, 24417, 27669, 10669, 10693, 10668, 10667 },
+        itemIds = { 20079, 20081, 20080, 22175, 8412, 8424, 8411, 8410 },
         itemId = 20079,
     },
     {
@@ -48,7 +52,7 @@ QuickAuras.consumes = {
         itemId = 12455,
     },
     {
-        name = "Major Troll's Blood Potion",
+        name = "Troll's Blood Potion",
         spellIds = { 24361 },
         itemId = 20004,
     },
@@ -59,7 +63,8 @@ QuickAuras.consumes = {
     },
     {
         name = "Food Buff",
-        spellIds = { 24799, 18192, 24799, 22730, 18194, 18191, 18193, 25661, 18191, 18192 },
+        spellIds = { 24800, 18192, 22730, 18194, 18191, 18193, 25661 },
+        itemIds = { 20452, 13928, 18254, 13931, 13927, 13934, 13929, 21023 },
         itemId = 13755,
     },
     {
@@ -73,17 +78,40 @@ QuickAuras.consumes = {
         spellIds = { 21920 },
         itemId = 17708,
         default = QuickAuras.isMage,
-    }
-
+    },
+    {
+        name = "Mageblood Potion",
+        spellIds = { 24363 },
+        itemId = 20007,
+    },
+    {
+        name = "Sweet Surprise",
+        spellIds = { 27722 },
+        itemId = 22239,
+    },
+    {
+        name = "Buttermilk Delight",
+        spellIds = { 27720 },
+        itemId = 22236,
+    },
+    {
+        name = "Dark Desire",
+        spellIds = { 27723 },
+        itemId = 22237,
+    },
+    {
+        name = "Very Berry Cream",
+        spellIds = { 27721 },
+        itemId = 22238,
+    },
 }
 
 function QuickAuras:BuildTrackedMissingBuffs()
     for _, buff in ipairs(self.consumes) do
         local itemName = GetItemInfo(buff.itemId)
-        buff.name = itemName
         buff.option = "mb_"..itemName:gsub("%s+", "")
         buff.list = "missing"
         --buff.tooltip = false
-        self.trackedMissingBuffs[buff.itemId] = buff
+        table.insert(self.trackedMissingBuffs, buff)
     end
 end

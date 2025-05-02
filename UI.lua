@@ -430,7 +430,7 @@ end
 function QuickAuras:TestIconMissingBuffs()
     self:ClearIcons("missing")
     local count = 0
-    for itemId, conf in pairs(self.trackedMissingBuffs) do
+    for _, conf in ipairs(self.trackedMissingBuffs) do
         count = count + 1
         self:AddItemIcon("missing", conf.itemId, conf)
     end

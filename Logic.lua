@@ -94,7 +94,7 @@ function QuickAuras:CheckAuras()
         --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
         if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
-            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
+            --debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
             local timer = self:AddTimer("auras", "bar", nil, nil, aura, duration, expTime)
             if timer then
                 seen[timer.key] = true
@@ -114,12 +114,12 @@ function QuickAuras:CheckAuras()
         for _, buff in ipairs(self.trackedMissingBuffs) do
             if not buff.option or self.db.profile[buff.option] then
                 local foundBuff = self:HasSeenAny(buff.spellIds, seen)
-                debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "option", buff.option, buff.option and self.db.profile[buff.option])
+                --debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "option", buff.option, buff.option and self.db.profile[buff.option])
                 if foundBuff then
                     if self:RemoveIcon("missing", buff.itemId) then buffsChanged = true end
                 else
                     local foundItemId, item = self:FindInBags(buff.itemIds or buff.itemId)
-                    debug(3, "CheckAuras", "(scan)  -", buff.name, "foundItemId", foundItemId, "item", item and item.slot)
+                    --debug(3, "CheckAuras", "(scan)  -", buff.name, "foundItemId", foundItemId, "item", item and item.slot)
                     if foundItemId then
                         if self:AddItemIcon("missing", foundItemId, buff) then buffsChanged = true end
                     end

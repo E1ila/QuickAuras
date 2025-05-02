@@ -57,6 +57,9 @@ end
 QuickAuras.Debug = debug
 
 function QuickAuras:OnInitialize()
+    if QuickAurasDB.debug and type(QuickAurasDB.debug) ~= "number" then
+        QuickAurasDB.debug = 1
+    end
     debug("Initializing...")
     _c = self.colors
 

@@ -108,7 +108,7 @@ end
 function QuickAuras:AddItemIcon(type, itemId, conf)
     local list, parent = GetIconList(type)
     if not list[itemId] then
-        debug(2, "AddItemIcon", itemId, "parent", parent:GetName())
+        --debug(2, "AddItemIcon", itemId, "parent", parent:GetName())
         local frame = self.CreateItemWarningIcon(self, itemId, parent, type.."-"..itemId, conf.tooltip == nil or conf.tooltip)
         list[itemId] = {
             name = conf.name,

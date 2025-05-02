@@ -108,8 +108,7 @@ QuickAuras.consumes = {
 
 function QuickAuras:BuildTrackedMissingBuffs()
     for _, buff in ipairs(self.consumes) do
-        local itemName = GetItemInfo(buff.itemId)
-        buff.option = "mb_"..itemName:gsub("%s+", "")
+        buff.option = "mb_"..buff.name:gsub("%s+", "")
         buff.list = "missing"
         --buff.tooltip = false
         table.insert(self.trackedMissingBuffs, buff)

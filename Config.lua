@@ -11,6 +11,8 @@ QuickAuras.optionalEvents = {
     "PLAYER_EQUIPMENT_CHANGED",
     "PLAYER_TARGET_CHANGED",
     "BAG_UPDATE",
+    "ENCOUNTER_START",
+    "ENCOUNTER_END",
 }
 
 QuickAuras.adjustableFrames = {
@@ -67,7 +69,7 @@ function QuickAuras:BuildTrackedGear()
             name = "Mark of the Champion",
             desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
             targetDependant = true,
-            shouldShow = function(equipped)
+            visibleFunc = function(equipped)
                 local targetExists = UnitExists("target") and not UnitIsDead("target") and not UnitPlayerControlled("target") and UnitIsEnemy("target", "player")
                 local isUndeadOrDemon = UnitCreatureType("target") == "Undead" or UnitCreatureType("target") == "Demon"
 

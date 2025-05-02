@@ -18,7 +18,7 @@ function QuickAuras:CheckGear(eventType, ...)
             if not conf.option or self.db.profile[conf.option] then
                 local isEquipped = equippedItems[itemId]
                 local shouldShow = isEquipped
-                if conf.shouldShow then shouldShow = conf.shouldShow(isEquipped) end
+                if conf.visibleFunc then shouldShow = conf.visibleFunc(isEquipped) end
                 --debug("Checking gear", itemId, self.colors.bold, conf.name, "|r", "isEquipped", isEquipped, "shouldShow", shouldShow)
                 if shouldShow then
                     if self:AddItemIcon("warning", itemId, conf) then changed = true end
@@ -119,10 +119,10 @@ function QuickAuras:CheckMissingBuffs()
         if not buff.option or self.db.profile[buff.option] then
             local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)
             --debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "option", buff.option, buff.option and self.db.profile[buff.option])
-            if foundBuff then
+            if foundBuff or buff.visibleFunc and not buff.visibleFunc() then
                 if self:RemoveIcon("missing", buff.itemId) then buffsChanged = true end
             else
-                local foundItemId, item = self:FindInBags(buff.itemIds or buff.itemId)
+                local foundItemId = self:FindInBags(buff.itemIds or buff.itemId)
                 --debug(3, "CheckAuras", "(scan)  -", buff.name, "foundItemId", foundItemId, "item", item and item.slot)
                 if foundItemId then
                     if self:AddItemIcon("missing", foundItemId, buff) then buffsChanged = true end

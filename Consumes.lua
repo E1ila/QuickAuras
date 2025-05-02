@@ -50,6 +50,10 @@ QuickAuras.consumes = {
         name = "Juju Ember",
         spellIds = { 16326 },
         itemId = 12455,
+        visibleFunc = function()
+            return QuickAuras.encounter and (QuickAuras.encounter.id == 613 -- firemaw
+                    or QuickAuras.encounter.id == 672) -- ragnaros
+        end
     },
     {
         name = "Troll's Blood Potion",

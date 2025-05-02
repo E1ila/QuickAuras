@@ -122,6 +122,16 @@ function QuickAuras:BAG_UPDATE(bagID)
     self:CheckMissingBuffs()
 end
 
+function QuickAuras:ENCOUNTER_START(encounterId, encounterName)
+    self.encounter = { id = encounterId, name = encounterName }
+    self:CheckMissingBuffs()
+end
+
+function QuickAuras:ENCOUNTER_END()
+    self.encounter = nil
+    self:CheckMissingBuffs()
+end
+
 -- OnUpdate
 
 function QuickAuras:OnUpdate()

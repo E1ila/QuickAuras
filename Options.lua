@@ -11,6 +11,7 @@ QuickAuras.defaultOptions = {
         cooldowns = true,
         watchBars = true,
         trackedGear = true,
+        missingConsumes = true,
         someSetting = 50,
         barHeight = 25,
         barGap = 2,
@@ -113,12 +114,16 @@ QuickAuras.options = {
             end,
             order = 8,
         },
-        showTimeOnBars = {
+        missingBuffsEnabled = {
             type = "toggle",
-            name = "Show Time Left",
-            desc = "Enables showing of time left on progress bars",
-            get = function(info) return QuickAuras.db.profile.showTimeOnBars end,
-            set = function(info, value) QuickAuras.db.profile.showTimeOnBars = value end,
+            name = "Missing Consumes",
+            desc = "Enables showing of list missing consumables in instances",
+            get = function(info) return QuickAuras.db.profile.missingConsumes end,
+            set = function(info, value)
+                QuickAuras.db.profile.missingConsumes = value
+                QuickAuras:ClearIcons("missing")
+                QuickAuras:CheckMissingBuffs()
+            end,
             order = 8,
         },
         spacer99 = {
@@ -219,6 +224,14 @@ QuickAuras.options = {
                 QuickAuras:TestIconMissingBuffs()
             end,
             order = 106,
+        },
+        showTimeOnBars = {
+            type = "toggle",
+            name = "Show Time Left",
+            desc = "Enables showing of time left on timers",
+            get = function(info) return QuickAuras.db.profile.showTimeOnBars end,
+            set = function(info, value) QuickAuras.db.profile.showTimeOnBars = value end,
+            order = 150,
         },
         spacer198 = {
             type = "description",

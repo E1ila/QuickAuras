@@ -117,8 +117,9 @@ function QuickAuras:PLAYER_TARGET_CHANGED(...)
     self:CheckGear("target", ...)
 end
 
-function QuickAuras:BAG_UPDATE(bagID)
-    self:ScanBag(bagID)
+function QuickAuras:BAG_UPDATE(bagId)
+    debug(2, "BAG_UPDATE", bagId)
+    self:ScanBags()
     self:CheckMissingBuffs()
 end
 

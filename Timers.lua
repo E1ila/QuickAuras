@@ -45,7 +45,7 @@ function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        --debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime)
+        debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime, "conf.flashOnEnd", conf.flashOnEnd)
     end
 
     local frame

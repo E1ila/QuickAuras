@@ -317,7 +317,7 @@ function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
     frame = CreateFrame("Frame", "QuickAuras_PBAR"..tostring(pbId), parent, "QuickAuras_ProgressBar")
     --debug("Created progress bar", "name", frame:GetName(), "index", index, "parent", parent)
     frame:SetBackdrop({
-        bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
+        bgFile   = "Interface\\AddOns\\QuickAuras\\assets\\background",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
         edgeSize = 8, -- Border thickness
         insets   = { left = padding, right = padding, top = padding, bottom = padding } -- Padding
@@ -326,7 +326,6 @@ function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
     frame:SetBackdropColor(0, 0, 0, 0.5) -- Black background with 50% opacity
 
     local iconFrame = _G[frame:GetName().."_Icon"]
-    local barFrame  = _G[frame:GetName().."_Progress_Bar"]
     local progFrame = _G[frame:GetName().."_Progress"]
     frame.icon = iconFrame.icon
 
@@ -334,7 +333,8 @@ function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
     progFrame:SetPoint("TOPLEFT", iconFrame, "TOPRIGHT", 0, 0)
     progFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -padding, 2)
 
-    barFrame:SetStatusBarColor(unpack(color))
+    frame.barFrame  = _G[frame:GetName().."_Progress_Bar"]
+    frame.barFrame:SetStatusBarColor(unpack(color))
 
     local height = self.db.profile.barHeight or 25
     iconFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", padding, -padding)
@@ -374,7 +374,7 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     return frame
 end
 
-function QuickAuras:spells(list, parent)
+function QuickAuras:ArrangeTimerBars(list, parent)
     local lastFrame = nil
     for i, timer in ipairs(list) do
         --debug(3, "Arranging progress frames", timer.key, timer.uiType)
@@ -406,10 +406,18 @@ function QuickAuras:UpdateProgressBar(timer)
     if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
         timer.frame:Show()
         if timer.duration > 0 then
-            if timer.flashOnEnd and timer.duration <= timer.flashOnEnd then
-                timer.frame:SetBackdropColor(1, 0, 0, 0.5)
+            local timeLeft = timer.expTime - GetTime()
+            local progress = timeLeft / timer.duration
+            if timer.flashOnEnd and timeLeft < timer.flashOnEnd then
+                --debug(3, "UpdateProgressBar", timer.key, "flashing", timeLeft)
+                if math.floor(timeLeft / 0.4) % 2 == 0 then
+                    timer.frame:SetBackdropBorderColor(1, 0, 0) -- Red border
+                    timer.frame.barFrame:SetStatusBarColor(1, 0, 0)
+                else
+                    timer.frame:SetBackdropBorderColor(unpack(timer.color)) -- Red border
+                    timer.frame.barFrame:SetStatusBarColor(unpack(timer.color))
+                end
             end
-            local progress = (timer.expTime - GetTime()) / timer.duration
             if timer.uiType == "bar" then
                 _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
                 if timer.frame.text then
@@ -489,6 +497,11 @@ end
 function QuickAuras:TestBars()
     self:TestProgressBar(self.trackedAuras, 5)
     self:TestProgressBar(self.trackedCombatLog, 3)
+end
+
+function QuickAuras:TestFlashBar()
+    local snd = self.trackedAuras[6774]
+    self:AddTimer("test", snd, 5, GetTime()+5)
 end
 
 function QuickAuras:TestCooldowns()

@@ -21,7 +21,7 @@ QuickAuras.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         missingBuffsSize = 35,
-        remindersBuffsSize = 35,
+        remindersBuffsSize = 60,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -211,6 +211,20 @@ QuickAuras.options = {
                 QuickAuras:TestIconMissingBuffs()
             end,
             order = 106,
+        },
+        remindersBuffsSize = {
+            type = "range",
+            name = "Reminders Size",
+            desc = "Set the size of the missing consumes icons",
+            min = 10,
+            max = 100,
+            step = 1,
+            get = function(info) return QuickAuras.db.profile.remindersBuffsSize end,
+            set = function(info, value)
+                QuickAuras.db.profile.remindersBuffsSize = value
+                QuickAuras:TestReminders()
+            end,
+            order = 107,
         },
         showTimeOnBars = {
             type = "toggle",

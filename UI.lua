@@ -5,9 +5,7 @@ local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
 local _c
-local _testIconMissing_Timer_Id = 0
-local _testIconWarnings_Timer_Id = 0
-local _testIconAlerts_Timer_Id = 0
+local _test_TimerId = { }
 
 -- General -----------------------------------------------------------
 
@@ -481,6 +479,21 @@ function QuickAuras:TestCooldowns()
     end
 end
 
+function QuickAuras:TestReminders()
+    self:ClearIcons("reminder")
+    self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
+    self:AddIcon("reminder", "spell", 2580, self.trackedAuras[2580])
+    self:ArrangeIcons("reminder")
+
+    _test_TimerId["reminder"] = (_test_TimerId["reminder"] or 0) + 1
+    local timerId = _test_TimerId["reminder"]
+    C_Timer.After(2, function()
+        if timerId ~= _test_TimerId["reminder"] then return end
+        debug("TestReminders timer ended")
+        QuickAuras:ClearIcons("reminder")
+    end)
+end
+
 function QuickAuras:TestIconMissingBuffs()
     self:ClearIcons("missing")
     local count = 0
@@ -490,10 +503,10 @@ function QuickAuras:TestIconMissingBuffs()
     end
     self:ArrangeIcons("missing")
 
-    _testIconMissing_Timer_Id = _testIconMissing_Timer_Id + 1
-    local timerId = _testIconMissing_Timer_Id
+    _test_TimerId["missing"] = (_test_TimerId["missing"] or 0) + 1
+    local timerId = _test_TimerId["missing"]
     C_Timer.After(2, function()
-        if timerId ~= _testIconMissing_Timer_Id then return end
+        if timerId ~= _test_TimerId["missing"] then return end
         debug("TestIconMissingBuffs timer ended")
         QuickAuras:ClearIcons("missing")
         QuickAuras:CheckAuras()
@@ -510,10 +523,10 @@ function QuickAuras:TestIconWarnings()
     end
     self:ArrangeIcons("warning")
 
-    _testIconWarnings_Timer_Id = _testIconWarnings_Timer_Id + 1
-    local timerId = _testIconWarnings_Timer_Id
+    _test_TimerId["warning"] = (_test_TimerId["warning"] or 0) + 1
+    local timerId = _test_TimerId["warning"]
     C_Timer.After(2, function()
-        if timerId ~= _testIconWarnings_Timer_Id then return end
+        if timerId ~= _test_TimerId["warning"] then return end
         debug("TestIconWarnings timer ended")
         QuickAuras:ClearIcons("warning")
         QuickAuras:CheckGear()
@@ -525,10 +538,10 @@ function QuickAuras:TestIconAlerts()
     self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
     self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
 
-    _testIconAlerts_Timer_Id = _testIconAlerts_Timer_Id + 1
-    local timerId = _testIconAlerts_Timer_Id
+    _test_TimerId["alert"] = (_test_TimerId["alert"] or 0) + 1
+    local timerId = _test_TimerId["alert"]
     C_Timer.After(seconds, function()
-        if timerId ~= _testIconAlerts_Timer_Id then return end
+        if timerId ~= _test_TimerId["alert"] then return end
         debug("TestIconAlerts timer ended")
         QuickAuras:ClearIcons("alert")
         --QuickAuras:CheckAura()

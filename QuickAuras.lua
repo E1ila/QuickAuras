@@ -65,7 +65,7 @@ function QuickAuras:OnInitialize()
     debug("Initializing...")
     _c = self.colors
 
-    self:InitAbilities()
+    self:InitSpells()
     self:BuildTrackedGear()
     self:BuildTrackedSpells()
     self:BuildTrackedMissingBuffs()

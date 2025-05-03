@@ -4,6 +4,8 @@ local debug = QuickAuras.Debug
 
 local TRACKING_TEXTURE_HERBS = 133939
 local TRACKING_TEXTURE_MINING = 136025
+local TEXTURE_POTION_READY = "Mage-ArcaneCharge"
+local TEXTURE_MANATIDE_READY = "FlightMaster_VindicaarMacAree-Taxi_Frame_Green"
 
 QuickAuras.optionalEvents = {
     "UNIT_POWER_UPDATE",

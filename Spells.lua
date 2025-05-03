@@ -146,6 +146,7 @@ spells.shaman = {
         spellId = { 16188 },
         name = "Nature's Swiftness",
         icon = "Interface\\Icons\\Spell_nature_ravenform",
+        readyTexture = "DruidEclipse-SolarSun",
         color = {0.5, 0.5, 0.5},
         cooldown = 180,
         visible = QuickAuras.isShaman,
@@ -339,7 +340,7 @@ spells.reminders = {
     },
 }
 
-function QuickAuras:InitAbilities()
+function QuickAuras:InitSpells()
     for class, cspells in pairs(spells) do
         for ability, obj in pairs(cspells) do
             if not obj.option then

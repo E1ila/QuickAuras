@@ -7,7 +7,7 @@ function QuickAuras:CheckTrackingStatus()
     if not self.db.profile.remindersEnabled then return end
     local trackingType = GetTrackingTexture()
     debug(3, "trackingType", trackingType)
-    self:AddIcon("warning", "item", 12457, self.trackedGear[23206])
+    --QAG:AddIcon("missing", "item", QAG.trackedMissingBuffs[2].itemId, QAG.trackedMissingBuffs[2])
     if trackingType == TRACKING_TEXTURE_HERBS or trackingType == TRACKING_TEXTURE_MINING then
         --self:AddTimer("tracking", self.spells.reminders.detectHerbs)
     end

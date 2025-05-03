@@ -512,6 +512,13 @@ function QuickAuras:TestCooldowns()
     end
 end
 
+local DelayedReset_Reminders = QuickAuras:Debounce(function()
+    debug("TestReminders timer ended")
+    QuickAuras:ClearIcons("reminder")
+    QuickAuras:CheckTrackingStatus()
+    QuickAuras:CheckLowConsumes()
+end, 3)
+
 function QuickAuras:TestReminders()
     self:ClearIcons("reminder")
     --self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
@@ -520,17 +527,14 @@ function QuickAuras:TestReminders()
         if i == 3 then break end
     end
     self:ArrangeIcons("reminder")
-
-    _test_TimerId["reminder"] = (_test_TimerId["reminder"] or 0) + 1
-    local timerId = _test_TimerId["reminder"]
-    C_Timer.After(2, function()
-        if timerId ~= _test_TimerId["reminder"] then return end
-        debug("TestReminders timer ended")
-        QuickAuras:ClearIcons("reminder")
-        QuickAuras:CheckTrackingStatus()
-        QuickAuras:CheckLowConsumes()
-    end)
+    DelayedReset_Reminders()
 end
+
+local DelayedReset_IconMissingBuffs = QuickAuras:Debounce(function()
+    debug("TestIconMissingBuffs timer ended")
+    QuickAuras:ClearIcons("missing")
+    QuickAuras:CheckAuras()
+end, 3)
 
 function QuickAuras:TestIconMissingBuffs()
     self:ClearIcons("missing")
@@ -540,16 +544,14 @@ function QuickAuras:TestIconMissingBuffs()
         self:AddIcon("missing", "item", conf.itemId, conf)
     end
     self:ArrangeIcons("missing")
-
-    _test_TimerId["missing"] = (_test_TimerId["missing"] or 0) + 1
-    local timerId = _test_TimerId["missing"]
-    C_Timer.After(2, function()
-        if timerId ~= _test_TimerId["missing"] then return end
-        debug("TestIconMissingBuffs timer ended")
-        QuickAuras:ClearIcons("missing")
-        QuickAuras:CheckAuras()
-    end)
+    DelayedReset_IconMissingBuffs()
 end
+
+local DelayedReset_IconWarnings = QuickAuras:Debounce(function()
+    debug("TestIconWarnings timer ended")
+    QuickAuras:ClearIcons("warning")
+    QuickAuras:CheckGear()
+end, 3)
 
 function QuickAuras:TestIconWarnings()
     self:ClearIcons("warning")
@@ -560,30 +562,18 @@ function QuickAuras:TestIconWarnings()
         if count == 3 then break end
     end
     self:ArrangeIcons("warning")
-
-    _test_TimerId["warning"] = (_test_TimerId["warning"] or 0) + 1
-    local timerId = _test_TimerId["warning"]
-    C_Timer.After(2, function()
-        if timerId ~= _test_TimerId["warning"] then return end
-        debug("TestIconWarnings timer ended")
-        QuickAuras:ClearIcons("warning")
-        QuickAuras:CheckGear()
-    end)
+    DelayedReset_IconWarnings()
 end
 
-function QuickAuras:TestIconAlerts()
-    local seconds = 6
-    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
-    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, seconds, GetTime()+seconds)
+local DelayedReset_IconAlerts = QuickAuras:Debounce(function()
+    debug("TestIconAlerts timer ended")
+    QuickAuras:ClearIcons("alert")
+end, 6)
 
-    _test_TimerId["alert"] = (_test_TimerId["alert"] or 0) + 1
-    local timerId = _test_TimerId["alert"]
-    C_Timer.After(seconds, function()
-        if timerId ~= _test_TimerId["alert"] then return end
-        debug("TestIconAlerts timer ended")
-        QuickAuras:ClearIcons("alert")
-        --QuickAuras:CheckAura()
-    end)
+function QuickAuras:TestIconAlerts()
+    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, 6, GetTime()+6)
+    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, 6, GetTime()+6)
+    DelayedReset_IconAlerts()
 end
 
 function QuickAuras:DemoUI()

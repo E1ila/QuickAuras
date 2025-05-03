@@ -2,26 +2,6 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-local function debounce(func, delay)
-    local timer = nil
-    return function(...)
-        local args = { ... }
-        if timer then
-            timer:Cancel() -- Cancel the previous timer if it exists
-        end
-        timer = C_Timer.NewTimer(delay, function()
-            func(unpack(args)) -- Call the original function with the arguments
-        end)
-    end
-end
-
-QuickAuras.BagsChanged = debounce(function()
-    debug(2, "BAG_UPDATE", bagId)
-    QuickAuras:ScanBags()
-    QuickAuras:CheckMissingBuffs()
-    QuickAuras:CheckLowConsumes()
-end, 0.5)
-
 function QuickAuras:CheckLowConsumes()
     if not self.db.profile.remindersEnabled then return end
     if self.db.profile.lowConsumesInCapital and not self.inCapital then return end
@@ -225,3 +205,17 @@ function QuickAuras:UpdateZone()
         QuickAuras:CheckLowConsumes()
     end
 end
+
+-- DEBOUNCE FUNCTIONS
+
+QuickAuras.BagsChanged = QuickAuras:Debounce(function()
+    debug(2, "BAG_UPDATE", bagId)
+    QuickAuras:ScanBags()
+    QuickAuras:CheckMissingBuffs()
+    QuickAuras:CheckLowConsumes()
+end, 0.5)
+
+QuickAuras.ZoneChanged = QuickAuras:Debounce(function()
+    debug(2, "Zone Update")
+    QuickAuras:UpdateZone()
+end, 2)

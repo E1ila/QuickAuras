@@ -21,19 +21,19 @@ function QuickAuras:UNIT_POWER_UPDATE(unit, powerType)
 end
 
 function QuickAuras:ZONE_CHANGED()
-    self:UpdateZone()
+    QuickAuras:ZoneChanged()
 end
 
 function QuickAuras:ZONE_CHANGED_INDOORS()
-    self:UpdateZone()
+    QuickAuras:ZoneChanged()
 end
 
 function QuickAuras:ZONE_CHANGED_NEW_AREA()
-    self:UpdateZone()
+    QuickAuras:ZoneChanged()
 end
 
 function QuickAuras:PLAYER_ENTERING_WORLD()
-    self:UpdateZone()
+    QuickAuras:ZoneChanged()
 end
 
 function QuickAuras:UNIT_AURA(unit)

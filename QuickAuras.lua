@@ -61,6 +61,19 @@ local function debug(text, ...)
 end
 QuickAuras.Debug = debug
 
+function QuickAuras:Debounce(func, delay)
+    local timer = nil
+    return function(...)
+        local args = { ... }
+        if timer then
+            timer:Cancel() -- Cancel the previous timer if it exists
+        end
+        timer = C_Timer.NewTimer(delay, function()
+            func(unpack(args)) -- Call the original function with the arguments
+        end)
+    end
+end
+
 function QuickAuras:OnInitialize()
     debug("Initializing...")
     _c = self.colors

@@ -553,6 +553,7 @@ function QuickAuras:DemoUI()
     self:TestCooldowns()
     self:TestIconWarnings()
     self:TestIconAlerts()
+    self:TestReminders()
 end
 
 function QuickAuras:DemoUI2()

@@ -95,6 +95,8 @@ function QuickAuras:OnInitialize()
         QuickAuras:CheckCooldowns()
         QuickAuras:CheckGear()
         QuickAuras:CheckTrackingStatus()
+        QuickAuras:CheckMissingBuffs()
+        QuickAuras:CheckConsumes()
         out("QuickAuras loaded. Type " .. _c.bold .. "/qa|r for options.")
     end)
 end
@@ -172,7 +174,12 @@ function QuickAuras:ScanBag(bag)
     for slot = 1, C_Container.GetContainerNumSlots(bag) do -- Iterate through all slots in the bag
         local id = C_Container.GetContainerItemID(bag, slot)
         if id ~= nil then
-            self.bags[id] = { bag = bag, slot = slot }
+            local itemInfo = C_Container.GetContainerItemInfo(bag, slot)
+            if self.bags[id] then
+                self.bags[id].count = self.bags[id].count + itemInfo.stackCount
+            else
+                self.bags[id] = { bag = bag, slot = slot, count = itemInfo.stackCount }
+            end
         end
     end
 end

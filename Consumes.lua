@@ -119,13 +119,23 @@ QuickAuras.consumes = {
         spellIds = { 27721 },
         itemId = 22238,
     },
+    {
+        name = "Ankh",
+        itemId = 17030,
+        minCount = 5,
+    }
 }
 
 function QuickAuras:BuildTrackedMissingBuffs()
     for _, buff in ipairs(self.consumes) do
         buff.option = "mb_"..buff.name:gsub("%s+", "")
-        buff.list = "missing"
-        --buff.tooltip = false
-        table.insert(self.trackedMissingBuffs, buff)
+        if buff.spellIds then
+            buff.list = "missing"
+            --buff.tooltip = false
+            table.insert(self.trackedMissingBuffs, buff)
+        else
+            buff.list = "reminder"
+            table.insert(self.trackedConsumes, buff)
+        end
     end
 end

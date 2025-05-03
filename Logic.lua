@@ -7,6 +7,49 @@ local TRACKING_TEXTURES  = {
     [ 2580 ] = 136025, -- mining
 }
 
+local function debounce(func, delay)
+    local timer = nil
+    return function(...)
+        local args = { ... }
+        if timer then
+            timer:Cancel() -- Cancel the previous timer if it exists
+        end
+        timer = C_Timer.NewTimer(delay, function()
+            func(unpack(args)) -- Call the original function with the arguments
+        end)
+    end
+end
+
+QuickAuras.BagsChanged = debounce(function()
+    debug(2, "BAG_UPDATE", bagId)
+    QuickAuras:ScanBags()
+    QuickAuras:CheckMissingBuffs()
+    QuickAuras:CheckConsumes()
+end, 0.5)
+
+function QuickAuras:CheckConsumes()
+    debug(3, "CheckConsumes")
+    if not self.db.profile.remindersEnabled then return end
+    debug(3, "CheckConsumes", "trackedConsumes", self.trackedConsumes)
+    local changed = false
+    for _, consume in pairs(self.trackedConsumes) do
+        local itemId = consume.itemId
+        debug(3, "CheckConsumes", "(scan)", consume.name, "itemId", itemId, "option", consume.option)
+        if not consume.option or self.db.profile[consume.option] then
+            local foundItemId, details = self:FindInBags(itemId)
+            debug(3, "CheckAuras", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and self.db.profile[consume.option])
+            if foundItemId and details.count < consume.minCount then
+                if self:AddIcon("reminder", "item", foundItemId, consume) then changed = true end
+            else
+                if self:RemoveIcon("reminder", itemId) then changed = true end
+            end
+        end
+    end
+    if changed then
+        self:ArrangeIcons("reminder")
+    end
+end
+
 function QuickAuras:CheckTrackingStatus()
     debug(3, "CheckTrackingStatus")
     if not self.db.profile.remindersEnabled then return end

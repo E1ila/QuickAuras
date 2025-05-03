@@ -103,8 +103,20 @@ QuickAuras.options = {
         },
         missingBuffsEnabled = {
             type = "toggle",
-            name = "Missing Consumes",
-            desc = "Enables showing of list missing consumables in instances",
+            name = "Missing Buffs",
+            desc = "Enables showing of list missing buffs/consumables in instances",
+            get = function(info) return QuickAuras.db.profile.missingConsumes end,
+            set = function(info, value)
+                QuickAuras.db.profile.missingConsumes = value
+                QuickAuras:ClearIcons("missing")
+                QuickAuras:CheckMissingBuffs()
+            end,
+            order = 8,
+        },
+        remindersEnabled = {
+            type = "toggle",
+            name = "Reminders",
+            desc = "Enables reminders, such as consumes in bags, tracking buffs, etc.",
             get = function(info) return QuickAuras.db.profile.missingConsumes end,
             set = function(info, value)
                 QuickAuras.db.profile.missingConsumes = value

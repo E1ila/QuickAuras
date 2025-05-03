@@ -66,6 +66,8 @@ QuickAuras.trackedCooldowns = {}
 
 QuickAuras.trackedMissingBuffs = {}
 
+QuickAuras.trackedConsumes = {}
+
 -- custom events
 
 function QuickAuras:BuildTrackedGear()

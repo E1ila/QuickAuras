@@ -118,9 +118,9 @@ function QuickAuras:PLAYER_TARGET_CHANGED(...)
 end
 
 function QuickAuras:BAG_UPDATE(bagId)
-    debug(2, "BAG_UPDATE", bagId)
-    self:ScanBags()
-    self:CheckMissingBuffs()
+    if bagId >= 0 and bagId <= 4 then
+        self:BagsChanged()
+    end
 end
 
 function QuickAuras:ENCOUNTER_START(encounterId, encounterName)

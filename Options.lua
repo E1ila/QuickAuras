@@ -14,6 +14,7 @@ QuickAuras.defaultOptions = {
         trackedGear = true,
         missingConsumes = true,
         remindersEnabled = true,
+        lowConsumesInCapital = true,
         someSetting = 50,
         barHeight = 25,
         barGap = 2,
@@ -117,11 +118,13 @@ QuickAuras.options = {
             type = "toggle",
             name = "Reminders",
             desc = "Enables reminders, such as consumes in bags, tracking buffs, etc.",
-            get = function(info) return QuickAuras.db.profile.missingConsumes end,
+            get = function(info) return QuickAuras.db.profile.remindersEnabled end,
             set = function(info, value)
-                QuickAuras.db.profile.missingConsumes = value
-                QuickAuras:ClearIcons("missing")
-                QuickAuras:CheckMissingBuffs()
+                QuickAuras.db.profile.remindersEnabled = value
+                QuickAuras:ClearIcons("reminder")
+                QuickAuras:CheckLowConsumes()
+                QuickAuras:CheckTrackingStatus()
+                QuickAuras:CheckLowConsumes()
             end,
             order = 8,
         },
@@ -130,142 +133,124 @@ QuickAuras.options = {
             name = "",
             order = 99,
         },
-        lookAndFeelHeader = {
-            type = "header",
+        lookAndFeel = {
+            type = "group",
             name = "Look and Feel",
             order = 100,
+            args = {
+                barHeight = {
+                    type = "range",
+                    name = "Bar Height",
+                    desc = "Set the height of the bars",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.barHeight end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.barHeight = value
+                        QuickAuras:TestBars()
+                    end,
+                    order = 102,
+                },
+                barGap = {
+                    type = "range",
+                    name = "Bar Gap",
+                    desc = "Set the spacing between bars",
+                    min = 0,
+                    max = 10,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.barGap end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.barGap = value
+                        QuickAuras:TestBars()
+                    end,
+                    order = 102,
+                },
+                buttonHeight = {
+                    type = "range",
+                    name = "Cooldown Size",
+                    desc = "Set the size of the cooldown icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.buttonHeight end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.buttonHeight = value
+                        QuickAuras:TestCooldowns()
+                    end,
+                    order = 103,
+                },
+                gearWarningSize = {
+                    type = "range",
+                    name = "Warning Icon Size",
+                    desc = "Set the size of the warning icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.gearWarningSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.gearWarningSize = value
+                        QuickAuras:TestIconWarnings()
+                    end,
+                    order = 104,
+                },
+                iconAlertSize = {
+                    type = "range",
+                    name = "Alert Icon Size",
+                    desc = "Set the size of the alert icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.iconAlertSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.iconAlertSize = value
+                        QuickAuras:TestIconAlerts()
+                    end,
+                    order = 105,
+                },
+                missingBuffsSize = {
+                    type = "range",
+                    name = "Missing Consumes Size",
+                    desc = "Set the size of the missing consumes icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.missingBuffsSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.missingBuffsSize = value
+                        QuickAuras:TestIconMissingBuffs()
+                    end,
+                    order = 106,
+                },
+                remindersBuffsSize = {
+                    type = "range",
+                    name = "Reminders Size",
+                    desc = "Set the size of the missing consumes icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.remindersBuffsSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.remindersBuffsSize = value
+                        QuickAuras:TestReminders()
+                    end,
+                    order = 107,
+                },
+                spacer198 = {
+                    type = "description",
+                    name = "",
+                    order = 198,
+                },
+                showTimeOnBars = {
+                    type = "toggle",
+                    name = "Show Time Left",
+                    desc = "Enables showing of time left on timers",
+                    get = function(info) return QuickAuras.db.profile.showTimeOnBars end,
+                    set = function(info, value) QuickAuras.db.profile.showTimeOnBars = value end,
+                    order = 200,
+                },
+            },
         },
-        spacer101 = {
-            type = "description",
-            name = "",
-            order = 101,
-        },
-        barHeight = {
-            type = "range",
-            name = "Bar Height",
-            desc = "Set the height of the bars",
-            min = 10,
-            max = 100,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.barHeight end,
-            set = function(info, value)
-                QuickAuras.db.profile.barHeight = value
-                QuickAuras:TestBars()
-            end,
-            order = 102,
-        },
-        barGap = {
-            type = "range",
-            name = "Bar Gap",
-            desc = "Set the spacing between bars",
-            min = 0,
-            max = 10,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.barGap end,
-            set = function(info, value)
-                QuickAuras.db.profile.barGap = value
-                QuickAuras:TestBars()
-            end,
-            order = 102,
-        },
-        buttonHeight = {
-            type = "range",
-            name = "Cooldown Size",
-            desc = "Set the size of the cooldown icons",
-            min = 10,
-            max = 100,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.buttonHeight end,
-            set = function(info, value)
-                QuickAuras.db.profile.buttonHeight = value
-                QuickAuras:TestCooldowns()
-            end,
-            order = 103,
-        },
-        gearWarningSize = {
-            type = "range",
-            name = "Warning Icon Size",
-            desc = "Set the size of the warning icons",
-            min = 10,
-            max = 100,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.gearWarningSize end,
-            set = function(info, value)
-                QuickAuras.db.profile.gearWarningSize = value
-                QuickAuras:TestIconWarnings()
-            end,
-            order = 104,
-        },
-        iconAlertSize = {
-            type = "range",
-            name = "Alert Icon Size",
-            desc = "Set the size of the alert icons",
-            min = 10,
-            max = 100,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.iconAlertSize end,
-            set = function(info, value)
-                QuickAuras.db.profile.iconAlertSize = value
-                QuickAuras:TestIconAlerts()
-            end,
-            order = 105,
-        },
-        missingBuffsSize = {
-            type = "range",
-            name = "Missing Consumes Size",
-            desc = "Set the size of the missing consumes icons",
-            min = 10,
-            max = 100,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.missingBuffsSize end,
-            set = function(info, value)
-                QuickAuras.db.profile.missingBuffsSize = value
-                QuickAuras:TestIconMissingBuffs()
-            end,
-            order = 106,
-        },
-        remindersBuffsSize = {
-            type = "range",
-            name = "Reminders Size",
-            desc = "Set the size of the missing consumes icons",
-            min = 10,
-            max = 100,
-            step = 1,
-            get = function(info) return QuickAuras.db.profile.remindersBuffsSize end,
-            set = function(info, value)
-                QuickAuras.db.profile.remindersBuffsSize = value
-                QuickAuras:TestReminders()
-            end,
-            order = 107,
-        },
-        showTimeOnBars = {
-            type = "toggle",
-            name = "Show Time Left",
-            desc = "Enables showing of time left on timers",
-            get = function(info) return QuickAuras.db.profile.showTimeOnBars end,
-            set = function(info, value) QuickAuras.db.profile.showTimeOnBars = value end,
-            order = 150,
-        },
-        spacer198 = {
-            type = "description",
-            name = "",
-            order = 198,
-        },
-        spacer199 = {
-            type = "description",
-            name = "",
-            order = 199,
-        },
-        --commonUtilsHeader = {
-        --    type = "header",
-        --    name = "Common Utils",
-        --    order = 200,
-        --},
-        --spacer201 = {
-        --    type = "description",
-        --    name = "",
-        --    order = 201,
-        --},
         meleeUtils = {
             type = "group",
             name = "Melee Utils",
@@ -375,6 +360,13 @@ QuickAuras.options = {
             order = 10002,
             args = {
             },
+        },
+        reminders = {
+            type = "group",
+            name = "Reminders",
+            order = 10003,
+            args = {
+            },
         }
     },
 }
@@ -434,7 +426,7 @@ function QuickAuras:AddAbilitiesOptions()
     AddSpells(QuickAuras.spells.racials)
     AddSpells(QuickAuras.spells.iconAlerts)
     AddSpells(QuickAuras.spells.other)
-    AddSpells(QuickAuras.spells.reminders)
+    --AddSpells(QuickAuras.spells.reminders)
     AddSpells(QuickAuras.spells.trinkets, "trinkets")
     local lowerClass = string.lower(QuickAuras.playerClass)
     local classAbilities = QuickAuras.spells[lowerClass]
@@ -466,27 +458,70 @@ function QuickAuras:AddGearWarningOptions()
     end
 end
 
-function QuickAuras:AddMissingBuffsOptions()
+function QuickAuras:AddRemindersOptions()
     local order = 0
-    for _, buff in ipairs(self.consumes) do
-        order = order + 1
-        --debug("Adding missing buff option", buff.name, buff.option, buff.default)
-        QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
-        QuickAuras.options.args.missingBuffs.args[buff.option] = {
+
+    local function AddOption(obj)
+        obj.option = "reminders_"..obj.name:gsub("%s+", "")
+        debug(3, "Adding reminder option", obj.name, obj.option)
+        QuickAuras.defaultOptions.profile[obj.option] = true
+        QuickAuras.options.args.reminders.args[obj.option] = {
             type = "toggle",
-            name = buff.name,
-            desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
+            name = obj.name,
+            desc = obj.desc or "Shows a warning when you're low on "..obj.name,
             get = function(info)
-                return QuickAuras.db.profile[buff.option]
+                return QuickAuras.db.profile[obj.option]
             end,
             set = function(info, value)
-                QuickAuras.db.profile[buff.option] = value
-                QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
-                QuickAuras:CheckMissingBuffs()
-                --QuickAuras:CheckAuras()
+                debug(3, "Set reminder", obj.name, value)
+                QuickAuras.db.profile[obj.option] = value
+                QuickAuras:ClearIcons("reminder")
+                QuickAuras:CheckLowConsumes()
+                QuickAuras:CheckTrackingStatus()
+                QuickAuras:CheckLowConsumes()
             end,
             order = order,
         }
+    end
+
+    for _, obj in ipairs(QuickAuras.trackedConsumes) do
+        order = order + 1
+        AddOption(obj)
+    end
+    for _, obj in pairs(QuickAuras.trackedTracking) do
+        order = order + 1
+        AddOption(obj)
+    end
+end
+
+function QuickAuras:AddMissingBuffsOptions()
+    local order = 0
+    for _, buff in ipairs(self.consumes) do
+        if buff.spellIds then
+            order = order + 1
+            --debug("Adding missing buff option", buff.name, buff.option, buff.default)
+            QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
+            QuickAuras.options.args.missingBuffs.args[buff.option] = {
+                type = "toggle",
+                name = buff.name,
+                desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
+                get = function(info)
+                    return QuickAuras.db.profile[buff.option]
+                end,
+                set = function(info, value)
+                    QuickAuras.db.profile[buff.option] = value
+                    if buff.spellIds then
+                        QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
+                        QuickAuras:CheckMissingBuffs()
+                    elseif buff.minCount and (buff.visible == nil or buff.visible) then
+                        QuickAuras:ClearIcons("reminder")
+                        QuickAuras:CheckLowConsumes()
+                        QuickAuras:CheckTrackingStatus()
+                    end
+                end,
+                order = order,
+            }
+        end
     end
 end
 
@@ -494,4 +529,5 @@ function QuickAuras:BuildOptions()
     self:AddAbilitiesOptions()
     self:AddGearWarningOptions()
     self:AddMissingBuffsOptions()
+    self:AddRemindersOptions()
 end

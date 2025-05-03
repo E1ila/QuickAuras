@@ -43,7 +43,7 @@ end
 
 -- frame creation -----------------------------------
 
-function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip)
+function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -60,6 +60,15 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
     iconTexture:SetAllPoints(frame)
     frame.icon = iconTexture
     debug(3, "CreateItemWarningIcon", frameName, "itemId", itemId, "icon", itemIcon)
+
+    if showCount then
+        local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(self.db.profile.remindersBuffsSize/2), "OUTLINE")
+        counterText:SetTextColor(1, 1, 1, 1)
+        counterText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2) -- Position the counter
+        counterText:SetText("0") -- Default value
+        frame.counterText = counterText -- Store the counter for later updates
+    end
 
     if showTooltip then
         -- Add a tooltip to show the item's name
@@ -145,25 +154,30 @@ local function GetIconList(type, idType)
     return list, parent, Create
 end
 
-function QuickAuras:AddIcon(type, idType, id, conf)
-    local list, parent, Create = GetIconList(type, idType)
+function QuickAuras:AddIcon(iconType, idType, id, conf, count)
+    local list, parent, Create = GetIconList(iconType, idType)
     if not list[id] then
-        debug(2, "AddIcon", id, "parent", parent:GetName())
-        local frame = Create(self, id, parent, type.."-".. id, conf.tooltip == nil or conf.tooltip)
+        debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
+        local frame = Create(self, id, parent, iconType .."-".. id, conf.tooltip == nil or conf.tooltip, conf.minCount)
         list[id] = {
             name = conf.name,
+            conf = conf,
             id = id,
             idType = idType,
             frame = frame,
             list = list,
             parent = parent,
+            count = count,
         }
+        return true
+    elseif count ~= nil then
+        list[id].count = count
         return true
     end
 end
 
-function QuickAuras:RemoveIcon(type, id)
-    local list = GetIconList(type)
+function QuickAuras:RemoveIcon(iconType, id)
+    local list = GetIconList(iconType)
     if list[id] then
         debug("RemoveIconWarning", itemId)
         local frame = list[id].frame
@@ -175,43 +189,48 @@ function QuickAuras:RemoveIcon(type, id)
     end
 end
 
-function QuickAuras:ClearIcons(type)
+function QuickAuras:ClearIcons(iconType)
     --debug("Clearing icon warnings")
-    local list = GetIconList(type)
+    local list = GetIconList(iconType)
     for id, obj in pairs(list) do
-        self:RemoveIcon(type, id)
+        self:RemoveIcon(iconType, id)
     end
 end
 
-function QuickAuras:ArrangeIcons(type)
+function QuickAuras:ArrangeIcons(iconType)
     --debug("Arranging icon warnings")
-    local list, parent, Create = GetIconList(type)
+    local list = GetIconList(iconType)
     local lastFrame = nil
     for _, obj in pairs(list) do
         local frame = obj.frame
         frame:ClearAllPoints()
-        if type == "warning" then
+        --debug(3, "ArrangeIcons", iconType, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
+        if frame.counterText and obj.count and type(obj.count) == "number" then
+            --debug(3, "ArrangeIcons", "count", obj.count)
+            frame.counterText:SetText(obj.count)
+        end
+        if iconType == "warning" then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
-        elseif type == "missing" then
+        elseif iconType == "missing" then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.missingBuffsSize, self.db.profile.missingBuffsSize) -- Width, Height
-        elseif type == "reminder" then
+        elseif iconType == "reminder" then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.remindersBuffsSize, self.db.profile.remindersBuffsSize) -- Width, Height
-        elseif type == "alert" then
+        elseif iconType == "alert" then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
             else
@@ -482,7 +501,7 @@ end
 function QuickAuras:TestReminders()
     self:ClearIcons("reminder")
     self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
-    self:AddIcon("reminder", "spell", 2580, self.trackedAuras[2580])
+    self:AddIcon("reminder", "item", 184937, self.trackedConsumes[2], 2)
     self:ArrangeIcons("reminder")
 
     _test_TimerId["reminder"] = (_test_TimerId["reminder"] or 0) + 1
@@ -491,6 +510,9 @@ function QuickAuras:TestReminders()
         if timerId ~= _test_TimerId["reminder"] then return end
         debug("TestReminders timer ended")
         QuickAuras:ClearIcons("reminder")
+        QuickAuras:CheckLowConsumes()
+        QuickAuras:CheckTrackingStatus()
+        QuickAuras:CheckLowConsumes()
     end)
 end
 

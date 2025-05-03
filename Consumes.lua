@@ -123,7 +123,19 @@ QuickAuras.consumes = {
         name = "Ankh",
         itemId = 17030,
         minCount = 5,
-    }
+        visible = QuickAuras.isShaman,
+    },
+    {
+        name = "Chronoboons",
+        itemId = 184937,
+        minCount = 3,
+    },
+    {
+        name = "Mana Potions",
+        itemId = 13444,
+        minCount = 10,
+        visible = QuickAuras.isManaClass,
+    },
 }
 
 function QuickAuras:BuildTrackedMissingBuffs()
@@ -133,7 +145,7 @@ function QuickAuras:BuildTrackedMissingBuffs()
             buff.list = "missing"
             --buff.tooltip = false
             table.insert(self.trackedMissingBuffs, buff)
-        else
+        elseif (buff.visible == nil or buff.visible) then
             buff.list = "reminder"
             table.insert(self.trackedConsumes, buff)
         end

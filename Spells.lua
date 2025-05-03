@@ -329,22 +329,25 @@ spells.other = {
     },
 }
 
+-- will be added to options by AddRemindersOptions and not AddAbilitiesOptions
 spells.reminders = {
     findHerbs = {
         spellId = { 2383 },
-        aura = true,
+        textureId = 133939,
+        category = "reminders",
         name = "Find Herbs",
         icon = "Interface\\Icons\\spell_nature_earthquake",
         list = "reminder",
-        --visible = IsSpellKnown(2383),
+        visible = IsSpellKnown(2383),
     },
     findMinerals = {
         spellId = { 2580 },
-        aura = true,
+        textureId = 136025,
+        category = "reminders",
         name = "Find Minerals",
         icon = "Interface\\Icons\\inv_misc_flower_02",
         list = "reminder",
-        --visible = IsSpellKnown(2580),
+        visible = IsSpellKnown(2580),
     },
 }
 

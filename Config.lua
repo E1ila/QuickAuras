@@ -55,6 +55,15 @@ QuickAuras.trackedGear = {
     },
 }
 
+QuickAuras.capitalCities = {
+    ["Stormwind"] = true,
+    ["Ironforge"] = true,
+    ["Darnassus"] = true,
+    ["Orgrimmar"] = true,
+    ["Thunder Bluff"] = true,
+    ["Undercity"] = true,
+}
+
 -- these will be detected through UNIT_AURA event
 QuickAuras.trackedAuras = {}
 
@@ -67,6 +76,8 @@ QuickAuras.trackedCooldowns = {}
 QuickAuras.trackedMissingBuffs = {}
 
 QuickAuras.trackedConsumes = {}
+
+QuickAuras.trackedTracking = {}
 
 -- custom events
 
@@ -94,12 +105,12 @@ end
 function QuickAuras:BuildTrackedSpells()
     debug("Building config...")
     for category, cspells in pairs(QuickAuras.spells) do
-        debug(2, "BuildTrackedSpells", ">>", string.upper(category))
+        --debug(3, "BuildTrackedSpells", ">>", string.upper(category))
         for key, spell in pairs(cspells) do
-            debug(2, "BuildTrackedSpells", "  - ", key)
+            --debug(3, "BuildTrackedSpells", "  - ", key)
             if spell.spellId and (spell.visible == nil or spell.visible) then
                 for _, spellId in ipairs(spell.spellId) do
-                    debug(2, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
+                    --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
                     if spell.aura then
                         self.trackedAuras[spellId] = spell
                     elseif spell.duration then -- combat log ability has to have duration
@@ -112,4 +123,9 @@ function QuickAuras:BuildTrackedSpells()
             end
         end
     end
+end
+
+function QuickAuras:BuildTrackedTracking()
+    self.trackedTracking[self.spells.reminders.findHerbs.spellId[1]] = self.spells.reminders.findHerbs
+    self.trackedTracking[self.spells.reminders.findMinerals.spellId[1]] = self.spells.reminders.findMinerals
 end

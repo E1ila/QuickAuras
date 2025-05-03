@@ -2,11 +2,6 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-local TRACKING_TEXTURES  = {
-    [ 2383 ] = 133939, -- herbs
-    [ 2580 ] = 136025, -- mining
-}
-
 local function debounce(func, delay)
     local timer = nil
     return function(...)
@@ -24,22 +19,20 @@ QuickAuras.BagsChanged = debounce(function()
     debug(2, "BAG_UPDATE", bagId)
     QuickAuras:ScanBags()
     QuickAuras:CheckMissingBuffs()
-    QuickAuras:CheckConsumes()
+    QuickAuras:CheckLowConsumes()
 end, 0.5)
 
-function QuickAuras:CheckConsumes()
-    debug(3, "CheckConsumes")
+function QuickAuras:CheckLowConsumes()
     if not self.db.profile.remindersEnabled then return end
-    debug(3, "CheckConsumes", "trackedConsumes", self.trackedConsumes)
+    if self.db.profile.lowConsumesInCapital and not self.inCapital then return end
     local changed = false
     for _, consume in pairs(self.trackedConsumes) do
         local itemId = consume.itemId
-        debug(3, "CheckConsumes", "(scan)", consume.name, "itemId", itemId, "option", consume.option)
         if not consume.option or self.db.profile[consume.option] then
             local foundItemId, details = self:FindInBags(itemId)
             debug(3, "CheckAuras", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and self.db.profile[consume.option])
             if foundItemId and details.count < consume.minCount then
-                if self:AddIcon("reminder", "item", foundItemId, consume) then changed = true end
+                if self:AddIcon("reminder", "item", foundItemId, consume, details.count) then changed = true end
             else
                 if self:RemoveIcon("reminder", itemId) then changed = true end
             end
@@ -51,13 +44,13 @@ function QuickAuras:CheckConsumes()
 end
 
 function QuickAuras:CheckTrackingStatus()
-    debug(3, "CheckTrackingStatus")
     if not self.db.profile.remindersEnabled then return end
     local trackingType = GetTrackingTexture()
     local changed, found, missingSpellId = false, false, nil
-    for spellId, textureId in pairs(TRACKING_TEXTURES) do
-        if IsSpellKnown(spellId) then
-            if textureId == trackingType then
+    for spellId, conf in pairs(QuickAuras.trackedTracking) do
+        debug(3, "CheckTrackingStatus", "(scan)", conf.name, "spellId", spellId, "option", conf.option, conf.option and self.db.profile[conf.option])
+        if IsSpellKnown(spellId) and self.db.profile[conf.option] then
+            if conf.textureId == trackingType then
                 if QAG:RemoveIcon("reminder", spellId) then changed = true end
                 found = true
                 break
@@ -66,8 +59,9 @@ function QuickAuras:CheckTrackingStatus()
             end
         end
     end
+    debug(2, "CheckTrackingStatus", "trackingType", trackingType, "found", found, "missingSpellId", missingSpellId)
     if not found and missingSpellId then
-        if QAG:AddIcon("reminder", "spell", missingSpellId, QAG.trackedAuras[missingSpellId]) then changed = true end
+        if QAG:AddIcon("reminder", "spell", missingSpellId, QAG.trackedTracking[missingSpellId]) then changed = true end
     end
     if changed then
         QAG:ArrangeIcons("reminder")
@@ -164,10 +158,10 @@ function QuickAuras:CheckAuras()
         seen[spellId] = true
         -- timer auras -----------------------------------------
         local aura = self.trackedAuras[spellId]
-        debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
+        --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
         if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
-            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
+            --debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
             local timer = self:AddTimer("auras", aura, duration, expTime)
             if timer then
                 seen[timer.key] = true
@@ -213,12 +207,19 @@ function QuickAuras:CheckMissingBuffs()
 end
 
 function QuickAuras:UpdateZone()
-    local inInstance, instanceType = IsInInstance()
-    self.InstanceName = nil
-    if inInstance and (instanceType == "raid" or instanceType == "party") then
-        self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
+    local newZoneName = GetRealZoneText()
+    local zoneChanged = newZoneName ~= self.ZoneName
+    self.ZoneName = newZoneName
+    if zoneChanged then
+        local inInstance, instanceType = IsInInstance()
+        self.InstanceName = nil
+        if inInstance and (instanceType == "raid" or instanceType == "party") then
+            self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name
+        end
+        self.inCapital = self.capitalCities[newZoneName]
+        debug(2, "UpdateZone", "inInstance", inInstance, "instanceType", instanceType, "instanceName", self.InstanceName, "zoneName", self.ZoneName, "inCapital", self.inCapital)
+        -- zone dependant checks
+        self:CheckMissingBuffs()
+        self:CheckLowConsumes()
     end
-    self.ZoneName = GetRealZoneText()
-    self:CheckMissingBuffs()
-    --debug("Updating Zone:", QAG.ZoneName)
 end

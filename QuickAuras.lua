@@ -94,6 +94,7 @@ function QuickAuras:OnInitialize()
         QuickAuras:CheckAuras()
         QuickAuras:CheckCooldowns()
         QuickAuras:CheckGear()
+        QuickAuras:CheckTrackingStatus()
         out("QuickAuras loaded. Type " .. _c.bold .. "/qa|r for options.")
     end)
 end

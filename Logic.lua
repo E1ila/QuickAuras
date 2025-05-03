@@ -2,14 +2,32 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
+local TRACKING_TEXTURES  = {
+    [ 2383 ] = 133939, -- herbs
+    [ 2580 ] = 136025, -- mining
+}
+
 function QuickAuras:CheckTrackingStatus()
     debug(3, "CheckTrackingStatus")
     if not self.db.profile.remindersEnabled then return end
     local trackingType = GetTrackingTexture()
-    debug(3, "trackingType", trackingType)
-    --QAG:AddIcon("missing", "item", QAG.trackedMissingBuffs[2].itemId, QAG.trackedMissingBuffs[2])
-    if trackingType == TRACKING_TEXTURE_HERBS or trackingType == TRACKING_TEXTURE_MINING then
-        --self:AddTimer("tracking", self.spells.reminders.detectHerbs)
+    local changed, found, missingSpellId = false, false, nil
+    for spellId, textureId in pairs(TRACKING_TEXTURES) do
+        if IsSpellKnown(spellId) then
+            if textureId == trackingType then
+                if QAG:RemoveIcon("reminder", spellId) then changed = true end
+                found = true
+                break
+            else
+                missingSpellId = spellId
+            end
+        end
+    end
+    if not found and missingSpellId then
+        if QAG:AddIcon("reminder", "spell", missingSpellId, QAG.trackedAuras[missingSpellId]) then changed = true end
+    end
+    if changed then
+        QAG:ArrangeIcons("reminder")
     end
 end
 

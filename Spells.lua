@@ -330,13 +330,21 @@ spells.other = {
 }
 
 spells.reminders = {
-    detectHerbs = {
+    findHerbs = {
         spellId = { 2383 },
         aura = true,
-        name = "Detect Herbs",
-        icon = "Interface\\Icons\\inv_misc_flower_02",
+        name = "Find Herbs",
+        icon = "Interface\\Icons\\spell_nature_earthquake",
         list = "reminder",
         visible = IsSpellKnown(2383),
+    },
+    findMinerals = {
+        spellId = { 2580 },
+        aura = true,
+        name = "Find Minerals",
+        icon = "Interface\\Icons\\inv_misc_flower_02",
+        list = "reminder",
+        visible = IsSpellKnown(2580),
     },
 }
 

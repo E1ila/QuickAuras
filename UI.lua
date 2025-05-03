@@ -50,7 +50,7 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
     -- Get the item's icon texture
-    local itemIcon = GetItemIcon(itemId) or GetSpellTexture(itemId)
+    local itemIcon = GetItemIcon(itemId)
     if not itemIcon then
         print("Invalid itemId:", itemId)
         return nil
@@ -80,12 +80,11 @@ end
 
 function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip)
     -- Create a button frame
-    local frame = CreateFrame("Frame", frameName, parentFrame, "BackdropTemplate")
-    self:SetDarkBackdrop(frame)
+    local frame = CreateFrame("Frame", frameName, parentFrame)
 
     -- Get the item's icon texture
-    local spellIcon = GetItemIcon(12457)
-    --local spellIcon = GetSpellTexture(spellId)
+    --local spellIcon = GetItemIcon(12457)
+    local spellIcon = GetSpellTexture(spellId)
     if not spellIcon then
         print("Invalid spellId:", spellId)
         return nil
@@ -152,7 +151,7 @@ function QuickAuras:AddIcon(type, idType, id, conf)
     local list, parent, Create = GetIconList(type, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName())
-        local frame = self:CreateItemWarningIcon(id, parent, type.."-".. id, conf.tooltip == nil or conf.tooltip)
+        local frame = Create(self, id, parent, type.."-".. id, conf.tooltip == nil or conf.tooltip)
         list[id] = {
             name = conf.name,
             id = id,
@@ -168,7 +167,7 @@ end
 function QuickAuras:RemoveIcon(type, id)
     local list = GetIconList(type)
     if list[id] then
-        --debug("RemoveIconWarning", itemId)
+        debug("RemoveIconWarning", itemId)
         local frame = list[id].frame
         frame:Hide()
         frame:SetParent(nil)
@@ -388,7 +387,7 @@ function QuickAuras:ArrangeTimerBars(list, parent)
 end
 
 function QuickAuras:UpdateProgressBar(timer)
-    --debug("Updating progress for", timer.name, "expTime", timer.expTime, "duration", timer.duration)
+    if not timer or not timer.frame then return end -- timer destroyed
     if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
         timer.frame:Show()
         if timer.duration > 1 then

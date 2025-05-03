@@ -17,6 +17,7 @@ QuickAuras.defaultOptions = {
         lowConsumesInCapital = true,
         someSetting = 50,
         barHeight = 25,
+        barWidth = 128,
         barGap = 2,
         buttonHeight = 50,
         gearWarningSize = 80,
@@ -147,6 +148,20 @@ QuickAuras.options = {
                     get = function(info) return QuickAuras.db.profile.barHeight end,
                     set = function(info, value)
                         QuickAuras.db.profile.barHeight = value
+                        QuickAuras:TestBars()
+                    end,
+                    order = 102,
+                },
+                barWidth = {
+                    type = "range",
+                    name = "Bar Width",
+                    desc = "Set the height of the bars",
+                    min = 50,
+                    max = 200,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.barWidth end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.barWidth = value
                         QuickAuras:TestBars()
                     end,
                     order = 102,
@@ -472,7 +487,7 @@ function QuickAuras:AddRemindersOptions()
                 return QuickAuras.db.profile[obj.option]
             end,
             set = function(info, value)
-                debug(3, "Set reminder", obj.name, value)
+                debug(3, "Set reminder", obj.name, obj.option, value)
                 QuickAuras.db.profile[obj.option] = value
                 QuickAuras:ClearIcons("reminder")
                 QuickAuras:CheckTrackingStatus()

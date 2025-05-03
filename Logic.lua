@@ -31,8 +31,8 @@ function QuickAuras:CheckLowConsumes()
         if not consume.option or self.db.profile[consume.option] then
             local foundItemId, details = self:FindInBags(itemId)
             debug(3, "CheckAuras", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and self.db.profile[consume.option])
-            if foundItemId and details.count < consume.minCount then
-                if self:AddIcon("reminder", "item", foundItemId, consume, details.count) then changed = true end
+            if not foundItemId or details.count < consume.minCount then
+                if self:AddIcon("reminder", "item", itemId, consume, details and details.count or 0) then changed = true end
             else
                 if self:RemoveIcon("reminder", itemId) then changed = true end
             end
@@ -61,6 +61,7 @@ function QuickAuras:CheckTrackingStatus()
     end
     debug(2, "CheckTrackingStatus", "trackingType", trackingType, "found", found, "missingSpellId", missingSpellId)
     if not found and missingSpellId then
+        debug(3, "CheckTrackingStatus", "missingSpellId", missingSpellId)
         if QAG:AddIcon("reminder", "spell", missingSpellId, QAG.trackedTracking[missingSpellId]) then changed = true end
     end
     if changed then

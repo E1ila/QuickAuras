@@ -374,7 +374,7 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     return frame
 end
 
-function QuickAuras:ArrangeTimerBars(list, parent)
+function QuickAuras:spells(list, parent)
     local lastFrame = nil
     for i, timer in ipairs(list) do
         --debug(3, "Arranging progress frames", timer.key, timer.uiType)
@@ -385,10 +385,8 @@ function QuickAuras:ArrangeTimerBars(list, parent)
             else
                 timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
             end
-            timer.frame:SetPoint("LEFT", parent, "LEFT", 0, 0)
-            timer.frame:SetPoint("RIGHT", parent, "RIGHT", 0, 0)
-            local height = self.db.profile.barHeight or 25
-            timer.frame:SetHeight(height)
+            timer.frame:SetPoint("CENTER", parent, "CENTER", 0, 0)
+            timer.frame:SetSize(self.db.profile.barWidth * (timer.widthMul or 1), self.db.profile.barHeight)
 
         elseif timer.uiType == "button" then
             if lastFrame then
@@ -407,7 +405,10 @@ function QuickAuras:UpdateProgressBar(timer)
     if not timer or not timer.frame then return end -- timer destroyed
     if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
         timer.frame:Show()
-        if timer.duration > 1 then
+        if timer.duration > 0 then
+            if timer.flashOnEnd and timer.duration <= timer.flashOnEnd then
+                timer.frame:SetBackdropColor(1, 0, 0, 0.5)
+            end
             local progress = (timer.expTime - GetTime()) / timer.duration
             if timer.uiType == "bar" then
                 _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
@@ -475,12 +476,12 @@ function QuickAuras:TestProgressBar(spells, limit)
     for _, conf in pairs(spells) do
         if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
             debug("TestProgressBar", "conf", conf.name, conf.list, limit)
-            i = i + 1
             seen[conf.name] = true
-            local duration = math.min(conf.duration or 10, 15)
+            local duration = 15 - (i*2)
             local expTime = GetTime() + duration
             self:AddTimer("test", conf, duration, expTime)
             if i == limit then break end
+            i = i + 1
         end
     end
 end
@@ -500,8 +501,11 @@ end
 
 function QuickAuras:TestReminders()
     self:ClearIcons("reminder")
-    self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
-    self:AddIcon("reminder", "item", 184937, self.trackedConsumes[2], 2)
+    --self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
+    for i, conf in ipairs(self.trackedConsumes) do
+        self:AddIcon("reminder", "item", conf.itemId, conf, i)
+        if i == 3 then break end
+    end
     self:ArrangeIcons("reminder")
 
     _test_TimerId["reminder"] = (_test_TimerId["reminder"] or 0) + 1

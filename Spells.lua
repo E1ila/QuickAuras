@@ -34,6 +34,7 @@ spells.rogue = {
         icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
         color = {0, 0.9, 0.2},
         list = "watch",
+        flashOnEnd = 2,
         visible = QuickAuras.isRogue,
     },
     exposeArmor = {

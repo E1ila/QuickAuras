@@ -5,6 +5,7 @@ local debug = QuickAuras.Debug
 function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent
+    local widthMul = 1
     if source == "test-cooldowns" or source == "cooldowns" then
         list = self.cooldowns
         parent = QuickAuras_Cooldowns
@@ -17,6 +18,7 @@ function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
         list = self.offensiveBars
         parent = QuickAuras_OffensiveBars
         uiType = "bar"
+        widthMul = 1.5
     elseif conf.list == "alert" then
         list = self.iconAlerts
         parent = QuickAuras_IconAlerts
@@ -67,6 +69,8 @@ function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
         uiType = uiType,
         parent = parent,
         source = source,
+        flashOnEnd = conf.flashOnEnd,
+        widthMul = widthMul,
         arrangeFunc = arrangeFunc,
     }
     timer.key = self:GetTimerKey(conf.name, expTime, uiType)

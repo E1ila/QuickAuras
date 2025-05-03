@@ -122,7 +122,6 @@ QuickAuras.options = {
             set = function(info, value)
                 QuickAuras.db.profile.remindersEnabled = value
                 QuickAuras:ClearIcons("reminder")
-                QuickAuras:CheckLowConsumes()
                 QuickAuras:CheckTrackingStatus()
                 QuickAuras:CheckLowConsumes()
             end,
@@ -476,7 +475,6 @@ function QuickAuras:AddRemindersOptions()
                 debug(3, "Set reminder", obj.name, value)
                 QuickAuras.db.profile[obj.option] = value
                 QuickAuras:ClearIcons("reminder")
-                QuickAuras:CheckLowConsumes()
                 QuickAuras:CheckTrackingStatus()
                 QuickAuras:CheckLowConsumes()
             end,
@@ -515,8 +513,8 @@ function QuickAuras:AddMissingBuffsOptions()
                         QuickAuras:CheckMissingBuffs()
                     elseif buff.minCount and (buff.visible == nil or buff.visible) then
                         QuickAuras:ClearIcons("reminder")
-                        QuickAuras:CheckLowConsumes()
                         QuickAuras:CheckTrackingStatus()
+                        QuickAuras:CheckLowConsumes()
                     end
                 end,
                 order = order,

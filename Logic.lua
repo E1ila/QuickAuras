@@ -219,7 +219,8 @@ function QuickAuras:UpdateZone()
         self.inCapital = self.capitalCities[newZoneName]
         debug(2, "UpdateZone", "inInstance", inInstance, "instanceType", instanceType, "instanceName", self.InstanceName, "zoneName", self.ZoneName, "inCapital", self.inCapital)
         -- zone dependant checks
-        self:CheckMissingBuffs()
-        self:CheckLowConsumes()
+        QuickAuras:ClearIcons("reminder")
+        QuickAuras:CheckTrackingStatus()
+        QuickAuras:CheckLowConsumes()
     end
 end

@@ -510,7 +510,6 @@ function QuickAuras:TestReminders()
         if timerId ~= _test_TimerId["reminder"] then return end
         debug("TestReminders timer ended")
         QuickAuras:ClearIcons("reminder")
-        QuickAuras:CheckLowConsumes()
         QuickAuras:CheckTrackingStatus()
         QuickAuras:CheckLowConsumes()
     end)

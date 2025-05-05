@@ -122,19 +122,21 @@ QuickAuras.consumes = {
     {
         name = "Ankh",
         itemId = 17030,
-        minCount = 5,
+        minCount = 2,
         visible = QuickAuras.isShaman,
     },
     {
         name = "Chronoboons",
         itemId = 184937,
         minCount = 3,
+        minLevel = 60,
     },
     {
         name = "Mana Potions",
         itemId = 13444,
         minCount = 10,
         visible = QuickAuras.isManaClass,
+        minLevel = 58,
     },
 }
 

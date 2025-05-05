@@ -307,6 +307,13 @@ spells.racials = {
         cooldown = true,
         visible = QuickAuras.isOrc,
     },
+    berserking = { -- ability
+        spellId = { 20554 },
+        name = "Berserking",
+        icon = "Interface\\Icons\\racial_troll_berserk",
+        cooldown = true,
+        visible = QuickAuras.isTroll,
+    },
     bloodFuryBuff = { -- buff
         spellId = { 23234 },
         aura = true,

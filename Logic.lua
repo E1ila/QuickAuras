@@ -11,7 +11,10 @@ function QuickAuras:CheckLowConsumes()
         if not consume.option or self.db.profile[consume.option] then
             local foundItemId, details = self:FindInBags(itemId)
             debug(3, "CheckAuras", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and self.db.profile[consume.option])
-            if not foundItemId or details.count < consume.minCount then
+            if
+                (not foundItemId or details.count < consume.minCount)
+                and (not consume.minLevel or consume.minLevel <= self.playerLevel)
+            then
                 if self:AddIcon("reminder", "item", itemId, consume, details and details.count or 0) then changed = true end
             else
                 if self:RemoveIcon("reminder", itemId) then changed = true end

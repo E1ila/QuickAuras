@@ -145,6 +145,10 @@ function QuickAuras:PLAYER_UNGHOST()
     self:CheckTrackingStatus()
 end
 
+function QuickAuras:PLAYER_LEVEL_UP()
+    self.playerLevel = UnitLevel("player")
+end
+
 -- OnUpdate
 
 function QuickAuras:OnUpdate()

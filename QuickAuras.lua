@@ -9,7 +9,7 @@ local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
 local QuickAuras = addon.root
-QuickAuras.version = "0.3"
+QuickAuras.version = "0.4"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.bags = {} -- items in bags
 QuickAuras.playerBuffs = {} -- items in bags
@@ -34,6 +34,7 @@ local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass
 QuickAuras.playerRace = select(1, UnitRace("player"))
 QuickAuras.playerGuid = UnitGUID("player")
+QuickAuras.playerLevel = UnitLevel("player")
 QuickAuras.isRogue = pclass == "ROGUE"
 QuickAuras.isWarrior = pclass == "WARRIOR"
 QuickAuras.isPaladin = pclass == "PALADIN"
@@ -44,6 +45,7 @@ QuickAuras.isHunter = pclass == "HUNTER"
 QuickAuras.isDruid = pclass == "DRUID"
 QuickAuras.isPriest = pclass == "PRIEST"
 QuickAuras.isOrc = QuickAuras.playerRace == "Orc"
+QuickAuras.isTroll = QuickAuras.playerRace == "Troll"
 QuickAuras.isUndead = QuickAuras.playerRace == "Undead"
 QuickAuras.isManaClass = QuickAuras.isPriest or QuickAuras.isMage or QuickAuras.isWarlock or QuickAuras.isDruid or QuickAuras.isPaladin or QuickAuras.isShaman or QuickAuras.isHunter
 local _c

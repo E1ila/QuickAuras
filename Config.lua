@@ -19,6 +19,7 @@ QuickAuras.optionalEvents = {
     "MINIMAP_UPDATE_TRACKING",
     "PLAYER_ALIVE",
     "PLAYER_UNGHOST",
+    "PLAYER_LEVEL_UP"
 }
 
 QuickAuras.adjustableFrames = {

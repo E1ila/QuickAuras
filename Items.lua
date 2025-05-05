@@ -34,7 +34,7 @@ QuickAuras.consumes = {
     },
     {
         name = "Zanza",
-        spellIds = { 24382, 24383, 24417, 27669, 10669, 10693, 10668, 10667 },
+        spellIds = { 24382, 24383, 24417, 27669, 10669, 10693, 10668, 10667, 27671 },
         itemIds = { 20079, 20081, 20080, 22175, 8412, 8424, 8411, 8410 },
         itemId = 20079,
     },
@@ -50,7 +50,7 @@ QuickAuras.consumes = {
         itemId = 12457,
         visibleFunc = function()
             return InEncounters({1119, 1114})
-        end
+        end -- default naxx attuned
     },
     {
         name = "Juju Might",
@@ -80,7 +80,7 @@ QuickAuras.consumes = {
         name = "Food Buff",
         spellIds = { 24800, 18192, 22730, 18194, 18191, 18193, 25661 },
         itemIds = { 20452, 13928, 18254, 13931, 13927, 13934, 13929, 21023 },
-        itemId = 13755,
+        itemId = 20452,
     },
     {
         name = "Winterfall Firewater",
@@ -98,11 +98,13 @@ QuickAuras.consumes = {
         name = "Mageblood Potion",
         spellIds = { 24363 },
         itemId = 20007,
+        default = QuickAuras.isManaClass,
     },
     {
         name = "Sweet Surprise",
         spellIds = { 27722 },
         itemId = 22239,
+        default = QuickAuras.isShaman or QuickAuras.isPriest or QuickAuras.isDruid or QuickAuras.isPaladin,
     },
     {
         name = "Buttermilk Delight",
@@ -129,14 +131,12 @@ QuickAuras.consumes = {
         name = "Chronoboons",
         itemId = 184937,
         minCount = 3,
-        minLevel = 60,
     },
     {
         name = "Mana Potions",
         itemId = 13444,
         minCount = 10,
         visible = QuickAuras.isManaClass,
-        minLevel = 58,
     },
 }
 
@@ -147,9 +147,11 @@ function QuickAuras:BuildTrackedMissingBuffs()
             buff.list = "missing"
             --buff.tooltip = false
             table.insert(self.trackedMissingBuffs, buff)
-        elseif (buff.visible == nil or buff.visible) then
-            buff.list = "reminder"
-            table.insert(self.trackedConsumes, buff)
+
+            if (buff.visible == nil or buff.visible) then
+                buff.list = "reminder"
+                table.insert(self.trackedLowConsumes, buff)
+            end
         end
     end
 end

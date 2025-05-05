@@ -76,7 +76,7 @@ QuickAuras.trackedCooldowns = {}
 
 QuickAuras.trackedMissingBuffs = {}
 
-QuickAuras.trackedConsumes = {}
+QuickAuras.trackedLowConsumes = {}
 
 QuickAuras.trackedTracking = {}
 

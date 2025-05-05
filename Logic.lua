@@ -3,21 +3,20 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
 function QuickAuras:CheckLowConsumes()
-    if not self.db.profile.remindersEnabled then return end
+    if not self.db.profile.remindersEnabled or self.db.profile.lowConsumesReminder then return end
     if self.db.profile.lowConsumesInCapital and not self.inCapital then return end
     local changed = false
-    for _, consume in pairs(self.trackedConsumes) do
-        local itemId = consume.itemId
+    for _, consume in pairs(self.trackedLowConsumes) do
         if not consume.option or self.db.profile[consume.option] then
-            local foundItemId, details = self:FindInBags(itemId)
+            local foundItemId, details = self:FindInBags(consume.itemIds or consume.itemId)
             debug(3, "CheckAuras", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and self.db.profile[consume.option])
             if
-                (not foundItemId or details.count < consume.minCount)
-                and (not consume.minLevel or consume.minLevel <= self.playerLevel)
+                (not foundItemId or details.count < self.db.profile.lowConsumesMinCount)
+                and self.db.profile.lowConsumesMinLevel <= self.playerLevel
             then
-                if self:AddIcon("reminder", "item", itemId, consume, details and details.count or 0) then changed = true end
+                if self:AddIcon("reminder", "item", consume.itemId, consume, details and details.count or 0) then changed = true end
             else
-                if self:RemoveIcon("reminder", itemId) then changed = true end
+                if self:RemoveIcon("reminder", consume.itemId) then changed = true end
             end
         end
     end

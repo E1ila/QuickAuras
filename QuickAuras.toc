@@ -12,7 +12,7 @@ QuickAuras.xml
 UI.lua
 Timers.lua
 Spells.lua
-Consumes.lua
+Items.lua
 Config.lua
 Options.lua
 Events.lua

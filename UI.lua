@@ -522,7 +522,7 @@ end, 3)
 function QuickAuras:TestReminders()
     self:ClearIcons("reminder")
     --self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
-    for i, conf in ipairs(self.trackedConsumes) do
+    for i, conf in ipairs(self.trackedLowConsumes) do
         self:AddIcon("reminder", "item", conf.itemId, conf, i)
         if i == 3 then break end
     end

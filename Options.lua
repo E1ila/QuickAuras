@@ -15,6 +15,7 @@ QuickAuras.defaultOptions = {
         missingConsumes = true,
         remindersEnabled = true,
         lowConsumesInCapital = true,
+        lowConsumesReminder = true,
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,
@@ -30,6 +31,8 @@ QuickAuras.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         showTimeOnBars = true,
+        lowConsumesMinLevel = 58,
+        lowConsumesMinCount = 1,
         manaTideAura = QuickAuras.isManaClass,
         innervateAura = QuickAuras.isManaClass,
     },
@@ -113,12 +116,12 @@ QuickAuras.options = {
                 QuickAuras:ClearIcons("missing")
                 QuickAuras:CheckMissingBuffs()
             end,
-            order = 8,
+            order = 9,
         },
         remindersEnabled = {
             type = "toggle",
             name = "Reminders",
-            desc = "Enables reminders, such as consumes in bags, tracking buffs, etc.",
+            desc = "Enables reminders for low consumes, candles, ankh, tracking buffs, etc.",
             get = function(info) return QuickAuras.db.profile.remindersEnabled end,
             set = function(info, value)
                 QuickAuras.db.profile.remindersEnabled = value
@@ -126,7 +129,7 @@ QuickAuras.options = {
                 QuickAuras:CheckTrackingStatus()
                 QuickAuras:CheckLowConsumes()
             end,
-            order = 8,
+            order = 10,
         },
         spacer99 = {
             type = "description",
@@ -368,7 +371,7 @@ QuickAuras.options = {
             args = {
             },
         },
-        missingBuffs = {
+        consumes = {
             type = "group",
             name = "Consumes",
             order = 10002,
@@ -380,6 +383,18 @@ QuickAuras.options = {
             name = "Reminders",
             order = 10003,
             args = {
+                lowConsumesReminder = {
+                    type = "toggle",
+                    name = "Low Consumes",
+                    desc = "Shows a reminder to get consumes you're low on, at a capital city",
+                    get = function(info)
+                        return QuickAuras.db.profile.lowConsumesReminder
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.lowConsumesReminder = value
+                    end,
+                    order = 1,
+                },
             },
         }
     },
@@ -475,11 +490,11 @@ end
 function QuickAuras:AddRemindersOptions()
     local order = 0
 
-    local function AddOption(obj)
+    local function AddOption(obj, optionsList)
         obj.option = "reminders_"..obj.name:gsub("%s+", "")
         debug(3, "Adding reminder option", obj.name, obj.option)
         QuickAuras.defaultOptions.profile[obj.option] = true
-        QuickAuras.options.args.reminders.args[obj.option] = {
+        optionsList.args[obj.option] = {
             type = "toggle",
             name = obj.name,
             desc = obj.desc or "Shows a warning when you're low on "..obj.name,
@@ -497,13 +512,13 @@ function QuickAuras:AddRemindersOptions()
         }
     end
 
-    for _, obj in ipairs(QuickAuras.trackedConsumes) do
-        order = order + 1
-        AddOption(obj)
-    end
+    --for _, obj in ipairs(QuickAuras.trackedLowConsumes, QuickAuras.options.args.consumes) do
+    --    order = order + 1
+    --    AddOption(obj)
+    --end
     for _, obj in pairs(QuickAuras.trackedTracking) do
         order = order + 1
-        AddOption(obj)
+        AddOption(obj, QuickAuras.options.args.reminders)
     end
 end
 
@@ -514,7 +529,7 @@ function QuickAuras:AddMissingBuffsOptions()
             order = order + 1
             --debug("Adding missing buff option", buff.name, buff.option, buff.default)
             QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
-            QuickAuras.options.args.missingBuffs.args[buff.option] = {
+            QuickAuras.options.args.consumes.args[buff.option] = {
                 type = "toggle",
                 name = buff.name,
                 desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
@@ -526,10 +541,11 @@ function QuickAuras:AddMissingBuffsOptions()
                     if buff.spellIds then
                         QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
                         QuickAuras:CheckMissingBuffs()
-                    elseif buff.minCount and (buff.visible == nil or buff.visible) then
-                        QuickAuras:ClearIcons("reminder")
-                        QuickAuras:CheckTrackingStatus()
-                        QuickAuras:CheckLowConsumes()
+                        if (buff.visible == nil or buff.visible) then
+                            QuickAuras:ClearIcons("reminder")
+                            QuickAuras:CheckTrackingStatus()
+                            QuickAuras:CheckLowConsumes()
+                        end
                     end
                 end,
                 order = order,

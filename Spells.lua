@@ -194,6 +194,13 @@ spells.shaman = {
         cooldown = 180,
         visible = QuickAuras.isShaman,
     },
+    stormstrike = {
+        spellId = { 17364 },
+        name = "Stormstrike",
+        icon = "Interface\\Icons\\spell_holy_sealofmight",
+        cooldown = 20,
+        visible = QuickAuras.isShaman,
+    }
 }
 
 spells.trinkets = {

@@ -392,6 +392,9 @@ QuickAuras.options = {
                     end,
                     set = function(info, value)
                         QuickAuras.db.profile.lowConsumesReminder = value
+                        QuickAuras:ClearIcons("reminder")
+                        QuickAuras:CheckTrackingStatus()
+                        QuickAuras:CheckLowConsumes()
                     end,
                     order = 1,
                 },
@@ -525,32 +528,30 @@ end
 function QuickAuras:AddMissingBuffsOptions()
     local order = 0
     for _, buff in ipairs(self.consumes) do
-        if buff.spellIds then
-            order = order + 1
-            --debug("Adding missing buff option", buff.name, buff.option, buff.default)
-            QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
-            QuickAuras.options.args.consumes.args[buff.option] = {
-                type = "toggle",
-                name = buff.name,
-                desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
-                get = function(info)
-                    return QuickAuras.db.profile[buff.option]
-                end,
-                set = function(info, value)
-                    QuickAuras.db.profile[buff.option] = value
-                    if buff.spellIds then
-                        QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
-                        QuickAuras:CheckMissingBuffs()
-                        if (buff.visible == nil or buff.visible) then
-                            QuickAuras:ClearIcons("reminder")
-                            QuickAuras:CheckTrackingStatus()
-                            QuickAuras:CheckLowConsumes()
-                        end
+        order = order + 1
+        debug("Adding missing buff option", buff.name, buff.option, buff.default)
+        QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
+        QuickAuras.options.args.consumes.args[buff.option] = {
+            type = "toggle",
+            name = buff.name,
+            desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
+            get = function(info)
+                return QuickAuras.db.profile[buff.option]
+            end,
+            set = function(info, value)
+                QuickAuras.db.profile[buff.option] = value
+                if buff.spellIds then
+                    QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
+                    QuickAuras:CheckMissingBuffs()
+                    if (buff.visible == nil or buff.visible) then
+                        QuickAuras:ClearIcons("reminder")
+                        QuickAuras:CheckTrackingStatus()
+                        QuickAuras:CheckLowConsumes()
                     end
-                end,
-                order = order,
-            }
-        end
+                end
+            end,
+            order = order,
+        }
     end
 end
 

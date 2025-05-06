@@ -158,7 +158,8 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count)
     local list, parent, Create = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
-        local frame = Create(self, id, parent, iconType .."-".. id, conf.tooltip == nil or conf.tooltip, conf.minCount)
+        local showCount = iconType == "reminder" and (conf.minCount or self.db.profile.lowConsumesMinCount)
+        local frame = Create(self, id, parent, iconType .."-".. id, conf.tooltip == nil or conf.tooltip, showCount)
         list[id] = {
             name = conf.name,
             conf = conf,

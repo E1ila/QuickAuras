@@ -17,7 +17,7 @@ QuickAuras.defaultOptions = {
         lowConsumesInCapital = true,
         lowConsumesReminder = true,
         forceShowMissing = false,
-        warnFinishedConsume = true,
+        outOfConsumeWarning = true,
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,
@@ -394,6 +394,18 @@ QuickAuras.options = {
                         QuickAuras:ClearIcons("reminder")
                         QuickAuras:CheckTrackingStatus()
                         QuickAuras:CheckLowConsumes()
+                    end,
+                    order = 1,
+                },
+                outOfConsumeWarning = {
+                    type = "toggle",
+                    name = "Out of Consume",
+                    desc = "Shows a warning if a consume has finished during an instance. Right click icon to dismiss.",
+                    get = function(info)
+                        return QuickAuras.db.profile.outOfConsumeWarning
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.outOfConsumeWarning = value
                     end,
                     order = 1,
                 },

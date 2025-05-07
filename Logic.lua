@@ -19,7 +19,7 @@ function QuickAuras:CheckLowConsumes()
             else
                 if self:RemoveIcon("reminder", consume.itemId) then changed = true end
             end
-            if minCount and self.db.profile.warnFinishedConsume then
+            if minCount and self.db.profile.outOfConsumeWarning then
                 if foundItemId then
                     self.existingConsumes[consume.itemId] = true
                 elseif self.existingConsumes[consume.itemId] then

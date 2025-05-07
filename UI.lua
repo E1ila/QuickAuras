@@ -538,7 +538,7 @@ end
 
 function QuickAuras:TestCooldowns()
     local t = 0
-    for i, conf in pairs(self.trackedCooldowns) do
+    for i, conf in pairs(self.trackedSpellCooldowns) do
         self:AddTimer("test-cooldowns", conf, 15-t, GetTime()+15-t)
         t = t + 1
     end

@@ -127,6 +127,11 @@ QuickAuras.consumes = {
         default = QuickAuras.isShaman or QuickAuras.isPriest or QuickAuras.isDruid or QuickAuras.isPaladin,
     },
     {
+        name = "Thistle Tea",
+        itemId = 7676,
+        cooldown = true,
+    },
+    {
         name = "Troll's Blood Potion",
         spellIds = { 24361 },
         itemId = 20004,
@@ -151,18 +156,23 @@ QuickAuras.consumes = {
     },
 }
 
-function QuickAuras:BuildTrackedMissingBuffs()
-    for _, buff in ipairs(self.consumes) do
-        buff.option = "mb_"..buff.name:gsub("%s+", "")
-        debug(3, "BuildTrackedMissingBuffs", buff.name, buff.option, buff.spellIds, buff.visible)
-        if buff.spellIds then
-            buff.list = "missing"
+function QuickAuras:BuildTrackedItems()
+    local p = QuickAuras.defaultOptions.profile
+    debug(2, "BuildTrackedItems...")
+    for _, item in ipairs(self.consumes) do
+        item.option = "item_".. item.name:gsub("%s+", "")
+        debug(3, "BuildTrackedItems", item.name, item.option, item.spellIds, item.visible)
+        if item.spellIds then
+            item.list = "missing"
             --buff.tooltip = false
-            table.insert(self.trackedMissingBuffs, buff)
+            table.insert(self.trackedMissingBuffs, item)
         end
-        if (buff.visible == nil or buff.visible) then
-            buff.list = "reminder"
-            table.insert(self.trackedLowConsumes, buff)
+        if (item.visible == nil or item.visible) then
+            item.list = "reminder"
+            table.insert(self.trackedLowConsumes, item)
+        end
+        if item.cooldown then
+            self.trackedSpellCooldowns[item.itemId] = item
         end
     end
 end

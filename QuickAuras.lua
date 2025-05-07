@@ -13,6 +13,7 @@ QuickAuras.version = "0.4"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.bags = {} -- items in bags
 QuickAuras.playerBuffs = {} -- items in bags
+QuickAuras.existingConsumes = {}
 QAG = QuickAuras
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,
@@ -84,7 +85,7 @@ function QuickAuras:OnInitialize()
     self:BuildTrackedGear()
     self:BuildTrackedSpells()
     self:BuildTrackedTracking()
-    self:BuildTrackedMissingBuffs()
+    self:BuildTrackedItems()
     self:BuildOptions()
 
     self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)

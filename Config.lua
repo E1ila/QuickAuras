@@ -69,7 +69,8 @@ QuickAuras.trackedAuras = {}
 QuickAuras.trackedCombatLog = {}
 
 -- these will be detected through SPELL_UPDATE_COOLDOWN
-QuickAuras.trackedCooldowns = {}
+QuickAuras.trackedSpellCooldowns = {}
+QuickAuras.trackedItemCooldowns = {}
 
 QuickAuras.trackedMissingBuffs = {}
 
@@ -101,7 +102,7 @@ function QuickAuras:BuildTrackedGear()
 end
 
 function QuickAuras:BuildTrackedSpells()
-    debug("Building config...")
+    debug(2, "BuildTrackedSpells...")
     for category, cspells in pairs(QuickAuras.spells) do
         --debug(3, "BuildTrackedSpells", ">>", string.upper(category))
         for key, spell in pairs(cspells) do
@@ -115,7 +116,7 @@ function QuickAuras:BuildTrackedSpells()
                         self.trackedCombatLog[spellId] = spell
                     end
                     if spell.cooldown then
-                        self.trackedCooldowns[spellId] = spell
+                        self.trackedSpellCooldowns[spellId] = spell
                     end
                 end
             end

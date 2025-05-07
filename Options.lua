@@ -17,6 +17,7 @@ QuickAuras.defaultOptions = {
         lowConsumesInCapital = true,
         lowConsumesReminder = true,
         forceShowMissing = false,
+        warnFinishedConsume = true,
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,
@@ -522,22 +523,25 @@ end
 
 function QuickAuras:AddMissingBuffsOptions()
     local order = 0
-    for _, buff in ipairs(self.consumes) do
+    for _, item in ipairs(self.consumes) do
         order = order + 1
-        debug("Adding missing buff option", buff.name, buff.option, buff.default)
-        QuickAuras.defaultOptions.profile[buff.option] = buff.default == nil and true or buff.default
-        QuickAuras.options.args.consumes.args[buff.option] = {
+        debug("Adding missing buff option", item.name, item.option, item.default)
+        QuickAuras.defaultOptions.profile[item.option] = item.default == nil and true or item.default
+        if item.cooldown then
+            QuickAuras.defaultOptions.profile[item.option.."_cd"] = true
+        end
+        QuickAuras.options.args.consumes.args[item.option] = {
             type = "toggle",
-            name = buff.name,
-            desc = buff.desc or "Shows a warning when ".. buff.name.." buff is missing.",
+            name = item.name,
+            desc = item.desc or "Shows a warning when ".. item.name.." buff is missing.",
             get = function(info)
-                return QuickAuras.db.profile[buff.option]
+                return QuickAuras.db.profile[item.option]
             end,
             set = function(info, value)
-                QuickAuras.db.profile[buff.option] = value
-                if buff.spellIds then
+                QuickAuras.db.profile[item.option] = value
+                if item.spellIds then
                     QuickAuras:RefreshMissing()
-                    if (buff.visible == nil or buff.visible) then
+                    if (item.visible == nil or item.visible) then
                         QuickAuras:RefreshReminders()
                     end
                 end

@@ -9,14 +9,27 @@ function QuickAuras:CheckLowConsumes()
     for _, consume in pairs(self.trackedLowConsumes) do
         if not consume.option or self.db.profile[consume.option] then
             local foundItemId, details = self:FindInBags(consume.itemIds or consume.itemId)
+            local minCount = consume.minCount or self.db.profile.lowConsumesMinCount
             debug(3, "CheckLowConsumes", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and self.db.profile[consume.option])
             if
-                (not foundItemId or details.count < (consume.minCount or self.db.profile.lowConsumesMinCount))
+                (not foundItemId or details.count < minCount)
                 and self.db.profile.lowConsumesMinLevel <= self.playerLevel
             then
                 if self:AddIcon("reminder", "item", consume.itemId, consume, details and details.count or 0) then changed = true end
             else
                 if self:RemoveIcon("reminder", consume.itemId) then changed = true end
+            end
+            if minCount and self.db.profile.warnFinishedConsume then
+                if foundItemId then
+                    self.existingConsumes[consume.itemId] = true
+                elseif self.existingConsumes[consume.itemId] then
+                    -- no more item
+                    self.existingConsumes[consume.itemId] = nil
+                    if IsInInstance() then
+                        self:AddIcon("reminder", "item", consume.itemId, consume, 0)
+                        changed = true
+                    end
+                end
             end
         end
     end
@@ -83,14 +96,25 @@ function QuickAuras:CheckGear(eventType, ...)
     end
 end
 
+local function _checkCooldown(conf, start, duration)
+    if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
+        --debug("Cooldown", spellId, conf.name, start, duration, enabled)
+        local updatedDuration = duration - (GetTime() - start)
+        self:AddTimer("cooldowns", conf, updatedDuration, start + duration)
+    end
+end
+
 function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
-    for spellId, conf in pairs(self.trackedCooldowns) do
-        local start, duration, enabled = GetSpellCooldown(spellId)
-        if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
-            --debug("Cooldown", spellId, conf.name, start, duration, enabled)
-            local updatedDuration = duration - (GetTime() - start)
-            self:AddTimer("cooldowns", conf, updatedDuration, start + duration)
+    for spellId, conf in pairs(self.trackedSpellCooldowns) do
+        local start, duration = GetSpellCooldown(spellId)
+        _checkCooldown(conf, start, duration)
+    end
+    for itemId, conf in pairs(self.trackedItemCooldowns) do
+        -- show cooldown only if item is in bags
+        if QuickAuras.bags[conf.itemId] then
+            local start, duration = GetItemCooldown(itemId)
+            _checkCooldown(conf, start, duration)
         end
     end
 end

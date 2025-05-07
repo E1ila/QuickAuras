@@ -164,7 +164,7 @@ end
 function QuickAuras:CheckMissingBuffs()
     if not QuickAuras.db.profile.missingConsumes then return end
     local buffsChanged = false
-    if IsInInstance() then
+    if self.db.profile.forceShowMissing or IsInInstance() then
         for _, buff in ipairs(self.trackedMissingBuffs) do
             if not buff.option or self.db.profile[buff.option] then
                 local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)
@@ -223,6 +223,17 @@ end
 function QuickAuras:RefreshWarnings()
     self:ClearIcons("warning")
     self:CheckGear()
+end
+
+function QuickAuras:RefreshAlerts()
+    self:ClearIcons("alert")
+end
+
+function QuickAuras:RefreshAll()
+    self:RefreshWarnings()
+    self:RefreshMissing()
+    self:RefreshAlerts()
+    self:RefreshReminders()
 end
 
 -- DEBOUNCE FUNCTIONS

@@ -43,7 +43,9 @@ end
 
 -- frame creation -----------------------------------
 
-function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount)
+QuickAuras.ignoredIcons = {}
+
+function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -82,10 +84,18 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
         end)
     end
 
+    if onRightClick then
+        frame:SetScript("OnMouseDown", function(self, button)
+            if button == "RightButton" then
+                onRightClick()
+            end
+        end)
+    end
+
     return frame
 end
 
-function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip)
+function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip, onRightClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -116,6 +126,14 @@ function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, show
         end)
     end
 
+    if onRightClick then
+        frame:SetScript("OnMouseDown", function(self, button)
+            if button == "RightButton" then
+                onRightClick()
+            end
+        end)
+    end
+
     return frame
 end
 
@@ -136,30 +154,40 @@ end
 -- Icon warnings ------------------------------------
 
 local function GetIconList(type, idType)
-    local list, parent
+    local list, parent, Refresh
     local Create = idType == "item" and QuickAuras.CreateItemWarningIcon or QuickAuras.CreateSpellWarningIcon
     if type == "warning" then
         list = QuickAuras.iconWarnings
         parent = QuickAuras_IconWarnings
+        Refresh = QuickAuras.RefreshWarnings
     elseif type == "missing" then
         list = QuickAuras.missingBuffs
         parent = QuickAuras_MissingBuffs
+        Refresh = QuickAuras.RefreshMissing
     elseif type == "alert" then
         list = QuickAuras.iconAlerts
         parent = QuickAuras_IconAlerts
+        Refresh = QuickAuras.RefreshAlerts
     elseif type == "reminder" then
         list = QuickAuras.reminders
         parent = QuickAuras_Reminders
+        Refresh = QuickAuras.RefreshReminders
     end
-    return list, parent, Create
+    return list, parent, Create, Refresh
 end
 
 function QuickAuras:AddIcon(iconType, idType, id, conf, count)
-    local list, parent, Create = GetIconList(iconType, idType)
+    local key = iconType.."-"..idType.."-"..tostring(id)
+    if QuickAuras.ignoredIcons[key] then return end
+    local list, parent, Create, Refresh = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
         local showCount = iconType == "reminder" and (conf.minCount or self.db.profile.lowConsumesMinCount)
-        local frame = Create(self, id, parent, iconType .."-".. id, conf.tooltip == nil or conf.tooltip, showCount)
+        local onRightClick = Refresh and function()
+            QuickAuras.ignoredIcons[key] = true
+            Refresh(QuickAuras)
+        end or nil
+        local frame = Create(self, id, parent, iconType .."-".. id, conf.tooltip == nil or conf.tooltip, showCount, onRightClick)
         list[id] = {
             name = conf.name,
             conf = conf,

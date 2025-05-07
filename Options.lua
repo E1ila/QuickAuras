@@ -16,6 +16,7 @@ QuickAuras.defaultOptions = {
         remindersEnabled = true,
         lowConsumesInCapital = true,
         lowConsumesReminder = true,
+        forceShowMissing = false,
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,

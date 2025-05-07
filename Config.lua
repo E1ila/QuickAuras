@@ -2,9 +2,6 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-local TEXTURE_POTION_READY = "Mage-ArcaneCharge"
-local TEXTURE_MANATIDE_READY = "FlightMaster_VindicaarMacAree-Taxi_Frame_Green"
-
 QuickAuras.optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",

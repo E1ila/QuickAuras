@@ -172,6 +172,9 @@ function QuickAuras:HandleSlashCommand(input)
             else
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
+        elseif cmd == "r" or cmd == "reset" then
+            self.ignoredIcons = {}
+            self:RefreshAll()
         elseif cmd == "test" then
             self:DemoUI()
         elseif cmd == "test2" then
@@ -181,7 +184,10 @@ function QuickAuras:HandleSlashCommand(input)
         elseif cmd == "reset" then
             self:ResetWidgets()
         else
-            out("Unknown command. Use '/qa' to open the options or '/mu debug' to toggle debug mode.")
+            out("QuickAuras available commands:")
+            out("  |cFF00FFaa/qa|r - Open options")
+            out("  |cFF00FFaa/qa lock|r - Toggle lock/unlock window position")
+            out("  |cFF00FFaa/qa reset|r - Reset ignored (right clicked) icons")
         end
     end
 end

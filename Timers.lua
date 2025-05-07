@@ -2,11 +2,11 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
+function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent
     local widthMul = 1
-    if source == "test-cooldowns" or source == "cooldowns" then
+    if timerType == "test-cooldowns" or timerType == "cooldowns" then
         list = self.cooldowns
         parent = QuickAuras_Cooldowns
         uiType = "button"
@@ -68,7 +68,7 @@ function QuickAuras:AddTimer(source, conf, duration, expTime, onUpdate, onEnd)
         onEnd = onEnd,
         uiType = uiType,
         parent = parent,
-        source = source,
+        timerType = timerType,
         flashOnEnd = conf.flashOnEnd,
         widthMul = widthMul,
         arrangeFunc = arrangeFunc,
@@ -90,11 +90,11 @@ end
 function QuickAuras:DebugPrintTimers()
     debug("timers")
     for _, timer in pairs(self.timers) do
-        debug("  - ", timer.key, "source", timer.source, "expTime", timer.expTime, "duration", timer.duration)
+        debug("  - ", timer.key, "timerType", timer.timerType, "expTime", timer.expTime, "duration", timer.duration)
     end
     debug("timerByName")
     for _, timer in pairs(self.timerByName) do
-        debug("  - ", timer.key, "source", timer.source, "expTime", timer.expTime, "duration", timer.duration)
+        debug("  - ", timer.key, "timerType", timer.timerType, "expTime", timer.expTime, "duration", timer.duration)
     end
     debug("lists")
     debug("  - watchBars", #self.watchBars)

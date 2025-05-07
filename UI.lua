@@ -483,17 +483,20 @@ end
 
 local lastErrorTime = 0
 local errorCount = 0
+local OOR_TIMEOUT_SEC = 10
+local OOR_CYCLE = 6
+local OOR_SOUND = 3
 function QuickAuras:ShowNoticableError(text)
     QuickAuras_OutOfRange_Text:SetText(string.upper(text))
     QuickAuras_OutOfRange:Show()
     if self.db.profile.outOfRangeSound then
-        if GetTime() - lastErrorTime > 6 then
+        if GetTime() - lastErrorTime > OOR_TIMEOUT_SEC then
             errorCount = 0
         end
         lastErrorTime = GetTime()
-        if errorCount == 1 then
+        if errorCount == OOR_SOUND then
             PlaySoundFile("Interface\\AddOns\\QuickAuras\\assets\\sonar.ogg", "Master")
-        elseif errorCount == 4 then
+        elseif errorCount == OOR_CYCLE then
             errorCount = 0
         end
         errorCount = errorCount + 1

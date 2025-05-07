@@ -202,12 +202,27 @@ function QuickAuras:UpdateZone()
         self.inCapital = self.capitalCities[newZoneName]
         debug(2, "UpdateZone", "inInstance", inInstance, "instanceType", instanceType, "instanceName", self.InstanceName, "zoneName", self.ZoneName, "inCapital", self.inCapital)
         -- zone dependant checks
-        self:ClearIcons("reminder")
-        self:CheckTrackingStatus()
-        self:CheckLowConsumes()
-        self:ClearIcons("missing") -- need to remove buff reminders when going out of an instance
-        self:CheckMissingBuffs()
+        self:RefreshReminders()
+        self:RefreshMissing()
     end
+end
+
+-- Icon management
+
+function QuickAuras:RefreshMissing()
+    self:ClearIcons("missing")
+    self:CheckMissingBuffs()
+end
+
+function QuickAuras:RefreshReminders()
+    self:ClearIcons("reminder")
+    self:CheckTrackingStatus()
+    self:CheckLowConsumes()
+end
+
+function QuickAuras:RefreshWarnings()
+    self:ClearIcons("warning")
+    self:CheckGear()
 end
 
 -- DEBOUNCE FUNCTIONS

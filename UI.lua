@@ -515,9 +515,7 @@ end
 
 local DelayedReset_Reminders = QuickAuras:Debounce(function()
     debug("TestReminders timer ended")
-    QuickAuras:ClearIcons("reminder")
-    QuickAuras:CheckTrackingStatus()
-    QuickAuras:CheckLowConsumes()
+    QuickAuras:RefreshReminders()
 end, 3)
 
 function QuickAuras:TestReminders()
@@ -533,8 +531,7 @@ end
 
 local DelayedReset_IconMissingBuffs = QuickAuras:Debounce(function()
     debug("TestIconMissingBuffs timer ended")
-    QuickAuras:ClearIcons("missing")
-    QuickAuras:CheckAuras()
+    QuickAuras:RefreshMissing()
 end, 3)
 
 function QuickAuras:TestIconMissingBuffs()
@@ -550,8 +547,7 @@ end
 
 local DelayedReset_IconWarnings = QuickAuras:Debounce(function()
     debug("TestIconWarnings timer ended")
-    QuickAuras:ClearIcons("warning")
-    QuickAuras:CheckGear()
+    QuickAuras:RefreshWarnings()
 end, 3)
 
 function QuickAuras:TestIconWarnings()

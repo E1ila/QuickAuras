@@ -113,8 +113,7 @@ QuickAuras.options = {
             get = function(info) return QuickAuras.db.profile.missingConsumes end,
             set = function(info, value)
                 QuickAuras.db.profile.missingConsumes = value
-                QuickAuras:ClearIcons("missing")
-                QuickAuras:CheckMissingBuffs()
+                QuickAuras:RefreshMissing()
             end,
             order = 9,
         },
@@ -125,9 +124,7 @@ QuickAuras.options = {
             get = function(info) return QuickAuras.db.profile.remindersEnabled end,
             set = function(info, value)
                 QuickAuras.db.profile.remindersEnabled = value
-                QuickAuras:ClearIcons("reminder")
-                QuickAuras:CheckTrackingStatus()
-                QuickAuras:CheckLowConsumes()
+                QuickAuras:RefreshReminders()
             end,
             order = 10,
         },
@@ -482,8 +479,7 @@ function QuickAuras:AddGearWarningOptions()
             end,
             set = function(info, value)
                 QuickAuras.db.profile[obj.option] = value
-                QuickAuras:ClearIcons("warning")
-                QuickAuras:CheckGear()
+                QuickAuras:RefreshWarnings()
             end,
             order = order,
         }
@@ -507,9 +503,7 @@ function QuickAuras:AddRemindersOptions()
             set = function(info, value)
                 debug(3, "Set reminder", obj.name, obj.option, value)
                 QuickAuras.db.profile[obj.option] = value
-                QuickAuras:ClearIcons("reminder")
-                QuickAuras:CheckTrackingStatus()
-                QuickAuras:CheckLowConsumes()
+                QuickAuras:RefreshReminders()
             end,
             order = order,
         }
@@ -541,12 +535,9 @@ function QuickAuras:AddMissingBuffsOptions()
             set = function(info, value)
                 QuickAuras.db.profile[buff.option] = value
                 if buff.spellIds then
-                    QuickAuras:ClearIcons("missing") -- need to clear, since CheckAuras don't remove disabled buffs
-                    QuickAuras:CheckMissingBuffs()
+                    QuickAuras:RefreshMissing()
                     if (buff.visible == nil or buff.visible) then
-                        QuickAuras:ClearIcons("reminder")
-                        QuickAuras:CheckTrackingStatus()
-                        QuickAuras:CheckLowConsumes()
+                        QuickAuras:RefreshReminders()
                     end
                 end
             end,

@@ -18,8 +18,7 @@ function QuickAuras:InitUI()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
-
-    self:CheckWeaponEnchant()
+    --self:CheckWeaponEnchant()
 end
 
 function QuickAuras:InitWeaponEnchants()
@@ -37,11 +36,16 @@ function QuickAuras:SetWeaponEnchantIcon(slot, itemId)
 end
 
 function QuickAuras:InitCrucialBuffMissing()
-    local battleShoutTexture = GetSpellTexture(25289)
     QuickAuras_CrucialBuffMissing.icon = QuickAuras_CrucialBuffMissing:CreateTexture(nil, "BACKGROUND")
     QuickAuras_CrucialBuffMissing.icon:SetAllPoints(QuickAuras_CrucialBuffMissing)
-    QuickAuras_CrucialBuffMissing.icon:SetTexture(battleShoutTexture)
     QuickAuras_CrucialBuffMissing:SetSize(self.db.profile.crucialBuffsSize, self.db.profile.crucialBuffsSize)
+    QuickAuras_CrucialBuffMissing:Hide()
+    self:SetCrucialBuffIcon(25289) -- battle shout
+end
+
+function QuickAuras:SetCrucialBuffIcon(spellId)
+    local texture = GetSpellTexture(spellId)
+    QuickAuras_CrucialBuffMissing.icon:SetTexture(texture)
 end
 
 function QuickAuras:ResetRogueWidgets()

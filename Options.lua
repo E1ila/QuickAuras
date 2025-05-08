@@ -15,7 +15,8 @@ QuickAuras.defaultOptions = {
         missingConsumes = true,
         remindersEnabled = true,
         lowConsumesInCapital = true,
-        lowConsumesReminder = true,
+        reminderLowConsumes = true,
+        reminderTransmute = true,
         forceShowMissing = false,
         outOfConsumeWarning = true,
         missingBuffsMode = "raid",
@@ -27,7 +28,7 @@ QuickAuras.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         missingBuffsSize = 35,
-        remindersBuffsSize = 30,
+        reminderIconSize = 30,
         weaponEnchantSize = 40,
         crucialBuffsSize = 50,
         rogue5combo = true,
@@ -241,16 +242,16 @@ QuickAuras.options = {
                     end,
                     order = 106,
                 },
-                remindersBuffsSize = {
+                reminderIconSize = {
                     type = "range",
                     name = "Reminders Size",
                     desc = "Set the size of the missing consumes icons",
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.remindersBuffsSize end,
+                    get = function(info) return QuickAuras.db.profile.reminderIconSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.remindersBuffsSize = value
+                        QuickAuras.db.profile.reminderIconSize = value
                         QuickAuras:TestReminders()
                     end,
                     order = 107,
@@ -418,18 +419,16 @@ QuickAuras.options = {
             name = "Reminders",
             order = 10003,
             args = {
-                lowConsumesReminder = {
+                reminderLowConsumes = {
                     type = "toggle",
                     name = "Low Consumes",
                     desc = "Shows a reminder to get consumes you're low on, at a capital city",
                     get = function(info)
-                        return QuickAuras.db.profile.lowConsumesReminder
+                        return QuickAuras.db.profile.reminderLowConsumes
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.lowConsumesReminder = value
-                        QuickAuras:ClearIcons("reminder")
-                        QuickAuras:CheckTrackingStatus()
-                        QuickAuras:CheckLowConsumes()
+                        QuickAuras.db.profile.reminderLowConsumes = value
+                        QuickAuras:RefreshReminders()
                     end,
                     order = 100,
                 },
@@ -442,6 +441,19 @@ QuickAuras.options = {
                     end,
                     set = function(info, value)
                         QuickAuras.db.profile.outOfConsumeWarning = value
+                    end,
+                    order = 101,
+                },
+                reminderTransmute = {
+                    type = "toggle",
+                    name = "Transmute",
+                    desc = "Reminder icon when Arcanite transmute, Mooncloth or Salt Shaker are ready.",
+                    get = function(info)
+                        return QuickAuras.db.profile.reminderTransmute
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.reminderTransmute = value
+                        QuickAuras:RefreshReminders()
                     end,
                     order = 101,
                 },
@@ -469,14 +481,14 @@ local function AddSpells(cspells, subCategory)
     local order = 1
     for spellKey, spell in pairs(cspells) do
         order = order + 1
-        --debug("Adding spell option", spellKey, spell.name, spell.spellId, spell.visible)
+        debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
         if spell.visible == nil or spell.visible == true then
             -- obj.option in format of class_abilityName
             if QuickAuras.defaultOptions.profile[spell.option] == nil then
                 QuickAuras.defaultOptions.profile[spell.option] = true
             end
             local categoryOptions = QuickAuras.options.args[spell.category or "bars"]
-            if categoryOptions and spell.list then
+            if categoryOptions and spell.list and not spell.transmute then
                 local args = categoryOptions.args
                 local sub = subCategory or spell.subCategory
                 if sub and args[sub] then
@@ -520,6 +532,7 @@ function QuickAuras:AddAbilitiesOptions()
     AddSpells(QuickAuras.spells.racials)
     AddSpells(QuickAuras.spells.iconAlerts)
     AddSpells(QuickAuras.spells.other)
+    AddSpells(QuickAuras.spells.transmutes)
     --AddSpells(QuickAuras.spells.reminders)
     AddSpells(QuickAuras.spells.trinkets, "trinkets")
     local lowerClass = string.lower(QuickAuras.playerClass)

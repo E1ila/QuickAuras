@@ -2,6 +2,26 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
+function QuickAuras:CheckTransmuteCooldown()
+    if not self.db.profile.remindersEnabled or not self.db.profile.reminderTransmute then return end
+    local changed = false
+    for _, spell in pairs(self.spells.transmutes) do
+        if IsPlayerSpell(spell.spellId[1]) then
+            local start, duration, enabled = GetSpellCooldown(spell.spellId[1])
+            if start == 0 then
+                if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
+            elseif start + duration - GetTime() < 60 then
+                local timer = self:AddTimer("reminder", spell, 100, GetTime()+100)
+                local fontSize = math.floor(self.db.profile.reminderIconSize/2)
+                timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
+            end
+        end
+    end
+    if changed then
+        self:ArrangeIcons("reminder")
+    end
+end
+
 function QuickAuras:CheckWeaponEnchant()
     local mh, expiration, _, enchid, _, _, _, _ = GetWeaponEnchantInfo("player")
     local mhItemId = GetInventoryItemID("player", 16)
@@ -10,7 +30,7 @@ function QuickAuras:CheckWeaponEnchant()
 end
 
 function QuickAuras:CheckLowConsumes()
-    if not self.db.profile.remindersEnabled or not self.db.profile.lowConsumesReminder then return end
+    if not self.db.profile.remindersEnabled or not self.db.profile.reminderLowConsumes then return end
     if self.db.profile.lowConsumesInCapital and not self.inCapital then return end
     local changed = false
     for _, consume in pairs(self.trackedLowConsumes) do
@@ -234,6 +254,7 @@ function QuickAuras:RefreshReminders()
     self:ClearIcons("reminder")
     self:CheckTrackingStatus()
     self:CheckLowConsumes()
+    self:CheckTransmuteCooldown()
 end
 
 function QuickAuras:RefreshWarnings()

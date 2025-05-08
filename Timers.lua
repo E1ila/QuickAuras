@@ -24,7 +24,7 @@ function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd
         parent = QuickAuras_IconAlerts
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert") end
-    elseif conf.list == "reminder" then
+    elseif timerType == "reminder" or conf.list == "reminder" then
         list = self.reminders
         parent = QuickAuras_Reminders
         uiType = "button"

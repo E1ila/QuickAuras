@@ -94,7 +94,7 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
 
     if showCount then
         local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-        counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(self.db.profile.remindersBuffsSize/2), "OUTLINE")
+        counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(self.db.profile.reminderIconSize/2), "OUTLINE")
         counterText:SetTextColor(1, 1, 1, 1)
         counterText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2) -- Position the counter
         counterText:SetText("0") -- Default value
@@ -286,7 +286,7 @@ function QuickAuras:ArrangeIcons(iconType)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
-            frame:SetSize(self.db.profile.remindersBuffsSize, self.db.profile.remindersBuffsSize) -- Width, Height
+            frame:SetSize(self.db.profile.reminderIconSize, self.db.profile.reminderIconSize) -- Width, Height
         elseif iconType == "alert" then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
@@ -431,9 +431,9 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     frame.cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
     frame.cooldown:SetAllPoints(frame)
 
-    local cooldownText = frame.cooldown:GetRegions() -- Get the font region
-    if cooldownText and cooldownText.SetFont then
-        cooldownText:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE") -- Set font, size, and style
+    frame.cooldownText = frame.cooldown:GetRegions() -- Get the font region
+    if frame.cooldownText and frame.cooldownText.SetFont then
+        frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE") -- Set font, size, and style
     end
 
     return frame

@@ -318,6 +318,7 @@ spells.racials = {
         spellId = { 20554 },
         name = "Berserking",
         icon = "Interface\\Icons\\racial_troll_berserk",
+        list = "watch",
         cooldown = true,
         visible = QuickAuras.isTroll,
     },
@@ -364,6 +365,30 @@ spells.reminders = {
         icon = "Interface\\Icons\\inv_misc_flower_02",
         list = "reminder",
         visible = IsSpellKnown(2580),
+    },
+}
+
+spells.transmutes = {
+    saltShaker = {
+        spellId = { 10662 },
+        name = "Salt Shaker",
+        transmute = true,
+        list = "reminder",
+        icon = "Interface\\Icons\\inv_misc_armorkit_17",
+    },
+    arcanite = {
+        spellId = { 17187 },
+        name = "Arcanite Transmute",
+        transmute = true,
+        list = "reminder",
+        icon = "Interface\\Icons\\inv_misc_stonetablet_05",
+    },
+    mooncloth = {
+        spellId = { 18560 },
+        name = "Mooncloth",
+        transmute = true,
+        list = "reminder",
+        icon = "Interface\\Icons\\inv_fabric_moonrag_01",
     },
 }
 

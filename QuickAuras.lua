@@ -104,9 +104,13 @@ function QuickAuras:OnInitialize()
 
     C_Timer.After(0.2, function()
         debug("Init delay ended")
-        QuickAuras:ScanBags()
+        self:ScanBags()
+        if not self.db.profile.initialized then
+            debug("First time initialization")
+            self.db.profile.initialized = true
+            self:SetOptionsDefaults()
+        end
         QuickAuras:InitUI()
-        QuickAuras:LoadConfig()
         QuickAuras:RegisterOptionalEvents()
         QuickAuras:CheckAuras()
         QuickAuras:CheckCooldowns()
@@ -140,10 +144,6 @@ function QuickAuras:UnregisterOptionalEvents()
     for _, event in ipairs(self.optionalEvents) do
         self.events:UnregisterEvent(event)
     end
-end
-
-function QuickAuras:LoadConfig()
-    debug("Loading config")
 end
 
 function QuickAuras:Options_ToggleEnabled(value)

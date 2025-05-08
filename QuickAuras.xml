@@ -186,7 +186,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Missing Consumes">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Missing Buffs">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />
@@ -236,7 +236,7 @@
 
     <Frame name="QuickAuras_Reminders" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
-            <AbsDimension x="80" y="80" />
+            <AbsDimension x="90" y="40" />
         </Size>
         <Anchors>
             <Anchor point="LEFT" relativePoint="CENTER" relativeTo="UIParent" x="-650" y="50" />

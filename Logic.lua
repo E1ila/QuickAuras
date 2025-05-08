@@ -97,10 +97,10 @@ function QuickAuras:CheckGear(eventType, ...)
 end
 
 local function _checkCooldown(conf, start, duration)
-    if start > 0 and duration > 2 and (not conf.option or self.db.profile[conf.option.."_cd"]) then
+    if start > 0 and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
         --debug("Cooldown", spellId, conf.name, start, duration, enabled)
         local updatedDuration = duration - (GetTime() - start)
-        self:AddTimer("cooldowns", conf, updatedDuration, start + duration)
+        QuickAuras:AddTimer("cooldowns", conf, updatedDuration, start + duration)
     end
 end
 
@@ -188,7 +188,10 @@ end
 function QuickAuras:CheckMissingBuffs()
     if not QuickAuras.db.profile.missingConsumes then return end
     local buffsChanged = false
-    if self.db.profile.forceShowMissing or IsInInstance() then
+    if  self.db.profile.forceShowMissing or
+        self.db.profile.missingBuffsMode == "instance" and IsInInstance() or
+        self.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
+    then
         for _, buff in ipairs(self.trackedMissingBuffs) do
             if not buff.option or self.db.profile[buff.option] then
                 local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)

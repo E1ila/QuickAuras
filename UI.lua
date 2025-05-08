@@ -208,7 +208,6 @@ end
 function QuickAuras:RemoveIcon(iconType, id)
     local list = GetIconList(iconType)
     if list[id] then
-        debug("RemoveIconWarning", itemId)
         local frame = list[id].frame
         frame:Hide()
         frame:SetParent(nil)

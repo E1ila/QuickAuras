@@ -18,6 +18,7 @@ QuickAuras.defaultOptions = {
         lowConsumesReminder = true,
         forceShowMissing = false,
         outOfConsumeWarning = true,
+        missingBuffsMode = "raid",
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,
@@ -26,7 +27,7 @@ QuickAuras.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         missingBuffsSize = 35,
-        remindersBuffsSize = 60,
+        remindersBuffsSize = 30,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -361,6 +362,16 @@ QuickAuras.options = {
             name = "Gear Warnings",
             order = 10000,
             args = {
+                header1 = {
+                    type = "header",
+                    name = "",
+                    order = 998,
+                },
+                title = {
+                    type = "description",
+                    name = "FYI: You can right click warning icons to dismiss them for this session.",
+                    order = 999,
+                },
             }
         },
         iconAlerts = {
@@ -375,6 +386,29 @@ QuickAuras.options = {
             name = "Consumes",
             order = 10002,
             args = {
+                header1 = {
+                    type = "header",
+                    name = "Consumables Options",
+                    order = 999,
+                },
+                missingBuffsMode = {
+                    type = "select",
+                    name = "Show Missing Buffs",
+                    desc = "Choose when to show missing buffs.",
+                    values = {
+                        never = "Never",
+                        instance = "Any Instance",
+                        raid = "Raid Instances",
+                    },
+                    get = function(info)
+                        return QuickAuras.db.profile.missingBuffsMode or "raid"
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.missingBuffsMode = value
+                        QuickAuras:RefreshMissing()
+                    end,
+                    order = 1000,
+                },
             },
         },
         reminders = {
@@ -395,19 +429,34 @@ QuickAuras.options = {
                         QuickAuras:CheckTrackingStatus()
                         QuickAuras:CheckLowConsumes()
                     end,
-                    order = 1,
+                    order = 100,
                 },
                 outOfConsumeWarning = {
                     type = "toggle",
                     name = "Out of Consume",
-                    desc = "Shows a warning if a consume has finished during an instance. Right click icon to dismiss.",
+                    desc = "Shows a warning if a consumable has been depleted during an instance. Right click icon to dismiss.",
                     get = function(info)
                         return QuickAuras.db.profile.outOfConsumeWarning
                     end,
                     set = function(info, value)
                         QuickAuras.db.profile.outOfConsumeWarning = value
                     end,
-                    order = 1,
+                    order = 101,
+                },
+                header1 = {
+                    type = "header",
+                    name = "Gathering",
+                    order = 199,
+                },
+                header2 = {
+                    type = "header",
+                    name = "",
+                    order = 299,
+                },
+                title = {
+                    type = "description",
+                    name = "FYI: You can right click reminder icons to dismiss them for this session.",
+                    order = 999,
                 },
             },
         }
@@ -479,7 +528,7 @@ function QuickAuras:AddAbilitiesOptions()
 end
 
 function QuickAuras:AddGearWarningOptions()
-    local order = 0
+    local order = 200
     for itemId, obj in pairs(QuickAuras.trackedGear) do
         order = order + 1
         obj.option = "gw_"..obj.name:gsub("%s+", "")
@@ -501,7 +550,7 @@ function QuickAuras:AddGearWarningOptions()
 end
 
 function QuickAuras:AddRemindersOptions()
-    local order = 0
+    local order = 200
 
     local function AddOption(obj, optionsList)
         obj.option = "reminders_"..obj.name:gsub("%s+", "")
@@ -527,6 +576,7 @@ function QuickAuras:AddRemindersOptions()
     --    order = order + 1
     --    AddOption(obj)
     --end
+    order = 200
     for _, obj in pairs(QuickAuras.trackedTracking) do
         order = order + 1
         AddOption(obj, QuickAuras.options.args.reminders)
@@ -534,32 +584,33 @@ function QuickAuras:AddRemindersOptions()
 end
 
 function QuickAuras:AddMissingBuffsOptions()
-    local order = 0
+    local order = 200
     for _, item in ipairs(self.consumes) do
-        order = order + 1
-        debug("Adding missing buff option", item.name, item.option, item.default)
-        QuickAuras.defaultOptions.profile[item.option] = item.default == nil and true or item.default
-        if item.cooldown then
-            QuickAuras.defaultOptions.profile[item.option.."_cd"] = true
-        end
-        QuickAuras.options.args.consumes.args[item.option] = {
-            type = "toggle",
-            name = item.name,
-            desc = item.desc or "Shows a warning when ".. item.name.." buff is missing.",
-            get = function(info)
-                return QuickAuras.db.profile[item.option]
-            end,
-            set = function(info, value)
-                QuickAuras.db.profile[item.option] = value
-                if item.spellIds then
-                    QuickAuras:RefreshMissing()
-                    if (item.visible == nil or item.visible) then
-                        QuickAuras:RefreshReminders()
+        if item.visible == nil or item.visible then
+            order = order + 1
+            debug("Adding missing buff option", item.name, item.option, item.default)
+            if item.cooldown then
+                QuickAuras.defaultOptions.profile[item.option.."_cd"] = true
+            end
+            QuickAuras.options.args.consumes.args[item.option] = {
+                type = "toggle",
+                name = item.name,
+                desc = item.desc or "Shows a warning when ".. item.name.." buff is missing.",
+                get = function(info)
+                    return QuickAuras.db.profile[item.option]
+                end,
+                set = function(info, value)
+                    QuickAuras.db.profile[item.option] = value
+                    if item.spellIds then
+                        QuickAuras:RefreshMissing()
+                        if (item.visible == nil or item.visible) then
+                            QuickAuras:RefreshReminders()
+                        end
                     end
-                end
-            end,
-            order = order,
-        }
+                end,
+                order = order,
+            }
+        end
     end
 end
 
@@ -568,4 +619,15 @@ function QuickAuras:BuildOptions()
     self:AddGearWarningOptions()
     self:AddMissingBuffsOptions()
     self:AddRemindersOptions()
+end
+
+--------
+
+function QuickAuras:SetOptionsDefaults()
+    for _, item in ipairs(self.consumes) do
+        if (item.visible == nil or item.visible) and self.bags[item.itemId] then
+            -- enable currently helf consumes for low consumes reminder
+            self.db.profile[item.option] = true
+        end
+    end
 end

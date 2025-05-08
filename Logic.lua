@@ -2,6 +2,13 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
+function QuickAuras:CheckWeaponEnchant()
+    local mh, expiration, _, enchid, _, _, _, _ = GetWeaponEnchantInfo("player")
+    local mhItemId = GetInventoryItemID("player", 16)
+    debug("CheckWeaponEnchant", "mh", mh, "expiration", expiration, "enchid", enchid, "mhItemId", mhItemId)
+    self:SetWeaponEnchantIcon(1, mhItemId)
+end
+
 function QuickAuras:CheckLowConsumes()
     if not self.db.profile.remindersEnabled or not self.db.profile.lowConsumesReminder then return end
     if self.db.profile.lowConsumesInCapital and not self.inCapital then return end
@@ -135,26 +142,6 @@ local function FixAuraExpTime(duration, expTime, aura, spellId)
     return duration, expTime
 end
 
-function QuickAuras:FindInBags(itemIds)
-    if type(itemIds) ~= "table" then
-        return self.bags[itemIds] and itemIds, self.bags[itemIds]
-    end
-    for _, itemId in  ipairs(itemIds) do
-        local f = self.bags[itemId]
-        if f then
-            return itemId, f
-        end
-    end
-end
-
-function QuickAuras:HasSeenAny(ids, seenHash)
-    for _, id in ipairs(ids) do
-        if seenHash[id] then
-            return true
-        end
-    end
-end
-
 function QuickAuras:CheckAuras()
     local i = 1
     local seen = {}
@@ -216,6 +203,8 @@ function QuickAuras:CheckMissingBuffs()
     end
 end
 
+-- Zone change
+
 function QuickAuras:UpdateZone()
     local newZoneName = GetRealZoneText()
     local zoneChanged = newZoneName ~= self.ZoneName
@@ -276,3 +265,25 @@ QuickAuras.ZoneChanged = QuickAuras:Debounce(function()
     debug(2, "Zone Update")
     QuickAuras:UpdateZone()
 end, 2)
+
+-- Utils
+
+function QuickAuras:FindInBags(itemIds)
+    if type(itemIds) ~= "table" then
+        return self.bags[itemIds] and itemIds, self.bags[itemIds]
+    end
+    for _, itemId in  ipairs(itemIds) do
+        local f = self.bags[itemId]
+        if f then
+            return itemId, f
+        end
+    end
+end
+
+function QuickAuras:HasSeenAny(ids, seenHash)
+    for _, id in ipairs(ids) do
+        if seenHash[id] then
+            return true
+        end
+    end
+end

@@ -173,14 +173,14 @@ function QuickAuras:HandleSlashCommand(input)
             else
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
-        elseif cmd == "r" or cmd == "reset" then
+        elseif cmd == "c" or cmd == "clear" then
             self.ignoredIcons = {}
             self:RefreshAll()
         elseif cmd == "test" then
             self:DemoUI()
         elseif cmd == "test2" then
             self:DemoUI2()
-        elseif cmd == "lock" then
+        elseif cmd == "lock" or cmd == "l" then
             self:ToggleLockedState()
         elseif cmd == "reset" then
             self:ResetWidgets()
@@ -188,7 +188,8 @@ function QuickAuras:HandleSlashCommand(input)
             out("QuickAuras available commands:")
             out("  |cFF00FFaa/qa|r - Open options")
             out("  |cFF00FFaa/qa lock|r - Toggle lock/unlock window position")
-            out("  |cFF00FFaa/qa reset|r - Reset ignored (right clicked) icons")
+            out("  |cFF00FFaa/qa clear|r - Clear ignored (right clicked) icons")
+            --out("  |cFF00FFaa/qa reset|r - Reset UI position")
         end
     end
 end

@@ -7,13 +7,15 @@ function QuickAuras:CheckTransmuteCooldown()
     local changed = false
     for _, spell in pairs(self.spells.transmutes) do
         if IsPlayerSpell(spell.spellId[1]) then
-            local start, duration, enabled = GetSpellCooldown(spell.spellId[1])
+            local start, duration, enabled = spell.itemId and QuickAuras:GetItemCooldown(spell.itemId) GetSpellCooldown(spell.spellId[1])
             if start == 0 then
                 if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
             elseif start + duration - GetTime() < 60 then
                 local timer = self:AddTimer("reminder", spell, 100, GetTime()+100)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
+            else
+                if self:RemoveIcon("reminder", spell.spellId[1]) then changed = true end
             end
         end
     end
@@ -140,7 +142,7 @@ function QuickAuras:CheckCooldowns()
     for itemId, conf in pairs(self.trackedItemCooldowns) do
         -- show cooldown only if item is in bags
         if QuickAuras.bags[conf.itemId] then
-            local start, duration = GetItemCooldown(itemId)
+            local start, duration = QuickAuras:GetItemCooldown(itemId)
             _checkCooldown(conf, start, duration)
         end
     end
@@ -280,6 +282,7 @@ QuickAuras.BagsChanged = QuickAuras:Debounce(function()
     QuickAuras:ScanBags()
     QuickAuras:CheckMissingBuffs()
     QuickAuras:CheckLowConsumes()
+    QuickAuras:CheckTransmuteCooldown()
 end, 0.5)
 
 QuickAuras.ZoneChanged = QuickAuras:Debounce(function()
@@ -306,5 +309,13 @@ function QuickAuras:HasSeenAny(ids, seenHash)
         if seenHash[id] then
             return true
         end
+    end
+end
+
+function QuickAuras:GetItemCooldown(itemId)
+    if C_Container and C_Container.GetItemCooldown then
+        return C_Container.GetItemCooldown(itemId)
+    else
+        return GetItemCooldown(itemId)
     end
 end

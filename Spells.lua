@@ -371,6 +371,7 @@ spells.reminders = {
 spells.transmutes = {
     saltShaker = {
         spellId = { 10662 },
+        itemId = 15846,
         name = "Salt Shaker",
         transmute = true,
         list = "reminder",

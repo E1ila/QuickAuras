@@ -2,7 +2,7 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd)
+function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, onEnd)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent
     local widthMul = 1
@@ -64,6 +64,7 @@ function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd
         frame = frame,
         index = index,
         list = list,
+        id = id,
         name = conf.name,
         icon = conf.icon,
         color = conf.color or {0.5, 0.5, 0.5},
@@ -77,9 +78,10 @@ function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd
         flashOnEnd = conf.flashOnEnd,
         widthMul = widthMul,
         arrangeFunc = arrangeFunc,
+        isTimer = true
     }
     timer.key = self:GetTimerKey(conf.name, expTime, uiType)
-    list[timer.key] = timer
+    list[id] = timer
     self.timers[timer.key] = timer
     self.timerByName[conf.name.."-"..uiType] = timer
     onUpdate(timer)
@@ -101,7 +103,7 @@ function QuickAuras:RemoveTimer(timer, reason)
     timer.frame:SetParent(nil)
     timer.frame:ClearAllPoints()
     timer.frame = nil
-    timer.list[timer.key] = nil
+    timer.list[timer.id] = nil
     self.timerByName[timer.name.."-"..timer.uiType] = nil
     self.timers[timer.key] = nil
     --debug(" -- ", timer.key)

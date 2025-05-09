@@ -236,12 +236,17 @@ end
 
 function QuickAuras:RemoveIcon(iconType, id)
     local list = GetIconList(iconType)
-    if list[id] then
-        local frame = list[id].frame
-        frame:Hide()
-        frame:SetParent(nil)
-        frame:ClearAllPoints()
-        list[id] = nil
+    local obj = list[id]
+    if obj then
+        if obj.isTimer then
+            self:RemoveTimer(obj, "removeicon")
+        else
+            local frame = obj.frame
+            frame:Hide()
+            frame:SetParent(nil)
+            frame:ClearAllPoints()
+            list[id] = nil
+        end
         return true
     end
 end
@@ -549,13 +554,13 @@ end
 function QuickAuras:TestProgressBar(spells, limit)
     local i = 0
     local seen = {}
-    for _, conf in pairs(spells) do
+    for key, conf in pairs(spells) do
         if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
             debug("TestProgressBar", "conf", conf.name, conf.list, limit)
             seen[conf.name] = true
             local duration = 15 - (i*2)
             local expTime = GetTime() + duration
-            self:AddTimer("test", conf, duration, expTime)
+            self:AddTimer("test", conf, key, duration, expTime)
             if i == limit then break end
             i = i + 1
         end
@@ -569,13 +574,13 @@ end
 
 function QuickAuras:TestFlashBar()
     local snd = self.trackedAuras[6774]
-    self:AddTimer("test", snd, 5, GetTime()+5)
+    self:AddTimer("test", snd, "test", 5, GetTime()+5)
 end
 
 function QuickAuras:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedSpellCooldowns) do
-        self:AddTimer("test-cooldowns", conf, 15-t, GetTime()+15-t)
+        self:AddTimer("test-cooldowns", conf, i, 15-t, GetTime()+15-t)
         t = t + 1
     end
 end
@@ -635,8 +640,8 @@ local DelayedReset_IconAlerts = QuickAuras:Debounce(function()
 end, 6)
 
 function QuickAuras:TestIconAlerts()
-    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, 6, GetTime()+6)
-    self:AddTimer("auras", self.spells.iconAlerts.limitedInvulnerabilityPotion, 6, GetTime()+6)
+    local lip = self.spells.iconAlerts.limitedInvulnerabilityPotion
+    self:AddTimer("auras", lip, lip.spellId[1], 1, 6, GetTime()+6)
     DelayedReset_IconAlerts()
 end
 

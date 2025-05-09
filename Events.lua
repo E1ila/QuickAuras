@@ -79,7 +79,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                     and self.db.profile.watchBars
                     and (not conf.option or self.db.profile[conf.option])
                 then
-                    local timer = self:AddTimer("combatlog", conf, conf.duration, GetTime()+conf.duration)
+                    local timer = self:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
                     if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
                     enemyDebuffs[p1][destGUID] = timer
                 end

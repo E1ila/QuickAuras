@@ -12,25 +12,26 @@ function QuickAuras:CheckTransmuteCooldown()
     local changed = false
     for _, spell in pairs(self.spells.transmutes) do
         local hasIt = true
-        if spell.spellId and not IsPlayerSpell(spell.spellId[1]) then hasIt = false end
+        local id = spell.spellId[1]
+        if spell.spellId and not IsPlayerSpell(id) then hasIt = false end
         if spell.itemId and not (self:FindInBags(spell.itemId) or self:FindInBags(spell.itemId, true)) then hasIt = false end
         if hasIt then
             local start, duration
             if spell.itemId then
                 start, duration = QuickAuras:GetItemCooldown(spell.itemId)
             else
-                start, duration = GetSpellCooldown(spell.spellId[1])
+                start, duration = GetSpellCooldown(id)
             end
             local timeLeft = math.floor((start + duration - GetTime()) / 60)
             debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration, "timeLeft", timeLeft)
             if start == 0 then
-                if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
+                if self:AddIcon("reminder", "spell", id, spell) then changed = true end
             elseif timeLeft <= self.db.profile.transmutePreReadyTime then
-                local timer = self:AddTimer("reminder", spell, duration, start+duration)
+                local timer = self:AddTimer("reminder", spell, id, duration, start+duration)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
             else
-                if self:RemoveIcon("reminder", spell.spellId[1]) then changed = true end
+                if self:RemoveIcon("reminder", id) then changed = true end
             end
         else
             debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "hasIt", hasIt)
@@ -142,11 +143,11 @@ function QuickAuras:CheckGear(eventType, ...)
     end
 end
 
-local function _checkCooldown(conf, start, duration)
+local function _checkCooldown(conf, id, start, duration)
     if start > 0 and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
         --debug("Cooldown", spellId, conf.name, start, duration, enabled)
         local updatedDuration = duration - (GetTime() - start)
-        QuickAuras:AddTimer("cooldowns", conf, updatedDuration, start + duration)
+        QuickAuras:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
     end
 end
 
@@ -154,13 +155,13 @@ function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellId, conf in pairs(self.trackedSpellCooldowns) do
         local start, duration = GetSpellCooldown(spellId)
-        _checkCooldown(conf, start, duration)
+        _checkCooldown(conf, spellId, start, duration)
     end
     for itemId, conf in pairs(self.trackedItemCooldowns) do
         -- show cooldown only if item is in bags
         if QuickAuras.bags[conf.itemId] then
             local start, duration = QuickAuras:GetItemCooldown(itemId)
-            _checkCooldown(conf, start, duration)
+            _checkCooldown(conf, itemId, start, duration)
         end
     end
 end
@@ -195,7 +196,7 @@ function QuickAuras:CheckAuras()
         if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
             --debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
-            local timer = self:AddTimer("auras", aura, duration, expTime)
+            local timer = self:AddTimer("auras", aura, spellId, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end

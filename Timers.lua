@@ -33,7 +33,12 @@ function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd
     if not parent then parent = UIParent end
     if not onUpdate then onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate end
     if not onEnd then onEnd = conf.onEnd or QuickAuras_Timer_OnUpdate end
-    local index = #list
+
+    local index = 0
+    for _ in pairs(list) do
+        index = index + 1
+    end
+
     local existingTimer = self.timerByName[conf.name.."-"..uiType]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
@@ -74,8 +79,7 @@ function QuickAuras:AddTimer(timerType, conf, duration, expTime, onUpdate, onEnd
         arrangeFunc = arrangeFunc,
     }
     timer.key = self:GetTimerKey(conf.name, expTime, uiType)
-    table.insert(list, timer)
-    --debug(" ++ ", timer.key, source)
+    list[timer.key] = timer
     self.timers[timer.key] = timer
     self.timerByName[conf.name.."-"..uiType] = timer
     onUpdate(timer)
@@ -87,38 +91,17 @@ function QuickAuras:GetTimerKey(name, expTime, uiType)
     return name.."-"..tostring(expTime).."-"..tostring(uiType)
 end
 
-function QuickAuras:DebugPrintTimers()
-    debug("timers")
-    for _, timer in pairs(self.timers) do
-        debug("  - ", timer.key, "timerType", timer.timerType, "expTime", timer.expTime, "duration", timer.duration)
-    end
-    debug("timerByName")
-    for _, timer in pairs(self.timerByName) do
-        debug("  - ", timer.key, "timerType", timer.timerType, "expTime", timer.expTime, "duration", timer.duration)
-    end
-    debug("lists")
-    debug("  - watchBars", #self.watchBars)
-    debug("  - offensiveBars", #self.offensiveBars)
-    debug("  - iconWarnings", #self.iconWarnings)
-    debug("  - iconAlerts", #self.iconAlerts)
-end
-
 function QuickAuras:RemoveTimer(timer, reason)
     --debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
         timer:onEnd(timer)
     end
     -- remove from timers the one with matching name and expTime
-    for i, t in ipairs(timer.list) do
-        if t.name == timer.name and t.expTime == timer.expTime then
-            table.remove(timer.list, i)
-            break
-        end
-    end
     timer.frame:Hide()
     timer.frame:SetParent(nil)
     timer.frame:ClearAllPoints()
     timer.frame = nil
+    timer.list[timer.key] = nil
     self.timerByName[timer.name.."-"..timer.uiType] = nil
     self.timers[timer.key] = nil
     --debug(" -- ", timer.key)

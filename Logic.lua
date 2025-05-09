@@ -2,6 +2,11 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
+-- debounce CheckTransmuteCooldown
+QuickAuras.CheckTransmuteCooldownDebounce = QuickAuras:Debounce(function()
+    QuickAuras:CheckTransmuteCooldown()
+end, 0.25)
+
 function QuickAuras:CheckTransmuteCooldown()
     if not self.db.profile.remindersEnabled or not self.db.profile.reminderTransmute then return end
     local changed = false
@@ -16,10 +21,11 @@ function QuickAuras:CheckTransmuteCooldown()
             else
                 start, duration = GetSpellCooldown(spell.spellId[1])
             end
-            debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration)
+            local timeLeft = math.floor((start + duration - GetTime()) / 60)
+            debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration, "timeLeft", timeLeft)
             if start == 0 then
                 if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
-            elseif start + duration - GetTime() < self.db.profile.transmutePreReadyTime then
+            elseif timeLeft <= self.db.profile.transmutePreReadyTime then
                 local timer = self:AddTimer("reminder", spell, duration, start+duration)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style

@@ -28,7 +28,7 @@ QuickAuras.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         missingBuffsSize = 35,
-        reminderIconSize = 30,
+        reminderIconSize = 40,
         weaponEnchantSize = 40,
         crucialBuffsSize = 50,
         transmutePreReadyTime = 3600,
@@ -431,7 +431,7 @@ QuickAuras.options = {
                         QuickAuras.db.profile.reminderLowConsumes = value
                         QuickAuras:RefreshReminders()
                     end,
-                    order = 100,
+                    order = 50,
                 },
                 outOfConsumeWarning = {
                     type = "toggle",
@@ -443,27 +443,33 @@ QuickAuras.options = {
                     set = function(info, value)
                         QuickAuras.db.profile.outOfConsumeWarning = value
                     end,
-                    order = 101,
-                },
-                reminderTransmute = {
-                    type = "toggle",
-                    name = "Transmute",
-                    desc = "Reminder icon when Arcanite transmute, Mooncloth or Salt Shaker are ready.",
-                    get = function(info)
-                        return QuickAuras.db.profile.reminderTransmute
-                    end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.reminderTransmute = value
-                        QuickAuras:RefreshReminders()
-                    end,
-                    order = 101,
+                    order = 51,
                 },
                 header1 = {
+                    type = "header",
+                    name = "Profession Cooldowns",
+                    order = 100,
+                },
+                transmutePreReadyTime = {
+                    type = "range",
+                    name = "Minutes Before",
+                    desc = "Show warning when cooldown is less than this many minutes",
+                    min = 0,
+                    max = 60*24,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.transmutePreReadyTime end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.transmutePreReadyTime = value
+                        QuickAuras:CheckTransmuteCooldownDebounce()
+                    end,
+                    order = 109,
+                },
+                header2 = {
                     type = "header",
                     name = "Gathering",
                     order = 199,
                 },
-                header2 = {
+                header3 = {
                     type = "header",
                     name = "",
                     order = 299,
@@ -490,6 +496,7 @@ local function AddSpells(cspells, subCategory)
             end
             local categoryOptions = QuickAuras.options.args[spell.category or "bars"]
             if categoryOptions and spell.list and not spell.transmute then
+                -- Buff/Debuff option
                 local args = categoryOptions.args
                 local sub = subCategory or spell.subCategory
                 if sub and args[sub] then
@@ -509,6 +516,7 @@ local function AddSpells(cspells, subCategory)
             end
             categoryOptions = QuickAuras.options.args[spell.category or "cooldowns"]
             if categoryOptions and spell.cooldown then
+                -- Cooldowns option
                 if QuickAuras.defaultOptions.profile[spell.option.."_cd"] == nil then
                     QuickAuras.defaultOptions.profile[spell.option.."_cd"] = true
                 end
@@ -523,6 +531,25 @@ local function AddSpells(cspells, subCategory)
                         if spell.aura then QuickAuras:CheckAuras() end
                     end,
                     order = order + 1000,
+                }
+            end
+            if spell.transmute then
+                -- Profession cooldowns option
+                if QuickAuras.defaultOptions.profile[spell.option.."_pcd"] == nil then
+                    QuickAuras.defaultOptions.profile[spell.option.."_pcd"] = true
+                end
+                QuickAuras.options.args.reminders.args[spellKey] = {
+                    type = "toggle",
+                    name = spell.name,
+                    desc = "Reminder icon when "..spell.name.." cooldown is ready.",
+                    get = function(info)
+                        return QuickAuras.db.profile[spell.option.."_pcd"]
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile[spell.option.."_pcd"] = value
+                        QuickAuras:RefreshReminders()
+                    end,
+                    order = order + 100,
                 }
             end
         end

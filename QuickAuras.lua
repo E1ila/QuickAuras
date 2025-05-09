@@ -12,12 +12,15 @@ local QuickAuras = addon.root
 QuickAuras.version = "0.4"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.bags = {} -- items in bags
-QuickAuras.playerBuffs = {} -- items in bags
+QuickAuras.playerBuffs = {}
 QuickAuras.existingConsumes = {}
 QAG = QuickAuras
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,
 }
+QuickAurasDB = QuickAurasDB or {}
+QuickAurasDB.bank = QuickAurasDB.bank or {}
+QuickAuras.bank = QuickAurasDB.bank
 
 -- managed timers
 QuickAuras.timers = {} -- all active timers
@@ -212,6 +215,36 @@ function QuickAuras:ScanBags()
     self.bags = {}
     for bag = 0, NUM_BAG_SLOTS do -- Iterate through all bags (0 is the backpack)
         self:ScanBag(bag)
+    end
+end
+
+function QuickAuras:ScanBank()
+    if not self.bankOpen then return end
+    debug("Scanning bank")
+    QuickAurasDB.bank = {}
+    QuickAuras.bank = QuickAurasDB.bank
+    -- Scan the main bank slots (bag ID -1)
+    for slot = 1, C_Container.GetContainerNumSlots(-1) do
+        local id = C_Container.GetContainerItemID(-1, slot)
+        if id then
+            local itemInfo = C_Container.GetContainerItemInfo(-1, slot)
+            self.bank[id] = { bag = -1, slot = slot, count = itemInfo.stackCount }
+        end
+    end
+
+    -- Scan the bank bags
+    for bag = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
+        for slot = 1, C_Container.GetContainerNumSlots(bag) do
+            local id = C_Container.GetContainerItemID(bag, slot)
+            if id then
+                local itemInfo = C_Container.GetContainerItemInfo(bag, slot)
+                if self.bank[id] then
+                    self.bank[id].count = self.bank[id].count + itemInfo.stackCount
+                else
+                    self.bank[id] = { bag = bag, slot = slot, count = itemInfo.stackCount }
+                end
+            end
+        end
     end
 end
 

@@ -149,6 +149,15 @@ function QuickAuras:PLAYER_LEVEL_UP()
     self.playerLevel = UnitLevel("player")
 end
 
+function QuickAuras:BANKFRAME_OPENED()
+    self.bankOpen = true
+    self:ScanBank()
+end
+
+function QuickAuras:BANKFRAME_CLOSED()
+    self.bankOpen = false
+end
+
 -- OnUpdate
 
 function QuickAuras:OnUpdate()

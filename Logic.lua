@@ -7,15 +7,26 @@ function QuickAuras:CheckTransmuteCooldown()
     local changed = false
     for _, spell in pairs(self.spells.transmutes) do
         if IsPlayerSpell(spell.spellId[1]) then
-            local start, duration, enabled = spell.itemId and QuickAuras:GetItemCooldown(spell.itemId) GetSpellCooldown(spell.spellId[1])
-            if start == 0 then
-                if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
-            elseif start + duration - GetTime() < 60 then
-                local timer = self:AddTimer("reminder", spell, 100, GetTime()+100)
-                local fontSize = math.floor(self.db.profile.reminderIconSize/2)
-                timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
+            local start, duration
+            local skip = false
+            if spell.itemId then
+                if not self.bags[spell.itemId] then
+                    skip = true
+                end
+                start, duration = QuickAuras:GetItemCooldown(spell.itemId)
             else
-                if self:RemoveIcon("reminder", spell.spellId[1]) then changed = true end
+                start, duration = GetSpellCooldown(spell.spellId[1])
+            end
+            if not skip then
+                if start == 0 then
+                    if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
+                elseif start + duration - GetTime() < 60 then
+                    local timer = self:AddTimer("reminder", spell, 100, GetTime()+100)
+                    local fontSize = math.floor(self.db.profile.reminderIconSize/2)
+                    timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
+                else
+                    if self:RemoveIcon("reminder", spell.spellId[1]) then changed = true end
+                end
             end
         end
     end
@@ -280,6 +291,7 @@ end
 QuickAuras.BagsChanged = QuickAuras:Debounce(function()
     debug(2, "BAG_UPDATE", bagId)
     QuickAuras:ScanBags()
+    QuickAuras:ScanBank()
     QuickAuras:CheckMissingBuffs()
     QuickAuras:CheckLowConsumes()
     QuickAuras:CheckTransmuteCooldown()
@@ -292,12 +304,13 @@ end, 2)
 
 -- Utils
 
-function QuickAuras:FindInBags(itemIds)
+function QuickAuras:FindInBags(itemIds, inBank)
+    local lookup = inBank and self.bank or self.bags
     if type(itemIds) ~= "table" then
-        return self.bags[itemIds] and itemIds, self.bags[itemIds]
+        return lookup[itemIds] and itemIds, lookup[itemIds]
     end
     for _, itemId in  ipairs(itemIds) do
-        local f = self.bags[itemId]
+        local f = lookup[itemId]
         if f then
             return itemId, f
         end

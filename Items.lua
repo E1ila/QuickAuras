@@ -27,6 +27,12 @@ QuickAuras.consumes = {
         minCount = 5,
     },
     {
+        name = "Blinding Powder",
+        itemId = 5530,
+        minCount = 5,
+        visible = QuickAuras.isRogue,
+    },
+    {
         name = "Buttermilk Delight",
         spellIds = { 27720 },
         itemId = 22236,
@@ -54,6 +60,12 @@ QuickAuras.consumes = {
         itemId = 21546,
         default = QuickAuras.isFireClass,
         minCount = 5,
+    },
+    {
+        name = "Flash Powder",
+        itemId = 5140,
+        minCount = 10,
+        visible = QuickAuras.isRogue,
     },
     {
         name = "Food Buff",
@@ -130,6 +142,7 @@ QuickAuras.consumes = {
         name = "Thistle Tea",
         itemId = 7676,
         cooldown = true,
+        minCount = 10,
     },
     {
         name = "Troll's Blood Potion",

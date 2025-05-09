@@ -626,12 +626,12 @@ function QuickAuras:AddRemindersOptions()
     end
 end
 
-function QuickAuras:AddMissingBuffsOptions()
+function QuickAuras:AddConsumeOptions()
     local order = 200
     for _, item in ipairs(self.consumes) do
         if item.visible == nil or item.visible then
             order = order + 1
-            debug("Adding missing buff option", item.name, item.option, item.default)
+            debug(3, "AddConsumeOptions", item.name, item.option, item.default)
             if item.cooldown then
                 QuickAuras.defaultOptions.profile[item.option.."_cd"] = true
             end
@@ -644,11 +644,9 @@ function QuickAuras:AddMissingBuffsOptions()
                 end,
                 set = function(info, value)
                     QuickAuras.db.profile[item.option] = value
-                    if item.spellIds then
-                        QuickAuras:RefreshMissing()
-                        if (item.visible == nil or item.visible) then
-                            QuickAuras:RefreshReminders()
-                        end
+                    QuickAuras:RefreshMissing()
+                    if (item.visible == nil or item.visible) and (item.visibleFunc == nil or item.visibleFunc()) then
+                        QuickAuras:RefreshReminders()
                     end
                 end,
                 order = order,
@@ -660,7 +658,7 @@ end
 function QuickAuras:BuildOptions()
     self:AddAbilitiesOptions()
     self:AddGearWarningOptions()
-    self:AddMissingBuffsOptions()
+    self:AddConsumeOptions()
     self:AddRemindersOptions()
 end
 

@@ -446,8 +446,8 @@ end
 
 function QuickAuras:ArrangeTimerBars(list, parent)
     local lastFrame = nil
-    for i, timer in ipairs(list) do
-        --debug(3, "Arranging progress frames", timer.key, timer.uiType)
+    for id, timer in pairs(list) do
+        debug(3, "Arranging progress frames", timer.key, timer.uiType)
         timer.frame:ClearAllPoints()
         if timer.uiType == "bar" then
             if lastFrame then

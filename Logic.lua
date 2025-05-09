@@ -144,8 +144,8 @@ function QuickAuras:CheckGear(eventType, ...)
 end
 
 local function _checkCooldown(conf, id, start, duration)
+    debug(3, "_checkCooldown", spellId, conf.name, start, duration, "option", conf.option)
     if start > 0 and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
-        --debug("Cooldown", spellId, conf.name, start, duration, enabled)
         local updatedDuration = duration - (GetTime() - start)
         QuickAuras:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
     end

@@ -118,9 +118,10 @@ function QuickAuras:OnInitialize()
         QuickAuras:CheckAuras()
         QuickAuras:CheckCooldowns()
         QuickAuras:CheckGear()
-        QuickAuras:CheckTrackingStatus()
-        QuickAuras:CheckMissingBuffs()
-        QuickAuras:CheckLowConsumes()
+        --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
+        --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
+        --QuickAuras:CheckLowConsumes() -- updated on load due to zone event
+        --QuickAuras:CheckTransmuteCooldown() -- updated on load due to zone event
         out("QuickAuras loaded. Type " .. _c.bold .. "/qa|r for options.")
     end)
 end

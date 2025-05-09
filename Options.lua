@@ -31,6 +31,7 @@ QuickAuras.defaultOptions = {
         reminderIconSize = 30,
         weaponEnchantSize = 40,
         crucialBuffsSize = 50,
+        transmutePreReadyTime = 3600,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,

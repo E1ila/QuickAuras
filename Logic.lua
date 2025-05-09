@@ -16,15 +16,18 @@ function QuickAuras:CheckTransmuteCooldown()
             else
                 start, duration = GetSpellCooldown(spell.spellId[1])
             end
+            debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration)
             if start == 0 then
                 if self:AddIcon("reminder", "spell", spell.spellId[1], spell) then changed = true end
-            elseif start + duration - GetTime() < 60 then
-                local timer = self:AddTimer("reminder", spell, 100, GetTime()+100)
+            elseif start + duration - GetTime() < self.db.profile.transmutePreReadyTime then
+                local timer = self:AddTimer("reminder", spell, duration, start+duration)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
             else
                 if self:RemoveIcon("reminder", spell.spellId[1]) then changed = true end
             end
+        else
+            debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "hasIt", hasIt)
         end
     end
     if changed then

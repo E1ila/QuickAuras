@@ -68,6 +68,36 @@ QuickAuras.consumes = {
         visible = QuickAuras.isRogue,
     },
     {
+        name = "Flask of Chromatic Resistance",
+        itemId = 13513,
+        minCount = 1,
+        default = false,
+    },
+    {
+        name = "Flask of Distilled Wisdom",
+        itemId = 13511,
+        minCount = 1,
+        default = QuickAuras.isShaman or QuickAuras.isPriest or QuickAuras.isDruid or QuickAuras.isPaladin,
+    },
+    {
+        name = "Flask of Petrification",
+        itemId = 13506,
+        minCount = 1,
+        default = false,
+    },
+    {
+        name = "Flask of Supreme Power",
+        itemId = 13512,
+        minCount = 1,
+        default = QuickAuras.isWarlock or QuickAuras.isMage,
+    },
+    {
+        name = "Flask of the Titans",
+        itemId = 13510,
+        minCount = 1,
+        default = QuickAuras.isRogue or QuickAuras.isWarrior,
+    },
+    {
         name = "Food Buff",
         spellIds = { 24800, 18192, 22730, 18194, 18191, 18193, 25661 },
         itemIds = { 20452, 13928, 18254, 13931, 13927, 13934, 13929, 21023 },
@@ -166,6 +196,7 @@ QuickAuras.consumes = {
         spellIds = { 24382, 24383, 24417, 27669, 10669, 10693, 10668, 10667, 27671 },
         itemIds = { 20079, 20081, 20080, 22175, 8412, 8424, 8411, 8410 },
         itemId = 20079,
+        minCount = 1,
     },
 }
 

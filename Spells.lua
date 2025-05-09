@@ -144,6 +144,13 @@ spells.rogue = {
 }
 
 spells.shaman = {
+    chainLightning = {
+        spellId = { 10605 },
+        name = "Chain Lightning",
+        icon = "Interface\\Icons\\spell_nature_chainlightning",
+        cooldown = 6,
+        visible = QuickAuras.isShaman,
+    },
     naturesSwiftness = {
         spellId = { 16188 },
         name = "Nature's Swiftness",

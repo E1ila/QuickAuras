@@ -5,7 +5,7 @@ local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
 local _c
-local _test_TimerId = { }
+local ICON = QuickAuras.ICON
 
 -- General -----------------------------------------------------------
 
@@ -193,7 +193,7 @@ local function GetIconList(type, idType)
         list = QuickAuras.missingBuffs
         parent = QuickAuras_MissingBuffs
         Refresh = QuickAuras.RefreshMissing
-    elseif type == "alert" then
+    elseif type == ICON.ALERT then
         list = QuickAuras.iconAlerts
         parent = QuickAuras_IconAlerts
         Refresh = QuickAuras.RefreshAlerts
@@ -292,7 +292,7 @@ function QuickAuras:ArrangeIcons(iconType)
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.reminderIconSize, self.db.profile.reminderIconSize) -- Width, Height
-        elseif iconType == "alert" then
+        elseif iconType == ICON.ALERT then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
             else
@@ -636,7 +636,7 @@ end
 
 local DelayedReset_IconAlerts = QuickAuras:Debounce(function()
     debug("TestIconAlerts timer ended")
-    QuickAuras:ClearIcons("alert")
+    QuickAuras:ClearIcons(ICON.ALERT)
 end, 6)
 
 function QuickAuras:TestIconAlerts()

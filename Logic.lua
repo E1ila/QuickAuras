@@ -1,6 +1,32 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
+local _useTeaShown = false
+local USE_TEA_ENERGY_THRESHOLD = 6
+local ICON = QuickAuras.ICON
+
+function QuickAuras:CheckPower(unit, powerType)
+    if self.isRogue and unit == "player" and powerType == "ENERGY" then
+        local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
+        if _useTeaShown then
+            if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
+                _useTeaShown = false
+                self:RemoveIcon(ICON.ALERT, 7676)
+            end
+        else
+            if
+            currentEnergy < USE_TEA_ENERGY_THRESHOLD and
+                    (self.db.profile.rogueUseTea == "always" or
+                            self.db.profile.rogueUseTea == "flurry" and self.playerBuffs[13877])
+            then
+                debug("CheckPower", "SHOWING")
+                _useTeaShown = true
+                self:AddIcon(ICON.ALERT, "item", 7676, { name = "Thistle Tea"})
+                self:ArrangeIcons(ICON.ALERT)
+            end
+        end
+    end
+end
 
 -- debounce CheckTransmuteCooldown
 QuickAuras.CheckTransmuteCooldownDebounce = QuickAuras:Debounce(function()
@@ -144,7 +170,7 @@ function QuickAuras:CheckGear(eventType, ...)
 end
 
 local function _checkCooldown(conf, id, start, duration)
-    debug(3, "_checkCooldown", spellId, conf.name, start, duration, "option", conf.option)
+    --debug(3, "_checkCooldown", spellId, conf.name, start, duration, "option", conf.option)
     if start > 0 and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
         QuickAuras:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
@@ -283,7 +309,7 @@ function QuickAuras:RefreshWarnings()
 end
 
 function QuickAuras:RefreshAlerts()
-    self:ClearIcons("alert")
+    self:ClearIcons(ICON.ALERT)
 end
 
 function QuickAuras:RefreshAll()
@@ -305,7 +331,7 @@ QuickAuras.BagsChanged = QuickAuras:Debounce(function()
 end, 0.5)
 
 QuickAuras.ZoneChanged = QuickAuras:Debounce(function()
-    debug(2, "Zone Update")
+    --debug(2, "Zone Update")
     QuickAuras:UpdateZone()
 end, 2)
 

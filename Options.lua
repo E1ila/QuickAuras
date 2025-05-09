@@ -20,6 +20,7 @@ QuickAuras.defaultOptions = {
         forceShowMissing = false,
         outOfConsumeWarning = true,
         missingBuffsMode = "raid",
+        rogueUseTea = "always",
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,
@@ -331,6 +332,24 @@ QuickAuras.options = {
                     hidden = not QuickAuras.isRogue,
                     order = 304,
                 },
+                rogueUseTea = {
+                    type = "select",
+                    name = "Use Tea Now",
+                    desc = "Shows a visible Thistle Tea indication when you have less than 6 energy.",
+                    values = {
+                        never = "Never",
+                        flurry = "On Blade Flurry",
+                        always = "Always",
+                    },
+                    get = function(info)
+                        return QuickAuras.db.profile.rogueUseTea or "always"
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.rogueUseTea = value
+                    end,
+                    order = 306,
+                },
+
             },
         },
         bars = {
@@ -638,7 +657,7 @@ function QuickAuras:AddConsumeOptions()
             QuickAuras.options.args.consumes.args[item.option] = {
                 type = "toggle",
                 name = item.name,
-                desc = item.desc or "Shows a warning when ".. item.name.." buff is missing.",
+                desc = item.desc or "Shows a warning when ".. item.name.." is missing.",
                 get = function(info)
                     return QuickAuras.db.profile[item.option]
                 end,

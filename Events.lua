@@ -158,6 +158,10 @@ function QuickAuras:BANKFRAME_CLOSED()
     self.bankOpen = false
 end
 
+function QuickAuras:UNIT_POWER_UPDATE(unit, powerType)
+    self:CheckPower(unit, powerType)
+end
+
 -- OnUpdate
 
 function QuickAuras:OnUpdate()

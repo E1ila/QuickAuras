@@ -54,6 +54,13 @@ QuickAuras.isUndead = QuickAuras.playerRace == "Undead"
 QuickAuras.isManaClass = QuickAuras.isPriest or QuickAuras.isMage or QuickAuras.isWarlock or QuickAuras.isDruid or QuickAuras.isPaladin or QuickAuras.isShaman or QuickAuras.isHunter
 local _c
 
+QuickAuras.ICON = {
+    ALERT = "alert",
+    REMINDER = "reminder",
+    WARNING = "warning",
+    MISSING = "missing",
+}
+
 local function out(text, ...)
     print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
 end
@@ -178,6 +185,7 @@ function QuickAuras:HandleSlashCommand(input)
                 out("Debug mode ".._c.disabled.."disabled|r") -- Orange text
             end
         elseif cmd == "c" or cmd == "clear" then
+            out("Cleared ignored icons!")
             self.ignoredIcons = {}
             self:RefreshAll()
         elseif cmd == "test" then

@@ -1,6 +1,7 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
+local ICON = QuickAuras.ICON
 
 function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, onEnd)
     local arrangeFunc = self.ArrangeTimerBars
@@ -23,7 +24,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
         list = self.iconAlerts
         parent = QuickAuras_IconAlerts
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons("alert") end
+        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.ALERT) end
     elseif timerType == "reminder" or conf.list == "reminder" then
         list = self.reminders
         parent = QuickAuras_Reminders

@@ -185,11 +185,11 @@ end
 local function GetIconList(type, idType)
     local list, parent, Refresh
     local Create = idType == "item" and QuickAuras.CreateItemWarningIcon or QuickAuras.CreateSpellWarningIcon
-    if type == "warning" then
+    if type == ICON.WARNING then
         list = QuickAuras.iconWarnings
         parent = QuickAuras_IconWarnings
         Refresh = QuickAuras.RefreshWarnings
-    elseif type == "missing" then
+    elseif type == ICON.MISSING then
         list = QuickAuras.missingBuffs
         parent = QuickAuras_MissingBuffs
         Refresh = QuickAuras.RefreshMissing
@@ -197,7 +197,7 @@ local function GetIconList(type, idType)
         list = QuickAuras.iconAlerts
         parent = QuickAuras_IconAlerts
         Refresh = QuickAuras.RefreshAlerts
-    elseif type == "reminder" then
+    elseif type == ICON.REMINDER then
         list = QuickAuras.reminders
         parent = QuickAuras_Reminders
         Refresh = QuickAuras.RefreshReminders
@@ -211,8 +211,8 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count)
     local list, parent, Create, Refresh = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
-        local showCount = iconType == "reminder" and (conf.minCount or self.db.profile.lowConsumesMinCount)
-        local onRightClick = Refresh and function()
+        local showCount = iconType == ICON.REMINDER and (conf.minCount or self.db.profile.lowConsumesMinCount)
+        local onRightClick = iconType ~= ICON.ALERT and Refresh and function()
             QuickAuras.ignoredIcons[key] = true
             Refresh(QuickAuras)
         end or nil
@@ -271,21 +271,21 @@ function QuickAuras:ArrangeIcons(iconType)
             --debug(3, "ArrangeIcons", "count", obj.count)
             frame.counterText:SetText(obj.count)
         end
-        if iconType == "warning" then
+        if iconType == ICON.WARNING then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.gearWarningSize, self.db.profile.gearWarningSize) -- Width, Height
-        elseif iconType == "missing" then
+        elseif iconType == ICON.MISSING then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(self.db.profile.missingBuffsSize, self.db.profile.missingBuffsSize) -- Width, Height
-        elseif iconType == "reminder" then
+        elseif iconType == ICON.REMINDER then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
@@ -591,13 +591,13 @@ local DelayedReset_Reminders = QuickAuras:Debounce(function()
 end, 3)
 
 function QuickAuras:TestReminders()
-    self:ClearIcons("reminder")
-    --self:AddIcon("reminder", "spell", 2383, self.trackedAuras[2383])
+    self:ClearIcons(ICON.REMINDER)
+    --self:AddIcon(ICON.REMINDER, "spell", 2383, self.trackedAuras[2383])
     for i, conf in ipairs(self.trackedLowConsumes) do
-        self:AddIcon("reminder", "item", conf.itemId, conf, i)
+        self:AddIcon(ICON.REMINDER, "item", conf.itemId, conf, i)
         if i == 3 then break end
     end
-    self:ArrangeIcons("reminder")
+    self:ArrangeIcons(ICON.REMINDER)
     DelayedReset_Reminders()
 end
 
@@ -607,13 +607,13 @@ local DelayedReset_IconMissingBuffs = QuickAuras:Debounce(function()
 end, 3)
 
 function QuickAuras:TestIconMissingBuffs()
-    self:ClearIcons("missing")
+    self:ClearIcons(ICON.MISSING)
     local count = 0
     for _, conf in ipairs(self.trackedMissingBuffs) do
         count = count + 1
-        self:AddIcon("missing", "item", conf.itemId, conf)
+        self:AddIcon(ICON.MISSING, "item", conf.itemId, conf)
     end
-    self:ArrangeIcons("missing")
+    self:ArrangeIcons(ICON.MISSING)
     DelayedReset_IconMissingBuffs()
 end
 
@@ -623,14 +623,14 @@ local DelayedReset_IconWarnings = QuickAuras:Debounce(function()
 end, 3)
 
 function QuickAuras:TestIconWarnings()
-    self:ClearIcons("warning")
+    self:ClearIcons(ICON.WARNING)
     local count = 0
     for itemId, conf in pairs(self.trackedGear) do
         count = count + 1
-        self:AddIcon("warning", "item", itemId, conf)
+        self:AddIcon(ICON.WARNING, "item", itemId, conf)
         if count == 3 then break end
     end
-    self:ArrangeIcons("warning")
+    self:ArrangeIcons(ICON.WARNING)
     DelayedReset_IconWarnings()
 end
 

@@ -11,18 +11,16 @@ function QuickAuras:CheckPower(unit, powerType)
         if _useTeaShown then
             if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
                 _useTeaShown = false
-                self:RemoveIcon(ICON.ALERT, 7676)
+                self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, 7676)
             end
         else
-            if
-            currentEnergy < USE_TEA_ENERGY_THRESHOLD and
-                    (self.db.profile.rogueUseTea == "always" or
-                            self.db.profile.rogueUseTea == "flurry" and self.playerBuffs[13877])
+            if  currentEnergy < USE_TEA_ENERGY_THRESHOLD and
+                (self.db.profile.rogueTeaTime == "always" or
+                self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[13877])
             then
-                debug("CheckPower", "SHOWING")
                 _useTeaShown = true
-                self:AddIcon(ICON.ALERT, "item", 7676, { name = "Thistle Tea"})
-                self:ArrangeIcons(ICON.ALERT)
+                self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", 7676, { name = "Thistle Tea"})
+                self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
             end
         end
     end
@@ -51,20 +49,20 @@ function QuickAuras:CheckTransmuteCooldown()
             local timeLeft = math.floor((start + duration - GetTime()) / 60)
             debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration, "timeLeft", timeLeft)
             if start == 0 then
-                if self:AddIcon("reminder", "spell", id, spell) then changed = true end
+                if self:AddIcon(ICON.REMINDER, "spell", id, spell) then changed = true end
             elseif timeLeft <= self.db.profile.transmutePreReadyTime then
                 local timer = self:AddTimer("reminder", spell, id, duration, start+duration)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
             else
-                if self:RemoveIcon("reminder", id) then changed = true end
+                if self:RemoveIcon(ICON.REMINDER, id) then changed = true end
             end
         else
             debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "hasIt", hasIt)
         end
     end
     if changed then
-        self:ArrangeIcons("reminder")
+        self:ArrangeIcons(ICON.REMINDER)
     end
 end
 
@@ -88,9 +86,9 @@ function QuickAuras:CheckLowConsumes()
                 (not foundItemId or details.count < minCount)
                 and self.db.profile.lowConsumesMinLevel <= self.playerLevel
             then
-                if self:AddIcon("reminder", "item", consume.itemId, consume, details and details.count or 0) then changed = true end
+                if self:AddIcon(ICON.REMINDER, "item", consume.itemId, consume, details and details.count or 0) then changed = true end
             else
-                if self:RemoveIcon("reminder", consume.itemId) then changed = true end
+                if self:RemoveIcon(ICON.REMINDER, consume.itemId) then changed = true end
             end
             if minCount and self.db.profile.outOfConsumeWarning then
                 if foundItemId then
@@ -99,7 +97,7 @@ function QuickAuras:CheckLowConsumes()
                     -- no more item
                     self.existingConsumes[consume.itemId] = nil
                     if IsInInstance() then
-                        self:AddIcon("reminder", "item", consume.itemId, consume, 0)
+                        self:AddIcon(ICON.REMINDER, "item", consume.itemId, consume, 0)
                         changed = true
                     end
                 end
@@ -107,7 +105,7 @@ function QuickAuras:CheckLowConsumes()
         end
     end
     if changed then
-        self:ArrangeIcons("reminder")
+        self:ArrangeIcons(ICON.REMINDER)
     end
 end
 
@@ -119,7 +117,7 @@ function QuickAuras:CheckTrackingStatus()
         debug(3, "CheckTrackingStatus", "(scan)", conf.name, "spellId", spellId, "option", conf.option, conf.option and self.db.profile[conf.option])
         if IsSpellKnown(spellId) and self.db.profile[conf.option] then
             if conf.textureId == trackingType then
-                if QAG:RemoveIcon("reminder", spellId) then changed = true end
+                if QAG:RemoveIcon(ICON.REMINDER, spellId) then changed = true end
                 found = true
                 break
             else
@@ -130,10 +128,10 @@ function QuickAuras:CheckTrackingStatus()
     debug(2, "CheckTrackingStatus", "trackingType", trackingType, "found", found, "missingSpellId", missingSpellId)
     if not found and missingSpellId then
         debug(3, "CheckTrackingStatus", "missingSpellId", missingSpellId)
-        if QAG:AddIcon("reminder", "spell", missingSpellId, QAG.trackedTracking[missingSpellId]) then changed = true end
+        if QAG:AddIcon(ICON.REMINDER, "spell", missingSpellId, QAG.trackedTracking[missingSpellId]) then changed = true end
     end
     if changed then
-        QAG:ArrangeIcons("reminder")
+        QAG:ArrangeIcons(ICON.REMINDER)
     end
 end
 
@@ -156,15 +154,15 @@ function QuickAuras:CheckGear(eventType, ...)
                 if conf.visibleFunc then shouldShow = conf.visibleFunc(isEquipped) end
                 --debug("Checking gear", itemId, self.colors.bold, conf.name, "|r", "isEquipped", isEquipped, "shouldShow", shouldShow)
                 if shouldShow then
-                    if self:AddIcon("warning", "item", itemId, conf) then changed = true end
+                    if self:AddIcon(ICON.WARNING, "item", itemId, conf) then changed = true end
                 else
-                    if self:RemoveIcon("warning", itemId) then changed = true end
+                    if self:RemoveIcon(ICON.WARNING, itemId) then changed = true end
                 end
             end
         end
 
         if changed then
-            self:ArrangeIcons("warning")
+            self:ArrangeIcons(ICON.WARNING)
         end
     end
 end
@@ -254,9 +252,9 @@ function QuickAuras:CheckMissingBuffs()
                     or buff.visibleFunc and not buff.visibleFunc()
                     or not foundItemId
                 then
-                    if self:RemoveIcon("missing", buff.usedItemId or buff.itemId) then buffsChanged = true end
+                    if self:RemoveIcon(ICON.MISSING, buff.usedItemId or buff.itemId) then buffsChanged = true end
                 else
-                    if self:AddIcon("missing", "item", foundItemId, buff) then
+                    if self:AddIcon(ICON.MISSING, "item", foundItemId, buff) then
                         buffsChanged = true
                         buff.usedItemId = foundItemId
                     end
@@ -265,7 +263,7 @@ function QuickAuras:CheckMissingBuffs()
         end
     end
     if buffsChanged then
-        self:ArrangeIcons("missing")
+        self:ArrangeIcons(ICON.MISSING)
     end
 end
 
@@ -292,19 +290,19 @@ end
 -- Icon management
 
 function QuickAuras:RefreshMissing()
-    self:ClearIcons("missing")
+    self:ClearIcons(ICON.MISSING)
     self:CheckMissingBuffs()
 end
 
 function QuickAuras:RefreshReminders()
-    self:ClearIcons("reminder")
+    self:ClearIcons(ICON.REMINDER)
     self:CheckTrackingStatus()
     self:CheckLowConsumes()
     self:CheckTransmuteCooldown()
 end
 
 function QuickAuras:RefreshWarnings()
-    self:ClearIcons("warning")
+    self:ClearIcons(ICON.WARNING)
     self:CheckGear()
 end
 

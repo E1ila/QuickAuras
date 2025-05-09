@@ -4,6 +4,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local out = QuickAuras.Print
 local debug = QuickAuras.Debug
 local _c = QuickAuras.colors
+local ICON = QuickAuras.ICON
 
 QuickAuras.defaultOptions = {
     profile = {
@@ -20,7 +21,8 @@ QuickAuras.defaultOptions = {
         forceShowMissing = false,
         outOfConsumeWarning = true,
         missingBuffsMode = "raid",
-        rogueUseTea = "always",
+        rogueTeaTime = "always",
+        rogueTeaTimeFrame = ICON.WARNING,
         someSetting = 50,
         barHeight = 25,
         barWidth = 128,
@@ -109,7 +111,7 @@ QuickAuras.options = {
                 if value then
                     QuickAuras:CheckGear()
                 else
-                    QuickAuras:ClearIcons("warning")
+                    QuickAuras:ClearIcons(ICON.WARNING)
                 end
             end,
             order = 8,
@@ -332,24 +334,39 @@ QuickAuras.options = {
                     hidden = not QuickAuras.isRogue,
                     order = 304,
                 },
-                rogueUseTea = {
+                rogueTeaTime = {
                     type = "select",
-                    name = "Use Tea Now",
-                    desc = "Shows a visible Thistle Tea indication when you have less than 6 energy.",
+                    name = "Tea Time!",
+                    desc = "Shows a visible Thistle Tea indication when you have less than 6 energy, the perfect time for a tea.",
                     values = {
                         never = "Never",
                         flurry = "On Blade Flurry",
                         always = "Always",
                     },
                     get = function(info)
-                        return QuickAuras.db.profile.rogueUseTea or "always"
+                        return QuickAuras.db.profile.rogueTeaTime or "always"
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.rogueUseTea = value
+                        QuickAuras.db.profile.rogueTeaTime = value
                     end,
                     order = 306,
                 },
-
+                rogueTeaTimeFrame = {
+                    type = "select",
+                    name = "Tea Time Frame",
+                    desc = "Choose where to show the Thistle Tea indication.",
+                    values = {
+                        warning = "Warning Frame",
+                        alert = "Alert Frame",
+                    },
+                    get = function(info)
+                        return QuickAuras.db.profile.rogueTeaTimeFrame or "always"
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.rogueTeaTimeFrame = value
+                    end,
+                    order = 307,
+                },
             },
         },
         bars = {

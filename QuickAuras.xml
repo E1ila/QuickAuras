@@ -205,7 +205,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Gear Warnings">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Warnings">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />
@@ -224,7 +224,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Crucial Alerts">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Alerts">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />

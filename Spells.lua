@@ -21,10 +21,10 @@ spells.warrior = {
         visible = QuickAuras.isWarrior,
     },
     battleShout = {
-        spellId = { 6673, 6674, 5242, 5243, 6192, 6193, 6543, 11549, 11551, 11552, 11553, 25259, 25356 },
+        spellId = { 6673, 5242, 6192, 11549, 11550, 11551, 25289 },
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
-        crucial = true,
+        crucial = QuickAuras.isWarrior or QuickAuras.isRogue,
         visible = QuickAuras.isWarrior,
     }
 }

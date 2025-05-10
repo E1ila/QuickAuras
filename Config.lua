@@ -112,16 +112,17 @@ function QuickAuras:BuildTrackedSpells()
         --debug(3, "BuildTrackedSpells", ">>", string.upper(category))
         for key, spell in pairs(cspells) do
             --debug(3, "BuildTrackedSpells", "  - ", key)
+            if spell.crucial then
+                local obj = {
+                    spellIds = spell.spellId,
+                    conf = spell,
+                }
+                table.insert(self.trackedCrucialAuras, obj)
+            end
+
             if spell.spellId and (spell.visible == nil or spell.visible) then
                 if not spell.icon then
                     spell.icon = GetSpellTexture(spell.spellId[1])
-                end
-                if spell.crucial then
-                    local obj = {
-                        spellIds = spell.spellId,
-                        conf = spell,
-                    }
-                    table.insert(self.trackedCrucialAuras, obj)
                 end
                 for _, spellId in ipairs(spell.spellId) do
                     --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")

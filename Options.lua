@@ -445,6 +445,11 @@ QuickAuras.options = {
                     name = "Trinkets",
                     order = 2000,
                 },
+                header3 = {
+                    type = "header",
+                    name = "Raid Buffs",
+                    order = 3000,
+                },
             },
         },
         cooldowns = {
@@ -621,7 +626,19 @@ local function AddSpells(cspells, orderStart)
         order = order + 1
         debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
         if spell.raidBars then
-            -- todo
+            if QuickAuras.defaultOptions.profile[spell.option.."_rbars"] == nil then
+                QuickAuras.defaultOptions.profile[spell.option.."_rbars"] = true
+            end
+            QuickAuras.options.args.bars.args[spellKey.."_rbars"] = {
+                type = "toggle",
+                name = spell.name,
+                desc = "Shows time bar when "..spell.name.." is active for a raid member.",
+                get = function(info) return QuickAuras.db.profile[spell.option.."_rbars"] end,
+                set = function(info, value)
+                    QuickAuras.db.profile[spell.option.."_rbars"] = value
+                end,
+                order = order + 3000,
+            }
         end
         if spell.visible == nil or spell.visible == true then
             -- obj.option in format of class_abilityName

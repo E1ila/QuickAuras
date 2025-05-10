@@ -207,7 +207,7 @@ end
 
 local function _checkCooldown(conf, idType, id, start, duration)
     debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
-    if start > 0 and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
+    if start and start > 0 and duration and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
         QuickAuras:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
     end
@@ -251,6 +251,7 @@ function QuickAuras:CheckAuras()
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
+        debug("CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
         seen[spellId] = { duration, expTime }
         -- timer auras -----------------------------------------
         local aura = self.trackedAuras[spellId]
@@ -311,7 +312,7 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
     for _, crucial in pairs(self.trackedCrucialAuras) do
         local hasIt, aura = self:HasSeenAny(crucial.spellIds, activeAuras)
         local obj = self.list_crucial[crucial.spellIds[1]] -- not necessarly a timer
-        debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
+        debug("CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
         if not hasIt then
             if obj and obj.isTimer then
                 self:RemoveTimer(obj, "crucial")

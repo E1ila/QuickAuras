@@ -503,39 +503,6 @@ function QuickAuras:ArrangeTimerBars(list, parent)
     end
 end
 
-function QuickAuras:UpdateProgressBar(timer)
-    if not timer or not timer.frame then return end -- timer destroyed
-    if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
-        timer.frame:Show()
-        if timer.duration > 0 then
-            local timeLeft = timer.expTime - GetTime()
-            local progress = timeLeft / timer.duration
-            if timer.flashOnEnd and timeLeft < timer.flashOnEnd then
-                --debug(3, "UpdateProgressBar", timer.key, "flashing", timeLeft)
-                if math.floor(timeLeft / 0.4) % 2 == 0 then
-                    timer.frame:SetBackdropBorderColor(1, 0, 0) -- Red border
-                    timer.frame.barFrame:SetStatusBarColor(1, 0, 0)
-                else
-                    timer.frame:SetBackdropBorderColor(unpack(timer.color)) -- Red border
-                    timer.frame.barFrame:SetStatusBarColor(unpack(timer.color))
-                end
-            end
-            if timer.uiType == "bar" then
-                _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
-                if timer.frame.text then
-                    timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
-                end
-            elseif timer.uiType == "button" then
-                timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
-            end
-        end
-        return true
-    else
-        timer.frame:Hide()
-        return false
-    end
-end
-
 
 -------------------------------------------------------------
 

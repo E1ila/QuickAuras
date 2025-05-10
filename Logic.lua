@@ -311,7 +311,7 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
     for _, crucial in pairs(self.trackedCrucialAuras) do
         local hasIt, aura = self:HasSeenAny(crucial.spellIds, activeAuras)
         local obj = self.list_crucial[crucial.spellIds[1]] -- not necessarly a timer
-        --debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
+        debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
         if not hasIt then
             if obj and obj.isTimer then
                 self:RemoveTimer(obj, "crucial")
@@ -325,7 +325,7 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
             if obj and not obj.isTimer then
                 self:ClearIcons(ICON.CRUCIAL)
             end
-            self:AddTimer("crucial", crucial.conf, crucial.spellIds[1], aura[1], aura[2])
+            self:AddTimer("crucial", crucial.conf, crucial.spellIds[1], aura[1], aura[2], self.db.profile.crucialExpireTime)
             return
         end
     end

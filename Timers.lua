@@ -3,7 +3,7 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 local ICON = QuickAuras.ICON
 
-function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, onEnd)
+function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent
     local widthMul = 1
@@ -37,8 +37,8 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
         arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.CRUCIAL) end
     end
     if not parent then parent = UIParent end
-    if not onUpdate then onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate end
-    if not onEnd then onEnd = conf.onEnd or QuickAuras_Timer_OnUpdate end
+    local onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate
+    local onEnd = conf.onEnd or QuickAuras_Timer_OnUpdate
 
     local index = 0
     for _ in pairs(list) do
@@ -62,6 +62,10 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
     local frame
     if uiType == "button" then
         frame = self:CreateTimerButton(parent, index, 2, conf.color, conf.icon)
+        if showAtTime then
+            showAtTime = expTime - showAtTime
+            frame:Hide()
+        end
     else
         local text = self.db.profile.showTimeOnBars and tostring(duration) or nil
         frame = self:CreateTimerBar(parent, index, 2, conf.color, conf.icon, text)
@@ -76,6 +80,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
         color = conf.color or {0.5, 0.5, 0.5},
         expTime = expTime,
         duration = duration,
+        showAtTime = showAtTime,
         onUpdate = onUpdate,
         onEnd = onEnd,
         uiType = uiType,
@@ -97,6 +102,41 @@ end
 
 function QuickAuras:GetTimerKey(name, expTime, uiType)
     return name.."-"..tostring(expTime).."-"..tostring(uiType)
+end
+
+function QuickAuras:UpdateProgressBar(timer)
+    if not timer or not timer.frame then return end -- timer destroyed
+    if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
+        if not timer.showAtTime or GetTime() >= timer.showAtTime then
+            timer.frame:Show()
+            if timer.duration > 0 then
+                local timeLeft = timer.expTime - GetTime()
+                local progress = timeLeft / timer.duration
+                if timer.flashOnEnd and timeLeft < timer.flashOnEnd then
+                    --debug(3, "UpdateProgressBar", timer.key, "flashing", timeLeft)
+                    if math.floor(timeLeft / 0.4) % 2 == 0 then
+                        timer.frame:SetBackdropBorderColor(1, 0, 0) -- Red border
+                        timer.frame.barFrame:SetStatusBarColor(1, 0, 0)
+                    else
+                        timer.frame:SetBackdropBorderColor(unpack(timer.color)) -- Red border
+                        timer.frame.barFrame:SetStatusBarColor(unpack(timer.color))
+                    end
+                end
+                if timer.uiType == "bar" then
+                    _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
+                    if timer.frame.text then
+                        timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
+                    end
+                elseif timer.uiType == "button" then
+                    timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
+                end
+            end
+        end
+        return true
+    else
+        timer.frame:Hide()
+        return false
+    end
 end
 
 function QuickAuras:RemoveTimer(timer, reason)

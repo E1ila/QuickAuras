@@ -6,14 +6,14 @@ local _useTeaShown = false
 local USE_TEA_ENERGY_THRESHOLD = 6
 local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
-local _lastInRange = false
+QuickAuras.targetInRange = false
 
 function QuickAuras:CheckTargetRange()
-    if not self.db.profile.rangeSpellId then return end
+    if not self.db.profile.targetInRangeIndication or not self.db.profile.rangeSpellId then return end
     local spellName = GetSpellInfo(self.db.profile.rangeSpellId)
     local inRange = IsSpellInRange(spellName, "target") == 1
-    if inRange ~= _lastInRange then
-        _lastInRange = inRange
+    if inRange ~= self.targetInRange then
+        self.targetInRange = inRange
         debug(2, "inRange", spellName, inRange)
         if inRange then
             QuickAuras_RangeIndicator:Show()
@@ -307,7 +307,7 @@ function QuickAuras:CheckMissingBuffs()
 end
 
 function QuickAuras:CheckCrucialBuffs(activeAuras)
-    local changed = false
+    if not self.db.profile.battleShoutMissing then return end
     for _, crucial in pairs(self.trackedCrucialAuras) do
         local hasIt = self:HasSeenAny(crucial.spellIds, activeAuras)
         debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)

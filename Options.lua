@@ -21,6 +21,7 @@ QuickAuras.defaultOptions = {
         forceShowMissing = false,
         outOfConsumeWarning = true,
         hsNotCapitalWarning = true,
+        targetInRangeIndication = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
         rogueTeaTimeFrame = ICON.WARNING,
@@ -44,6 +45,7 @@ QuickAuras.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         showTimeOnBars = true,
+        battleShoutMissing = QuickAuras.isWarrior or QuickAuras.isRogue,
         lowConsumesMinLevel = 58,
         lowConsumesMinCount = 1,
         manaTideAura = QuickAuras.isManaClass,
@@ -310,7 +312,7 @@ QuickAuras.options = {
             type = "group",
             name = "Melee Utils",
             order = 1000,
-            hidden = not QuickAuras.isRogue,
+            hidden = not QuickAuras.isRogue and not QuickAuras.isWarrior,
             args = {
                 harryPaste = {
                     type = "toggle",
@@ -342,15 +344,29 @@ QuickAuras.options = {
                     end,
                     order = 104,
                 },
+                battleShoutMissing = {
+                    type = "toggle",
+                    name = "Battle Shout Missing",
+                    desc = "Show a warning when Battle Shout is missing",
+                    get = function(info) return QuickAuras.db.profile.battleShoutMissing end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.battleShoutMissing = value
+                        QuickAuras:ClearIcons(ICON.CRUCIAL)
+                        QuickAuras:CheckAuras()
+                    end,
+                    order = 105,
+                },
                 rogueUtilsHeader = {
                     type = "header",
                     name = "Rogue Utils",
                     order = 298,
+                    hidden = not QuickAuras.isRogue,
                 },
                 spacer201 = {
                     type = "description",
                     name = "",
                     order = 299,
+                    hidden = not QuickAuras.isRogue,
                 },
                 rogue5Combo = {
                     type = "toggle",
@@ -380,6 +396,7 @@ QuickAuras.options = {
                     set = function(info, value)
                         QuickAuras.db.profile.rogueTeaTime = value
                     end,
+                    hidden = not QuickAuras.isRogue,
                     order = 306,
                 },
                 rogueTeaTimeFrame = {
@@ -396,6 +413,7 @@ QuickAuras.options = {
                     set = function(info, value)
                         QuickAuras.db.profile.rogueTeaTimeFrame = value
                     end,
+                    hidden = not QuickAuras.isRogue,
                     order = 307,
                 },
             },
@@ -468,6 +486,26 @@ QuickAuras.options = {
             name = "Icon Alerts",
             order = 10001,
             args = {
+                targetInRangeIndication = {
+                    type = "toggle",
+                    name = "Target In Range",
+                    desc = "Lets you know when target is in range for casting a spell",
+                    get = function(info)
+                        return QuickAuras.db.profile.targetInRangeIndication
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.targetInRangeIndication = value
+                        QuickAuras_RangeIndicator:Hide()
+                        QuickAuras.targetInRange = false
+                        QuickAuras:CheckTargetRange()
+                    end,
+                    order = 50,
+                },
+                header1 = {
+                    type = "header",
+                    name = "Buff/Debuff Alert",
+                    order = 99,
+                },
             },
         },
         consumes = {
@@ -569,8 +607,8 @@ QuickAuras.options = {
     },
 }
 
-local function AddSpells(cspells, subCategory)
-    local order = 1
+local function AddSpells(cspells, subCategory, orderStart)
+    local order = orderStart or 1
     for spellKey, spell in pairs(cspells) do
         order = order + 1
         debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
@@ -643,7 +681,7 @@ end
 
 function QuickAuras:AddAbilitiesOptions()
     AddSpells(QuickAuras.spells.racials)
-    AddSpells(QuickAuras.spells.iconAlerts)
+    AddSpells(QuickAuras.spells.iconAlerts, nil, 100)
     AddSpells(QuickAuras.spells.other)
     AddSpells(QuickAuras.spells.transmutes)
     --AddSpells(QuickAuras.spells.reminders)
@@ -741,10 +779,18 @@ function QuickAuras:AddConsumeOptions()
 end
 
 function QuickAuras:SetRangeDefaultSpellId()
-    if QuickAuras.isRogue then
-        QuickAuras.defaultOptions.profile.rangeSpellId = nil
-    elseif QuickAuras.isWarrior then
+    if QuickAuras.isWarrior then
         QuickAuras.defaultOptions.profile.rangeSpellId = 6178 -- charge
+    elseif QuickAuras.isShaman then
+        QuickAuras.defaultOptions.profile.rangeSpellId = 8056 -- frost shock
+    elseif QuickAuras.isMage then
+        QuickAuras.defaultOptions.profile.rangeSpellId = 116 -- frostbolt
+    elseif QuickAuras.isWarlock then
+        QuickAuras.defaultOptions.profile.rangeSpellId = 686 -- shadow bolt
+    elseif QuickAuras.isHunter then
+        QuickAuras.defaultOptions.profile.rangeSpellId = 3044 -- arcane shot
+    else
+        QuickAuras.defaultOptions.profile.rangeSpellId = nil
     end
 end
 

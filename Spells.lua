@@ -367,11 +367,10 @@ spells.racials = {
 
 spells.other = {
     potion = {
-        spellId = { 13444 },
-        aura = true,
+        -- placed here for cooldown support, even that it's an item
+        itemId = 13444,
         name = "Potion",
         icon = "Interface\\Icons\\inv_potion_76",
-        color = {0.5, 0.5, 0.5},
         cooldown = true,
     },
 }

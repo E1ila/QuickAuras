@@ -205,8 +205,8 @@ function QuickAuras:CheckGear(eventType, ...)
     end
 end
 
-local function _checkCooldown(conf, id, start, duration)
-    --debug(3, "_checkCooldown", spellId, conf.name, start, duration, "option", conf.option)
+local function _checkCooldown(conf, idType, id, start, duration)
+    debug(3, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
     if start > 0 and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
         QuickAuras:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
@@ -217,13 +217,13 @@ function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellId, conf in pairs(self.trackedSpellCooldowns) do
         local start, duration = GetSpellCooldown(spellId)
-        _checkCooldown(conf, spellId, start, duration)
+        _checkCooldown(conf, "spell", spellId, start, duration)
     end
     for itemId, conf in pairs(self.trackedItemCooldowns) do
         -- show cooldown only if item is in bags
-        if QuickAuras.bags[conf.itemId] then
+        if conf.evenIfNotInBag or QuickAuras.bags[conf.itemId] then
             local start, duration = QuickAuras:GetItemCooldown(itemId)
-            _checkCooldown(conf, itemId, start, duration)
+            _checkCooldown(conf, "item", itemId, start, duration)
         end
     end
 end

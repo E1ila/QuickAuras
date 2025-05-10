@@ -131,6 +131,10 @@ function QuickAuras:BuildTrackedSpells()
                         self.trackedSpellCooldowns[spellId] = spell
                     end
                 end
+            elseif spell.itemId then
+                if spell.cooldown then
+                    self.trackedItemCooldowns[spell.itemId] = spell
+                end
             end
         end
     end

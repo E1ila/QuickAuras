@@ -101,11 +101,13 @@ end
 
 function QuickAuras:PLAYER_REGEN_DISABLED()
     -- in combat
+    self.inCombat = true
     self:CheckAuras()
 end
 
 function QuickAuras:PLAYER_REGEN_ENABLED()
     -- out of combat
+    self.inCombat = false
     self:CheckAuras()
 end
 

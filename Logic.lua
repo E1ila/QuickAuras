@@ -251,7 +251,7 @@ function QuickAuras:CheckAuras()
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        debug("CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
+        debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
         seen[spellId] = { duration, expTime }
         -- timer auras -----------------------------------------
         local aura = self.trackedAuras[spellId]
@@ -308,11 +308,14 @@ function QuickAuras:CheckMissingBuffs()
 end
 
 function QuickAuras:CheckCrucialBuffs(activeAuras)
-    if not self.db.profile.battleShoutMissing then return end
+    if not self.db.profile.battleShoutMissing or (not self.inCombat and not IsInGroup()) then
+        self:ClearIcons(ICON.CRUCIAL)
+        return
+    end
     for _, crucial in pairs(self.trackedCrucialAuras) do
         local hasIt, aura = self:HasSeenAny(crucial.spellIds, activeAuras)
         local obj = self.list_crucial[crucial.spellIds[1]] -- not necessarly a timer
-        debug("CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
+        debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
         if not hasIt then
             if obj and obj.isTimer then
                 self:RemoveTimer(obj, "crucial")

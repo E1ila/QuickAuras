@@ -356,6 +356,13 @@ end
 
 -- Icon management
 
+function QuickAuras:RefreshCooldowns()
+    for _, timer in pairs(self.list_cooldowns) do
+        self:RemoveTimer(timer, "refresh")
+    end
+    self:CheckCooldowns()
+end
+
 function QuickAuras:RefreshMissing()
     self:ClearIcons(ICON.MISSING)
     self:CheckMissingBuffs()

@@ -22,6 +22,7 @@ QuickAuras.defaultOptions = {
         outOfConsumeWarning = true,
         hsNotCapitalWarning = true,
         targetInRangeIndication = true,
+        raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
         rogueTeaTimeFrame = ICON.WARNING,
@@ -142,6 +143,16 @@ QuickAuras.options = {
                 QuickAuras:RefreshReminders()
             end,
             order = 10,
+        },
+        raidBars = {
+            type = "toggle",
+            name = "Raid Bars",
+            desc = "Enables tracking of raid players' buffs, cooldowns, etc.",
+            get = function(info) return QuickAuras.db.profile.raidBars end,
+            set = function(info, value)
+                QuickAuras.db.profile.raidBars = value
+            end,
+            order = 11,
         },
         spacer99 = {
             type = "description",
@@ -420,22 +431,18 @@ QuickAuras.options = {
         },
         bars = {
             type = "group",
-            name = "Buffs / Debuffs",
+            name = "Buff Bars",
             order = 1002,
             args = {
-                abilities = {
-                    type = "group",
+                header1 = {
+                    type = "header",
                     name = "Abilities",
                     order = 1000,
-                    args = {
-                    },
                 },
-                trinkets = {
-                    type = "group",
+                header2 = {
+                    type = "header",
                     name = "Trinkets",
-                    order = 1001,
-                    args = {
-                    },
+                    order = 2000,
                 },
             },
         },
@@ -446,7 +453,7 @@ QuickAuras.options = {
             args = {
             }
         },
-        gearWarnings = {
+        warnings = {
             type = "group",
             name = "Warnings",
             order = 10000,
@@ -607,7 +614,7 @@ QuickAuras.options = {
     },
 }
 
-local function AddSpells(cspells, subCategory, orderStart)
+local function AddSpells(cspells, orderStart)
     local order = orderStart or 1
     for spellKey, spell in pairs(cspells) do
         order = order + 1
@@ -621,10 +628,6 @@ local function AddSpells(cspells, subCategory, orderStart)
             if categoryOptions and spell.list and not spell.transmute then
                 -- Buff/Debuff option
                 local args = categoryOptions.args
-                local sub = subCategory or spell.subCategory
-                if sub and args[sub] then
-                    args = args[sub].args
-                end
                 args[spellKey] = {
                     type = "toggle",
                     name = spell.name,
@@ -650,7 +653,7 @@ local function AddSpells(cspells, subCategory, orderStart)
                     get = function(info) return QuickAuras.db.profile[spell.option.."_cd"] end,
                     set = function(info, value)
                         QuickAuras.db.profile[spell.option.."_cd"] = value
-                        QuickAuras:CheckCooldowns()
+                        QuickAuras:RefreshCooldowns()
                         if spell.aura then QuickAuras:CheckAuras() end
                     end,
                     order = order + 1000,
@@ -681,15 +684,15 @@ end
 
 function QuickAuras:AddAbilitiesOptions()
     AddSpells(QuickAuras.spells.racials)
-    AddSpells(QuickAuras.spells.iconAlerts, nil, 100)
+    AddSpells(QuickAuras.spells.iconAlerts, 100)
     AddSpells(QuickAuras.spells.other)
     AddSpells(QuickAuras.spells.transmutes)
     --AddSpells(QuickAuras.spells.reminders)
-    AddSpells(QuickAuras.spells.trinkets, "trinkets")
+    AddSpells(QuickAuras.spells.trinkets, 2000)
     local lowerClass = string.lower(QuickAuras.playerClass)
     local classAbilities = QuickAuras.spells[lowerClass]
     if classAbilities then
-        AddSpells(classAbilities, "abilities")
+        AddSpells(classAbilities, 1000)
     end
 end
 
@@ -699,7 +702,7 @@ function QuickAuras:AddGearWarningOptions()
         order = order + 1
         obj.option = "gw_"..obj.name:gsub("%s+", "")
         QuickAuras.defaultOptions.profile[obj.option] = true
-        QuickAuras.options.args.gearWarnings.args[obj.option] = {
+        QuickAuras.options.args.warnings.args[obj.option] = {
             type = "toggle",
             name = obj.name,
             desc = obj.desc or "Shows a warning when "..obj.name.." is worn.",

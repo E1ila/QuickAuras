@@ -361,7 +361,6 @@ spells.racials = {
         list = "watch",
         duration = 15,
         visible = QuickAuras.isOrc,
-        subCategory = "abilities"
     },
 }
 
@@ -372,6 +371,7 @@ spells.other = {
         name = "Potion",
         icon = "Interface\\Icons\\inv_potion_76",
         cooldown = true,
+        evenIfNotInBag = true,
     },
 }
 

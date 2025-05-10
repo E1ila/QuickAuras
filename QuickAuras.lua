@@ -35,6 +35,7 @@ QuickAuras.list_missingBuffs = {} -- item obj
 QuickAuras.list_reminders = {} -- spell obj
 QuickAuras.list_crucial = {} -- timer / icon
 QuickAuras.list_range = {}
+QuickAuras.list_raidBars = {} -- timer
 
 local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass

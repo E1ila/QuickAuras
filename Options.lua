@@ -31,6 +31,7 @@ QuickAuras.defaultOptions = {
         buttonHeight = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
+        crucialIconSize = 80,
         missingBuffsSize = 35,
         reminderIconSize = 40,
         weaponEnchantSize = 40,
@@ -230,6 +231,20 @@ QuickAuras.options = {
                     set = function(info, value)
                         QuickAuras.db.profile.iconAlertSize = value
                         QuickAuras:TestIconAlerts()
+                    end,
+                    order = 105,
+                },
+                crucialIconSize = {
+                    type = "range",
+                    name = "Alert Icon Size",
+                    desc = "Set the size of the alert icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.crucialIconSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.crucialIconSize = value
+                        --QuickAuras:TestIconAlerts()
                     end,
                     order = 105,
                 },

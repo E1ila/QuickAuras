@@ -14,7 +14,7 @@ function QuickAuras:InitUI()
     _c = self.colors
     self:ParentFramesNormalState()
     self:InitWeaponEnchants()
-    self:InitCrucialBuffMissing()
+    --self:InitCrucialBuffMissing()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
@@ -35,18 +35,25 @@ function QuickAuras:SetWeaponEnchantIcon(slot, itemId)
     frame:SetSize(self.db.profile.weaponEnchantSize, self.db.profile.weaponEnchantSize)
 end
 
-function QuickAuras:InitCrucialBuffMissing()
-    QuickAuras_CrucialBuffMissing.icon = QuickAuras_CrucialBuffMissing:CreateTexture(nil, "BACKGROUND")
-    QuickAuras_CrucialBuffMissing.icon:SetAllPoints(QuickAuras_CrucialBuffMissing)
-    QuickAuras_CrucialBuffMissing:SetSize(self.db.profile.crucialBuffsSize, self.db.profile.crucialBuffsSize)
-    QuickAuras_CrucialBuffMissing:Hide()
-    self:SetCrucialBuffIcon(25289) -- battle shout
-end
+--function QuickAuras:InitCrucialBuffMissing()
+--    QuickAuras_CrucialBuffMissing.icon = QuickAuras_CrucialBuffMissing:CreateTexture(nil, "BACKGROUND")
+--    QuickAuras_CrucialBuffMissing.icon:SetAllPoints(QuickAuras_CrucialBuffMissing)
+--    QuickAuras_CrucialBuffMissing:SetSize(self.db.profile.crucialBuffsSize, self.db.profile.crucialBuffsSize)
+--    QuickAuras_CrucialBuffMissing:Hide()
+--    self:ShowCrucialBuffIcon(25289) -- battle shout
+--end
 
-function QuickAuras:SetCrucialBuffIcon(spellId)
-    local texture = GetSpellTexture(spellId)
-    QuickAuras_CrucialBuffMissing.icon:SetTexture(texture)
-end
+--function QuickAuras:ShowCrucialBuffIcon(spellId, duration)
+--    if spellId then
+--        local texture = GetSpellTexture(spellId)
+--        QuickAuras_CrucialBuffMissing.icon:SetTexture(texture)
+--    end
+--    QuickAuras_CrucialBuffMissing:Show()
+--end
+--
+--function QuickAuras:HideCrucialBuffIcon()
+--    QuickAuras_CrucialBuffMissing:Hide()
+--end
 
 function QuickAuras:ResetRogueWidgets()
     --QuickAuras_Combo_Texture:ClearAllPoints()
@@ -201,6 +208,10 @@ local function GetIconList(type, idType)
         list = QuickAuras.reminders
         parent = QuickAuras_Reminders
         Refresh = QuickAuras.RefreshReminders
+    elseif type == ICON.CRUCIAL then
+        list = QuickAuras.crucial
+        parent = QuickAuras_CrucialBuffMissing
+        --Refresh = QuickAuras.RefreshReminders
     end
     return list, parent, Create, Refresh
 end
@@ -300,6 +311,14 @@ function QuickAuras:ArrangeIcons(iconType)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:SetSize(self.db.profile.iconAlertSize, self.db.profile.iconAlertSize) -- Width, Height
+        elseif iconType == ICON.CRUCIAL then
+            if lastFrame then
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
+            else
+                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+            end
+            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+            frame:SetSize(self.db.profile.crucialIconSize, self.db.profile.crucialIconSize) -- Width, Height
         end
         lastFrame = frame
     end
@@ -348,6 +367,7 @@ function QuickAuras:ParentFramesEditState()
     QuickAuras_Reminders_Text:Show()
     QuickAuras_WeaponEnchants_Text:Show()
     QuickAuras_CrucialBuffMissing_Text:Show()
+    --QuickAuras_CrucialBuffMissing:Show()
 end
 
 function QuickAuras:ToggleLockedState()

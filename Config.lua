@@ -19,6 +19,8 @@ QuickAuras.optionalEvents = {
     "PLAYER_LEVEL_UP",
     "BANKFRAME_OPENED",
     "BANKFRAME_CLOSED",
+    "PLAYER_REGEN_DISABLED",
+    "PLAYER_REGEN_ENABLED",
 }
 
 QuickAuras.adjustableFrames = {
@@ -66,6 +68,7 @@ QuickAuras.capitalCities = {
 
 -- these will be detected through UNIT_AURA event
 QuickAuras.trackedAuras = {}
+QuickAuras.trackedCrucialAuras = {}
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
 QuickAuras.trackedCombatLog = {}
@@ -110,6 +113,13 @@ function QuickAuras:BuildTrackedSpells()
         for key, spell in pairs(cspells) do
             --debug(3, "BuildTrackedSpells", "  - ", key)
             if spell.spellId and (spell.visible == nil or spell.visible) then
+                if spell.crucial then
+                    local obj = {
+                        spellIds = spell.spellId,
+                        conf = spell,
+                    }
+                    table.insert(self.trackedCrucialAuras, obj)
+                end
                 for _, spellId in ipairs(spell.spellId) do
                     --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
                     if spell.aura then

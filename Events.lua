@@ -153,6 +153,16 @@ function QuickAuras:UNIT_POWER_UPDATE(unit, powerType)
     self:CheckPower(unit, powerType)
 end
 
+function QuickAuras:PLAYER_REGEN_DISABLED()
+    -- in combat
+    self:CheckAuras()
+end
+
+function QuickAuras:PLAYER_REGEN_ENABLED()
+    -- out of combat
+    self:CheckAuras()
+end
+
 -- OnUpdate
 
 function QuickAuras:OnUpdate()

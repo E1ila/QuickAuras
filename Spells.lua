@@ -4,6 +4,29 @@ QuickAuras.spells = { }
 local spells = QuickAuras.spells
 
 spells.warrior = {
+    taunt = {
+        spellId = { 355 },
+        name = "Taunt",
+        icon = "Interface\\Icons\\spell_nature_reincarnation",
+        cooldown = true,
+        list = "offensive",
+        visible = QuickAuras.isWarrior,
+    },
+    mockingBlow = {
+        spellId = { 694, 7400, 7402, 20559, 20560 },
+        name = "Mocking Blow",
+        icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
+        cooldown = true,
+        list = "offensive",
+        visible = QuickAuras.isWarrior,
+    },
+    battleShout = {
+        spellId = { 6673, 6674, 5242, 5243, 6192, 6193, 6543, 11549, 11551, 11552, 11553, 25259, 25356 },
+        name = "Battle Shout",
+        icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
+        crucial = true,
+        visible = QuickAuras.isWarrior,
+    }
 }
 
 spells.rogue = {

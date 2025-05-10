@@ -241,7 +241,7 @@ function QuickAuras:CheckAuras()
         --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
         if aura and (not aura.option or self.db.profile[aura.option]) and self.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
-            --debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
+            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, self.db.profile[aura.option])
             local timer = self:AddTimer("auras", aura, spellId, duration, expTime)
             if timer then
                 seen[timer.key] = true
@@ -256,6 +256,7 @@ function QuickAuras:CheckAuras()
         end
     end
     self:CheckMissingBuffs()
+    self:CheckCrucialBuffs(seen)
 end
 
 function QuickAuras:CheckMissingBuffs()
@@ -288,6 +289,26 @@ function QuickAuras:CheckMissingBuffs()
         self:ArrangeIcons(ICON.MISSING)
     end
 end
+
+function QuickAuras:CheckCrucialBuffs(activeAuras)
+    local changed = false
+    for _, crucial in pairs(self.trackedCrucialAuras) do
+        local hasIt = self:HasSeenAny(crucial.spellIds, activeAuras)
+        debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
+        if not hasIt then
+            debug("CheckCrucialBuffs", "Found missing crucial buff", crucial.spellIds[1])
+            --self:ShowCrucialBuffIcon(crucial.spellIds[1])
+            if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf) then
+                self:ArrangeIcons(ICON.CRUCIAL)
+            end
+            --self:AddTimer("crucial", crucial.conf, crucial.spellIds[1], crucial.conf.duration, GetTime()+crucial.conf.duration)
+            return
+        end
+    end
+    self:ClearIcons(ICON.CRUCIAL)
+    --self:HideCrucialBuffIcon()
+end
+
 
 -- Zone change
 
@@ -375,7 +396,7 @@ end
 function QuickAuras:HasSeenAny(ids, seenHash)
     for _, id in ipairs(ids) do
         if seenHash[id] then
-            return true
+            return id
         end
     end
 end

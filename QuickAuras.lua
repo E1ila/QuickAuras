@@ -33,6 +33,7 @@ QuickAuras.iconWarnings = {} -- item obj
 QuickAuras.iconAlerts = {} -- timer obj
 QuickAuras.missingBuffs = {} -- item obj
 QuickAuras.reminders = {} -- spell obj
+QuickAuras.crucial = {}
 
 local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass
@@ -59,6 +60,7 @@ QuickAuras.ICON = {
     REMINDER = "reminder",
     WARNING = "warning",
     MISSING = "missing",
+    CRUCIAL = "crucial",
 }
 
 local function out(text, ...)

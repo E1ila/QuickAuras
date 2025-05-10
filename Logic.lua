@@ -1,9 +1,21 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
+local out = QuickAuras.Print
 local _useTeaShown = false
 local USE_TEA_ENERGY_THRESHOLD = 6
 local ICON = QuickAuras.ICON
+local _c = QuickAuras.colors
+
+function QuickAuras:CheckHearthstone()
+    local bindLocation = GetBindLocation()
+    if self.inCapital and not self.capitalCities[bindLocation] then
+        self:AddIcon(ICON.WARNING, "item", 6948, { name = "Hearthstone" })
+        out("|cffff0000Warning:|r Your Hearthstone is set to ".._c.bold..bindLocation.."|r!")
+    else
+        self:RemoveIcon(ICON.WARNING, 6948)
+    end
+end
 
 function QuickAuras:CheckPower(unit, powerType)
     if self.isRogue and unit == "player" then
@@ -304,6 +316,7 @@ function QuickAuras:RefreshReminders()
     self:CheckTrackingStatus()
     self:CheckLowConsumes()
     self:CheckTransmuteCooldown()
+    self:CheckHearthstone()
 end
 
 function QuickAuras:RefreshWarnings()

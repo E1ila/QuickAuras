@@ -8,25 +8,25 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
     local uiType, list, parent
     local widthMul = 1
     if timerType == "test-cooldowns" or timerType == "cooldowns" then
-        list = self.cooldowns
+        list = self.list_cooldowns
         parent = QuickAuras_Cooldowns
         uiType = "button"
     elseif conf.list == "watch" then
-        list = self.watchBars
+        list = self.list_watchBars
         parent = QuickAuras_WatchBars
         uiType = "bar"
     elseif conf.list == "offensive" then
-        list = self.offensiveBars
+        list = self.list_offensiveBars
         parent = QuickAuras_OffensiveBars
         uiType = "bar"
         widthMul = 1.5
     elseif conf.list == "alert" then
-        list = self.iconAlerts
+        list = self.list_iconAlerts
         parent = QuickAuras_IconAlerts
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.ALERT) end
     elseif timerType == "reminder" or conf.list == "reminder" then
-        list = self.reminders
+        list = self.list_reminders
         parent = QuickAuras_Reminders
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.REMINDER) end
@@ -40,7 +40,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
         index = index + 1
     end
 
-    local existingTimer = self.timerByName[conf.name.."-"..uiType]
+    local existingTimer = self.list_timerByName[conf.name.."-"..uiType]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
@@ -83,8 +83,8 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
     }
     timer.key = self:GetTimerKey(conf.name, expTime, uiType)
     list[id] = timer
-    self.timers[timer.key] = timer
-    self.timerByName[conf.name.."-"..uiType] = timer
+    self.list_timers[timer.key] = timer
+    self.list_timerByName[conf.name.."-"..uiType] = timer
     onUpdate(timer)
     arrangeFunc(self, list, parent)
     return timer
@@ -105,8 +105,8 @@ function QuickAuras:RemoveTimer(timer, reason)
     timer.frame:ClearAllPoints()
     timer.frame = nil
     timer.list[timer.id] = nil
-    self.timerByName[timer.name.."-"..timer.uiType] = nil
-    self.timers[timer.key] = nil
+    self.list_timerByName[timer.name.."-"..timer.uiType] = nil
+    self.list_timers[timer.key] = nil
     --debug(" -- ", timer.key)
     if timer.arrangeFunc then
         timer.arrangeFunc(self, timer.list, timer.parent)
@@ -116,7 +116,7 @@ function QuickAuras:RemoveTimer(timer, reason)
 end
 
 function QuickAuras:CheckTimers()
-    for _, timer in pairs(self.timers) do
+    for _, timer in pairs(self.list_timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then
                 self:RemoveTimer(timer, "expired")

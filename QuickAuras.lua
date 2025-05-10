@@ -23,17 +23,18 @@ QuickAurasDB.bank = QuickAurasDB.bank or {}
 QuickAuras.bank = QuickAurasDB.bank
 
 -- managed timers
-QuickAuras.timers = {} -- all active timers
-QuickAuras.timerByName = {}
+QuickAuras.list_timers = {} -- all active timers
+QuickAuras.list_timerByName = {}
 -- managed timers by frame type
-QuickAuras.watchBars = {} -- timer obj
-QuickAuras.offensiveBars = {} -- timer obj
-QuickAuras.cooldowns = {} -- timer obj
-QuickAuras.iconWarnings = {} -- item obj
-QuickAuras.iconAlerts = {} -- timer obj
-QuickAuras.missingBuffs = {} -- item obj
-QuickAuras.reminders = {} -- spell obj
-QuickAuras.crucial = {}
+QuickAuras.list_watchBars = {} -- timer obj
+QuickAuras.list_offensiveBars = {} -- timer obj
+QuickAuras.list_cooldowns = {} -- timer obj
+QuickAuras.list_iconWarnings = {} -- item obj
+QuickAuras.list_iconAlerts = {} -- timer obj
+QuickAuras.list_missingBuffs = {} -- item obj
+QuickAuras.list_reminders = {} -- spell obj
+QuickAuras.list_crucial = {}
+QuickAuras.list_range = {}
 
 local pclass = select(2, UnitClass("player"))
 QuickAuras.playerClass = pclass
@@ -61,6 +62,7 @@ QuickAuras.ICON = {
     WARNING = "warning",
     MISSING = "missing",
     CRUCIAL = "crucial",
+    RANGE = "range",
 }
 
 local function out(text, ...)

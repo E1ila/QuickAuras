@@ -193,23 +193,27 @@ local function GetIconList(type, idType)
     local list, parent, Refresh
     local Create = idType == "item" and QuickAuras.CreateItemWarningIcon or QuickAuras.CreateSpellWarningIcon
     if type == ICON.WARNING then
-        list = QuickAuras.iconWarnings
+        list = QuickAuras.list_iconWarnings
         parent = QuickAuras_IconWarnings
         Refresh = QuickAuras.RefreshWarnings
     elseif type == ICON.MISSING then
-        list = QuickAuras.missingBuffs
+        list = QuickAuras.list_missingBuffs
         parent = QuickAuras_MissingBuffs
         Refresh = QuickAuras.RefreshMissing
     elseif type == ICON.ALERT then
-        list = QuickAuras.iconAlerts
+        list = QuickAuras.list_iconAlerts
         parent = QuickAuras_IconAlerts
         Refresh = QuickAuras.RefreshAlerts
     elseif type == ICON.REMINDER then
-        list = QuickAuras.reminders
+        list = QuickAuras.list_reminders
         parent = QuickAuras_Reminders
         Refresh = QuickAuras.RefreshReminders
     elseif type == ICON.CRUCIAL then
-        list = QuickAuras.crucial
+        list = QuickAuras.list_crucial
+        parent = QuickAuras_CrucialBuffMissing
+        --Refresh = QuickAuras.RefreshReminders
+    elseif type == ICON.RANGE then
+        list = QuickAuras.icons_range
         parent = QuickAuras_CrucialBuffMissing
         --Refresh = QuickAuras.RefreshReminders
     end
@@ -337,6 +341,7 @@ function QuickAuras:ParentFramesNormalState()
     self:DisableDarkBackdrop(QuickAuras_Reminders)
     self:DisableDarkBackdrop(QuickAuras_WeaponEnchants)
     self:DisableDarkBackdrop(QuickAuras_CrucialBuffMissing)
+    self:DisableDarkBackdrop(QuickAuras_RangeIndicator)
     QuickAuras_WatchBars_Text:Hide()
     QuickAuras_OffensiveBars_Text:Hide()
     QuickAuras_Cooldowns_Text:Hide()
@@ -346,6 +351,7 @@ function QuickAuras:ParentFramesNormalState()
     QuickAuras_Reminders_Text:Hide()
     QuickAuras_WeaponEnchants_Text:Hide()
     QuickAuras_CrucialBuffMissing_Text:Hide()
+    QuickAuras_RangeIndicator_Text:Hide()
 end
 
 function QuickAuras:ParentFramesEditState()
@@ -358,6 +364,7 @@ function QuickAuras:ParentFramesEditState()
     self:SetDarkBackdrop(QuickAuras_Reminders)
     self:SetDarkBackdrop(QuickAuras_WeaponEnchants)
     self:SetDarkBackdrop(QuickAuras_CrucialBuffMissing)
+    self:SetDarkBackdrop(QuickAuras_RangeIndicator)
     QuickAuras_WatchBars_Text:Show()
     QuickAuras_OffensiveBars_Text:Show()
     QuickAuras_Cooldowns_Text:Show()
@@ -367,6 +374,7 @@ function QuickAuras:ParentFramesEditState()
     QuickAuras_Reminders_Text:Show()
     QuickAuras_WeaponEnchants_Text:Show()
     QuickAuras_CrucialBuffMissing_Text:Show()
+    QuickAuras_RangeIndicator_Text:Show()
     --QuickAuras_CrucialBuffMissing:Show()
 end
 

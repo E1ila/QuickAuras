@@ -250,7 +250,7 @@ function QuickAuras:CheckAuras()
         i = i + 1
     end
     -- remove missing auras
-    for _, timer in pairs(self.timers) do
+    for _, timer in pairs(self.list_timers) do
         if not seen[timer.key] and timer.timerType == "auras" then
             self:RemoveTimer(timer, "unseen")
         end

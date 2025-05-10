@@ -287,7 +287,7 @@
 
     <Frame name="QuickAuras_CrucialBuffMissing" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
-            <AbsDimension x="50" y="50" />
+            <AbsDimension x="70" y="70" />
         </Size>
         <Anchors>
             <Anchor point="CENTER" relativePoint="CENTER" relativeTo="QuickAuras_WeaponEnchants" x="0" y="-60" />
@@ -295,6 +295,25 @@
         <Layers>
             <Layer level="OVERLAY">
                 <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="BUFF!!">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <Frame name="QuickAuras_RangeIndicator" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
+        <Size>
+            <AbsDimension x="30" y="30" />
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="TargetFrame" x="65" y="36" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Rng">
                     <Color r="0.3" g="0.7" b="1"/>
                     <Anchors>
                         <Anchor point="CENTER" />

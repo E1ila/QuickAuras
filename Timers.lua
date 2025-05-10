@@ -30,6 +30,11 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, onUpdate, o
         parent = QuickAuras_Reminders
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.REMINDER) end
+    elseif timerType == "crucial" or conf.list == "crucial" then
+        list = self.list_crucial
+        parent = QuickAuras_Crucial
+        uiType = "button"
+        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.CRUCIAL) end
     end
     if not parent then parent = UIParent end
     if not onUpdate then onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate end

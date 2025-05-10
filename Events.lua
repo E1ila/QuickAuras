@@ -11,15 +11,6 @@ local updateInterval = 0.01 -- Execute every 0.1 seconds
 
 -- WoW Events
 
-function QuickAuras:UNIT_POWER_UPDATE(unit, powerType)
-    if self.isRogue and self.db.profile.rogue5combo then
-        if unit == "player" and powerType == "COMBO_POINTS" then
-            local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
-            self:Rogue_SetCombo(comboPoints)
-        end
-    end
-end
-
 function QuickAuras:ZONE_CHANGED()
     QuickAuras:ZoneChanged()
 end

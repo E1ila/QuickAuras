@@ -6,22 +6,27 @@ local USE_TEA_ENERGY_THRESHOLD = 6
 local ICON = QuickAuras.ICON
 
 function QuickAuras:CheckPower(unit, powerType)
-    if self.isRogue and unit == "player" and powerType == "ENERGY" then
-        local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
-        if _useTeaShown then
-            if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
-                _useTeaShown = false
-                self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, 7676)
+    if self.isRogue and unit == "player" then
+        if powerType == "ENERGY" then
+            local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
+            if _useTeaShown then
+                if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
+                    _useTeaShown = false
+                    self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, 7676)
+                end
+            else
+                if  currentEnergy < USE_TEA_ENERGY_THRESHOLD and
+                        (self.db.profile.rogueTeaTime == "always" or
+                                self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[13877])
+                then
+                    _useTeaShown = true
+                    self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", 7676, { name = "Thistle Tea"})
+                    self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
+                end
             end
-        else
-            if  currentEnergy < USE_TEA_ENERGY_THRESHOLD and
-                (self.db.profile.rogueTeaTime == "always" or
-                self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[13877])
-            then
-                _useTeaShown = true
-                self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", 7676, { name = "Thistle Tea"})
-                self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
-            end
+        elseif powerType == "COMBO_POINTS" then
+            local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
+            self:Rogue_SetCombo(comboPoints)
         end
     end
 end

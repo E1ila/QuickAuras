@@ -19,7 +19,6 @@ QuickAuras.optionalEvents = {
     "PLAYER_LEVEL_UP",
     "BANKFRAME_OPENED",
     "BANKFRAME_CLOSED",
-    "UNIT_POWER_UPDATE",
 }
 
 QuickAuras.adjustableFrames = {

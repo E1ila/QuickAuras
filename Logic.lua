@@ -8,12 +8,17 @@ local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
 
 function QuickAuras:CheckHearthstone()
+    if not self.db.profile.hsNotCapitalWarning then return end
     local bindLocation = GetBindLocation()
+    local changed
     if self.inCapital and not self.capitalCities[bindLocation] then
-        self:AddIcon(ICON.WARNING, "item", 6948, { name = "Hearthstone" })
+        changed = self:AddIcon(ICON.WARNING, "item", 6948, { name = "Hearthstone" })
         out("|cffff0000Warning:|r Your Hearthstone is set to ".._c.bold..bindLocation.."|r!")
     else
-        self:RemoveIcon(ICON.WARNING, 6948)
+        changed = self:RemoveIcon(ICON.WARNING, 6948)
+    end
+    if changed then
+        self:ArrangeIcons(ICON.WARNING)
     end
 end
 
@@ -301,6 +306,7 @@ function QuickAuras:UpdateZone()
         -- zone dependant checks
         self:RefreshReminders()
         self:RefreshMissing()
+        self:RefreshWarnings()
     end
 end
 
@@ -316,12 +322,12 @@ function QuickAuras:RefreshReminders()
     self:CheckTrackingStatus()
     self:CheckLowConsumes()
     self:CheckTransmuteCooldown()
-    self:CheckHearthstone()
 end
 
 function QuickAuras:RefreshWarnings()
     self:ClearIcons(ICON.WARNING)
     self:CheckGear()
+    self:CheckHearthstone()
 end
 
 function QuickAuras:RefreshAlerts()

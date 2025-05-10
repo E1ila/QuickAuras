@@ -20,6 +20,7 @@ QuickAuras.defaultOptions = {
         reminderTransmute = true,
         forceShowMissing = false,
         outOfConsumeWarning = true,
+        hsNotCapitalWarning = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
         rogueTeaTimeFrame = ICON.WARNING,
@@ -103,8 +104,8 @@ QuickAuras.options = {
         },
         iconWarningEnabled = {
             type = "toggle",
-            name = "Gear Warnings",
-            desc = "Enables gear warnings",
+            name = "Warnings",
+            desc = "Enables warnings for gear and other",
             get = function(info) return QuickAuras.db.profile.trackedGear end,
             set = function(info, value)
                 QuickAuras.db.profile.trackedGear = value
@@ -399,10 +400,28 @@ QuickAuras.options = {
         },
         gearWarnings = {
             type = "group",
-            name = "Gear Warnings",
+            name = "Warnings",
             order = 10000,
             args = {
+                hsNotCapitalWarning = {
+                    type = "toggle",
+                    name = "Hearthstone",
+                    desc = "Shows a warning if your hearthstone is not set to a capital city.",
+                    get = function(info)
+                        return QuickAuras.db.profile.hsNotCapitalWarning
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.hsNotCapitalWarning = value
+                        QuickAuras:RefreshWarnings()
+                    end,
+                    order = 50,
+                },
                 header1 = {
+                    type = "header",
+                    name = "Gear Warnings",
+                    order = 199,
+                },
+                header2 = {
                     type = "header",
                     name = "",
                     order = 998,

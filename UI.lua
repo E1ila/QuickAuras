@@ -15,6 +15,7 @@ function QuickAuras:InitUI()
     self:ParentFramesNormalState()
     self:InitWeaponEnchants()
     --self:InitCrucialBuffMissing()
+    self:InitRangeIndication()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     self:Rogue_SetCombo(0)
@@ -35,25 +36,20 @@ function QuickAuras:SetWeaponEnchantIcon(slot, itemId)
     frame:SetSize(self.db.profile.weaponEnchantSize, self.db.profile.weaponEnchantSize)
 end
 
---function QuickAuras:InitCrucialBuffMissing()
---    QuickAuras_CrucialBuffMissing.icon = QuickAuras_CrucialBuffMissing:CreateTexture(nil, "BACKGROUND")
---    QuickAuras_CrucialBuffMissing.icon:SetAllPoints(QuickAuras_CrucialBuffMissing)
---    QuickAuras_CrucialBuffMissing:SetSize(self.db.profile.crucialBuffsSize, self.db.profile.crucialBuffsSize)
---    QuickAuras_CrucialBuffMissing:Hide()
---    self:ShowCrucialBuffIcon(25289) -- battle shout
---end
+function QuickAuras:InitRangeIndication(frame)
+    QuickAuras_RangeIndicator.icon = QuickAuras_RangeIndicator:CreateTexture(nil, "BACKGROUND")
+    QuickAuras_RangeIndicator.icon:SetAllPoints(QuickAuras_RangeIndicator)
+    QuickAuras_RangeIndicator:Hide()
+    self:UpdateRangeIndication()
+end
 
---function QuickAuras:ShowCrucialBuffIcon(spellId, duration)
---    if spellId then
---        local texture = GetSpellTexture(spellId)
---        QuickAuras_CrucialBuffMissing.icon:SetTexture(texture)
---    end
---    QuickAuras_CrucialBuffMissing:Show()
---end
---
---function QuickAuras:HideCrucialBuffIcon()
---    QuickAuras_CrucialBuffMissing:Hide()
---end
+function QuickAuras:UpdateRangeIndication()
+    QuickAuras_RangeIndicator:SetSize(self.db.profile.rangeIconSize, self.db.profile.rangeIconSize)
+    if self.db.profile.rangeSpellId then
+        local texture = GetSpellTexture(self.db.profile.rangeSpellId)
+        QuickAuras_RangeIndicator.icon:SetTexture(texture)
+    end
+end
 
 function QuickAuras:ResetRogueWidgets()
     --QuickAuras_Combo_Texture:ClearAllPoints()
@@ -210,11 +206,11 @@ local function GetIconList(type, idType)
         Refresh = QuickAuras.RefreshReminders
     elseif type == ICON.CRUCIAL then
         list = QuickAuras.list_crucial
-        parent = QuickAuras_CrucialBuffMissing
+        parent = QuickAuras_Crucial
         --Refresh = QuickAuras.RefreshReminders
     elseif type == ICON.RANGE then
-        list = QuickAuras.icons_range
-        parent = QuickAuras_CrucialBuffMissing
+        list = QuickAuras.list_range
+        parent = QuickAuras_RangeIndicator
         --Refresh = QuickAuras.RefreshReminders
     end
     return list, parent, Create, Refresh
@@ -323,6 +319,14 @@ function QuickAuras:ArrangeIcons(iconType)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:SetSize(self.db.profile.crucialIconSize, self.db.profile.crucialIconSize) -- Width, Height
+        elseif iconType == ICON.RANGE then
+            if lastFrame then
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
+            else
+                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+            end
+            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+            frame:SetSize(self.db.profile.rangeIconSize, self.db.profile.rangeIconSize) -- Width, Height
         end
         lastFrame = frame
     end
@@ -340,7 +344,7 @@ function QuickAuras:ParentFramesNormalState()
     self:DisableDarkBackdrop(QuickAuras_IconAlerts)
     self:DisableDarkBackdrop(QuickAuras_Reminders)
     self:DisableDarkBackdrop(QuickAuras_WeaponEnchants)
-    self:DisableDarkBackdrop(QuickAuras_CrucialBuffMissing)
+    self:DisableDarkBackdrop(QuickAuras_Crucial)
     self:DisableDarkBackdrop(QuickAuras_RangeIndicator)
     QuickAuras_WatchBars_Text:Hide()
     QuickAuras_OffensiveBars_Text:Hide()
@@ -350,7 +354,7 @@ function QuickAuras:ParentFramesNormalState()
     QuickAuras_IconAlerts_Text:Hide()
     QuickAuras_Reminders_Text:Hide()
     QuickAuras_WeaponEnchants_Text:Hide()
-    QuickAuras_CrucialBuffMissing_Text:Hide()
+    QuickAuras_Crucial_Text:Hide()
     QuickAuras_RangeIndicator_Text:Hide()
 end
 
@@ -363,7 +367,7 @@ function QuickAuras:ParentFramesEditState()
     self:SetDarkBackdrop(QuickAuras_IconAlerts)
     self:SetDarkBackdrop(QuickAuras_Reminders)
     self:SetDarkBackdrop(QuickAuras_WeaponEnchants)
-    self:SetDarkBackdrop(QuickAuras_CrucialBuffMissing)
+    self:SetDarkBackdrop(QuickAuras_Crucial)
     self:SetDarkBackdrop(QuickAuras_RangeIndicator)
     QuickAuras_WatchBars_Text:Show()
     QuickAuras_OffensiveBars_Text:Show()
@@ -373,9 +377,9 @@ function QuickAuras:ParentFramesEditState()
     QuickAuras_IconAlerts_Text:Show()
     QuickAuras_Reminders_Text:Show()
     QuickAuras_WeaponEnchants_Text:Show()
-    QuickAuras_CrucialBuffMissing_Text:Show()
+    QuickAuras_Crucial_Text:Show()
     QuickAuras_RangeIndicator_Text:Show()
-    --QuickAuras_CrucialBuffMissing:Show()
+    --QuickAuras_Crucial:Show()
 end
 
 function QuickAuras:ToggleLockedState()

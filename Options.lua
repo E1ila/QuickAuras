@@ -32,6 +32,7 @@ QuickAuras.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         crucialIconSize = 80,
+        rangeIconSize = 30,
         missingBuffsSize = 35,
         reminderIconSize = 40,
         weaponEnchantSize = 40,
@@ -234,20 +235,6 @@ QuickAuras.options = {
                     end,
                     order = 105,
                 },
-                crucialIconSize = {
-                    type = "range",
-                    name = "Alert Icon Size",
-                    desc = "Set the size of the alert icons",
-                    min = 10,
-                    max = 100,
-                    step = 1,
-                    get = function(info) return QuickAuras.db.profile.crucialIconSize end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.crucialIconSize = value
-                        --QuickAuras:TestIconAlerts()
-                    end,
-                    order = 105,
-                },
                 missingBuffsSize = {
                     type = "range",
                     name = "Missing Consumes Size",
@@ -275,6 +262,34 @@ QuickAuras.options = {
                         QuickAuras:TestReminders()
                     end,
                     order = 107,
+                },
+                crucialIconSize = {
+                    type = "range",
+                    name = "Alert Icon Size",
+                    desc = "Set the size of the alert icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.crucialIconSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.crucialIconSize = value
+                        --QuickAuras:TestIconAlerts()
+                    end,
+                    order = 108,
+                },
+                rangeIconSize = {
+                    type = "range",
+                    name = "Range Size",
+                    desc = "Set the size of the range indicator icon",
+                    min = 5,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QuickAuras.db.profile.crucialIconSize end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.crucialIconSize = value
+                        --QuickAuras:TestIconAlerts()
+                    end,
+                    order = 109,
                 },
                 spacer198 = {
                     type = "description",
@@ -725,11 +740,20 @@ function QuickAuras:AddConsumeOptions()
     end
 end
 
+function QuickAuras:SetRangeDefaultSpellId()
+    if QuickAuras.isRogue then
+        QuickAuras.defaultOptions.profile.rangeSpellId = nil
+    elseif QuickAuras.isWarrior then
+        QuickAuras.defaultOptions.profile.rangeSpellId = 6178 -- charge
+    end
+end
+
 function QuickAuras:BuildOptions()
     self:AddAbilitiesOptions()
     self:AddGearWarningOptions()
     self:AddConsumeOptions()
     self:AddRemindersOptions()
+    self:SetRangeDefaultSpellId()
 end
 
 --------

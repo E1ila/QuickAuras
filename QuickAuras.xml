@@ -285,7 +285,7 @@
         </Frames>
     </Frame>
 
-    <Frame name="QuickAuras_CrucialBuffMissing" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
+    <Frame name="QuickAuras_Crucial" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
             <AbsDimension x="70" y="70" />
         </Size>
@@ -309,7 +309,7 @@
             <AbsDimension x="30" y="30" />
         </Size>
         <Anchors>
-            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="TargetFrame" x="65" y="36" />
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="TargetFrame" x="70" y="36" />
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">

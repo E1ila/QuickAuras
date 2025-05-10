@@ -6,6 +6,22 @@ local _useTeaShown = false
 local USE_TEA_ENERGY_THRESHOLD = 6
 local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
+local _lastInRange = false
+
+function QuickAuras:CheckTargetRange()
+    if not self.db.profile.rangeSpellId then return end
+    local spellName = GetSpellInfo(self.db.profile.rangeSpellId)
+    local inRange = IsSpellInRange(spellName, "target") == 1
+    if inRange ~= _lastInRange then
+        _lastInRange = inRange
+        debug(2, "inRange", spellName, inRange)
+        if inRange then
+            QuickAuras_RangeIndicator:Show()
+        else
+            QuickAuras_RangeIndicator:Hide()
+        end
+    end
+end
 
 function QuickAuras:CheckHearthstone()
     if not self.db.profile.hsNotCapitalWarning then return end
@@ -297,7 +313,6 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
         debug(3, "CheckCrucialBuffs", "(scan)", crucial.conf.name, "hasIt", hasIt)
         if not hasIt then
             debug("CheckCrucialBuffs", "Found missing crucial buff", crucial.spellIds[1])
-            --self:ShowCrucialBuffIcon(crucial.spellIds[1])
             if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf) then
                 self:ArrangeIcons(ICON.CRUCIAL)
             end
@@ -306,7 +321,6 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
         end
     end
     self:ClearIcons(ICON.CRUCIAL)
-    --self:HideCrucialBuffIcon()
 end
 
 

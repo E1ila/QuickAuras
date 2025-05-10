@@ -170,5 +170,6 @@ function QuickAuras:OnUpdate()
     if self.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime
         self:CheckTimers()
+        self:CheckTargetRange()
     end
 end

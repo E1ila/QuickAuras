@@ -274,16 +274,16 @@ spells.trinkets = {
 }
 
 spells.iconAlerts = {
-    weakTrollsBloodPotion = {
-        spellId = { 3219 },
-        color = {0.667, 0.988, 0.455},
-        raidBars = true,
-        duration = 10,
-        name = "Weak Troll's Blood Potion",
-    },
+    --weakTrollsBloodPotion = {
+    --    spellId = { 3219 },
+    --    color = {0.667, 0.988, 0.455},
+    --    raidBars = true,
+    --    duration = 10,
+    --    name = "Weak Troll's Blood Potion",
+    --},
     limitedInvulnerabilityPotion = {
         spellId = { 3169 },
-        color = {0.988, 0.957, 0.455},
+        color = {0.969, 1.000, 0.063},
         aura = true,
         raidBars = true,
         list = "alert",

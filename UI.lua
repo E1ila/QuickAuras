@@ -569,7 +569,7 @@ function QuickAuras:TestProgressBar(spells, limit)
             if i == limit then break end
             i = i + 1
         elseif conf.raidBars then
-            self:AddTimer("raidbar", conf, conf.spellId[1], conf.duration, GetTime()+conf.duration)
+            local timer = self:AddTimer("raidbar", conf, conf.spellId[1], conf.duration, GetTime()+conf.duration, nil, "Text")
         end
     end
 end

@@ -3,7 +3,7 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 local ICON = QuickAuras.ICON
 
-function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
+function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent, height
     local widthMul = 1
@@ -72,8 +72,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
             frame:Hide()
         end
     else
-        local text = self.db.profile.showTimeOnBars and tostring(duration) or nil
-        frame = self:CreateTimerBar(parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text)
+        frame = self:CreateTimerBar(parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or self.db.profile.showTimeOnBars and tostring(duration) or nil)
     end
     local timer = {
         frame = frame,
@@ -86,6 +85,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
         expTime = expTime,
         duration = duration,
         showAtTime = showAtTime,
+        text = text,
         height = height,
         onUpdate = onUpdate,
         onEnd = onEnd,
@@ -130,7 +130,7 @@ function QuickAuras:UpdateProgressBar(timer)
                 end
                 if timer.uiType == "bar" then
                     _G[timer.frame:GetName().."_Progress_Bar"]:SetValue(progress)
-                    if timer.frame.text then
+                    if timer.frame.text and not timer.text then
                         timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
                     end
                 elseif timer.uiType == "button" then

@@ -176,7 +176,8 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                             --and (not conf.option or self.db.profile[conf.option.."_rbars"])
                     then
                         -- start offensive timer
-                        local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration)
+                        local name = strsplit("-", sourceName)
+                        local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name)
                         if not raidBuffs[p1] then raidBuffs[p1] = {} end
                         raidBuffs[p1][destGUID] = timer
                     end

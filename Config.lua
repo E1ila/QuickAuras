@@ -113,6 +113,9 @@ function QuickAuras:BuildTrackedSpells()
         for key, spell in pairs(cspells) do
             --debug(3, "BuildTrackedSpells", "  - ", key)
             if spell.spellId and (spell.visible == nil or spell.visible) then
+                if not spell.icon then
+                    spell.icon = GetSpellTexture(spell.spellId[1])
+                end
                 if spell.crucial then
                     local obj = {
                         spellIds = spell.spellId,
@@ -124,7 +127,7 @@ function QuickAuras:BuildTrackedSpells()
                     --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
                     if spell.aura then
                         self.trackedAuras[spellId] = spell
-                    elseif spell.duration then -- combat log ability has to have duration
+                    elseif spell.duration or spell.raidBars then -- combat log ability has to have duration
                         self.trackedCombatLog[spellId] = spell
                     end
                     if spell.cooldown then

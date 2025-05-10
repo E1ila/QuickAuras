@@ -27,6 +27,7 @@ QuickAuras.defaultOptions = {
         rogueTeaTime = "always",
         rogueTeaTimeFrame = ICON.WARNING,
         someSetting = 50,
+        raidBarHeight = 20,
         barHeight = 25,
         barWidth = 128,
         barGap = 2,
@@ -619,6 +620,9 @@ local function AddSpells(cspells, orderStart)
     for spellKey, spell in pairs(cspells) do
         order = order + 1
         debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
+        if spell.raidBars then
+            -- todo
+        end
         if spell.visible == nil or spell.visible == true then
             -- obj.option in format of class_abilityName
             if QuickAuras.defaultOptions.profile[spell.option] == nil then

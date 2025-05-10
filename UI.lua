@@ -431,22 +431,21 @@ function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
     frame:SetBackdropBorderColor(unpack(color)) -- Red border
     frame:SetBackdropColor(0, 0, 0, 0.5) -- Black background with 50% opacity
 
-    local iconFrame = _G[frame:GetName().."_Icon"]
+    frame.iconFrame = _G[frame:GetName().."_Icon"]
     local progFrame = _G[frame:GetName().."_Progress"]
-    frame.icon = iconFrame.icon
+    frame.icon = frame.iconFrame.icon
+    frame.iconFrame.icon:SetAllPoints(frame.iconFrame)
 
     progFrame:ClearAllPoints()
-    progFrame:SetPoint("TOPLEFT", iconFrame, "TOPRIGHT", 0, 0)
+    progFrame:SetPoint("TOPLEFT", frame.iconFrame, "TOPRIGHT", 0, 0)
     progFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -padding, 2)
 
     frame.barFrame  = _G[frame:GetName().."_Progress_Bar"]
     frame.barFrame:SetStatusBarColor(unpack(color))
 
-    local height = self.db.profile.barHeight or 25
-    iconFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", padding, -padding)
-    iconFrame.icon:SetTexture(icon)
-    iconFrame:SetSize(height-padding*2, height-padding*2)
-    iconFrame.icon:SetSize(height-padding*2, height-padding*2)
+    frame.iconFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", padding, -padding)
+    frame.iconFrame:SetPoint("BOTTOM", frame, "BOTTOM", 0, padding)
+    frame.iconFrame.icon:SetTexture(icon)
 
     local textLayer = _G[frame:GetName().."_Progress_Bar_Text"];
     if text then
@@ -491,16 +490,19 @@ function QuickAuras:ArrangeTimerBars(list, parent)
             else
                 timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
             end
+            local height = timer.height or self.db.profile.barHeight or 25
+            local padding = 2
             timer.frame:SetPoint("CENTER", parent, "CENTER", 0, 0)
-            timer.frame:SetSize(self.db.profile.barWidth * (timer.widthMul or 1), self.db.profile.barHeight)
-
+            timer.frame:SetSize(self.db.profile.barWidth * (timer.widthMul or 1), height)
+            timer.frame.iconFrame:SetSize(height-padding*2, height-padding*2)
+            timer.frame.iconFrame.icon:SetSize(height-padding*2, height-padding*2)
         elseif timer.uiType == "button" then
             if lastFrame then
                 timer.frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", -self.db.profile.barGap+4, 0)
             else
                 timer.frame:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
             end
-            local height = self.db.profile.buttonHeight or 50
+            local height = timer.height or self.db.profile.buttonHeight or 50
             timer.frame:SetSize(height, height)
         end
         lastFrame = timer.frame
@@ -566,6 +568,8 @@ function QuickAuras:TestProgressBar(spells, limit)
             self:AddTimer("test", conf, key, duration, expTime)
             if i == limit then break end
             i = i + 1
+        elseif conf.raidBars then
+            self:AddTimer("raidbar", conf, conf.spellId[1], conf.duration, GetTime()+conf.duration)
         end
     end
 end

@@ -2,9 +2,8 @@ local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
-local enemyDebuffs = {
-    exporeArmor = {},
-}
+local enemyDebuffs = {}
+local raidBuffs = {}
 
 local lastUpdate = 0
 local updateInterval = 0.01 -- Execute every 0.1 seconds
@@ -12,19 +11,19 @@ local updateInterval = 0.01 -- Execute every 0.1 seconds
 -- WoW Events
 
 function QuickAuras:ZONE_CHANGED()
-    QuickAuras:ZoneChanged()
+    self:ZoneChanged()
 end
 
 function QuickAuras:ZONE_CHANGED_INDOORS()
-    QuickAuras:ZoneChanged()
+    self:ZoneChanged()
 end
 
 function QuickAuras:ZONE_CHANGED_NEW_AREA()
-    QuickAuras:ZoneChanged()
+    self:ZoneChanged()
 end
 
 function QuickAuras:PLAYER_ENTERING_WORLD()
-    QuickAuras:ZoneChanged()
+    self:ZoneChanged()
 end
 
 function QuickAuras:UNIT_AURA(unit)
@@ -39,59 +38,6 @@ function QuickAuras:UI_ERROR_MESSAGE(errorType, errorMessage)
             or errorMessage == ERR_SPELL_OUT_OF_RANGE
             or errorMessage == "You must be behind your target" then
             self:ShowNoticableError(errorMessage)
-        end
-    end
-end
-
-function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
-    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
-
-    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
-
-    if  -- parry haste
-        self.db.profile.harryPaste and
-        subevent == "SWING_MISSED" and
-        sourceGUID == self.playerGuid and
-        p1 == "PARRY" and -- missType
-        destGUID == UnitGUID("target") and
-        self.playerGuid ~= UnitGUID("targettarget") and
-        not UnitIsPlayer("target") and
-        IsInInstance()
-    then
-        self:ShowParry()
-    end
-
-    if type(p1) == "number" and p1 > 0 then
-        for spellId, conf in pairs(self.trackedCombatLog) do
-            if p1 == spellId then
-                if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                    and sourceGUID == self.playerGuid
-                    --and destGUID == UnitGUID("target")
-                    and self.db.profile.watchBars
-                    and (not conf.option or self.db.profile[conf.option])
-                then
-                    local timer = self:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
-                    if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
-                    enemyDebuffs[p1][destGUID] = timer
-                end
-
-                if  subevent == "SPELL_AURA_REMOVED"
-                    and sourceGUID == self.playerGuid
-                    and enemyDebuffs[p1] and enemyDebuffs[p1][destGUID]
-                then
-                    self:RemoveTimer(enemyDebuffs[p1][destGUID], "combatlog")
-                    enemyDebuffs[p1][destGUID] = nil
-                end
-            end
-        end
-    end
-
-    if subevent == "UNIT_DIED" then
-        for spellId, conf in pairs(QuickAuras.trackedCombatLog) do
-            if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGUID] then
-                self:RemoveTimer(enemyDebuffs[spellId][destGUID], "combatlog")
-                enemyDebuffs[spellId][destGUID] = nil
-            end
         end
     end
 end
@@ -172,4 +118,94 @@ function QuickAuras:OnUpdate()
         self:CheckTimers()
         self:CheckTargetRange()
     end
+end
+
+-- Combat log
+
+function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
+    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
+
+    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
+
+    if  -- parry haste
+    self.db.profile.harryPaste and
+            subevent == "SWING_MISSED" and
+            sourceGUID == self.playerGuid and
+            p1 == "PARRY" and -- missType
+            destGUID == UnitGUID("target") and
+            self.playerGuid ~= UnitGUID("targettarget") and
+            not UnitIsPlayer("target") and
+            IsInInstance()
+    then
+        self:ShowParry()
+    end
+
+    -- tracked spells
+    if type(p1) == "number" and p1 > 0 then
+        for spellId, conf in pairs(self.trackedCombatLog) do
+            if p1 == spellId then
+                -- offensive debuffs
+                if conf.duration and conf.list then
+                    if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+                            and sourceGUID == self.playerGuid
+                            --and destGUID == UnitGUID("target")
+                            and self.db.profile.watchBars
+                            and (not conf.option or self.db.profile[conf.option])
+                    then
+                        -- start offensive timer
+                        local timer = self:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
+                        if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
+                        enemyDebuffs[p1][destGUID] = timer
+                    end
+
+                    if  subevent == "SPELL_AURA_REMOVED"
+                            and sourceGUID == self.playerGuid
+                            and enemyDebuffs[p1] and enemyDebuffs[p1][destGUID]
+                    then
+                        -- end offensive timer
+                        self:RemoveTimer(enemyDebuffs[p1][destGUID], "combatlog")
+                        enemyDebuffs[p1][destGUID] = nil
+                    end
+                end
+                -- raid tracking
+                if conf.raidBars then
+                    debug("Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGUID, "destGUID", destGUID)
+                    if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+                            and sourceGUID ~= self.playerGuid
+                            and self.db.profile.raidBars
+                            --and (not conf.option or self.db.profile[conf.option.."_rbars"])
+                    then
+                        -- start offensive timer
+                        local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration)
+                        if not raidBuffs[p1] then raidBuffs[p1] = {} end
+                        raidBuffs[p1][destGUID] = timer
+                    end
+
+                    if  subevent == "SPELL_AURA_REMOVED"
+                            and sourceGUID ~= self.playerGuid
+                            and raidBuffs[p1] and raidBuffs[p1][destGUID]
+                    then
+                        -- end offensive timer
+                        self:RemoveTimer(raidBuffs[p1][destGUID], "raidbar")
+                        raidBuffs[p1][destGUID] = nil
+                    end
+                end
+            end
+        end
+    end
+
+    -- reset buffs/debuffs of dead unit
+    if subevent == "UNIT_DIED" then
+        for spellId, conf in pairs(QuickAuras.trackedCombatLog) do
+            if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGUID] then
+                self:RemoveTimer(enemyDebuffs[spellId][destGUID], "combatlog")
+                enemyDebuffs[spellId][destGUID] = nil
+            end
+            if raidBuffs[spellId] and raidBuffs[spellId][destGUID] then
+                self:RemoveTimer(raidBuffs[spellId][destGUID], "raidbar")
+                raidBuffs[spellId][destGUID] = nil
+            end
+        end
+    end
+
 end

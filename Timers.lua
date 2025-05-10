@@ -5,9 +5,14 @@ local ICON = QuickAuras.ICON
 
 function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
     local arrangeFunc = self.ArrangeTimerBars
-    local uiType, list, parent
+    local uiType, list, parent, height
     local widthMul = 1
-    if timerType == "test-cooldowns" or timerType == "cooldowns" then
+    if timerType == "raidbar" then
+        list = self.list_raidBars
+        parent = QuickAuras_RaidBars
+        uiType = "bar"
+        height = self.db.profile.raidBarHeight
+    elseif timerType == "test-cooldowns" or timerType == "cooldowns" then
         list = self.list_cooldowns
         parent = QuickAuras_Cooldowns
         uiType = "button"
@@ -68,7 +73,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
         end
     else
         local text = self.db.profile.showTimeOnBars and tostring(duration) or nil
-        frame = self:CreateTimerBar(parent, index, 2, conf.color, conf.icon, text)
+        frame = self:CreateTimerBar(parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text)
     end
     local timer = {
         frame = frame,
@@ -81,6 +86,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime)
         expTime = expTime,
         duration = duration,
         showAtTime = showAtTime,
+        height = height,
         onUpdate = onUpdate,
         onEnd = onEnd,
         uiType = uiType,

@@ -194,7 +194,7 @@ function QuickAuras:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sou
                 end
                 -- raid tracking
                 if conf.raidBars then
-                    debug("Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
+                    debug(2, "Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
                     if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                             and sourceGuid ~= self.playerGuid
                             and self.db.profile.raidBars

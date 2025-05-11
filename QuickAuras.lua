@@ -212,11 +212,22 @@ function QuickAuras:HandleSlashCommand(input)
             out("Cleared ignored icons!")
             self.ignoredIcons = {}
             self:RefreshAll()
-        elseif cmd == "inj" then
+        elseif cmd == "inj1" then
             local log = {
                 "SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
                 "SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+            }
+            for i, line in ipairs(log) do
+                if line and #line > 0 then
+                    local subevent, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6 = self:fixParams(strsplit(",", line))
+                    --print(self:fixParams(strsplit(",", line)))
+                    self:HandleCombatLogEvent("", subevent, "", sourceGuid, sourceName, "", "", destGuid, destName, "", "", p1, p2, p3, p4, p5, p6)
+                end
+            end
+        elseif cmd == "inj2" then
+            local log = {
                 "SPELL_AURA_APPLIED,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+                "SPELL_AURA_APPLIED,Player-5233-01F4ABDF,\"Defchad-Firemaw-EU\",0x40514,0x0,Creature-0-5253-533-7736-16453-00019CF387,\"Necro Stalker\",0x10a48,0x80,355,\"Taunt\",0x1,DEBUFF",
             }
             for i, line in ipairs(log) do
                 if line and #line > 0 then

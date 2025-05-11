@@ -121,6 +121,11 @@ function QuickAuras:BuildTrackedSpells()
                 }
                 table.insert(self.trackedCrucialAuras, obj)
             end
+            if spell.raidBars then
+                for _, spellId in ipairs(spell.spellId) do
+                    self.trackedCombatLog[spellId] = spell
+                end
+            end
 
             if spell.spellId and (spell.visible == nil or spell.visible) then
                 if not spell.icon then
@@ -128,9 +133,6 @@ function QuickAuras:BuildTrackedSpells()
                 end
                 for _, spellId in ipairs(spell.spellId) do
                     --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
-                    if spell.raidBars then
-                        self.trackedCombatLog[spellId] = spell
-                    end
                     if spell.aura then
                         self.trackedAuras[spellId] = spell
                     elseif spell.duration then

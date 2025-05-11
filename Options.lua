@@ -22,6 +22,7 @@ QuickAuras.defaultOptions = {
         outOfConsumeWarning = true,
         hsNotCapitalWarning = true,
         targetInRangeIndication = true,
+        announceInterrupts = true,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -320,12 +321,32 @@ QuickAuras.options = {
                 },
             },
         },
-        meleeUtils = {
+        generalUtils = {
             type = "group",
-            name = "Melee Utils",
+            name = "Utils",
             order = 1000,
-            hidden = not QuickAuras.isRogue and not QuickAuras.isWarrior,
+            --hidden = not QuickAuras.isRogue and not QuickAuras.isWarrior,
             args = {
+                announceInterrupts = {
+                    type = "toggle",
+                    name = "Announce Interrupts",
+                    desc = "Say when you interrupt a spell",
+                    get = function(info) return QuickAuras.db.profile.announceInterrupts end,
+                    set = function(info, value) QuickAuras.db.profile.announceInterrupts = value end,
+                    order = 102,
+                },
+                meleeUtilsHeader = {
+                    type = "header",
+                    name = "Melee Utils",
+                    order = 98,
+                    hidden = not QuickAuras.isRogue,
+                },
+                spacer201 = {
+                    type = "description",
+                    name = "",
+                    order = 99,
+                    hidden = not QuickAuras.isRogue,
+                },
                 harryPaste = {
                     type = "toggle",
                     name = "Harry Paste",

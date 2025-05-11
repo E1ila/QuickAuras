@@ -142,7 +142,7 @@ end
 -- Combat log
 
 function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
-    local timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
+    local timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6 = CombatLogGetCurrentEventInfo()
 
     --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
@@ -231,4 +231,15 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
         end
     end
 
+    if      subevent == "SPELL_INTERRUPT" and
+            sourceGuid == self.playerGuid and
+            self.InstanceName and self.db.profile.announceInterrupts and
+            destGuid == UnitGUID("target")
+    then
+        if p5 then
+            SendChatMessage(">> Interrupted "..tostring(p5).." <<", "SAY")
+        else
+            SendChatMessage(">> Interrupted "..destName.." <<", "SAY")
+        end
+    end
 end

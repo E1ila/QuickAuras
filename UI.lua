@@ -77,7 +77,7 @@ end
 
 QuickAuras.ignoredIcons = {}
 
-function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick)
+function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -116,10 +116,12 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
         end)
     end
 
-    if onRightClick then
+    if onRightClick or onClick then
         frame:SetScript("OnMouseDown", function(self, button)
-            if button == "RightButton" then
+            if onRightClick and button == "RightButton" then
                 onRightClick()
+            elseif onClick and button == "LeftButton" then
+                onClick()
             end
         end)
     end
@@ -127,7 +129,7 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
     return frame
 end
 
-function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip, onRightClick)
+function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -158,10 +160,14 @@ function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, show
         end)
     end
 
-    if onRightClick then
+    if onRightClick or onClick then
+        debug("adding OnMouseDown event")
         frame:SetScript("OnMouseDown", function(self, button)
-            if button == "RightButton" then
+            debug("clicked", button)
+            if onRightClick and button == "RightButton" then
                 onRightClick()
+            elseif onClick and button == "LeftButton" then
+                onClick()
             end
         end)
     end
@@ -216,7 +222,7 @@ local function GetIconList(type, idType)
     return list, parent, Create, Refresh
 end
 
-function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip)
+function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     local key = iconType.."-"..idType.."-"..tostring(id)
     if QuickAuras.ignoredIcons[key] then return end
     local list, parent, Create, Refresh = GetIconList(iconType, idType)
@@ -228,7 +234,7 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip)
             Refresh(QuickAuras)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
-        local frame = Create(self, id, parent, iconType .."-".. id, showTooltip, showCount, onRightClick)
+        local frame = Create(self, id, parent, iconType .."-".. id, showTooltip, showCount, onRightClick, onClick)
         list[id] = {
             name = conf.name,
             conf = conf,

@@ -127,6 +127,7 @@ function QuickAuras:OnInitialize()
         end
         QuickAuras:InitUI()
         QuickAuras:RegisterOptionalEvents()
+        QuickAuras:CheckIfWarriorInParty()
         QuickAuras:CheckAuras()
         QuickAuras:CheckCooldowns()
         QuickAuras:CheckGear()

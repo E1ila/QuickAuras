@@ -321,6 +321,12 @@ function QuickAuras:CheckMissingBuffs(activeAuras)
     end
 end
 
+local function BattleShoutMissingOnClick()
+    if not QuickAuras.isWarrior then
+        SendChatMessage("Battle Shout dropped!", "PARTY")
+    end
+end
+
 function QuickAuras:CheckCrucialBuffs(activeAuras)
     debug(2, "CheckCrucialBuffs", "isWarrior", self.isWarrior, "inCombat", self.inCombat, "IsInGroup", IsInGroup(), "hasWarriorInParty", self.hasWarriorInParty)
     if not self.db.profile.battleShoutMissing or (self.isWarrior and not self.inCombat and not IsInGroup()) or (not self.isWarrior and not self.hasWarriorInParty) then
@@ -335,7 +341,7 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
             if obj and obj.isTimer then
                 self:RemoveTimer(obj, "crucial")
             end
-            if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf, nil, false) then
+            if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf, nil, false, BattleShoutMissingOnClick) then
                 self:ArrangeIcons(ICON.CRUCIAL)
             end
             return

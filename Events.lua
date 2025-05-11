@@ -52,6 +52,7 @@ end
 
 function QuickAuras:PLAYER_TARGET_CHANGED(...)
     self:CheckGear("target", ...)
+    self:ResetErrorCount()
 end
 
 function QuickAuras:BAG_UPDATE(bagId)
@@ -109,6 +110,18 @@ function QuickAuras:PLAYER_REGEN_ENABLED()
     -- out of combat
     self.inCombat = false
     self:CheckAuras()
+end
+
+function QuickAuras:GROUP_ROSTER_UPDATE()
+    self:CheckIfWarriorInParty()
+end
+
+function QuickAuras:GROUP_ROSTER_UPDATE()
+    self:CheckIfWarriorInParty()
+end
+
+function QuickAuras:PARTY_MEMBER_ENABLE()
+    self:CheckIfWarriorInParty()
 end
 
 -- OnUpdate

@@ -21,6 +21,8 @@ QuickAuras.optionalEvents = {
     "BANKFRAME_CLOSED",
     "PLAYER_REGEN_DISABLED",
     "PLAYER_REGEN_ENABLED",
+    "GROUP_ROSTER_UPDATE",
+    "PARTY_MEMBER_ENABLE",
 }
 
 QuickAuras.adjustableFrames = {

@@ -8,6 +8,19 @@ local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
 QuickAuras.targetInRange = false
 
+function QuickAuras:CheckIfWarriorInParty()
+    self.hasWarriorInParty = false
+    for i = 1, GetNumGroupMembers() do
+        local unitId = "party"..i
+        debug(2, "CheckIfWarriorInParty", unitId, UnitClass(unitId))
+        if UnitClass(unitId) == "Warrior" then
+            self.hasWarriorInParty = true
+            debug("Found a warrior" , unitId, UnitName(unitId))
+            break
+        end
+    end
+end
+
 function QuickAuras:CheckTargetRange()
     if not self.db.profile.targetInRangeIndication or not self.db.profile.rangeSpellId then return end
     local spellName = GetSpellInfo(self.db.profile.rangeSpellId)
@@ -308,7 +321,8 @@ function QuickAuras:CheckMissingBuffs()
 end
 
 function QuickAuras:CheckCrucialBuffs(activeAuras)
-    if not self.db.profile.battleShoutMissing or (not self.inCombat and not IsInGroup()) then
+    debug(2, "CheckCrucialBuffs", "isWarrior", self.isWarrior, "inCombat", self.inCombat, "IsInGroup", IsInGroup(), "hasWarriorInParty", self.hasWarriorInParty)
+    if not self.db.profile.battleShoutMissing or (self.isWarrior and not self.inCombat and not IsInGroup()) or (not self.isWarrior and not self.hasWarriorInParty) then
         self:ClearIcons(ICON.CRUCIAL)
         return
     end
@@ -320,7 +334,7 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
             if obj and obj.isTimer then
                 self:RemoveTimer(obj, "crucial")
             end
-            if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf) then
+            if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf, nil, false) then
                 self:ArrangeIcons(ICON.CRUCIAL)
             end
             return

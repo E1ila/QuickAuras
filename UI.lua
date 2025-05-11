@@ -216,7 +216,7 @@ local function GetIconList(type, idType)
     return list, parent, Create, Refresh
 end
 
-function QuickAuras:AddIcon(iconType, idType, id, conf, count)
+function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip)
     local key = iconType.."-"..idType.."-"..tostring(id)
     if QuickAuras.ignoredIcons[key] then return end
     local list, parent, Create, Refresh = GetIconList(iconType, idType)
@@ -227,7 +227,8 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count)
             QuickAuras.ignoredIcons[key] = true
             Refresh(QuickAuras)
         end or nil
-        local frame = Create(self, id, parent, iconType .."-".. id, conf.tooltip == nil or conf.tooltip, showCount, onRightClick)
+        if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
+        local frame = Create(self, id, parent, iconType .."-".. id, showTooltip, showCount, onRightClick)
         list[id] = {
             name = conf.name,
             conf = conf,
@@ -550,6 +551,11 @@ function QuickAuras:ShowNoticableError(text)
     C_Timer.After(1, function()
         QuickAuras_OutOfRange:Hide()
     end)
+end
+
+function QuickAuras:ResetErrorCount()
+    lastErrorTime = GetTime()
+    errorCount = 0
 end
 
 

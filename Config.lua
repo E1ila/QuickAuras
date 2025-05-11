@@ -128,10 +128,13 @@ function QuickAuras:BuildTrackedSpells()
                 end
                 for _, spellId in ipairs(spell.spellId) do
                     --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
+                    if spell.raidBars then
+                        self.trackedCombatLog[spellId] = spell
+                    end
                     if spell.aura then
                         self.trackedAuras[spellId] = spell
-                    elseif spell.duration or spell.raidBars then -- combat log ability has to have duration
-                        self.trackedCombatLog[spellId] = spell
+                    elseif spell.duration then
+                        self.trackedCombatLog[spellId] = spell -- offensive
                     end
                     if spell.cooldown then
                         self.trackedSpellCooldowns[spellId] = spell

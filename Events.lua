@@ -142,8 +142,10 @@ end
 -- Combat log
 
 function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
-    local timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6 = CombatLogGetCurrentEventInfo()
+    self:HandleCombatLogEvent(CombatLogGetCurrentEventInfo())
+end
 
+function QuickAuras:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
     --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
@@ -165,6 +167,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     -- tracked spells
     if type(p1) == "number" and p1 > 0 then
         for spellId, conf in pairs(self.trackedCombatLog) do
+            --debug("CombatLog", "spellId", spellId, "conf.name", conf.name, "p1", p1, "conf.raidBars", conf.raidBars)
             if p1 == spellId then
                 -- offensive debuffs
                 if conf.duration and conf.list then
@@ -199,7 +202,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                     then
                         -- start offensive timer
                         local name = strsplit("-", sourceName)
-                        local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name)
+                        local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name, name)
                         if not raidBuffs[p1] then raidBuffs[p1] = {} end
                         raidBuffs[p1][destGuid] = timer
                     end

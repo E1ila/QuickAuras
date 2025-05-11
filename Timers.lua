@@ -3,10 +3,11 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 local ICON = QuickAuras.ICON
 
-function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text)
+function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent, height
     local widthMul = 1
+    keyExtra = keyExtra or ""
     if timerType == "raidbar" then
         list = self.list_raidBars
         parent = QuickAuras_RaidBars
@@ -85,6 +86,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
         expTime = expTime,
         duration = duration,
         showAtTime = showAtTime,
+        keyExtra = keyExtra,
         text = text,
         height = height,
         onUpdate = onUpdate,
@@ -97,10 +99,10 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
         arrangeFunc = arrangeFunc,
         isTimer = true
     }
-    timer.key = self:GetTimerKey(conf.name, expTime, uiType)
-    list[id] = timer
+    timer.key = keyExtra..self:GetTimerKey(conf.name, expTime, uiType)
+    list[keyExtra..tostring(id)] = timer
     self.list_timers[timer.key] = timer
-    self.list_timerByName[conf.name.."-"..uiType] = timer
+    self.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
     onUpdate(timer)
     arrangeFunc(self, list, parent)
     return timer
@@ -155,8 +157,8 @@ function QuickAuras:RemoveTimer(timer, reason)
     timer.frame:SetParent(nil)
     timer.frame:ClearAllPoints()
     timer.frame = nil
-    timer.list[timer.id] = nil
-    self.list_timerByName[timer.name.."-"..timer.uiType] = nil
+    timer.list[timer.keyExtra..timer.id] = nil
+    self.list_timerByName[timer.keyExtra..timer.name.."-"..timer.uiType] = nil
     self.list_timers[timer.key] = nil
     --debug(" -- ", timer.key)
     if timer.arrangeFunc then

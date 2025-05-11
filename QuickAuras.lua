@@ -172,6 +172,24 @@ function QuickAuras:Options_ToggleEnabled(value)
     end
 end
 
+function QuickAuras:fixParams(...)
+    local args = { ... }
+    for i = 1, #args do
+        local x = args[i]
+        --debug("fixing", "#"..tostring(i), x, "len", #x, "first", string.sub(x, 1, 1))
+        if i == 1 or i == 2 or i == 6 then
+        elseif #x > 0 and string.sub(x, 1, 1) == '"' then
+            args[i] = string.sub(x, 2, -2)
+        elseif x:match("^0x") then
+            args[i] = tonumber(x, 16)
+        else
+            args[i] = tonumber(x)
+        end
+        --debug("fixed", "#"..tostring(i), x, "=>", args[i], "("..type(args[i])..")")
+    end
+    return unpack(args)
+end
+
 function QuickAuras:HandleSlashCommand(input)
     if not input or input:trim() == "" then
         AceConfigDialog:Open("QuickAuras")
@@ -194,6 +212,19 @@ function QuickAuras:HandleSlashCommand(input)
             out("Cleared ignored icons!")
             self.ignoredIcons = {}
             self:RefreshAll()
+        elseif cmd == "inj" then
+            local log = {
+                "SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
+                "SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+                "SPELL_AURA_APPLIED,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+            }
+            for i, line in ipairs(log) do
+                if line and #line > 0 then
+                    local subevent, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6 = self:fixParams(strsplit(",", line))
+                    --print(self:fixParams(strsplit(",", line)))
+                    self:HandleCombatLogEvent("", subevent, "", sourceGuid, sourceName, "", "", destGuid, destName, "", "", p1, p2, p3, p4, p5, p6)
+                end
+            end
         elseif cmd == "test" then
             self:DemoUI()
         elseif cmd == "test2" then

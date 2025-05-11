@@ -93,7 +93,7 @@ spells.rogue = {
         spellId = { 408, 8643 },
         name = "Kidney Shot",
         icon = "Interface\\Icons\\Ability_Rogue_KidneyShot",
-        color = {0.7961, 0.2784, 0.0980},
+        color = {1.000, 0.318, 0.227},
         list = "offensive",
         duration = 6,
         cooldown = 20,
@@ -283,7 +283,7 @@ spells.iconAlerts = {
     --},
     limitedInvulnerabilityPotion = {
         spellId = { 3169 },
-        color = {0.969, 1.000, 0.063},
+        color = {0.914, 0.651, 0.086},
         aura = true,
         raidBars = true,
         list = "alert",

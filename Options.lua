@@ -24,6 +24,7 @@ QuickAuras.defaultOptions = {
         targetInRangeIndication = true,
         announceInterrupts = true,
         announceMisses = false,
+        stealthInInstance = true,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -459,6 +460,19 @@ QuickAuras.options = {
                     end,
                     hidden = not QuickAuras.isRogue,
                     order = 307,
+                },
+                stealthInInstance = {
+                    type = "toggle",
+                    name = "Stealthed Warn",
+                    desc = "Show a warning when stealthed in an instance. Can be useful when vanishing mid combat, it's hard to see whether you're stealthed or not.",
+                    get = function(info)
+                        return QuickAuras.db.profile.stealthInInstance
+                    end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.stealthInInstance = value
+                    end,
+                    hidden = not QuickAuras.isRogue,
+                    order = 308,
                 },
             },
         },

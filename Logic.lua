@@ -285,11 +285,12 @@ function QuickAuras:CheckAuras()
             self:RemoveTimer(timer, "unseen")
         end
     end
-    self:CheckMissingBuffs()
+    self:CheckMissingBuffs(seen)
     self:CheckCrucialBuffs(seen)
+    self:CheckStealthInInstance(seen)
 end
 
-function QuickAuras:CheckMissingBuffs()
+function QuickAuras:CheckMissingBuffs(activeAuras)
     if not QuickAuras.db.profile.missingConsumes then return end
     local buffsChanged = false
     if  self.db.profile.forceShowMissing or
@@ -298,7 +299,7 @@ function QuickAuras:CheckMissingBuffs()
     then
         for _, buff in ipairs(self.trackedMissingBuffs) do
             if not buff.option or self.db.profile[buff.option] then
-                local foundBuff = self:HasSeenAny(buff.spellIds, self.playerBuffs)
+                local foundBuff = self:HasSeenAny(buff.spellIds, activeAuras)
                 local foundItemId = self:FindInBags(buff.itemIds or buff.itemId)
                 debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId, "option", buff.option, buff.option and self.db.profile[buff.option])
                 if  foundBuff
@@ -348,6 +349,26 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
         end
     end
     self:ClearIcons(ICON.CRUCIAL)
+end
+
+function QuickAuras:CheckStealthInInstance(seen)
+    if not self.db.profile.stealthInInstance or not self.InstanceName then return end
+    local stealth = self.spells.rogue.stealth
+    local changed = false
+    local found = false
+    for _, spellId in ipairs(self.spells.rogue.stealth.spellId) do
+        found = seen[spellId]
+        if found then
+            changed = self:AddIcon(ICON.WARNING, "spell", stealth.spellId[1], stealth)
+            break
+        end
+    end
+    if not found then
+        changed = self:RemoveIcon(ICON.WARNING, stealth.spellId[1])
+    end
+    if changed then
+        self:ArrangeIcons(ICON.WARNING)
+    end
 end
 
 

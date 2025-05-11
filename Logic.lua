@@ -237,8 +237,10 @@ end
 function QuickAuras:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellId, conf in pairs(self.trackedSpellCooldowns) do
-        local start, duration = GetSpellCooldown(spellId)
-        _checkCooldown(conf, "spell", spellId, start, duration)
+        if not (conf.ignoreCooldownInStealth and self.playerIsStealthed) then
+            local start, duration = GetSpellCooldown(spellId)
+            _checkCooldown(conf, "spell", spellId, start, duration)
+        end
     end
     for itemId, conf in pairs(self.trackedItemCooldowns) do
         -- show cooldown only if item is in bags
@@ -269,11 +271,13 @@ function QuickAuras:CheckAuras()
     local i = 1
     local seen = {}
     self.playerBuffs = seen
+    self.playerIsStealthed = false
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
         debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
         seen[spellId] = { duration, expTime }
+        if self.stealthAbilities[spellId] then self.playerIsStealthed = true end
         -- timer auras -----------------------------------------
         local aura = self.trackedAuras[spellId]
         --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
@@ -370,7 +374,7 @@ function QuickAuras:CheckStealthInInstance(seen)
     local stealth = self.spells.rogue.stealth
     local changed = false
     local found = false
-    for _, spellId in ipairs(self.spells.rogue.stealth.spellId) do
+    for spellId, _ in pairs(self.stealthAbilities) do
         found = seen[spellId]
         if found then
             changed = self:AddIcon(ICON.WARNING, "spell", stealth.spellId[1], stealth)

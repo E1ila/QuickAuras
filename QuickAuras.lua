@@ -13,6 +13,7 @@ QuickAuras.version = "0.6"
 QuickAuras.events = CreateFrame("Frame")
 QuickAuras.bags = {} -- items in bags
 QuickAuras.playerBuffs = {}
+QuickAuras.playerIsStealthed = {}
 QuickAuras.existingConsumes = {}
 QAG = QuickAuras
 QuickAurasDBG = QuickAurasDBG or {

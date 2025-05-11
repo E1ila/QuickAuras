@@ -141,6 +141,7 @@ spells.rogue = {
         icon = "Interface\\Icons\\Ability_Stealth",
         color = {0.4451, 0.7882, 0.8000},
         cooldown = true,
+        ignoreCooldownInStealth = true,
         visible = QuickAuras.isRogue,
     },
     kick = {
@@ -455,5 +456,15 @@ function QuickAuras:InitSpells()
                 obj.option = class.."_"..ability
             end
         end
+    end
+    self.stealthAbilities = {}
+    if self.isRogue then
+        for _, id in ipairs(spells.rogue.stealth.spellId) do
+            self.stealthAbilities[id] = true
+        end
+    elseif self.isDruid then
+        --for _, id in ipairs(spells.druid.stealth.spellId) do
+        --    self.stealthAbilities[id] = true
+        --end
     end
 end

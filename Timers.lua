@@ -57,6 +57,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
             --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
             return existingTimer -- already exists
         end
+        debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime)
         -- different timer, remove old
         self:RemoveTimer(existingTimer, "replaced")
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)

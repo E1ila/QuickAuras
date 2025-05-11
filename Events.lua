@@ -231,6 +231,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
         end
     end
 
+    -- announce interrupts
     if      subevent == "SPELL_INTERRUPT" and
             sourceGuid == self.playerGuid and
             self.InstanceName and self.db.profile.announceInterrupts and
@@ -241,5 +242,15 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
         else
             SendChatMessage(">> Interrupted "..destName.." <<", "SAY")
         end
+    end
+
+    -- announce misses
+    if      subevent == "SWING_MISSED" and
+            sourceGuid == self.playerGuid and
+            self.InstanceName and self.db.profile.announceMisses and
+            destGuid == UnitGUID("target") and
+            sourceGuid == UnitGUID("targettarget") and p1
+    then
+        SendChatMessage(">> "..tostring(p1).." <<", "SAY")
     end
 end

@@ -23,6 +23,7 @@ QuickAuras.defaultOptions = {
         hsNotCapitalWarning = true,
         targetInRangeIndication = true,
         announceInterrupts = true,
+        announceMisses = false,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -333,7 +334,18 @@ QuickAuras.options = {
                     desc = "Say when you interrupt a spell",
                     get = function(info) return QuickAuras.db.profile.announceInterrupts end,
                     set = function(info, value) QuickAuras.db.profile.announceInterrupts = value end,
-                    order = 102,
+                    order = 10,
+                },
+                outOfRange = {
+                    type = "toggle",
+                    name = "Out of Range",
+                    desc = "Show a noticable warning when you are out of range of your target in combat",
+                    get = function(info) return QuickAuras.db.profile.outOfRange end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.outOfRange = value
+                        if not value then QuickAuras.db.profile.outOfRangeSound = false end
+                    end,
+                    order = 11,
                 },
                 meleeUtilsHeader = {
                     type = "header",
@@ -354,17 +366,6 @@ QuickAuras.options = {
                     get = function(info) return QuickAuras.db.profile.harryPaste end,
                     set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
                     order = 102,
-                },
-                outOfRange = {
-                    type = "toggle",
-                    name = "Out of Range",
-                    desc = "Show a noticable warning when you are out of range of your target in combat",
-                    get = function(info) return QuickAuras.db.profile.outOfRange end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.outOfRange = value
-                        if not value then QuickAuras.db.profile.outOfRangeSound = false end
-                    end,
-                    order = 104,
                 },
                 outOfRangeSound = {
                     type = "toggle",
@@ -388,6 +389,16 @@ QuickAuras.options = {
                         QuickAuras:CheckAuras()
                     end,
                     order = 105,
+                },
+                announceMisses = {
+                    type = "toggle",
+                    name = "Announce Misses",
+                    desc = "When tanking a mob in an instance, will say when your swing missed.",
+                    get = function(info) return QuickAuras.db.profile.announceMisses end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.announceMisses = value
+                    end,
+                    order = 106,
                 },
                 rogueUtilsHeader = {
                     type = "header",

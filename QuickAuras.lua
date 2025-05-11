@@ -74,7 +74,7 @@ QuickAuras.Print = out
 local function debug(text, ...)
     local minLevel = type(text) == "number" and text or 1
     if QuickAurasDBG.debug and QuickAurasDBG.debug >= minLevel then
-        print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cff009999DEBUG|cff999999", text, ...)
+        print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r","|cff009999DEBUG|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", text, ...)
     end
 end
 QuickAuras.Debug = debug

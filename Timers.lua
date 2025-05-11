@@ -148,7 +148,8 @@ function QuickAuras:UpdateProgressBar(timer)
 end
 
 function QuickAuras:RemoveTimer(timer, reason)
-    --debug("Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
+    if not timer.frame then return end -- target died, already removed
+    debug(2, "Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
         timer:onEnd(timer)
     end

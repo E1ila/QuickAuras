@@ -469,7 +469,7 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
-    debug("Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
+    debug(2, "Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
 
     frame.icon = frame:CreateTexture(nil, "ARTWORK")
     frame.icon:SetAllPoints(frame)
@@ -487,9 +487,16 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
 end
 
 function QuickAuras:ArrangeTimerBars(list, parent)
-    local lastFrame = nil
+    local sortedList = {}
+    for _, timer in pairs(list) do
+        table.insert(sortedList, timer)
+    end
+    table.sort(sortedList, function(a, b)
+        return a.expTime > b.expTime
+    end)
     debug("Arranging timer bars", parent:GetName())
-    for id, timer in pairs(list) do
+    local lastFrame
+    for _, timer in pairs(sortedList) do
         debug(3, "Arranging progress frames", timer.key, timer.uiType)
         timer.frame:ClearAllPoints()
         if timer.uiType == "bar" then
@@ -569,28 +576,36 @@ end
 
 -- Test UI -----------------------------------------------------------
 
-function QuickAuras:TestProgressBar(spells, limit)
-    local i = 0
+function QuickAuras:TestProgressBar(spells, limit, includeRaidBars)
+    local count1 = 0
+    local count2 = 0
     local seen = {}
     for key, conf in pairs(spells) do
         if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
-            debug("TestProgressBar", "conf", conf.name, conf.list, limit)
-            seen[conf.name] = true
-            local duration = 15 - (i*2)
-            local expTime = GetTime() + duration
-            self:AddTimer("test", conf, key, duration, expTime)
-            if i == limit then break end
-            i = i + 1
-        elseif conf.raidBars then
-            -- we'll inject raidbars separately
-        --    local timer = self:AddTimer("raidbar", conf, conf.spellId[1], conf.duration, GetTime()+conf.duration, nil, "Text")
+            if count1 < limit then
+                debug("TestProgressBar", "conf", conf.name, conf.list, limit)
+                seen[conf.name] = true
+                local duration = 15 - (count1*2)
+                local expTime = GetTime() + duration
+                self:AddTimer("test", conf, key, duration, expTime)
+                count1 = count1 + 1
+            end
+        elseif conf.raidBars and includeRaidBars then
+            if count2 < limit then
+                debug("TestProgressBar", "conf", conf.name, conf.list, limit)
+                -- we'll inject raidbars separately
+                local duration = math.min(conf.duration, 10)
+                --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+                self:AddTimer("raidbar", conf, conf.spellId[1], duration, GetTime()+duration, nil, "Text", tostring(count2))
+                count2 = count2 + 1
+            end
         end
     end
 end
 
 function QuickAuras:TestBars()
     self:TestProgressBar(self.trackedAuras, 5)
-    self:TestProgressBar(self.trackedCombatLog, 3)
+    self:TestProgressBar(self.trackedCombatLog, 3, true)
 end
 
 function QuickAuras:TestFlashBar()
@@ -697,7 +712,7 @@ function QuickAuras:InjectLog(log)
     end
 end
 
-function QuickAuras:TestRaidBars()
+function QuickAuras:TestInject()
     local log = {
         "SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
         "SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
@@ -718,7 +733,6 @@ function QuickAuras:DemoUI()
     self:TestIconWarnings()
     self:TestIconAlerts()
     self:TestReminders()
-    self:TestRaidBars()
 end
 
 function QuickAuras:DemoUI2()

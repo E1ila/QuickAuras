@@ -4,6 +4,8 @@ local debug = QuickAuras.Debug
 local out = QuickAuras.Print
 local _useTeaShown = false
 local USE_TEA_ENERGY_THRESHOLD = 6
+local THISTLE_TEA_ITEMID = 7676
+local BLADE_FLURRY_SPELLID = 13877
 local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
 QuickAuras.targetInRange = false
@@ -56,18 +58,24 @@ function QuickAuras:CheckPower(unit, powerType)
         if powerType == "ENERGY" then
             local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
             if _useTeaShown then
+                -- hide
                 if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
                     _useTeaShown = false
-                    self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, 7676)
+                    self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, THISTLE_TEA_ITEMID)
                 end
             else
+                -- show
                 if  currentEnergy < USE_TEA_ENERGY_THRESHOLD and
                         (self.db.profile.rogueTeaTime == "always" or
-                                self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[13877])
+                                self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[BLADE_FLURRY_SPELLID])
                 then
-                    _useTeaShown = true
-                    self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", 7676, { name = "Thistle Tea"})
-                    self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
+                    local start = self:GetItemCooldown(THISTLE_TEA_ITEMID)
+                    local foundItemId = self:FindInBags(THISTLE_TEA_ITEMID)
+                    if start == 0 and foundItemId then
+                        _useTeaShown = true
+                        self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", THISTLE_TEA_ITEMID, { name = "Thistle Tea"})
+                        self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
+                    end
                 end
             end
         elseif powerType == "COMBO_POINTS" then

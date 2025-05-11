@@ -1,12 +1,16 @@
 local ADDON_NAME, addon = ...
 local QuickAuras = addon.root
 local debug = QuickAuras.Debug
+local out = QuickAuras.Print
+local _c = QuickAuras.colors
 
 local enemyDebuffs = {}
 local raidBuffs = {}
 
 local lastUpdate = 0
 local updateInterval = 0.01 -- Execute every 0.1 seconds
+
+local BOSS_LEVEL = 63
 
 -- WoW Events
 
@@ -138,21 +142,24 @@ end
 -- Combat log
 
 function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
-    local timestamp, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
+    local timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3 = CombatLogGetCurrentEventInfo()
 
     --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
-    self.db.profile.harryPaste and
+            self.db.profile.harryPaste and
             subevent == "SWING_MISSED" and
-            sourceGUID == self.playerGuid and
             p1 == "PARRY" and -- missType
-            destGUID == UnitGUID("target") and
-            self.playerGuid ~= UnitGUID("targettarget") and
+            destGuid == UnitGUID("target") and
+            sourceGuid ~= UnitGUID("targettarget") and
             not UnitIsPlayer("target") and
             IsInInstance()
     then
-        self:ShowParry()
+        if sourceGuid == self.playerGuid then
+            self:ShowParry()
+        elseif UnitLevel("target") >= BOSS_LEVEL then
+            out("|cffff0000Warning:|r "..destName.." has parried ".._c.bold..sourceName.."|r hit!")
+        end
     end
 
     -- tracked spells
@@ -162,7 +169,7 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                 -- offensive debuffs
                 if conf.duration and conf.list then
                     if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                            and sourceGUID == self.playerGuid
+                            and sourceGuid == self.playerGuid
                             --and destGUID == UnitGUID("target")
                             and self.db.profile.watchBars
                             and (not conf.option or self.db.profile[conf.option])
@@ -170,23 +177,23 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                         -- start offensive timer
                         local timer = self:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
                         if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
-                        enemyDebuffs[p1][destGUID] = timer
+                        enemyDebuffs[p1][destGuid] = timer
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
-                            and sourceGUID == self.playerGuid
-                            and enemyDebuffs[p1] and enemyDebuffs[p1][destGUID]
+                            and sourceGuid == self.playerGuid
+                            and enemyDebuffs[p1] and enemyDebuffs[p1][destGuid]
                     then
                         -- end offensive timer
-                        self:RemoveTimer(enemyDebuffs[p1][destGUID], "combatlog")
-                        enemyDebuffs[p1][destGUID] = nil
+                        self:RemoveTimer(enemyDebuffs[p1][destGuid], "combatlog")
+                        enemyDebuffs[p1][destGuid] = nil
                     end
                 end
                 -- raid tracking
                 if conf.raidBars then
-                    debug("Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGUID, "destGUID", destGUID)
+                    debug("Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
                     if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                            and sourceGUID ~= self.playerGuid
+                            and sourceGuid ~= self.playerGuid
                             and self.db.profile.raidBars
                             --and (not conf.option or self.db.profile[conf.option.."_rbars"])
                     then
@@ -194,16 +201,16 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
                         local name = strsplit("-", sourceName)
                         local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name)
                         if not raidBuffs[p1] then raidBuffs[p1] = {} end
-                        raidBuffs[p1][destGUID] = timer
+                        raidBuffs[p1][destGuid] = timer
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
-                            and sourceGUID ~= self.playerGuid
-                            and raidBuffs[p1] and raidBuffs[p1][destGUID]
+                            and sourceGuid ~= self.playerGuid
+                            and raidBuffs[p1] and raidBuffs[p1][destGuid]
                     then
                         -- end offensive timer
-                        self:RemoveTimer(raidBuffs[p1][destGUID], "raidbar")
-                        raidBuffs[p1][destGUID] = nil
+                        self:RemoveTimer(raidBuffs[p1][destGuid], "raidbar")
+                        raidBuffs[p1][destGuid] = nil
                     end
                 end
             end
@@ -213,13 +220,13 @@ function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
     -- reset buffs/debuffs of dead unit
     if subevent == "UNIT_DIED" then
         for spellId, conf in pairs(QuickAuras.trackedCombatLog) do
-            if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGUID] then
-                self:RemoveTimer(enemyDebuffs[spellId][destGUID], "combatlog")
-                enemyDebuffs[spellId][destGUID] = nil
+            if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGuid] then
+                self:RemoveTimer(enemyDebuffs[spellId][destGuid], "combatlog")
+                enemyDebuffs[spellId][destGuid] = nil
             end
-            if raidBuffs[spellId] and raidBuffs[spellId][destGUID] then
-                self:RemoveTimer(raidBuffs[spellId][destGUID], "raidbar")
-                raidBuffs[spellId][destGUID] = nil
+            if raidBuffs[spellId] and raidBuffs[spellId][destGuid] then
+                self:RemoveTimer(raidBuffs[spellId][destGuid], "raidbar")
+                raidBuffs[spellId][destGuid] = nil
             end
         end
     end

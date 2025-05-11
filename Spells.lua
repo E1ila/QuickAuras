@@ -29,6 +29,16 @@ spells.warrior = {
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
         crucial = QuickAuras.isWarrior or QuickAuras.isRogue,
         visible = QuickAuras.isWarrior,
+    },
+    deathWish = {
+        spellId = { 12328 },
+        name = "Death Wish",
+        icon = "Interface\\Icons\\spell_shadow_deathpact",
+        raidBars = true,
+        cooldown = true,
+        duration = 30,
+        color = {0.902, 0.357, 0.055},
+        visible = QuickAuras.isWarrior,
     }
 }
 
@@ -36,6 +46,8 @@ spells.rogue = {
     bladeFlurry = {
         spellId = { 13877 },
         aura = true,
+        raidBars = true,
+        duration = 15,
         name = "Blade Flurry",
         icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
         color = {246/256, 122/256, 0},
@@ -46,6 +58,8 @@ spells.rogue = {
     adrenalineRush = {
         spellId = { 13750 },
         aura = true,
+        raidBars = true,
+        duration = 15,
         name = "Adrenaline Rush",
         icon = "Interface\\Icons\\Spell_Shadow_ShadowWordDominate",
         color = {246/256, 220/256, 0},

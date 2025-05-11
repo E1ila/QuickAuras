@@ -284,7 +284,7 @@ function QuickAuras:ArrangeIcons(iconType)
     for _, obj in pairs(list) do
         local frame = obj.frame
         frame:ClearAllPoints()
-        --debug(3, "ArrangeIcons", iconType, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
+        debug(3, "ArrangeIcons", iconType, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
         if frame.counterText and obj.count and type(obj.count) == "number" then
             --debug(3, "ArrangeIcons", "count", obj.count)
             frame.counterText:SetText(obj.count)
@@ -469,7 +469,7 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
-    --debug("Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
+    debug("Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
 
     frame.icon = frame:CreateTexture(nil, "ARTWORK")
     frame.icon:SetAllPoints(frame)
@@ -488,6 +488,7 @@ end
 
 function QuickAuras:ArrangeTimerBars(list, parent)
     local lastFrame = nil
+    debug("Arranging timer bars", parent:GetName())
     for id, timer in pairs(list) do
         debug(3, "Arranging progress frames", timer.key, timer.uiType)
         timer.frame:ClearAllPoints()
@@ -581,7 +582,8 @@ function QuickAuras:TestProgressBar(spells, limit)
             if i == limit then break end
             i = i + 1
         elseif conf.raidBars then
-            local timer = self:AddTimer("raidbar", conf, conf.spellId[1], conf.duration, GetTime()+conf.duration, nil, "Text")
+            -- we'll inject raidbars separately
+        --    local timer = self:AddTimer("raidbar", conf, conf.spellId[1], conf.duration, GetTime()+conf.duration, nil, "Text")
         end
     end
 end
@@ -599,8 +601,11 @@ end
 function QuickAuras:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedSpellCooldowns) do
-        self:AddTimer("test-cooldowns", conf, i, 15-t, GetTime()+15-t)
-        t = t + 1
+        --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+        if conf.spellId then
+            self:AddTimer("test-cooldowns", conf, conf.spellId[1], 15-t, GetTime()+15-t)
+            t = t + 1
+        end
     end
 end
 
@@ -660,8 +665,51 @@ end, 6)
 
 function QuickAuras:TestIconAlerts()
     local lip = self.spells.iconAlerts.limitedInvulnerabilityPotion
-    self:AddTimer("auras", lip, lip.spellId[1], 1, 6, GetTime()+6)
+    --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+    self:AddTimer("auras", lip, lip.spellId[1], 6, GetTime()+6)
     DelayedReset_IconAlerts()
+end
+
+
+local function fixLogInput(...)
+    local args = { ... }
+    for i = 1, #args do
+        local x = args[i]
+        if i == 1 or i == 2 or i == 6 then
+        elseif #x > 0 and string.sub(x, 1, 1) == '"' then
+            args[i] = string.sub(x, 2, -2)
+        elseif x:match("^0x") then
+            args[i] = tonumber(x, 16)
+        else
+            args[i] = tonumber(x)
+        end
+        --debug("fixed", "#"..tostring(i), x, "=>", args[i], "("..type(args[i])..")")
+    end
+    return unpack(args)
+end
+
+function QuickAuras:InjectLog(log)
+    for i, line in ipairs(log) do
+        if line and #line > 0 then
+            local subevent, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6 = fixLogInput(strsplit(",", line))
+            self:HandleCombatLogEvent("", subevent, "", sourceGuid, sourceName, "", "", destGuid, destName, "", "", p1, p2, p3, p4, p5, p6)
+        end
+    end
+end
+
+function QuickAuras:TestRaidBars()
+    local log = {
+        "SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
+        "SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+        "SPELL_AURA_APPLIED,Player-5233-01F4ABDF,\"Defchad-Firemaw-EU\",0x40514,0x0,Creature-0-5253-533-7736-16453-00019CF387,\"Necro Stalker\",0x10a48,0x80,355,\"Taunt\",0x1,DEBUFF",
+        "SPELL_AURA_APPLIED,Player-5233-033F9882,\"Dirge-Firemaw-EU\",0x514,0x0,Player-5233-033F9882,\"Dirge-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-026BAE34,\"Brucice-Firemaw-EU\",0x514,0x0,Player-5233-026BAE34,\"Brucice-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-02671588,\"Shorukh-Firemaw-EU\",0x514,0x0,Player-5233-02671588,\"Shorukh-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
+        "SPELL_AURA_APPLIED,Player-5233-027AEBDF,\"Blenders-Firemaw-EU\",0x514,0x0,Player-5233-027AEBDF,\"Blenders-Firemaw-EU\",0x514,0x0,13877,\"Blade Flurry\",0x1,BUFF",
+        "SPELL_AURA_APPLIED,Player-5233-029401E9,\"Derpymcderp-Skullflame-EU\",0x514,0x0,Player-5233-029401E9,\"Derpymcderp-Skullflame-EU\",0x514,0x0,13750,\"Adrenaline Rush\",0x1,BUFF"
+    }
+    self:InjectLog(log)
 end
 
 function QuickAuras:DemoUI()
@@ -670,6 +718,7 @@ function QuickAuras:DemoUI()
     self:TestIconWarnings()
     self:TestIconAlerts()
     self:TestReminders()
+    self:TestRaidBars()
 end
 
 function QuickAuras:DemoUI2()

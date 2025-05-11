@@ -307,7 +307,7 @@ function QuickAuras:CheckMissingBuffs(activeAuras)
     then
         for _, buff in ipairs(self.trackedMissingBuffs) do
             if not buff.option or self.db.profile[buff.option] then
-                local foundBuff = self:HasSeenAny(buff.spellIds, activeAuras)
+                local foundBuff = self:HasSeenAny(buff.spellIds, activeAuras or self.playerBuffs)
                 local foundItemId = self:FindInBags(buff.itemIds or buff.itemId)
                 debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId, "option", buff.option, buff.option and self.db.profile[buff.option])
                 if  foundBuff

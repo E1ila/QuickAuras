@@ -39,7 +39,17 @@ spells.warrior = {
         duration = 30,
         color = {0.902, 0.357, 0.055},
         visible = QuickAuras.isWarrior,
-    }
+    },
+    challengingShout = {
+        spellId = { 1161 },
+        name = "Challenging Shout",
+        icon = "Interface\\Icons\\ability_bullrush",
+        raidBars = true,
+        cooldown = true,
+        duration = 6,
+        color = {0.671, 0.251, 0.024},
+        visible = QuickAuras.isWarrior,
+    },
 }
 
 spells.rogue = {

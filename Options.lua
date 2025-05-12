@@ -43,7 +43,7 @@ QuickAuras.defaultOptions = {
         reminderIconSize = 40,
         weaponEnchantSize = 40,
         crucialExpireTime = 8,
-        transmutePreReadyTime = 3600,
+        transmutePreReadyTime = 60,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -348,6 +348,17 @@ QuickAuras.options = {
                     end,
                     order = 11,
                 },
+                outOfRangeSound = {
+                    type = "toggle",
+                    name = "Out of Range Sound",
+                    desc = "Play a warning when you are out of range of your target in combat",
+                    get = function(info) return QuickAuras.db.profile.outOfRangeSound end,
+                    set = function(info, value)
+                        QuickAuras.db.profile.outOfRangeSound = value
+                        if value then QuickAuras.db.profile.outOfRange = true end
+                    end,
+                    order = 12,
+                },
                 meleeUtilsHeader = {
                     type = "header",
                     name = "Melee Utils",
@@ -367,17 +378,6 @@ QuickAuras.options = {
                     get = function(info) return QuickAuras.db.profile.harryPaste end,
                     set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
                     order = 102,
-                },
-                outOfRangeSound = {
-                    type = "toggle",
-                    name = "Out of Range Sound",
-                    desc = "Play a warning when you are out of range of your target in combat",
-                    get = function(info) return QuickAuras.db.profile.outOfRangeSound end,
-                    set = function(info, value)
-                        QuickAuras.db.profile.outOfRangeSound = value
-                        if value then QuickAuras.db.profile.outOfRange = true end
-                    end,
-                    order = 104,
                 },
                 battleShoutMissing = {
                     type = "toggle",
@@ -478,22 +478,22 @@ QuickAuras.options = {
         },
         bars = {
             type = "group",
-            name = "Buff Bars",
+            name = "Time Bars",
             order = 1002,
             args = {
                 header1 = {
                     type = "header",
-                    name = "Abilities",
+                    name = "Tracked Abilities",
                     order = 1000,
                 },
                 header2 = {
                     type = "header",
-                    name = "Trinkets",
+                    name = "Tracked Trinkets",
                     order = 2000,
                 },
                 header3 = {
                     type = "header",
-                    name = "Raid Buffs",
+                    name = "Tracked Raid Buffs",
                     order = 3000,
                 },
             },
@@ -666,8 +666,9 @@ QuickAuras.options = {
     },
 }
 
-local function AddSpells(cspells, orderStart)
-    local order = orderStart or 1
+local function AddSpells(cspells, orderStart, categoryHidden)
+    orderStart = orderStart or 0
+    local order = 1
     for spellKey, spell in pairs(cspells) do
         order = order + 1
         debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
@@ -686,81 +687,81 @@ local function AddSpells(cspells, orderStart)
                 order = order + 3000,
             }
         end
-        if spell.visible == nil or spell.visible == true then
-            -- obj.option in format of class_abilityName
-            if QuickAuras.defaultOptions.profile[spell.option] == nil then
-                QuickAuras.defaultOptions.profile[spell.option] = true
-            end
-            local categoryOptions = QuickAuras.options.args[spell.category or "bars"]
-            if categoryOptions and spell.list and not spell.transmute then
-                -- Buff/Debuff option
-                local args = categoryOptions.args
-                args[spellKey] = {
-                    type = "toggle",
-                    name = spell.name,
-                    desc = spell.desc or "Shows "..(spell.offensive and "debuff" or "buff").." time for ".. spell.name..".",
-                    get = function(info) return QuickAuras.db.profile[spell.option] end,
-                    set = function(info, value)
-                        QuickAuras.db.profile[spell.option] = value
-                        if spell.aura then QuickAuras:CheckAuras() end
-                    end,
-                    order = order,
-                }
-            end
-            categoryOptions = QuickAuras.options.args[spell.category or "cooldowns"]
-            if categoryOptions and spell.cooldown then
-                -- Cooldowns option
-                if QuickAuras.defaultOptions.profile[spell.option.."_cd"] == nil then
-                    QuickAuras.defaultOptions.profile[spell.option.."_cd"] = true
+        if not categoryHidden then
+            if spell.visible == nil or spell.visible == true then
+                -- obj.option in format of class_abilityName
+                if QuickAuras.defaultOptions.profile[spell.option] == nil then
+                    QuickAuras.defaultOptions.profile[spell.option] = true
                 end
-                categoryOptions.args[spellKey] = {
-                    type = "toggle",
-                    name = spell.name,
-                    desc = spell.desc or "Shows cooldown for ".. spell.name..".",
-                    get = function(info) return QuickAuras.db.profile[spell.option.."_cd"] end,
-                    set = function(info, value)
-                        QuickAuras.db.profile[spell.option.."_cd"] = value
-                        QuickAuras:RefreshCooldowns()
-                        if spell.aura then QuickAuras:CheckAuras() end
-                    end,
-                    order = order + 1000,
-                }
-            end
-            if spell.transmute then
-                -- Profession cooldowns option
-                if QuickAuras.defaultOptions.profile[spell.option.."_pcd"] == nil then
-                    QuickAuras.defaultOptions.profile[spell.option.."_pcd"] = true
+                local categoryOptions = QuickAuras.options.args[spell.category or "bars"]
+                if categoryOptions and spell.list and not spell.transmute then
+                    -- Buff/Debuff option
+                    local args = categoryOptions.args
+                    args[spellKey] = {
+                        type = "toggle",
+                        name = spell.name,
+                        desc = spell.desc or "Shows "..(spell.offensive and "debuff" or "buff").." time for ".. spell.name..".",
+                        get = function(info) return QuickAuras.db.profile[spell.option] end,
+                        set = function(info, value)
+                            QuickAuras.db.profile[spell.option] = value
+                            if spell.aura then QuickAuras:CheckAuras() end
+                        end,
+                        order = order + orderStart,
+                    }
                 end
-                QuickAuras.options.args.reminders.args[spellKey] = {
-                    type = "toggle",
-                    name = spell.name,
-                    desc = "Reminder icon when "..spell.name.." cooldown is ready.",
-                    get = function(info)
-                        return QuickAuras.db.profile[spell.option.."_pcd"]
-                    end,
-                    set = function(info, value)
-                        QuickAuras.db.profile[spell.option.."_pcd"] = value
-                        QuickAuras:RefreshReminders()
-                    end,
-                    order = order + 100,
-                }
+                categoryOptions = QuickAuras.options.args[spell.category or "cooldowns"]
+                if categoryOptions and spell.cooldown then
+                    -- Cooldowns option
+                    if QuickAuras.defaultOptions.profile[spell.option.."_cd"] == nil then
+                        QuickAuras.defaultOptions.profile[spell.option.."_cd"] = true
+                    end
+                    categoryOptions.args[spellKey] = {
+                        type = "toggle",
+                        name = spell.name,
+                        desc = spell.desc or "Shows cooldown for ".. spell.name..".",
+                        get = function(info) return QuickAuras.db.profile[spell.option.."_cd"] end,
+                        set = function(info, value)
+                            QuickAuras.db.profile[spell.option.."_cd"] = value
+                            QuickAuras:RefreshCooldowns()
+                            if spell.aura then QuickAuras:CheckAuras() end
+                        end,
+                        order = order + 1000,
+                    }
+                end
+                if spell.transmute then
+                    -- Profession cooldowns option
+                    if QuickAuras.defaultOptions.profile[spell.option.."_pcd"] == nil then
+                        QuickAuras.defaultOptions.profile[spell.option.."_pcd"] = true
+                    end
+                    QuickAuras.options.args.reminders.args[spellKey] = {
+                        type = "toggle",
+                        name = spell.name,
+                        desc = "Reminder icon when "..spell.name.." cooldown is ready.",
+                        get = function(info)
+                            return QuickAuras.db.profile[spell.option.."_pcd"]
+                        end,
+                        set = function(info, value)
+                            QuickAuras.db.profile[spell.option.."_pcd"] = value
+                            QuickAuras:RefreshReminders()
+                        end,
+                        order = order + 100,
+                    }
+                end
             end
         end
     end
 end
 
 function QuickAuras:AddAbilitiesOptions()
-    AddSpells(QuickAuras.spells.racials)
-    AddSpells(QuickAuras.spells.iconAlerts, 100)
-    AddSpells(QuickAuras.spells.other)
-    AddSpells(QuickAuras.spells.transmutes)
-    --AddSpells(QuickAuras.spells.reminders)
-    AddSpells(QuickAuras.spells.trinkets, 2000)
-    local lowerClass = string.lower(QuickAuras.playerClass)
-    local classAbilities = QuickAuras.spells[lowerClass]
-    if classAbilities then
-        AddSpells(classAbilities, 1000)
-    end
+    AddSpells(self.spells.racials)
+    AddSpells(self.spells.iconAlerts, 100)
+    AddSpells(self.spells.other)
+    AddSpells(self.spells.transmutes)
+    --AddSpells(self.spells.reminders)
+    AddSpells(self.spells.trinkets, 2000)
+    AddSpells(self.spells.rogue, 1000, not self.isRogue)
+    AddSpells(self.spells.warrior, 1000, not self.isWarrior)
+    AddSpells(self.spells.shaman, 1000, not self.isShaman)
 end
 
 function QuickAuras:AddGearWarningOptions()

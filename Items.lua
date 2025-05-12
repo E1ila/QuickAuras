@@ -112,6 +112,11 @@ QuickAuras.consumes = {
         minCount = 5,
     },
     {
+        name = "Heavy Runecloth Bandage",
+        itemId = 14530,
+        minCount = 5,
+    },
+    {
         name = "Juju Chill",
         spellIds = { 16325 },
         itemId = 12457,

@@ -112,6 +112,31 @@ QuickAuras.consumes = {
         minCount = 5,
     },
     {
+        name = "Greater Arcane Protection Potion",
+        itemId = 13461,
+        minCount = 2,
+    },
+    {
+        name = "Greater Fire Protection Potion",
+        itemId = 13457,
+        minCount = 2,
+    },
+    {
+        name = "Greater Frost Protection Potion",
+        itemId = 13456,
+        minCount = 5,
+    },
+    {
+        name = "Greater Nature Protection Potion",
+        itemId = 13458,
+        minCount = 5,
+    },
+    {
+        name = "Greater Shadow Protection Potion",
+        itemId = 13459,
+        minCount = 5,
+    },
+    {
         name = "Heavy Runecloth Bandage",
         itemId = 14530,
         minCount = 5,

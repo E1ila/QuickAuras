@@ -55,6 +55,8 @@ QuickAuras.defaultOptions = {
         lowConsumesMinCount = 1,
         manaTideAura = QuickAuras.isManaClass,
         innervateAura = QuickAuras.isManaClass,
+        encounter4hmStartAt = 0, -- 0 = disabled
+        encounter4hmMoveEvery = 3,
     },
 }
 

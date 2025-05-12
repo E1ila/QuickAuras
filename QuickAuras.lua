@@ -205,6 +205,14 @@ function QuickAuras:HandleSlashCommand(input)
             self:ToggleLockedState()
         elseif cmd == "reset" then
             self:ResetWidgets()
+        elseif cmd == "4hm" then
+            local startAt = arg1 and tonumber(arg1) or 0
+            self.db.profile.encounter4hmStartAt = startAt
+            if startAt and startAt > 0 then
+                out("4HM healer mode, start moving set to ".._c.bold..tostring(startAt))
+            else
+                out("4HM healer mode disabled.")
+            end
         else
             out("QuickAuras available commands:")
             out("  |cFF00FFaa/qa|r - Open options")

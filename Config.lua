@@ -38,6 +38,7 @@ QuickAuras.adjustableFrames = {
 }
 
 QuickAuras.colors = {
+    yellow = "|cffffde00",
     bold = "|cffff99cc",
     enabled = "|cff00ff00",
     disabled = "|cffffff00",

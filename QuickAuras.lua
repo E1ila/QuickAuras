@@ -15,6 +15,7 @@ QuickAuras.bags = {} -- items in bags
 QuickAuras.playerBuffs = {}
 QuickAuras.playerIsStealthed = {}
 QuickAuras.existingConsumes = {}
+QuickAuras.encounter = { OnStart = {}, OnEnd = {} }
 QAG = QuickAuras
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,
@@ -132,6 +133,7 @@ function QuickAuras:OnInitialize()
         QuickAuras:CheckAuras()
         QuickAuras:CheckCooldowns()
         QuickAuras:CheckGear()
+        QuickAuras:InitBossLogic()
         --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
         --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
         --QuickAuras:CheckLowConsumes() -- updated on load due to zone event

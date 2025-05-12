@@ -66,13 +66,28 @@ function QuickAuras:BAG_UPDATE(bagId)
 end
 
 function QuickAuras:ENCOUNTER_START(encounterId, encounterName)
-    self.encounter = { id = encounterId, name = encounterName }
+    self.encounter.id = encounterId
+    self.encounter.name = encounterName
+
     self:CheckMissingBuffs()
+
+    local OnStart = self.encounter.OnStart[encounterId]
+    if OnStart and type(OnStart) == "function" then
+        OnStart(self)
+    end
 end
 
 function QuickAuras:ENCOUNTER_END()
+    if not self.encounter.id then return end -- not in encounter
+    local encounter = self.encounter
     self.encounter = nil
+
     self:CheckMissingBuffs()
+
+    local OnEnd = self.encounter.OnEnd[encounter.id]
+    if OnEnd and type(OnEnd) == "function" then
+        OnEnd(self)
+    end
 end
 
 function QuickAuras:MINIMAP_UPDATE_TRACKING()
@@ -256,4 +271,5 @@ function QuickAuras:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sou
     then
         SendChatMessage(">> "..tostring(p1).." <<", "SAY")
     end
+
 end

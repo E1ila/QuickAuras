@@ -8,6 +8,8 @@ local THISTLE_TEA_ITEMID = 7676
 local BLADE_FLURRY_SPELLID = 13877
 local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
+local _missingBuffsCombatState = false
+
 QuickAuras.targetInRange = false
 
 function QuickAuras:CheckIfWarriorInParty()
@@ -73,7 +75,8 @@ function QuickAuras:CheckPower(unit, powerType)
                     local foundItemId = self:FindInBags(THISTLE_TEA_ITEMID)
                     if start == 0 and foundItemId then
                         _useTeaShown = true
-                        self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", THISTLE_TEA_ITEMID, { name = "Thistle Tea"})
+                        local button = self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", THISTLE_TEA_ITEMID, { name = "Thistle Tea"})
+                        button.glowInCombat = true
                         self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
                     end
                 end
@@ -328,7 +331,8 @@ function QuickAuras:CheckMissingBuffs(activeAuras)
             end
         end
     end
-    if buffsChanged then
+    if buffsChanged or _missingBuffsCombatState ~= self.inCombat then
+        _missingBuffsCombatState = self.inCombat
         self:ArrangeIcons(ICON.MISSING)
     end
 end

@@ -4,6 +4,7 @@ local out = QuickAuras.Print
 local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
+local _rightClickWarning = false
 local _c
 local ICON = QuickAuras.ICON
 
@@ -192,7 +193,7 @@ end
 -- Icon warnings ------------------------------------
 
 local function GetIconList(type, idType)
-    local list, parent, Refresh
+    local list, parent, Refresh, glowInCombat
     local Create = idType == "item" and QuickAuras.CreateItemWarningIcon or QuickAuras.CreateSpellWarningIcon
     if type == ICON.WARNING then
         list = QuickAuras.list_iconWarnings
@@ -202,6 +203,7 @@ local function GetIconList(type, idType)
         list = QuickAuras.list_missingBuffs
         parent = QuickAuras_MissingBuffs
         Refresh = QuickAuras.RefreshMissing
+        glowInCombat = true
     elseif type == ICON.ALERT then
         list = QuickAuras.list_iconAlerts
         parent = QuickAuras_IconAlerts
@@ -219,13 +221,13 @@ local function GetIconList(type, idType)
         parent = QuickAuras_RangeIndicator
         --Refresh = QuickAuras.RefreshReminders
     end
-    return list, parent, Create, Refresh
+    return list, parent, Create, Refresh, glowInCombat
 end
 
 function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     local key = iconType.."-"..idType.."-"..tostring(id)
     if QuickAuras.ignoredIcons[key] then return end
-    local list, parent, Create, Refresh = GetIconList(iconType, idType)
+    local list, parent, Create, Refresh, glowInCombat = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
         local showCount = iconType == ICON.REMINDER and (conf.minCount or self.db.profile.lowConsumesMinCount)
@@ -235,7 +237,7 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onCl
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
         local frame = Create(self, id, parent, iconType .."-".. id, showTooltip, showCount, onRightClick, onClick)
-        list[id] = {
+        local button = {
             name = conf.name,
             conf = conf,
             id = id,
@@ -244,11 +246,13 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onCl
             list = list,
             parent = parent,
             count = count,
+            glowInCombat = glowInCombat
         }
-        return true
+        list[id] = button
+        return button
     elseif count ~= nil then
         list[id].count = count
-        return true
+        return list[id]
     end
 end
 
@@ -291,7 +295,7 @@ function QuickAuras:ArrangeIcons(iconType)
         end
         if iconType == ICON.WARNING then
             if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 2, 0)
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -5, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
@@ -334,6 +338,19 @@ function QuickAuras:ArrangeIcons(iconType)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:SetSize(self.db.profile.rangeIconSize, self.db.profile.rangeIconSize) -- Width, Height
+        end
+        if obj.glowInCombat then
+            if self.inCombat and not obj.frame.glow then
+                ActionButton_ShowOverlayGlow(obj.frame)
+                obj.frame.glow = true
+                if not _rightClickWarning then
+                    out("You're missing some buffs! Right click icons you don't wish to see.")
+                    _rightClickWarning = true
+                end
+            else
+                ActionButton_HideOverlayGlow(obj.frame)
+                obj.frame.glow = false
+            end
         end
         lastFrame = frame
     end

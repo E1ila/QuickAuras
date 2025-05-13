@@ -137,6 +137,9 @@ function QuickAuras:UpdateProgressBar(timer)
                         timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
                     end
                 elseif timer.uiType == "button" then
+                    if timer.expTime - GetTime() < 0.35 then
+                        ActionButton_ShowOverlayGlow(timer.frame)
+                    end
                     timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
                 end
             end

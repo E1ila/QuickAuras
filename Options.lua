@@ -37,7 +37,7 @@ QuickAuras.defaultOptions = {
         buttonHeight = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
-        crucialIconSize = 80,
+        crucialIconSize = 50,
         rangeIconSize = 30,
         missingBuffsSize = 40,
         reminderIconSize = 40,
@@ -284,7 +284,7 @@ QuickAuras.options = {
                 },
                 crucialIconSize = {
                     type = "range",
-                    name = "Alert Icon Size",
+                    name = "Crucial Alert Size",
                     desc = "Set the size of the alert icons",
                     min = 10,
                     max = 100,
@@ -292,7 +292,7 @@ QuickAuras.options = {
                     get = function(info) return QuickAuras.db.profile.crucialIconSize end,
                     set = function(info, value)
                         QuickAuras.db.profile.crucialIconSize = value
-                        --QuickAuras:TestIconAlerts()
+                        QuickAuras:RefreshCrucial()
                     end,
                     order = 108,
                 },
@@ -303,12 +303,12 @@ QuickAuras.options = {
                     min = 5,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.crucialIconSize end,
+                    get = function(info) return QuickAuras.db.profile.rangeIconSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.crucialIconSize = value
+                        QuickAuras.db.profile.rangeIconSize = value
                         --QuickAuras:TestIconAlerts()
                     end,
-                    order = 109,
+                    order = 110,
                 },
                 spacer198 = {
                     type = "description",

@@ -161,9 +161,7 @@ function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, show
     end
 
     if onRightClick or onClick then
-        debug("adding OnMouseDown event")
         frame:SetScript("OnMouseDown", function(self, button)
-            debug("clicked", button)
             if onRightClick and button == "RightButton" then
                 onRightClick()
             elseif onClick and button == "LeftButton" then

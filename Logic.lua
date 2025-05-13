@@ -19,7 +19,6 @@ function QuickAuras:CheckIfWarriorInParty()
         debug(2, "CheckIfWarriorInParty", unitId, UnitClass(unitId))
         if UnitClass(unitId) == "Warrior" then
             self.hasWarriorInParty = true
-            debug("Found a warrior" , unitId, UnitName(unitId))
             break
         end
     end
@@ -111,7 +110,11 @@ function QuickAuras:CheckTransmuteCooldown()
             local timeLeft = math.floor((start + duration - GetTime()) / 60)
             debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration, "timeLeft", timeLeft)
             if start == 0 then
-                if self:AddIcon(ICON.REMINDER, "spell", id, spell) then changed = true end
+                local TransmuteClick = function()
+                    out("|cffff0000Transmute|r "..spell.name.." is ready!")
+                end
+                --     :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
+                if self:AddIcon(ICON.REMINDER, "spell", id, spell, nil, nil, TransmuteClick) then changed = true end
             elseif timeLeft <= self.db.profile.transmutePreReadyTime then
                 local timer = self:AddTimer("reminder", spell, id, duration, start+duration)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)
@@ -446,6 +449,11 @@ end
 
 function QuickAuras:RefreshAlerts()
     self:ClearIcons(ICON.ALERT)
+end
+
+function QuickAuras:RefreshCrucial()
+    self:ClearIcons(ICON.CRUCIAL)
+    self:CheckAuras()
 end
 
 function QuickAuras:RefreshAll()

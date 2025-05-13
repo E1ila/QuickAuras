@@ -237,12 +237,9 @@ function QuickAuras:BuildTrackedItems()
         item.option = "item_".. item.name:gsub("%s+", "")
         debug(3, "BuildTrackedItems", item.name, item.option, item.spellIds, item.visible)
         if item.spellIds then
-            item.list = "missing"
-            --buff.tooltip = false
             table.insert(self.trackedMissingBuffs, item)
         end
         if (item.visible == nil or item.visible) then
-            item.list = "reminder"
             table.insert(self.trackedLowConsumes, item)
         end
         if item.cooldown then

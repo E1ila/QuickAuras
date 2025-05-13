@@ -277,3 +277,8 @@ end
 function QuickAuras_Timer_OnUpdate(timer)
     return QuickAuras:UpdateProgressBar(timer)
 end
+
+function QuickAuras:GetNpcIdFromGuid(guid)
+    local npcId = guid:match("Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)")
+    return tonumber(npcId)
+end

@@ -23,6 +23,7 @@ QuickAuras.optionalEvents = {
     "PLAYER_REGEN_ENABLED",
     "GROUP_ROSTER_UPDATE",
     "PARTY_MEMBER_ENABLE",
+    "UNIT_TARGETABLE_CHANGED",
 }
 
 QuickAuras.adjustableFrames = {

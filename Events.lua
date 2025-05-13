@@ -143,6 +143,13 @@ function QuickAuras:PARTY_MEMBER_ENABLE()
     self:CheckIfWarriorInParty()
 end
 
+function QuickAuras:UNIT_TARGETABLE_CHANGED(a, b, c)
+    debug("UNIT_TARGETABLE_CHANGED", a, b, c)
+    if self.encounter.UnitTargetableChanged then
+        self.encounter:UnitTargetableChanged()
+    end
+end
+
 -- OnUpdate
 
 function QuickAuras:OnUpdate()
@@ -270,6 +277,10 @@ function QuickAuras:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sou
             sourceGuid == UnitGUID("targettarget") and p1
     then
         SendChatMessage(">> "..tostring(p1).." <<", "SAY")
+    end
+
+    if self.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then
+        self.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
     end
 
 end

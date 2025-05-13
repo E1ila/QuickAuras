@@ -3,7 +3,106 @@ local QuickAuras = addon.root
 QuickAuras.spells = { }
 local spells = QuickAuras.spells
 
+spells.hunter = {
+    concussiveShot = {
+        spellId = { 5116 },
+        name = "Concussive Shot",
+        icon = "Interface\\Icons\\spell_frost_stun",
+        color = {0.6784, 0.6706, 0.8706},
+        list = "offensive",
+        duration = 4,
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    multiShot = {
+        spellId = { 2643, 14288, 14289, 14290, 25294 },
+        name = "Multi-Shot",
+        icon = "Interface\\Icons\\ability_upgrademoonglaive",
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    aimedShot = {
+        spellId = { 19434, 20900, 20901, 20902, 20903, 20904 },
+        name = "Aimed Shot",
+        icon = "Interface\\Icons\\inv_spear_07",
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    flare = {
+        spellId = { 1543 },
+        name = "Flare",
+        icon = "Interface\\Icons\\spell_fire_flare",
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    frostTrap = {
+        spellId = { 13809 },
+        name = "Frost Trap",
+        icon = "Interface\\Icons\\spell_frost_freezingbreath",
+        --cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    freezingTrap = {
+        spellId = { 1499, 14310, 14311 },
+        name = "Freezing Trap",
+        icon = "Interface\\Icons\\spell_frost_chainsofice",
+        color = {0.6784, 0.6706, 0.8706},
+        duration = 10,
+        list = "offensive",
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    wingClip = {
+        spellId = { 2974, 14267, 14268 },
+        name = "Wing Clip",
+        icon = "Interface\\Icons\\ability_rogue_trip",
+        color = {246/256, 220/256, 0},
+        list = "offensive",
+        duration = 10,
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    feignDeath = {
+        spellId = { 5384 },
+        name = "Feign Death",
+        icon = "Interface\\Icons\\Ability_Rogue_FeignDeath",
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    explosiveTrap = {
+        spellId = { 13813, 14316, 14317 },
+        name = "Explosive Trap",
+        icon = "Interface\\Icons\\spell_fire_selfdestruct",
+        --cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    distractingShot = {
+        spellId = { 20736, 14274, 15629, 15630, 15631, 15632 },
+        name = "Distracting Shot",
+        icon = "Interface\\Icons\\Ability_Hunter_SniperShot",
+        cooldown = true,
+        visible = QuickAuras.isHunter,
+    },
+    rapidFire = {
+        spellId = { 3045 },
+        name = "Rapid Fire",
+        icon = "Interface\\Icons\\Ability_Hunter_RunningShot",
+        color = {0.914, 0.086, 0.086},
+        cooldown = true,
+        duration = 15,
+        list = "watch",
+        visible = QuickAuras.isHunter,
+    }
+}
+
 spells.warrior = {
+    shieldBash = {
+        spellId = { 72, 1671, 1672 },
+        name = "Shield Bash",
+        icon = "Interface\\Icons\\Ability_Warrior_ShieldBash",
+        cooldown = true,
+        visible = QuickAuras.isWarrior,
+    },
     taunt = {
         spellId = { 355 },
         name = "Taunt",

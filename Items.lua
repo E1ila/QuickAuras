@@ -3,7 +3,7 @@ local QuickAuras = addon.root
 local debug = QuickAuras.Debug
 
 local function InEncounters(ids)
-    if not QuickAuras.encounter then return false end
+    if not QuickAuras.encounter.id then return false end
     for _, id in ipairs(ids) do
         if QuickAuras.encounter.id == id then
             return true

@@ -39,7 +39,7 @@ QuickAuras.defaultOptions = {
         iconAlertSize = 80,
         crucialIconSize = 80,
         rangeIconSize = 30,
-        missingBuffsSize = 35,
+        missingBuffsSize = 40,
         reminderIconSize = 40,
         weaponEnchantSize = 40,
         crucialExpireTime = 8,
@@ -762,6 +762,7 @@ function QuickAuras:AddAbilitiesOptions()
     --AddSpells(self.spells.reminders)
     AddSpells(self.spells.trinkets, 2000)
     AddSpells(self.spells.rogue, 1000, not self.isRogue)
+    AddSpells(self.spells.hunter, 1000, not self.isHunter)
     AddSpells(self.spells.warrior, 1000, not self.isWarrior)
     AddSpells(self.spells.shaman, 1000, not self.isShaman)
 end

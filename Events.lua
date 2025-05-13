@@ -79,12 +79,12 @@ end
 
 function QuickAuras:ENCOUNTER_END()
     if not self.encounter.id then return end -- not in encounter
-    local encounter = self.encounter
-    self.encounter = nil
+    local encounterId = self.encounter.id
+    self.encounter.id = nil
 
     self:CheckMissingBuffs()
 
-    local OnEnd = self.encounter.OnEnd[encounter.id]
+    local OnEnd = self.encounter.OnEnd[encounterId]
     if OnEnd and type(OnEnd) == "function" then
         OnEnd(self)
     end

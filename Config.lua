@@ -26,16 +26,30 @@ QuickAuras.optionalEvents = {
 }
 
 QuickAuras.adjustableFrames = {
-    ["QuickAuras_Parry"] = {
-        visible = QuickAuras.isRogue,
-    },
-    ["QuickAuras_Combo"] = {
-        visible = QuickAuras.isRogue,
-    },
-    ["QuickAuras_Flurry"] = {
-        visible = QuickAuras.isRogue,
-    },
+    QuickAuras_WatchBars,
+    QuickAuras_OffensiveBars,
+    QuickAuras_Cooldowns,
+    QuickAuras_MissingBuffs,
+    QuickAuras_IconWarnings,
+    QuickAuras_IconAlerts,
+    QuickAuras_Reminders,
+    QuickAuras_WeaponEnchants,
+    QuickAuras_Crucial,
+    QuickAuras_RangeIndicator,
+    QuickAuras_RaidBars
 }
+
+--QuickAuras.adjustableFrames = {
+--    ["QuickAuras_Parry"] = {
+--        visible = QuickAuras.isRogue,
+--    },
+--    ["QuickAuras_Combo"] = {
+--        visible = QuickAuras.isRogue,
+--    },
+--    ["QuickAuras_Flurry"] = {
+--        visible = QuickAuras.isRogue,
+--    },
+--}
 
 QuickAuras.colors = {
     yellow = "|cffffde00",

@@ -356,54 +356,19 @@ end
 -- Widget Positioning -----------------------------------------------------------
 
 function QuickAuras:ParentFramesNormalState()
-    self:DisableDarkBackdrop(QuickAuras_WatchBars)
-    self:DisableDarkBackdrop(QuickAuras_OffensiveBars)
-    self:DisableDarkBackdrop(QuickAuras_Cooldowns)
-    self:DisableDarkBackdrop(QuickAuras_MissingBuffs)
-    self:DisableDarkBackdrop(QuickAuras_IconWarnings)
-    self:DisableDarkBackdrop(QuickAuras_IconAlerts)
-    self:DisableDarkBackdrop(QuickAuras_Reminders)
-    self:DisableDarkBackdrop(QuickAuras_WeaponEnchants)
-    self:DisableDarkBackdrop(QuickAuras_Crucial)
-    self:DisableDarkBackdrop(QuickAuras_RangeIndicator)
-    self:DisableDarkBackdrop(QuickAuras_RaidBars)
-    QuickAuras_WatchBars_Text:Hide()
-    QuickAuras_OffensiveBars_Text:Hide()
-    QuickAuras_Cooldowns_Text:Hide()
-    QuickAuras_MissingBuffs_Text:Hide()
-    QuickAuras_IconWarnings_Text:Hide()
-    QuickAuras_IconAlerts_Text:Hide()
-    QuickAuras_Reminders_Text:Hide()
-    QuickAuras_WeaponEnchants_Text:Hide()
-    QuickAuras_Crucial_Text:Hide()
-    QuickAuras_RangeIndicator_Text:Hide()
-    QuickAuras_RaidBars_Text:Hide()
+    for _, frame in ipairs(self.adjustableFrames) do
+        self:DisableDarkBackdrop(frame)
+        _G[frame:GetName().."_Text"]:Hide()
+        frame:EnableMouse(false)
+    end
 end
 
 function QuickAuras:ParentFramesEditState()
-    self:SetDarkBackdrop(QuickAuras_WatchBars)
-    self:SetDarkBackdrop(QuickAuras_OffensiveBars)
-    self:SetDarkBackdrop(QuickAuras_Cooldowns)
-    self:SetDarkBackdrop(QuickAuras_MissingBuffs)
-    self:SetDarkBackdrop(QuickAuras_IconWarnings)
-    self:SetDarkBackdrop(QuickAuras_IconAlerts)
-    self:SetDarkBackdrop(QuickAuras_Reminders)
-    self:SetDarkBackdrop(QuickAuras_WeaponEnchants)
-    self:SetDarkBackdrop(QuickAuras_Crucial)
-    self:SetDarkBackdrop(QuickAuras_RangeIndicator)
-    self:SetDarkBackdrop(QuickAuras_RaidBars)
-    QuickAuras_WatchBars_Text:Show()
-    QuickAuras_OffensiveBars_Text:Show()
-    QuickAuras_Cooldowns_Text:Show()
-    QuickAuras_MissingBuffs_Text:Show()
-    QuickAuras_IconWarnings_Text:Show()
-    QuickAuras_IconAlerts_Text:Show()
-    QuickAuras_Reminders_Text:Show()
-    QuickAuras_WeaponEnchants_Text:Show()
-    QuickAuras_Crucial_Text:Show()
-    QuickAuras_RangeIndicator_Text:Show()
-    QuickAuras_RaidBars_Text:Show()
-    --QuickAuras_Crucial:Show()
+    for _, frame in ipairs(self.adjustableFrames) do
+        self:SetDarkBackdrop(frame)
+        _G[frame:GetName().."_Text"]:Show()
+        frame:EnableMouse(true)
+    end
 end
 
 function QuickAuras:ToggleLockedState()
@@ -415,15 +380,15 @@ function QuickAuras:ToggleLockedState()
         self:ParentFramesEditState()
     end
 
-    for name, obj in ipairs(self.adjustableFrames) do
-        if obj.visible == nil or obj.visible then
-            local f = _G[frame]
-            if f then
-                f:EnableMouse(not _uiLocked)
-                if _uiLocked then f:Hide() else f:Show() end
-            end
-        end
-    end
+    --for name, obj in ipairs(self.adjustableFrames) do
+    --    if obj.visible == nil or obj.visible then
+    --        local f = _G[name]
+    --        if f then
+    --            f:EnableMouse(not _uiLocked)
+    --            if _uiLocked then f:Hide() else f:Show() end
+    --        end
+    --    end
+    --end
     out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 end
 

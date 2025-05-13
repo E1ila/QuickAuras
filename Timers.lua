@@ -96,6 +96,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
         parent = parent,
         timerType = timerType,
         flashOnEnd = conf.flashOnEnd,
+        glowOnEnd = true,
         widthMul = widthMul,
         arrangeFunc = arrangeFunc,
         isTimer = true
@@ -137,8 +138,9 @@ function QuickAuras:UpdateProgressBar(timer)
                         timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
                     end
                 elseif timer.uiType == "button" then
-                    if timer.expTime - GetTime() < 0.35 then
+                    if timer.glowOnEnd and not timer.glow and timer.expTime - GetTime() < 0.35 then
                         ActionButton_ShowOverlayGlow(timer.frame)
+                        timer.glow = true
                     end
                     timer.frame.cooldown:SetCooldown(timer.expTime - timer.duration, timer.duration)
                 end

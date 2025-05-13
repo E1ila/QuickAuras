@@ -4,7 +4,6 @@ local out = QuickAuras.Print
 local debug = QuickAuras.Debug
 local pbId = 0
 local _uiLocked = true
-local _rightClickWarning = false
 local _c
 local ICON = QuickAuras.ICON
 
@@ -215,6 +214,7 @@ local function GetIconList(type, idType)
     elseif type == ICON.CRUCIAL then
         list = QuickAuras.list_crucial
         parent = QuickAuras_Crucial
+        glowInCombat = true
         --Refresh = QuickAuras.RefreshReminders
     elseif type == ICON.RANGE then
         list = QuickAuras.list_range
@@ -343,11 +343,7 @@ function QuickAuras:ArrangeIcons(iconType)
             if self.inCombat and not obj.frame.glow then
                 ActionButton_ShowOverlayGlow(obj.frame)
                 obj.frame.glow = true
-                if not _rightClickWarning then
-                    out("You're missing some buffs! Right click icons you don't wish to see.")
-                    _rightClickWarning = true
-                end
-            else
+            elseif not self.inCombat and obj.frame.glow then
                 ActionButton_HideOverlayGlow(obj.frame)
                 obj.frame.glow = false
             end

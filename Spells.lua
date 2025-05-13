@@ -96,6 +96,15 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    charge = {
+        spellId = { 100, 6178, 11578 },
+        name = "Charge",
+        icon = "Interface\\Icons\\Ability_Warrior_Charge",
+        color = {0.914, 0.086, 0.086},
+        cooldown = true,
+        --duration = 1,
+        visible = QuickAuras.isWarrior,
+    },
     shieldBash = {
         spellId = { 72, 1671, 1672 },
         name = "Shield Bash",

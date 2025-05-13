@@ -357,7 +357,8 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
             if obj and obj.isTimer then
                 self:RemoveTimer(obj, "crucial")
             end
-            if self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf, nil, false, BattleShoutMissingOnClick) then
+            local button = self:AddIcon(ICON.CRUCIAL, "spell", crucial.spellIds[1], crucial.conf, nil, false, BattleShoutMissingOnClick)
+            if button then
                 self:ArrangeIcons(ICON.CRUCIAL)
             end
             return
@@ -366,7 +367,8 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
             if obj and not obj.isTimer then
                 self:ClearIcons(ICON.CRUCIAL)
             end
-            self:AddTimer("crucial", crucial.conf, crucial.spellIds[1], aura[1], aura[2], self.db.profile.crucialExpireTime)
+            local timer = self:AddTimer("crucial", crucial.conf, crucial.spellIds[1], aura[1], aura[2], self.db.profile.crucialExpireTime)
+            timer.glowOnEnd = false -- no need, the icon will glow
             return
         end
     end

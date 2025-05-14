@@ -350,27 +350,26 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
     local changed = false
     debug(2, "CheckCrucialBuffs")
     for _, buff in pairs(self.trackedCrucialAuras) do
-        debug(3, "CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
         if buff.conf.crucialCond() then
             local hasIt, aura = self:HasSeenAny(buff.spellIds, activeAuras)
-            local existing = self.list_crucial[hasIt] -- not necessarly a timer
+            debug(3, "CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
+            local existing = self.list_crucial[buff.spellIds[1]] -- not necessarly a timer
             if not hasIt then
                 if existing and existing.isTimer then
                     self:RemoveTimer(existing, "crucial")
                     changed = true
                 end
-                local button = self:AddIcon(ICON.CRUCIAL, "spell", hasIt, buff.conf, nil, false, BattleShoutMissingOnClick)
+                local button = self:AddIcon(ICON.CRUCIAL, "spell", buff.spellIds[1], buff.conf, nil, false, BattleShoutMissingOnClick)
                 if button then
                     changed = true
                 end
-                return
             elseif aura and aura[1] and aura[2] and aura[2] > 0 then -- duration, expTime
                 -- has buff, display time to expire
                 if existing and not existing.isTimer then
-                    self:RemoveIcon(ICON.CRUCIAL, hasIt)
+                    self:RemoveIcon(ICON.CRUCIAL, buff.spellIds[1])
                     changed = true
                 end
-                local timer, isNew = self:AddTimer("crucial", buff.conf, hasIt, aura[1], aura[2], self.db.profile.crucialExpireTime)
+                local timer, isNew = self:AddTimer("crucial", buff.conf, buff.spellIds[1], aura[1], aura[2], self.db.profile.crucialExpireTime)
                 timer.glowOnEnd = false -- no need, the icon will glow
                 if isNew then
                     changed = true

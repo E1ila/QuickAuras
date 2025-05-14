@@ -224,7 +224,7 @@ end
 
 function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     local key = iconType.."-"..idType.."-"..tostring(id)
-    if QuickAuras.ignoredIcons[key] then return end
+    if QuickAuras.ignoredIcons[key] then return nil end
     local list, parent, Create, Refresh, glowInCombat = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)

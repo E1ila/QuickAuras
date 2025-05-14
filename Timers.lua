@@ -154,7 +154,7 @@ function QA:UpdateProgressBar(timer)
 end
 
 function QA:RemoveTimer(timer, reason)
-    if not timer.frame then return end -- target died, already removed
+    if not timer or not timer.frame then return false end -- target died, already removed
     debug(2, "Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
         timer:onEnd(timer)

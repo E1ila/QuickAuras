@@ -106,6 +106,35 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    retaliation = {
+        spellId = { 20230 },
+        name = "Retaliation",
+        icon = "Interface\\Icons\\Ability_Warrior_Challange",
+        color = {0.5, 0.5, 0.5},
+        list = "watch",
+        duration = 15,
+        --cooldown = true, -- shares cooldown with shieldwall
+        visible = QA.isWarrior,
+    },
+    shieldWall = {
+        spellId = { 871 },
+        name = "Shield Wall",
+        icon = "Interface\\Icons\\Ability_Warrior_ShieldWall",
+        color = {0.6784, 0.6706, 0.8706},
+        list = "watch",
+        duration = 10,
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
+    piercingHowl = {
+        spellId = { 12323 },
+        name = "Piercing Howl",
+        icon = "Interface\\Icons\\spell_shadow_deathscream",
+        color = {0.671, 0.251, 0.024},
+        list = "offensive",
+        duration = 6,
+        visible = QA.isWarrior,
+    },
     berserkerRage = {
         spellId = { 18499 },
         name = "Berserker Rage",

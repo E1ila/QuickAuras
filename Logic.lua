@@ -40,7 +40,7 @@ function QA:CheckTargetRange()
 end
 
 function QA:CheckHearthstone()
-    if not self.db.profile.hsNotCapitalWarning then return end
+    if not self.db.profile.hsNotCapitalWarning or self.playerLevel < 60 then return end
     local bindLocation = GetBindLocation()
     local changed
     if self.inCapital and not self.capitalCities[bindLocation] then
@@ -92,7 +92,7 @@ function QA:CheckWarriorOverpower()
             changed = self:RemoveIcon(self.db.profile.warriorOverpowerFrame, overpower.spellId[1])
             if not hasOverpowerCooldownCheck then
                 hasOverpowerCooldownCheck = true
-                C_Timer.After(start + duration - GetTime() + 0.05, function()
+                C_Timer.After(start + duration - GetTime() + 0.1, function()
                     hasOverpowerCooldownCheck = false
                     QA:CheckWarriorOverpower()
                 end)
@@ -444,6 +444,8 @@ function QA:CheckCrucialBuffs(activeAuras)
                     changed = true
                 end
             end
+        else
+            changed = self:RemoveIcon(ICON.CRUCIAL, buff.spellIds[1])
         end
     end
     if changed then

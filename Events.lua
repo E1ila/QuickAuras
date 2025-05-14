@@ -1,8 +1,8 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-local debug = QuickAuras.Debug
-local out = QuickAuras.Print
-local _c = QuickAuras.colors
+local QA = addon.root
+local debug = QA.Debug
+local out = QA.Print
+local _c = QA.colors
 
 local enemyDebuffs = {}
 local raidBuffs = {}
@@ -14,28 +14,28 @@ local BOSS_LEVEL = 63
 
 -- WoW Events
 
-function QuickAuras:ZONE_CHANGED()
+function QA:ZONE_CHANGED()
     self:ZoneChanged()
 end
 
-function QuickAuras:ZONE_CHANGED_INDOORS()
+function QA:ZONE_CHANGED_INDOORS()
     self:ZoneChanged()
 end
 
-function QuickAuras:ZONE_CHANGED_NEW_AREA()
+function QA:ZONE_CHANGED_NEW_AREA()
     self:ZoneChanged()
 end
 
-function QuickAuras:PLAYER_ENTERING_WORLD()
+function QA:PLAYER_ENTERING_WORLD()
     self:ZoneChanged()
 end
 
-function QuickAuras:UNIT_AURA(unit)
+function QA:UNIT_AURA(unit)
     if unit ~= "player" then return end
     self:CheckAuras()
 end
 
-function QuickAuras:UI_ERROR_MESSAGE(errorType, errorMessage)
+function QA:UI_ERROR_MESSAGE(errorType, errorMessage)
     if self.db.profile.outOfRange and UnitAffectingCombat("player") then
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
         if  errorMessage == ERR_OUT_OF_RANGE
@@ -46,26 +46,26 @@ function QuickAuras:UI_ERROR_MESSAGE(errorType, errorMessage)
     end
 end
 
-function QuickAuras:SPELL_UPDATE_COOLDOWN(...)
+function QA:SPELL_UPDATE_COOLDOWN(...)
     self:CheckCooldowns()
 end
 
-function QuickAuras:PLAYER_EQUIPMENT_CHANGED(...)
+function QA:PLAYER_EQUIPMENT_CHANGED(...)
     self:CheckGear("equip", ...)
 end
 
-function QuickAuras:PLAYER_TARGET_CHANGED(...)
+function QA:PLAYER_TARGET_CHANGED(...)
     self:CheckGear("target", ...)
     self:ResetErrorCount()
 end
 
-function QuickAuras:BAG_UPDATE(bagId)
+function QA:BAG_UPDATE(bagId)
     if bagId >= 0 and bagId <= 4 then
         self:BagsChanged()
     end
 end
 
-function QuickAuras:ENCOUNTER_START(encounterId, encounterName)
+function QA:ENCOUNTER_START(encounterId, encounterName)
     self.encounter.id = encounterId
     self.encounter.name = encounterName
 
@@ -77,7 +77,7 @@ function QuickAuras:ENCOUNTER_START(encounterId, encounterName)
     end
 end
 
-function QuickAuras:ENCOUNTER_END()
+function QA:ENCOUNTER_END()
     if not self.encounter.id then return end -- not in encounter
     local encounterId = self.encounter.id
     self.encounter.id = nil
@@ -90,60 +90,60 @@ function QuickAuras:ENCOUNTER_END()
     end
 end
 
-function QuickAuras:MINIMAP_UPDATE_TRACKING()
+function QA:MINIMAP_UPDATE_TRACKING()
     self:CheckTrackingStatus()
 end
 
-function QuickAuras:PLAYER_ALIVE()
+function QA:PLAYER_ALIVE()
     self:CheckTrackingStatus()
 end
 
-function QuickAuras:PLAYER_UNGHOST()
+function QA:PLAYER_UNGHOST()
     self:CheckTrackingStatus()
 end
 
-function QuickAuras:PLAYER_LEVEL_UP()
+function QA:PLAYER_LEVEL_UP()
     self.playerLevel = UnitLevel("player")
 end
 
-function QuickAuras:BANKFRAME_OPENED()
+function QA:BANKFRAME_OPENED()
     self.bankOpen = true
     self:ScanBank()
 end
 
-function QuickAuras:BANKFRAME_CLOSED()
+function QA:BANKFRAME_CLOSED()
     self.bankOpen = false
 end
 
-function QuickAuras:UNIT_POWER_UPDATE(unit, powerType)
+function QA:UNIT_POWER_UPDATE(unit, powerType)
     self:CheckPower(unit, powerType)
 end
 
-function QuickAuras:PLAYER_REGEN_DISABLED()
+function QA:PLAYER_REGEN_DISABLED()
     -- in combat
     self.inCombat = true
     self:CheckAuras()
 end
 
-function QuickAuras:PLAYER_REGEN_ENABLED()
+function QA:PLAYER_REGEN_ENABLED()
     -- out of combat
     self.inCombat = false
     self:CheckAuras()
 end
 
-function QuickAuras:GROUP_ROSTER_UPDATE()
+function QA:GROUP_ROSTER_UPDATE()
     self:CheckIfWarriorInParty()
 end
 
-function QuickAuras:GROUP_ROSTER_UPDATE()
+function QA:GROUP_ROSTER_UPDATE()
     self:CheckIfWarriorInParty()
 end
 
-function QuickAuras:PARTY_MEMBER_ENABLE()
+function QA:PARTY_MEMBER_ENABLE()
     self:CheckIfWarriorInParty()
 end
 
-function QuickAuras:UNIT_TARGETABLE_CHANGED(a, b, c)
+function QA:UNIT_TARGETABLE_CHANGED(a, b, c)
     debug("UNIT_TARGETABLE_CHANGED", a, b, c)
     if self.encounter.UnitTargetableChanged then
         self.encounter:UnitTargetableChanged()
@@ -152,7 +152,7 @@ end
 
 -- OnUpdate
 
-function QuickAuras:OnUpdate()
+function QA:OnUpdate()
     local currentTime = GetTime()
     if self.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime
@@ -163,11 +163,11 @@ end
 
 -- Combat log
 
-function QuickAuras:COMBAT_LOG_EVENT_UNFILTERED()
+function QA:COMBAT_LOG_EVENT_UNFILTERED()
     self:HandleCombatLogEvent(CombatLogGetCurrentEventInfo())
 end
 
-function QuickAuras:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
+function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
     --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
 
     if  -- parry haste
@@ -244,7 +244,7 @@ function QuickAuras:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sou
 
     -- reset buffs/debuffs of dead unit
     if subevent == "UNIT_DIED" then
-        for spellId, conf in pairs(QuickAuras.trackedCombatLog) do
+        for spellId, conf in pairs(QA.trackedCombatLog) do
             if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGuid] then
                 self:RemoveTimer(enemyDebuffs[spellId][destGuid], "combatlog")
                 enemyDebuffs[spellId][destGuid] = nil

@@ -1,18 +1,18 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-local debug = QuickAuras.Debug
-local out = QuickAuras.Print
+local QA = addon.root
+local debug = QA.Debug
+local out = QA.Print
 local _useTeaShown = false
 local USE_TEA_ENERGY_THRESHOLD = 6
 local THISTLE_TEA_ITEMID = 7676
 local BLADE_FLURRY_SPELLID = 13877
-local ICON = QuickAuras.ICON
-local _c = QuickAuras.colors
+local ICON = QA.ICON
+local _c = QA.colors
 local _missingBuffsCombatState = false
 
-QuickAuras.targetInRange = false
+QA.targetInRange = false
 
-function QuickAuras:CheckIfWarriorInParty()
+function QA:CheckIfWarriorInParty()
     self.hasWarriorInParty = false
     for i = 1, GetNumGroupMembers() do
         local unitId = "party"..i
@@ -24,7 +24,7 @@ function QuickAuras:CheckIfWarriorInParty()
     end
 end
 
-function QuickAuras:CheckTargetRange()
+function QA:CheckTargetRange()
     if not self.db.profile.targetInRangeIndication or not self.db.profile.rangeSpellId then return end
     local spellName = GetSpellInfo(self.db.profile.rangeSpellId)
     local inRange = IsSpellInRange(spellName, "target") == 1
@@ -39,7 +39,7 @@ function QuickAuras:CheckTargetRange()
     end
 end
 
-function QuickAuras:CheckHearthstone()
+function QA:CheckHearthstone()
     if not self.db.profile.hsNotCapitalWarning then return end
     local bindLocation = GetBindLocation()
     local changed
@@ -54,7 +54,7 @@ function QuickAuras:CheckHearthstone()
     end
 end
 
-function QuickAuras:CheckPower(unit, powerType)
+function QA:CheckPower(unit, powerType)
     if self.isRogue and unit == "player" then
         if powerType == "ENERGY" then
             local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
@@ -88,11 +88,11 @@ function QuickAuras:CheckPower(unit, powerType)
 end
 
 -- debounce CheckTransmuteCooldown
-QuickAuras.CheckTransmuteCooldownDebounce = QuickAuras:Debounce(function()
-    QuickAuras:CheckTransmuteCooldown()
+QA.CheckTransmuteCooldownDebounce = QA:Debounce(function()
+    QA:CheckTransmuteCooldown()
 end, 0.25)
 
-function QuickAuras:CheckTransmuteCooldown()
+function QA:CheckTransmuteCooldown()
     if not self.db.profile.remindersEnabled or not self.db.profile.reminderTransmute then return end
     local changed = false
     for _, spell in pairs(self.spells.transmutes) do
@@ -103,7 +103,7 @@ function QuickAuras:CheckTransmuteCooldown()
         if hasIt then
             local start, duration
             if spell.itemId then
-                start, duration = QuickAuras:GetItemCooldown(spell.itemId)
+                start, duration = QA:GetItemCooldown(spell.itemId)
             else
                 start, duration = GetSpellCooldown(id)
             end
@@ -131,14 +131,14 @@ function QuickAuras:CheckTransmuteCooldown()
     end
 end
 
-function QuickAuras:CheckWeaponEnchant()
+function QA:CheckWeaponEnchant()
     local mh, expiration, _, enchid, _, _, _, _ = GetWeaponEnchantInfo("player")
     local mhItemId = GetInventoryItemID("player", 16)
     debug("CheckWeaponEnchant", "mh", mh, "expiration", expiration, "enchid", enchid, "mhItemId", mhItemId)
     self:SetWeaponEnchantIcon(1, mhItemId)
 end
 
-function QuickAuras:CheckLowConsumes()
+function QA:CheckLowConsumes()
     if not self.db.profile.remindersEnabled or not self.db.profile.reminderLowConsumes then return end
     if self.db.profile.lowConsumesInCapital and not self.inCapital then return end
     local changed = false
@@ -174,11 +174,11 @@ function QuickAuras:CheckLowConsumes()
     end
 end
 
-function QuickAuras:CheckTrackingStatus()
+function QA:CheckTrackingStatus()
     if not self.db.profile.remindersEnabled then return end
     local trackingType = GetTrackingTexture()
     local changed, found, missingSpellId = false, false, nil
-    for spellId, conf in pairs(QuickAuras.trackedTracking) do
+    for spellId, conf in pairs(QA.trackedTracking) do
         debug(3, "CheckTrackingStatus", "(scan)", conf.name, "spellId", spellId, "option", conf.option, conf.option and self.db.profile[conf.option])
         if IsSpellKnown(spellId) and self.db.profile[conf.option] then
             if conf.textureId == trackingType then
@@ -200,7 +200,7 @@ function QuickAuras:CheckTrackingStatus()
     end
 end
 
-function QuickAuras:CheckGear(eventType, ...)
+function QA:CheckGear(eventType, ...)
     if self.db.profile.trackedGear then
         local equippedItems = {}
         local changed = false
@@ -212,7 +212,7 @@ function QuickAuras:CheckGear(eventType, ...)
             end
         end
 
-        for itemId, conf in pairs(QuickAuras.trackedGear) do
+        for itemId, conf in pairs(QA.trackedGear) do
             if not conf.option or self.db.profile[conf.option] then
                 local isEquipped = equippedItems[itemId]
                 local shouldShow = isEquipped
@@ -234,13 +234,13 @@ end
 
 local function _checkCooldown(conf, idType, id, start, duration)
     debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
-    if start and start > 0 and duration and duration > 2 and (not conf.option or QuickAuras.db.profile[conf.option.."_cd"]) then
+    if start and start > 0 and duration and duration > 2 and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
-        QuickAuras:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
+        QA:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
     end
 end
 
-function QuickAuras:CheckCooldowns()
+function QA:CheckCooldowns()
     if not self.db.profile.cooldowns then return end
     for spellId, conf in pairs(self.trackedSpellCooldowns) do
         if not (conf.ignoreCooldownInStealth and self.playerIsStealthed) then
@@ -250,8 +250,8 @@ function QuickAuras:CheckCooldowns()
     end
     for itemId, conf in pairs(self.trackedItemCooldowns) do
         -- show cooldown only if item is in bags
-        if conf.evenIfNotInBag or QuickAuras.bags[conf.itemId] then
-            local start, duration = QuickAuras:GetItemCooldown(itemId)
+        if conf.evenIfNotInBag or QA.bags[conf.itemId] then
+            local start, duration = QA:GetItemCooldown(itemId)
             _checkCooldown(conf, "item", itemId, start, duration)
         end
     end
@@ -273,7 +273,7 @@ local function FixAuraExpTime(duration, expTime, aura, spellId)
     return duration, expTime
 end
 
-function QuickAuras:CheckAuras()
+function QA:CheckAuras()
     local i = 1
     local seen = {}
     self.playerBuffs = seen
@@ -308,8 +308,8 @@ function QuickAuras:CheckAuras()
     self:CheckStealthInInstance(seen)
 end
 
-function QuickAuras:CheckMissingBuffs(activeAuras)
-    if not QuickAuras.db.profile.missingConsumes then return end
+function QA:CheckMissingBuffs(activeAuras)
+    if not QA.db.profile.missingConsumes then return end
     local buffsChanged = false
     if  self.db.profile.forceShowMissing or
         self.db.profile.missingBuffsMode == "instance" and IsInInstance() or
@@ -341,12 +341,12 @@ function QuickAuras:CheckMissingBuffs(activeAuras)
 end
 
 local function BattleShoutMissingOnClick()
-    if not QuickAuras.isWarrior then
+    if not QA.isWarrior then
         SendChatMessage("Battle Shout dropped!", "PARTY")
     end
 end
 
-function QuickAuras:CheckCrucialBuffs(activeAuras)
+function QA:CheckCrucialBuffs(activeAuras)
     local changed = false
     debug(2, "CheckCrucialBuffs")
     for _, buff in pairs(self.trackedCrucialAuras) do
@@ -382,7 +382,7 @@ function QuickAuras:CheckCrucialBuffs(activeAuras)
     end
 end
 
-function QuickAuras:CheckStealthInInstance(seen)
+function QA:CheckStealthInInstance(seen)
     if not self.db.profile.stealthInInstance or not self.InstanceName then return end
     local stealth = self.spells.rogue.stealth
     local changed = false
@@ -405,7 +405,7 @@ end
 
 -- Zone change
 
-function QuickAuras:UpdateZone()
+function QA:UpdateZone()
     local newZoneName = GetRealZoneText()
     local zoneChanged = newZoneName ~= self.ZoneName
     self.ZoneName = newZoneName
@@ -426,41 +426,41 @@ end
 
 -- Icon management
 
-function QuickAuras:RefreshCooldowns()
+function QA:RefreshCooldowns()
     for _, timer in pairs(self.list_cooldowns) do
         self:RemoveTimer(timer, "refresh")
     end
     self:CheckCooldowns()
 end
 
-function QuickAuras:RefreshMissing()
+function QA:RefreshMissing()
     self:ClearIcons(ICON.MISSING)
     self:CheckMissingBuffs()
 end
 
-function QuickAuras:RefreshReminders()
+function QA:RefreshReminders()
     self:ClearIcons(ICON.REMINDER)
     self:CheckTrackingStatus()
     self:CheckLowConsumes()
     self:CheckTransmuteCooldown()
 end
 
-function QuickAuras:RefreshWarnings()
+function QA:RefreshWarnings()
     self:ClearIcons(ICON.WARNING)
     self:CheckGear()
     self:CheckHearthstone()
 end
 
-function QuickAuras:RefreshAlerts()
+function QA:RefreshAlerts()
     self:ClearIcons(ICON.ALERT)
 end
 
-function QuickAuras:RefreshCrucial()
+function QA:RefreshCrucial()
     self:ClearIcons(ICON.CRUCIAL)
     self:CheckAuras()
 end
 
-function QuickAuras:RefreshAll()
+function QA:RefreshAll()
     self:RefreshWarnings()
     self:RefreshMissing()
     self:RefreshAlerts()
@@ -469,23 +469,23 @@ end
 
 -- DEBOUNCE FUNCTIONS
 
-QuickAuras.BagsChanged = QuickAuras:Debounce(function()
+QA.BagsChanged = QA:Debounce(function()
     debug(2, "BAG_UPDATE", bagId)
-    QuickAuras:ScanBags()
-    QuickAuras:ScanBank()
-    QuickAuras:CheckMissingBuffs()
-    QuickAuras:CheckLowConsumes()
-    QuickAuras:CheckTransmuteCooldown()
+    QA:ScanBags()
+    QA:ScanBank()
+    QA:CheckMissingBuffs()
+    QA:CheckLowConsumes()
+    QA:CheckTransmuteCooldown()
 end, 0.5)
 
-QuickAuras.ZoneChanged = QuickAuras:Debounce(function()
+QA.ZoneChanged = QA:Debounce(function()
     --debug(2, "Zone Update")
-    QuickAuras:UpdateZone()
+    QA:UpdateZone()
 end, 2)
 
 -- Utils
 
-function QuickAuras:FindInBags(itemIds, inBank)
+function QA:FindInBags(itemIds, inBank)
     local lookup = inBank and self.bank or self.bags
     if type(itemIds) ~= "table" then
         return lookup[itemIds] and itemIds, lookup[itemIds]
@@ -498,7 +498,7 @@ function QuickAuras:FindInBags(itemIds, inBank)
     end
 end
 
-function QuickAuras:HasSeenAny(ids, seenHash)
+function QA:HasSeenAny(ids, seenHash)
     for _, id in ipairs(ids) do
         if seenHash[id] then
             return id, seenHash[id]
@@ -506,7 +506,7 @@ function QuickAuras:HasSeenAny(ids, seenHash)
     end
 end
 
-function QuickAuras:GetItemCooldown(itemId)
+function QA:GetItemCooldown(itemId)
     if C_Container and C_Container.GetItemCooldown then
         return C_Container.GetItemCooldown(itemId)
     else

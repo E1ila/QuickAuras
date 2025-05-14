@@ -1,15 +1,15 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-local out = QuickAuras.Print
-local debug = QuickAuras.Debug
+local QA = addon.root
+local out = QA.Print
+local debug = QA.Debug
 local pbId = 0
 local _uiLocked = true
 local _c
-local ICON = QuickAuras.ICON
+local ICON = QA.ICON
 
 -- General -----------------------------------------------------------
 
-function QuickAuras:InitUI()
+function QA:InitUI()
     debug("Initializing UI")
     _c = self.colors
     self:ParentFramesNormalState()
@@ -22,28 +22,28 @@ function QuickAuras:InitUI()
     --self:CheckWeaponEnchant()
 end
 
-function QuickAuras:InitWeaponEnchants()
+function QA:InitWeaponEnchants()
     QuickAuras_WeaponEnchant1.icon = QuickAuras_WeaponEnchant1:CreateTexture(nil, "BACKGROUND")
     QuickAuras_WeaponEnchant1.icon:SetAllPoints(QuickAuras_WeaponEnchant1)
     QuickAuras_WeaponEnchant2.icon = QuickAuras_WeaponEnchant2:CreateTexture(nil, "BACKGROUND")
     QuickAuras_WeaponEnchant2.icon:SetAllPoints(QuickAuras_WeaponEnchant2)
 end
 
-function QuickAuras:SetWeaponEnchantIcon(slot, itemId)
+function QA:SetWeaponEnchantIcon(slot, itemId)
     local itemIcon = GetItemIcon(itemId)
     local frame = slot == 1 and QuickAuras_WeaponEnchant1 or QuickAuras_WeaponEnchant2
     frame.icon:SetTexture(itemIcon)
     frame:SetSize(self.db.profile.weaponEnchantSize, self.db.profile.weaponEnchantSize)
 end
 
-function QuickAuras:InitRangeIndication(frame)
+function QA:InitRangeIndication(frame)
     QuickAuras_RangeIndicator.icon = QuickAuras_RangeIndicator:CreateTexture(nil, "BACKGROUND")
     QuickAuras_RangeIndicator.icon:SetAllPoints(QuickAuras_RangeIndicator)
     QuickAuras_RangeIndicator:Hide()
     self:UpdateRangeIndication()
 end
 
-function QuickAuras:UpdateRangeIndication()
+function QA:UpdateRangeIndication()
     QuickAuras_RangeIndicator:SetSize(self.db.profile.rangeIconSize, self.db.profile.rangeIconSize)
     if self.db.profile.rangeSpellId then
         local texture = GetSpellTexture(self.db.profile.rangeSpellId)
@@ -51,7 +51,7 @@ function QuickAuras:UpdateRangeIndication()
     end
 end
 
-function QuickAuras:ResetRogueWidgets()
+function QA:ResetRogueWidgets()
     --QuickAuras_Combo_Texture:ClearAllPoints()
     --QuickAuras_Combo_Texture:SetSize(384, 384) -- Set the frame size
     --QuickAuras_Combo_Texture:SetPoint("CENTER", UIParent, "CENTER", 0, -30)
@@ -62,22 +62,22 @@ function QuickAuras:ResetRogueWidgets()
 
 end
 
-function QuickAuras:SetDarkBackdrop(frame)
+function QA:SetDarkBackdrop(frame)
     frame:SetBackdrop ({bgFile = [[Interface\AddOns\QuickAuras\assets\background]], tile = true, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}})
     frame:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
     frame:SetBackdropBorderColor(0, 0, 0, 0.9)
 end
 
-function QuickAuras:DisableDarkBackdrop(frame)
+function QA:DisableDarkBackdrop(frame)
     frame:SetBackdrop (nil)
 end
 
 
 -- frame creation -----------------------------------
 
-QuickAuras.ignoredIcons = {}
+QA.ignoredIcons = {}
 
-function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+function QA:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -129,7 +129,7 @@ function QuickAuras:CreateItemWarningIcon(itemId, parentFrame, frameName, showTo
     return frame
 end
 
-function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+function QA:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -173,7 +173,7 @@ function QuickAuras:CreateSpellWarningIcon(spellId, parentFrame, frameName, show
     return frame
 end
 
-function QuickAuras:CreateTextureIcon(texture, parentFrame, frameName)
+function QA:CreateTextureIcon(texture, parentFrame, frameName)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -191,47 +191,47 @@ end
 
 local function GetIconList(type, idType)
     local list, parent, Refresh, glowInCombat
-    local Create = idType == "item" and QuickAuras.CreateItemWarningIcon or QuickAuras.CreateSpellWarningIcon
+    local Create = idType == "item" and QA.CreateItemWarningIcon or QA.CreateSpellWarningIcon
     if type == ICON.WARNING then
-        list = QuickAuras.list_iconWarnings
+        list = QA.list_iconWarnings
         parent = QuickAuras_IconWarnings
-        Refresh = QuickAuras.RefreshWarnings
+        Refresh = QA.RefreshWarnings
     elseif type == ICON.MISSING then
-        list = QuickAuras.list_missingBuffs
+        list = QA.list_missingBuffs
         parent = QuickAuras_MissingBuffs
-        Refresh = QuickAuras.RefreshMissing
+        Refresh = QA.RefreshMissing
         glowInCombat = true
     elseif type == ICON.ALERT then
-        list = QuickAuras.list_iconAlerts
+        list = QA.list_iconAlerts
         parent = QuickAuras_IconAlerts
-        Refresh = QuickAuras.RefreshAlerts
+        Refresh = QA.RefreshAlerts
     elseif type == ICON.REMINDER then
-        list = QuickAuras.list_reminders
+        list = QA.list_reminders
         parent = QuickAuras_Reminders
-        Refresh = QuickAuras.RefreshReminders
+        Refresh = QA.RefreshReminders
     elseif type == ICON.CRUCIAL then
-        list = QuickAuras.list_crucial
+        list = QA.list_crucial
         parent = QuickAuras_Crucial
         glowInCombat = true
         --Refresh = QuickAuras.RefreshReminders
     elseif type == ICON.RANGE then
-        list = QuickAuras.list_range
+        list = QA.list_range
         parent = QuickAuras_RangeIndicator
         --Refresh = QuickAuras.RefreshReminders
     end
     return list, parent, Create, Refresh, glowInCombat
 end
 
-function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
+function QA:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     local key = iconType.."-"..idType.."-"..tostring(id)
-    if QuickAuras.ignoredIcons[key] then return nil end
+    if QA.ignoredIcons[key] then return nil end
     local list, parent, Create, Refresh, glowInCombat = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
         local showCount = iconType == ICON.REMINDER and (conf.minCount or self.db.profile.lowConsumesMinCount)
         local onRightClick = iconType ~= ICON.ALERT and Refresh and function()
-            QuickAuras.ignoredIcons[key] = true
-            Refresh(QuickAuras)
+            QA.ignoredIcons[key] = true
+            Refresh(QA)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
         local frame = Create(self, id, parent, iconType .."-".. id, showTooltip, showCount, onRightClick, onClick)
@@ -254,7 +254,7 @@ function QuickAuras:AddIcon(iconType, idType, id, conf, count, showTooltip, onCl
     end
 end
 
-function QuickAuras:RemoveIcon(iconType, id)
+function QA:RemoveIcon(iconType, id)
     local list = GetIconList(iconType)
     local obj = list[id]
     if obj then
@@ -271,7 +271,7 @@ function QuickAuras:RemoveIcon(iconType, id)
     end
 end
 
-function QuickAuras:ClearIcons(iconType)
+function QA:ClearIcons(iconType)
     --debug("Clearing icon warnings")
     local list = GetIconList(iconType)
     for id, obj in pairs(list) do
@@ -279,7 +279,7 @@ function QuickAuras:ClearIcons(iconType)
     end
 end
 
-function QuickAuras:ArrangeIcons(iconType)
+function QA:ArrangeIcons(iconType)
     --debug("Arranging icon warnings")
     local list = GetIconList(iconType)
     local lastFrame = nil
@@ -353,7 +353,7 @@ end
 
 -- Widget Positioning -----------------------------------------------------------
 
-function QuickAuras:ParentFramesNormalState()
+function QA:ParentFramesNormalState()
     for _, frame in ipairs(self.adjustableFrames) do
         self:DisableDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Hide()
@@ -361,7 +361,7 @@ function QuickAuras:ParentFramesNormalState()
     end
 end
 
-function QuickAuras:ParentFramesEditState()
+function QA:ParentFramesEditState()
     for _, frame in ipairs(self.adjustableFrames) do
         self:SetDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Show()
@@ -369,7 +369,7 @@ function QuickAuras:ParentFramesEditState()
     end
 end
 
-function QuickAuras:ToggleLockedState()
+function QA:ToggleLockedState()
     _uiLocked = not _uiLocked
 
     if  _uiLocked then
@@ -390,7 +390,7 @@ function QuickAuras:ToggleLockedState()
     out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 end
 
-function QuickAuras:ResetWidgets()
+function QA:ResetWidgets()
     debug("Resetting widgets")
     self:ResetGeneralWidgets()
     self:ResetRogueWidgets()
@@ -400,7 +400,7 @@ end
 
 -- Progress Bar -----------------------------------------------------------
 
-function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
+function QA:CreateTimerBar(parent, index, padding, color, icon, text)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBAR"..tostring(pbId), parent, "QuickAuras_ProgressBar")
@@ -441,7 +441,7 @@ function QuickAuras:CreateTimerBar(parent, index, padding, color, icon, text)
     return frame
 end
 
-function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
+function QA:CreateTimerButton(parent, index, padding, color, icon)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
@@ -462,7 +462,7 @@ function QuickAuras:CreateTimerButton(parent, index, padding, color, icon)
     return frame
 end
 
-function QuickAuras:ArrangeTimerBars(list, parent)
+function QA:ArrangeTimerBars(list, parent)
     local sortedList = {}
     for _, timer in pairs(list) do
         table.insert(sortedList, timer)
@@ -470,7 +470,7 @@ function QuickAuras:ArrangeTimerBars(list, parent)
     table.sort(sortedList, function(a, b)
         return a.expTime > b.expTime
     end)
-    debug("Arranging timer bars", parent:GetName())
+    debug(2, "Arranging timer bars", parent:GetName())
     local lastFrame
     for _, timer in pairs(sortedList) do
         debug(3, "Arranging progress frames", timer.key, timer.uiType)
@@ -503,7 +503,7 @@ end
 
 -------------------------------------------------------------
 
-function QuickAuras:Rogue_SetCombo(n)
+function QA:Rogue_SetCombo(n)
     if n < 5 then
         QuickAuras_Combo:Hide()
     else
@@ -511,7 +511,7 @@ function QuickAuras:Rogue_SetCombo(n)
     end
 end
 
-function QuickAuras:ShowParry()
+function QA:ShowParry()
     QuickAuras_Parry:Show()
     C_Timer.After(1, function()
         QuickAuras_Parry:Hide()
@@ -523,7 +523,7 @@ local errorCount = 0
 local OOR_TIMEOUT_SEC = 10
 local OOR_CYCLE = 6
 local OOR_SOUND = 3
-function QuickAuras:ShowNoticableError(text)
+function QA:ShowNoticableError(text)
     QuickAuras_OutOfRange_Text:SetText(string.upper(text))
     QuickAuras_OutOfRange:Show()
     if self.db.profile.outOfRangeSound then
@@ -543,7 +543,7 @@ function QuickAuras:ShowNoticableError(text)
     end)
 end
 
-function QuickAuras:ResetErrorCount()
+function QA:ResetErrorCount()
     lastErrorTime = GetTime()
     errorCount = 0
 end
@@ -552,7 +552,7 @@ end
 
 -- Test UI -----------------------------------------------------------
 
-function QuickAuras:TestProgressBar(spells, limit, includeRaidBars)
+function QA:TestProgressBar(spells, limit, includeRaidBars)
     local count1 = 0
     local count2 = 0
     local seen = {}
@@ -579,17 +579,17 @@ function QuickAuras:TestProgressBar(spells, limit, includeRaidBars)
     end
 end
 
-function QuickAuras:TestBars()
+function QA:TestBars()
     self:TestProgressBar(self.trackedAuras, 5)
     self:TestProgressBar(self.trackedCombatLog, 3, true)
 end
 
-function QuickAuras:TestFlashBar()
+function QA:TestFlashBar()
     local snd = self.trackedAuras[6774]
     self:AddTimer("test", snd, "test", 5, GetTime()+5)
 end
 
-function QuickAuras:TestCooldowns()
+function QA:TestCooldowns()
     local t = 0
     for i, conf in pairs(self.trackedSpellCooldowns) do
         --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
@@ -600,12 +600,12 @@ function QuickAuras:TestCooldowns()
     end
 end
 
-local DelayedReset_Reminders = QuickAuras:Debounce(function()
+local DelayedReset_Reminders = QA:Debounce(function()
     debug("TestReminders timer ended")
-    QuickAuras:RefreshReminders()
+    QA:RefreshReminders()
 end, 3)
 
-function QuickAuras:TestReminders()
+function QA:TestReminders()
     self:ClearIcons(ICON.REMINDER)
     --self:AddIcon(ICON.REMINDER, "spell", 2383, self.trackedAuras[2383])
     for i, conf in ipairs(self.trackedLowConsumes) do
@@ -616,12 +616,12 @@ function QuickAuras:TestReminders()
     DelayedReset_Reminders()
 end
 
-local DelayedReset_IconMissingBuffs = QuickAuras:Debounce(function()
+local DelayedReset_IconMissingBuffs = QA:Debounce(function()
     debug("TestIconMissingBuffs timer ended")
-    QuickAuras:RefreshMissing()
+    QA:RefreshMissing()
 end, 3)
 
-function QuickAuras:TestIconMissingBuffs()
+function QA:TestIconMissingBuffs()
     self:ClearIcons(ICON.MISSING)
     local count = 0
     for _, conf in ipairs(self.trackedMissingBuffs) do
@@ -632,12 +632,12 @@ function QuickAuras:TestIconMissingBuffs()
     DelayedReset_IconMissingBuffs()
 end
 
-local DelayedReset_IconWarnings = QuickAuras:Debounce(function()
+local DelayedReset_IconWarnings = QA:Debounce(function()
     debug("TestIconWarnings timer ended")
-    QuickAuras:RefreshWarnings()
+    QA:RefreshWarnings()
 end, 3)
 
-function QuickAuras:TestIconWarnings()
+function QA:TestIconWarnings()
     self:ClearIcons(ICON.WARNING)
     local count = 0
     for itemId, conf in pairs(self.trackedGear) do
@@ -649,23 +649,23 @@ function QuickAuras:TestIconWarnings()
     DelayedReset_IconWarnings()
 end
 
-local DelayedReset_IconAlerts = QuickAuras:Debounce(function()
+local DelayedReset_IconAlerts = QA:Debounce(function()
     debug("TestIconAlerts timer ended")
-    QuickAuras:ClearIcons(ICON.ALERT)
+    QA:ClearIcons(ICON.ALERT)
 end, 6)
 
-function QuickAuras:TestIconAlerts()
+function QA:TestIconAlerts()
     local lip = self.spells.iconAlerts.limitedInvulnerabilityPotion
     --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
     self:AddTimer("auras", lip, lip.spellId[1], 6, GetTime()+6)
     DelayedReset_IconAlerts()
 end
 
-local DelayedReset_CrucialAlerts = QuickAuras:Debounce(function()
-    QuickAuras:ClearIcons(ICON.CRUCIAL)
+local DelayedReset_CrucialAlerts = QA:Debounce(function()
+    QA:ClearIcons(ICON.CRUCIAL)
 end, 3)
 
-function QuickAuras:TestCrucial()
+function QA:TestCrucial()
     local bs = self.spells.warrior.battleShout
     local frr = self.spells.shaman.frostResistanceTotem
     --  :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
@@ -693,7 +693,7 @@ local function fixLogInput(...)
     return unpack(args)
 end
 
-function QuickAuras:InjectLog(log)
+function QA:InjectLog(log)
     for i, line in ipairs(log) do
         if line and #line > 0 then
             local subevent, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6 = fixLogInput(strsplit(",", line))
@@ -702,7 +702,7 @@ function QuickAuras:InjectLog(log)
     end
 end
 
-function QuickAuras:TestInject()
+function QA:TestInject()
     local log = {
         "SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
         "SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
@@ -717,7 +717,7 @@ function QuickAuras:TestInject()
     self:InjectLog(log)
 end
 
-function QuickAuras:DemoUI()
+function QA:DemoUI()
     self:TestBars()
     self:TestCooldowns()
     self:TestIconWarnings()
@@ -725,7 +725,7 @@ function QuickAuras:DemoUI()
     self:TestReminders()
 end
 
-function QuickAuras:DemoUI2()
+function QA:DemoUI2()
     QuickAuras_Parry:Show()
     QuickAuras_Combo:Show()
     QuickAuras_OutOfRange:Show()

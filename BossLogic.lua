@@ -1,9 +1,9 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-local debug = QuickAuras.Debug
-local out = QuickAuras.Print
-local ICON = QuickAuras.ICON
-local _c = QuickAuras.colors
+local QA = addon.root
+local debug = QA.Debug
+local out = QA.Print
+local ICON = QA.ICON
+local _c = QA.colors
 
 local FHM = {
     encounterId = 1121,
@@ -15,47 +15,47 @@ local KT = {
     npcId = 15990,
     phase = 0,
 }
-QuickAuras.boss = {
+QA.boss = {
     FHM = FHM,
     KT = KT,
 }
 
-function QuickAuras:InitBossLogic()
+function QA:InitBossLogic()
     self.encounter.OnStart[FHM.encounterId] = self.FHM_EncounterStart
     self.encounter.OnEnd[FHM.encounterId] = self.FHM_EncounterEnd
     self.encounter.OnStart[KT.encounterId] = self.KT_EncounterStart
     self.encounter.OnEnd[KT.encounterId] = self.KT_EncounterEnd
 end
 
-function QuickAuras:KT_EncounterStart()
+function QA:KT_EncounterStart()
     out(_c.bold.."KT".."|r Encounter started")
     KT.phase = 1
 
     self.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
-        if QuickAuras:GetNpcIdFromGuid(sourceGuid) == KT.npcId then
+        if QA:GetNpcIdFromGuid(sourceGuid) == KT.npcId then
             KT.phase = 2
-            QuickAuras.encounter.OnSwingDamage = nil
+            QA.encounter.OnSwingDamage = nil
             out(_c.bold.."KT".."|r Phase 2")
             self:CheckAuras()
         end
     end
 end
 
-function QuickAuras:KT_EncounterEnd()
+function QA:KT_EncounterEnd()
     out(_c.bold.."KT".."|r Encounter ended")
     self.encounter.OnSwingDamage = nil
     KT.phase = 0
 end
 
-function QuickAuras:FHM_EncounterStart()
+function QA:FHM_EncounterStart()
     out(_c.bold.."4HM".."|r Encounter started")
     FHM.mark = 0
     FHM.timer = C_Timer.NewTimer(21, function()
-        QuickAuras:FTM_Mark()
+        QA:FTM_Mark()
     end)
 end
 
-function QuickAuras:FHM_EncounterEnd()
+function QA:FHM_EncounterEnd()
     out(_c.bold.."4HM".."|r Encounter ended")
     if FHM.timer then
         FHM.timer:Cancel()
@@ -63,7 +63,7 @@ function QuickAuras:FHM_EncounterEnd()
     end
 end
 
-function QuickAuras:FTM_Mark()
+function QA:FTM_Mark()
     FHM.mark = FHM.mark + 1
     local extraText = ""
 
@@ -77,6 +77,6 @@ function QuickAuras:FTM_Mark()
 
     out(_c.bold.."4HM".."|r Mark "..FHM.mark..extraText)
     FHM.timer = C_Timer.NewTimer(13, function()
-        QuickAuras:FTM_Mark()
+        QA:FTM_Mark()
     end)
 end

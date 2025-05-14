@@ -1,9 +1,9 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-local debug = QuickAuras.Debug
-local ICON = QuickAuras.ICON
+local QA = addon.root
+local debug = QA.Debug
+local ICON = QA.ICON
 
-function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
     local arrangeFunc = self.ArrangeTimerBars
     local uiType, list, parent, height
     local widthMul = 1
@@ -30,17 +30,17 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
         list = self.list_iconAlerts
         parent = QuickAuras_IconAlerts
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.ALERT) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.ALERT) end
     elseif timerType == "reminder" or conf.list == "reminder" then
         list = self.list_reminders
         parent = QuickAuras_Reminders
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.REMINDER) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.REMINDER) end
     elseif timerType == "crucial" or conf.list == "crucial" then
         list = self.list_crucial
         parent = QuickAuras_Crucial
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QuickAuras:ArrangeIcons(ICON.CRUCIAL) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.CRUCIAL) end
     end
     if not parent then parent = UIParent end
     local onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate
@@ -63,7 +63,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug("Adding", uiType , "timer", "name", conf.name, "expTime", expTime, "conf.flashOnEnd", conf.flashOnEnd, "showAtTime", showAtTime)
+        debug(2, "Adding", uiType , "timer", "name", conf.name, "expTime", expTime, "conf.flashOnEnd", conf.flashOnEnd, "showAtTime", showAtTime)
     end
 
     local frame
@@ -110,11 +110,11 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
     return timer, true
 end
 
-function QuickAuras:GetTimerKey(name, expTime, uiType)
+function QA:GetTimerKey(name, expTime, uiType)
     return name.."-"..tostring(expTime).."-"..tostring(uiType)
 end
 
-function QuickAuras:UpdateProgressBar(timer)
+function QA:UpdateProgressBar(timer)
     if not timer or not timer.frame then return end -- timer destroyed
     if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
         if not timer.showAtTime or GetTime() >= timer.showAtTime then
@@ -153,7 +153,7 @@ function QuickAuras:UpdateProgressBar(timer)
     end
 end
 
-function QuickAuras:RemoveTimer(timer, reason)
+function QA:RemoveTimer(timer, reason)
     if not timer.frame then return end -- target died, already removed
     debug(2, "Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
     if timer.onEnd then
@@ -175,7 +175,7 @@ function QuickAuras:RemoveTimer(timer, reason)
     end
 end
 
-function QuickAuras:CheckTimers()
+function QA:CheckTimers()
     for _, timer in pairs(self.list_timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then

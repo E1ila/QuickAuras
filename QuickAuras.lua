@@ -8,58 +8,58 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
-local QuickAuras = addon.root
-QuickAuras.version = "0.8"
-QuickAuras.events = CreateFrame("Frame")
-QuickAuras.bags = {} -- items in bags
-QuickAuras.playerBuffs = {}
-QuickAuras.playerIsStealthed = {}
-QuickAuras.existingConsumes = {}
-QuickAuras.encounter = { OnStart = {}, OnEnd = {} }
-QAG = QuickAuras
+local QA = addon.root
+QA.version = "0.8"
+QA.events = CreateFrame("Frame")
+QA.bags = {} -- items in bags
+QA.playerBuffs = {}
+QA.playerIsStealthed = {}
+QA.existingConsumes = {}
+QA.encounter = { OnStart = {}, OnEnd = {} }
+QAG = QA
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,
 }
 QuickAurasDB = QuickAurasDB or {}
 QuickAurasDB.bank = QuickAurasDB.bank or {}
-QuickAuras.bank = QuickAurasDB.bank
+QA.bank = QuickAurasDB.bank
 
 -- managed timers
-QuickAuras.list_timers = {} -- all active timers
-QuickAuras.list_timerByName = {}
+QA.list_timers = {} -- all active timers
+QA.list_timerByName = {}
 -- managed timers by frame type
-QuickAuras.list_watchBars = {} -- timer obj
-QuickAuras.list_offensiveBars = {} -- timer obj
-QuickAuras.list_cooldowns = {} -- timer obj
-QuickAuras.list_iconWarnings = {} -- item obj
-QuickAuras.list_iconAlerts = {} -- timer obj
-QuickAuras.list_missingBuffs = {} -- item obj
-QuickAuras.list_reminders = {} -- spell obj
-QuickAuras.list_crucial = {} -- timer / icon
-QuickAuras.list_range = {}
-QuickAuras.list_raidBars = {} -- timer
+QA.list_watchBars = {} -- timer obj
+QA.list_offensiveBars = {} -- timer obj
+QA.list_cooldowns = {} -- timer obj
+QA.list_iconWarnings = {} -- item obj
+QA.list_iconAlerts = {} -- timer obj
+QA.list_missingBuffs = {} -- item obj
+QA.list_reminders = {} -- spell obj
+QA.list_crucial = {} -- timer / icon
+QA.list_range = {}
+QA.list_raidBars = {} -- timer
 
 local pclass = select(2, UnitClass("player"))
-QuickAuras.playerClass = pclass
-QuickAuras.playerRace = select(1, UnitRace("player"))
-QuickAuras.playerGuid = UnitGUID("player")
-QuickAuras.playerLevel = UnitLevel("player")
-QuickAuras.isRogue = pclass == "ROGUE"
-QuickAuras.isWarrior = pclass == "WARRIOR"
-QuickAuras.isPaladin = pclass == "PALADIN"
-QuickAuras.isShaman = pclass == "SHAMAN"
-QuickAuras.isMage = pclass == "MAGE"
-QuickAuras.isWarlock = pclass == "WARLOCK"
-QuickAuras.isHunter = pclass == "HUNTER"
-QuickAuras.isDruid = pclass == "DRUID"
-QuickAuras.isPriest = pclass == "PRIEST"
-QuickAuras.isOrc = QuickAuras.playerRace == "Orc"
-QuickAuras.isTroll = QuickAuras.playerRace == "Troll"
-QuickAuras.isUndead = QuickAuras.playerRace == "Undead"
-QuickAuras.isManaClass = QuickAuras.isPriest or QuickAuras.isMage or QuickAuras.isWarlock or QuickAuras.isDruid or QuickAuras.isPaladin or QuickAuras.isShaman or QuickAuras.isHunter
+QA.playerClass = pclass
+QA.playerRace = select(1, UnitRace("player"))
+QA.playerGuid = UnitGUID("player")
+QA.playerLevel = UnitLevel("player")
+QA.isRogue = pclass == "ROGUE"
+QA.isWarrior = pclass == "WARRIOR"
+QA.isPaladin = pclass == "PALADIN"
+QA.isShaman = pclass == "SHAMAN"
+QA.isMage = pclass == "MAGE"
+QA.isWarlock = pclass == "WARLOCK"
+QA.isHunter = pclass == "HUNTER"
+QA.isDruid = pclass == "DRUID"
+QA.isPriest = pclass == "PRIEST"
+QA.isOrc = QA.playerRace == "Orc"
+QA.isTroll = QA.playerRace == "Troll"
+QA.isUndead = QA.playerRace == "Undead"
+QA.isManaClass = QA.isPriest or QA.isMage or QA.isWarlock or QA.isDruid or QA.isPaladin or QA.isShaman or QA.isHunter
 local _c
 
-QuickAuras.ICON = {
+QA.ICON = {
     ALERT = "alert",
     REMINDER = "reminder",
     WARNING = "warning",
@@ -71,7 +71,7 @@ QuickAuras.ICON = {
 local function out(text, ...)
     print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
 end
-QuickAuras.Print = out
+QA.Print = out
 
 local function debug(text, ...)
     local minLevel = type(text) == "number" and text or 1
@@ -79,9 +79,9 @@ local function debug(text, ...)
         print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r","|cff009999DEBUG|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", text, ...)
     end
 end
-QuickAuras.Debug = debug
+QA.Debug = debug
 
-function QuickAuras:Debounce(func, delay)
+function QA:Debounce(func, delay)
     local timer = nil
     return function(...)
         local args = { ... }
@@ -94,7 +94,7 @@ function QuickAuras:Debounce(func, delay)
     end
 end
 
-function QuickAuras:OnInitialize()
+function QA:OnInitialize()
     debug("Initializing...")
     _c = self.colors
 
@@ -111,10 +111,10 @@ function QuickAuras:OnInitialize()
     self:RegisterChatCommand("qa", "HandleSlashCommand")
 
     self.events:SetScript("OnEvent", function(self, event, ...)
-        QuickAuras[event](QuickAuras, ...)
+        QA[event](QA, ...)
     end)
     self.events:SetScript("OnUpdate", function()
-        QuickAuras:OnUpdate()
+        QA:OnUpdate()
     end)
 
     self:RegisterMandatoryEvents()
@@ -127,13 +127,13 @@ function QuickAuras:OnInitialize()
             self.db.profile.initialized = true
             self:SetOptionsDefaults()
         end
-        QuickAuras:InitUI()
-        QuickAuras:RegisterOptionalEvents()
-        QuickAuras:CheckIfWarriorInParty()
-        QuickAuras:CheckAuras()
-        QuickAuras:CheckCooldowns()
-        QuickAuras:CheckGear()
-        QuickAuras:InitBossLogic()
+        QA:InitUI()
+        QA:RegisterOptionalEvents()
+        QA:CheckIfWarriorInParty()
+        QA:CheckAuras()
+        QA:CheckCooldowns()
+        QA:CheckGear()
+        QA:InitBossLogic()
         --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
         --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
         --QuickAuras:CheckLowConsumes() -- updated on load due to zone event
@@ -142,7 +142,7 @@ function QuickAuras:OnInitialize()
     end)
 end
 
-function QuickAuras:RegisterMandatoryEvents()
+function QA:RegisterMandatoryEvents()
     debug("Registering mandatory events")
     self.events:RegisterEvent("ZONE_CHANGED")
     self.events:RegisterEvent("ZONE_CHANGED_INDOORS")
@@ -150,7 +150,7 @@ function QuickAuras:RegisterMandatoryEvents()
     self.events:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
-function QuickAuras:RegisterOptionalEvents()
+function QA:RegisterOptionalEvents()
     if self.db.profile.enabled  then
         debug("Registering events")
         for _, event in ipairs(self.optionalEvents) do
@@ -159,14 +159,14 @@ function QuickAuras:RegisterOptionalEvents()
     end
 end
 
-function QuickAuras:UnregisterOptionalEvents()
+function QA:UnregisterOptionalEvents()
     debug("Unregistering events")
     for _, event in ipairs(self.optionalEvents) do
         self.events:UnregisterEvent(event)
     end
 end
 
-function QuickAuras:Options_ToggleEnabled(value)
+function QA:Options_ToggleEnabled(value)
     self.db.profile.enabled = value
     if self.db.profile.enabled then
         self:RegisterOptionalEvents()
@@ -175,7 +175,7 @@ function QuickAuras:Options_ToggleEnabled(value)
     end
 end
 
-function QuickAuras:HandleSlashCommand(input)
+function QA:HandleSlashCommand(input)
     if not input or input:trim() == "" then
         AceConfigDialog:Open("QuickAuras")
     else
@@ -223,7 +223,7 @@ function QuickAuras:HandleSlashCommand(input)
     end
 end
 
-function QuickAuras:ScanBag(bag)
+function QA:ScanBag(bag)
     for slot = 1, C_Container.GetContainerNumSlots(bag) do -- Iterate through all slots in the bag
         local id = C_Container.GetContainerItemID(bag, slot)
         if id ~= nil then
@@ -237,18 +237,18 @@ function QuickAuras:ScanBag(bag)
     end
 end
 
-function QuickAuras:ScanBags()
+function QA:ScanBags()
     self.bags = {}
     for bag = 0, NUM_BAG_SLOTS do -- Iterate through all bags (0 is the backpack)
         self:ScanBag(bag)
     end
 end
 
-function QuickAuras:ScanBank()
+function QA:ScanBank()
     if not self.bankOpen then return end
     debug("Scanning bank")
     QuickAurasDB.bank = {}
-    QuickAuras.bank = QuickAurasDB.bank
+    QA.bank = QuickAurasDB.bank
     -- Scan the main bank slots (bag ID -1)
     for slot = 1, C_Container.GetContainerNumSlots(-1) do
         local id = C_Container.GetContainerItemID(-1, slot)
@@ -275,10 +275,10 @@ function QuickAuras:ScanBank()
 end
 
 function QuickAuras_Timer_OnUpdate(timer)
-    return QuickAuras:UpdateProgressBar(timer)
+    return QA:UpdateProgressBar(timer)
 end
 
-function QuickAuras:GetNpcIdFromGuid(guid)
+function QA:GetNpcIdFromGuid(guid)
     local npcId = guid:match("Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)")
     return tonumber(npcId)
 end

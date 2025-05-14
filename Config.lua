@@ -1,8 +1,8 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-local debug = QuickAuras.Debug
+local QA = addon.root
+local debug = QA.Debug
 
-QuickAuras.optionalEvents = {
+QA.optionalEvents = {
     "UNIT_POWER_UPDATE",
     "COMBAT_LOG_EVENT_UNFILTERED",
     "UNIT_AURA",
@@ -26,7 +26,7 @@ QuickAuras.optionalEvents = {
     "UNIT_TARGETABLE_CHANGED",
 }
 
-QuickAuras.adjustableFrames = {
+QA.adjustableFrames = {
     QuickAuras_WatchBars,
     QuickAuras_OffensiveBars,
     QuickAuras_Cooldowns,
@@ -52,14 +52,14 @@ QuickAuras.adjustableFrames = {
 --    },
 --}
 
-QuickAuras.colors = {
+QA.colors = {
     yellow = "|cffffde00",
     bold = "|cffff99cc",
     enabled = "|cff00ff00",
     disabled = "|cffffff00",
 }
 
-QuickAuras.trackedGear = {
+QA.trackedGear = {
     [15138] = {
         name = "Onyxia Scale Cloak",
     },
@@ -75,7 +75,7 @@ QuickAuras.trackedGear = {
     },
 }
 
-QuickAuras.capitalCities = {
+QA.capitalCities = {
     ["Stormwind"] = true,
     ["Ironforge"] = true,
     ["Darnassus"] = true,
@@ -85,28 +85,28 @@ QuickAuras.capitalCities = {
 }
 
 -- these will be detected through UNIT_AURA event
-QuickAuras.trackedAuras = {}
-QuickAuras.trackedCrucialAuras = {}
+QA.trackedAuras = {}
+QA.trackedCrucialAuras = {}
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
-QuickAuras.trackedCombatLog = {}
+QA.trackedCombatLog = {}
 
 -- these will be detected through SPELL_UPDATE_COOLDOWN
-QuickAuras.trackedSpellCooldowns = {}
-QuickAuras.trackedItemCooldowns = {}
+QA.trackedSpellCooldowns = {}
+QA.trackedItemCooldowns = {}
 
-QuickAuras.trackedMissingBuffs = {}
+QA.trackedMissingBuffs = {}
 
-QuickAuras.trackedLowConsumes = {}
+QA.trackedLowConsumes = {}
 
-QuickAuras.trackedTracking = {}
+QA.trackedTracking = {}
 
 -- custom events
 
-function QuickAuras:BuildTrackedGear()
+function QA:BuildTrackedGear()
     local MARK_OF_THE_CHAMPION_ITEM_ID = { 23206, 23207 }
     for _, itemId in ipairs(MARK_OF_THE_CHAMPION_ITEM_ID) do
-        QuickAuras.trackedGear[itemId] = {
+        QA.trackedGear[itemId] = {
             name = "Mark of the Champion",
             desc = "Smart warning - shows if you need to use the trinket, or if you need to remove it (non undead/demon).",
             targetDependant = true,
@@ -117,16 +117,16 @@ function QuickAuras:BuildTrackedGear()
                 if equipped then
                     return targetExists and not isUndeadOrDemon
                 else
-                    return targetExists and isUndeadOrDemon and QuickAuras.bags[itemId]
+                    return targetExists and isUndeadOrDemon and QA.bags[itemId]
                 end
             end,
         }
     end
 end
 
-function QuickAuras:BuildTrackedSpells()
+function QA:BuildTrackedSpells()
     debug(2, "BuildTrackedSpells...")
-    for category, cspells in pairs(QuickAuras.spells) do
+    for category, cspells in pairs(QA.spells) do
         --debug(3, "BuildTrackedSpells", ">>", string.upper(category))
         for key, spell in pairs(cspells) do
             --debug(3, "BuildTrackedSpells", "  - ", key)
@@ -167,7 +167,7 @@ function QuickAuras:BuildTrackedSpells()
     end
 end
 
-function QuickAuras:BuildTrackedTracking()
+function QA:BuildTrackedTracking()
     self.trackedTracking[self.spells.reminders.findHerbs.spellId[1]] = self.spells.reminders.findHerbs
     self.trackedTracking[self.spells.reminders.findMinerals.spellId[1]] = self.spells.reminders.findMinerals
 end

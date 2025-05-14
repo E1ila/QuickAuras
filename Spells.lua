@@ -1,7 +1,7 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
-QuickAuras.spells = { }
-local spells = QuickAuras.spells
+local QA = addon.root
+QA.spells = { }
+local spells = QA.spells
 
 spells.hunter = {
     concussiveShot = {
@@ -12,35 +12,35 @@ spells.hunter = {
         list = "offensive",
         duration = 4,
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     multiShot = {
         spellId = { 2643, 14288, 14289, 14290, 25294 },
         name = "Multi-Shot",
         icon = "Interface\\Icons\\ability_upgrademoonglaive",
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     aimedShot = {
         spellId = { 19434, 20900, 20901, 20902, 20903, 20904 },
         name = "Aimed Shot",
         icon = "Interface\\Icons\\inv_spear_07",
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     flare = {
         spellId = { 1543 },
         name = "Flare",
         icon = "Interface\\Icons\\spell_fire_flare",
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     frostTrap = {
         spellId = { 13809 },
         name = "Frost Trap",
         icon = "Interface\\Icons\\spell_frost_freezingbreath",
         --cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     freezingTrap = {
         spellId = { 1499, 14310, 14311 },
@@ -50,7 +50,7 @@ spells.hunter = {
         duration = 10,
         list = "offensive",
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     wingClip = {
         spellId = { 2974, 14267, 14268 },
@@ -60,28 +60,28 @@ spells.hunter = {
         list = "offensive",
         duration = 10,
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     feignDeath = {
         spellId = { 5384 },
         name = "Feign Death",
         icon = "Interface\\Icons\\Ability_Rogue_FeignDeath",
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     explosiveTrap = {
         spellId = { 13813, 14316, 14317 },
         name = "Explosive Trap",
         icon = "Interface\\Icons\\spell_fire_selfdestruct",
         --cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     distractingShot = {
         spellId = { 20736, 14274, 15629, 15630, 15631, 15632 },
         name = "Distracting Shot",
         icon = "Interface\\Icons\\Ability_Hunter_SniperShot",
         cooldown = true,
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     },
     rapidFire = {
         spellId = { 3045 },
@@ -91,7 +91,7 @@ spells.hunter = {
         cooldown = true,
         duration = 15,
         list = "watch",
-        visible = QuickAuras.isHunter,
+        visible = QA.isHunter,
     }
 }
 
@@ -103,14 +103,14 @@ spells.warrior = {
         color = {0.914, 0.086, 0.086},
         cooldown = true,
         --duration = 1,
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
     shieldBash = {
         spellId = { 72, 1671, 1672 },
         name = "Shield Bash",
         icon = "Interface\\Icons\\Ability_Warrior_ShieldBash",
         cooldown = true,
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
     taunt = {
         spellId = { 355 },
@@ -121,7 +121,7 @@ spells.warrior = {
         duration = 3,
         color = {0.914, 0.086, 0.086},
         list = "offensive",
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
     mockingBlow = {
         spellId = { 694, 7400, 7402, 20559, 20560 },
@@ -129,17 +129,17 @@ spells.warrior = {
         icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
         cooldown = true,
         list = "offensive",
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
     battleShout = {
         spellId = { 6673, 5242, 6192, 11549, 11550, 11551, 25289 },
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
-        crucial = QuickAuras.isWarrior or QuickAuras.isRogue,
+        crucial = QA.isWarrior or QA.isRogue,
         crucialCond = function()
-            return QuickAuras.db.profile.battleShoutMissing and (not QuickAuras.isWarrior or QuickAuras.inCombat or IsInGroup()) and (QuickAuras.isWarrior or QuickAuras.hasWarriorInParty)
+            return QA.db.profile.battleShoutMissing and (not QA.isWarrior or QA.inCombat or IsInGroup()) and (QA.isWarrior or QA.hasWarriorInParty)
         end,
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
     deathWish = {
         spellId = { 12328 },
@@ -149,7 +149,7 @@ spells.warrior = {
         cooldown = true,
         duration = 30,
         color = {0.902, 0.357, 0.055},
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
     challengingShout = {
         spellId = { 1161 },
@@ -159,7 +159,7 @@ spells.warrior = {
         cooldown = true,
         duration = 6,
         color = {0.671, 0.251, 0.024},
-        visible = QuickAuras.isWarrior,
+        visible = QA.isWarrior,
     },
 }
 
@@ -174,7 +174,7 @@ spells.rogue = {
         color = {246/256, 122/256, 0},
         list = "watch",
         cooldown = 120,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     adrenalineRush = {
         spellId = { 13750 },
@@ -186,7 +186,7 @@ spells.rogue = {
         color = {246/256, 220/256, 0},
         list = "watch",
         cooldown = 300,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     sliceAndDice = {
         spellId = { 6774 },
@@ -196,7 +196,7 @@ spells.rogue = {
         color = {0, 0.9, 0.2},
         list = "watch",
         flashOnEnd = 3,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     exposeArmor = {
         spellId = { 8647, 8649, 8650, 11197, 11198 },
@@ -206,7 +206,7 @@ spells.rogue = {
         list = "watch",
         duration = 30,
         flashOnEnd = 5,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     gouge = {
         spellId = { 1776, 1777, 8629, 11285, 11286 },
@@ -216,7 +216,7 @@ spells.rogue = {
         list = "offensive",
         duration = 6,
         cooldown = 10,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     cheapShot = {
         spellId = { 1833 },
@@ -225,7 +225,7 @@ spells.rogue = {
         color = {0.7961, 0.5922, 0.3529},
         list = "offensive",
         duration = 4,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     kidneyShot = {
         spellId = { 408, 8643 },
@@ -235,7 +235,7 @@ spells.rogue = {
         list = "offensive",
         duration = 6,
         cooldown = 20,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     vanish = {
         spellId = { 1856, 1857 },
@@ -243,7 +243,7 @@ spells.rogue = {
         icon = "Interface\\Icons\\Ability_Vanish",
         color = {0.5, 0.5, 0.5},
         cooldown = true,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     sprint = {
         spellId = { 2983, 8696, 11305 },
@@ -254,7 +254,7 @@ spells.rogue = {
         list = "watch",
         duration = 15,
         cooldown = true,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     stealth = {
         spellId = { 1784, 1785, 1786, 1787 },
@@ -263,7 +263,7 @@ spells.rogue = {
         color = {0.4451, 0.7882, 0.8000},
         cooldown = true,
         ignoreCooldownInStealth = true,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     kick = {
         spellId = { 1766, 1767, 1768, 1769 },
@@ -271,7 +271,7 @@ spells.rogue = {
         icon = "Interface\\Icons\\Ability_Kick",
         color = {0.7, 0.7, 0.7},
         cooldown = true,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     blind = {
         spellId = { 2094 },
@@ -281,7 +281,7 @@ spells.rogue = {
         list = "offensive",
         duration = 10,
         cooldown = true,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     evasion = {
         spellId = { 5277 },
@@ -292,7 +292,7 @@ spells.rogue = {
         list = "watch",
         duration = 15,
         cooldown = true,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
     sap = {
         spellId = { 6770, 2070, 11297 },
@@ -301,7 +301,7 @@ spells.rogue = {
         color = {0.8941, 0.2157, 0.0627},
         list = "offensive",
         duration = 45,
-        visible = QuickAuras.isRogue,
+        visible = QA.isRogue,
     },
 }
 
@@ -311,7 +311,7 @@ spells.shaman = {
         name = "Chain Lightning",
         icon = "Interface\\Icons\\spell_nature_chainlightning",
         cooldown = 6,
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
     },
     naturesSwiftness = {
         spellId = { 16188 },
@@ -320,7 +320,7 @@ spells.shaman = {
         readyTexture = "DruidEclipse-SolarSun",
         color = {0.5, 0.5, 0.5},
         cooldown = 180,
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
     },
     manaTide = {
         spellId = { 16190 },
@@ -328,7 +328,7 @@ spells.shaman = {
         icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
         cooldown = 300,
         duration = 12,
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
     },
     --graceOfAirAura = { -- test
     --    spellId = { 25360 },
@@ -344,7 +344,7 @@ spells.shaman = {
         name = "Frost Shock",
         icon = "Interface\\Icons\\Spell_Frost_FrostShock",
         color = {0.5, 0.5, 0.5},
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
         cooldown = 6
     },
     frostResistanceTotem = {
@@ -353,7 +353,7 @@ spells.shaman = {
         icon = "Interface\\Icons\\spell_frostresistancetotem_01",
         crucial = true,
         crucialCond = function()
-            return QuickAuras.boss.KT.phase == 2 and QuickAuras.db.profile.frostResistanceTotemMissing
+            return QA.boss.KT.phase == 2 and QA.db.profile.frostResistanceTotemMissing
         end
     },
     reincarnation = {
@@ -362,7 +362,7 @@ spells.shaman = {
         icon = "Interface\\Icons\\Spell_Nature_Reincarnation",
         color = {0.5, 0.5, 0.5},
         cooldown = 1800,
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
     },
     elementalMastery = {
         spellId = { 16166 },
@@ -370,14 +370,14 @@ spells.shaman = {
         icon = "Interface\\Icons\\Spell_Nature_WispHeal",
         color = {0.3, 0.6, 0.9},
         cooldown = 180,
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
     },
     stormstrike = {
         spellId = { 17364 },
         name = "Stormstrike",
         icon = "Interface\\Icons\\spell_holy_sealofmight",
         cooldown = 20,
-        visible = QuickAuras.isShaman,
+        visible = QA.isShaman,
     }
 }
 
@@ -451,7 +451,7 @@ spells.iconAlerts = {
         name = "Mana Tide Aura",
         desc = "Notify when you or someone in your group uses a Mana Tide. Useful to know since they don't stack.",
         icon = "Interface\\Icons\\spell_frost_summonwaterelemental",
-        visible = QuickAuras.isManaClass,
+        visible = QA.isManaClass,
     },
     innervateAura = {
         spellId = { 29166 },
@@ -461,7 +461,7 @@ spells.iconAlerts = {
         category = "iconAlerts",
         name = "Innervate Buff",
         icon = "Interface\\Icons\\spell_nature_lightning",
-        visible = QuickAuras.isManaClass,
+        visible = QA.isManaClass,
     },
     powerInfusion = {
         spellId = { 10060 },
@@ -492,14 +492,14 @@ spells.racials = {
         name = "Will of the Forsaken",
         icon = "Interface\\Icons\\spell_shadow_raisedead",
         cooldown = true,
-        visible = QuickAuras.isUndead,
+        visible = QA.isUndead,
     },
     bloodFury = { -- ability
         spellId = { 20572 },
         name = "Blood Fury",
         icon = "Interface\\Icons\\Racial_Orc_BerserkerStrength",
         cooldown = true,
-        visible = QuickAuras.isOrc,
+        visible = QA.isOrc,
     },
     berserking = { -- ability
         spellId = { 20554 },
@@ -507,7 +507,7 @@ spells.racials = {
         icon = "Interface\\Icons\\racial_troll_berserk",
         list = "watch",
         cooldown = true,
-        visible = QuickAuras.isTroll,
+        visible = QA.isTroll,
     },
     bloodFuryBuff = { -- buff
         spellId = { 23234 },
@@ -517,7 +517,7 @@ spells.racials = {
         color = {0.9451, 0.6863, 0.5333},
         list = "watch",
         duration = 15,
-        visible = QuickAuras.isOrc,
+        visible = QA.isOrc,
     },
 }
 
@@ -579,7 +579,7 @@ spells.transmutes = {
     },
 }
 
-function QuickAuras:InitSpells()
+function QA:InitSpells()
     for class, cspells in pairs(spells) do
         for ability, obj in pairs(cspells) do
             if not obj.option then

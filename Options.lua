@@ -1,12 +1,12 @@
 local ADDON_NAME, addon = ...
-local QuickAuras = addon.root
+local QA = addon.root
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local out = QuickAuras.Print
-local debug = QuickAuras.Debug
-local _c = QuickAuras.colors
-local ICON = QuickAuras.ICON
+local out = QA.Print
+local debug = QA.Debug
+local _c = QA.colors
+local ICON = QA.ICON
 
-QuickAuras.defaultOptions = {
+QA.defaultOptions = {
     profile = {
         debug = 0,
         enabled = true,
@@ -50,20 +50,20 @@ QuickAuras.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         showTimeOnBars = true,
-        battleShoutMissing = QuickAuras.isWarrior or QuickAuras.isRogue,
+        battleShoutMissing = QA.isWarrior or QA.isRogue,
         frostResistanceTotemMissing = true,
         lowConsumesMinLevel = 58,
         lowConsumesMinCount = 1,
-        manaTideAura = QuickAuras.isManaClass,
-        innervateAura = QuickAuras.isManaClass,
+        manaTideAura = QA.isManaClass,
+        innervateAura = QA.isManaClass,
         encounter4hmStartAt = 0, -- 0 = disabled
         encounter4hmMoveEvery = 3,
     },
 }
 
-QuickAuras.options = {
+QA.options = {
     name = "QuickAuras",
-    handler = QuickAuras,
+    handler = QA,
     type = "group",
     childGroups = "tab",
     args = {
@@ -71,19 +71,19 @@ QuickAuras.options = {
             type = "toggle",
             name = "Enable",
             desc = "Enable or disable the addon",
-            get = function(info) return QuickAuras.db.profile.enabled end,
-            set = function(info, value) QuickAuras:Options_ToggleEnabled(value) end,
+            get = function(info) return QA.db.profile.enabled end,
+            set = function(info, value) QA:Options_ToggleEnabled(value) end,
             order = 4,
         },
         watchBarsEnabled = {
             type = "toggle",
             name = "Watch Bars",
             desc = "Enables progress bars for player's auras",
-            get = function(info) return QuickAuras.db.profile.watchBars end,
+            get = function(info) return QA.db.profile.watchBars end,
             set = function(info, value)
-                QuickAuras.db.profile.watchBars = value
+                QA.db.profile.watchBars = value
                 if value then
-                    QuickAuras:TestProgressBar(QuickAuras.trackedAuras)
+                    QA:TestProgressBar(QA.trackedAuras)
                 end
             end,
             order = 5,
@@ -92,11 +92,11 @@ QuickAuras.options = {
             type = "toggle",
             name = "Offensive Bars",
             desc = "Show a progress bar with time left on important abilities",
-            get = function(info) return QuickAuras.db.profile.offensiveBars end,
+            get = function(info) return QA.db.profile.offensiveBars end,
             set = function(info, value)
-                QuickAuras.db.profile.offensiveBars = value
+                QA.db.profile.offensiveBars = value
                 if value then
-                    QuickAuras:TestProgressBar(QuickAuras.trackedCombatLog)
+                    QA:TestProgressBar(QA.trackedCombatLog)
                 end
             end,
             order = 6,
@@ -105,11 +105,11 @@ QuickAuras.options = {
             type = "toggle",
             name = "Cooldown Timers",
             desc = "Enables cooldown timers",
-            get = function(info) return QuickAuras.db.profile.cooldowns end,
+            get = function(info) return QA.db.profile.cooldowns end,
             set = function(info, value)
-                QuickAuras.db.profile.cooldowns = value
+                QA.db.profile.cooldowns = value
                 if value then
-                    QuickAuras:TestCooldowns()
+                    QA:TestCooldowns()
                 end
             end,
             order = 7,
@@ -118,13 +118,13 @@ QuickAuras.options = {
             type = "toggle",
             name = "Warnings",
             desc = "Enables warnings for gear and other",
-            get = function(info) return QuickAuras.db.profile.trackedGear end,
+            get = function(info) return QA.db.profile.trackedGear end,
             set = function(info, value)
-                QuickAuras.db.profile.trackedGear = value
+                QA.db.profile.trackedGear = value
                 if value then
-                    QuickAuras:CheckGear()
+                    QA:CheckGear()
                 else
-                    QuickAuras:ClearIcons(ICON.WARNING)
+                    QA:ClearIcons(ICON.WARNING)
                 end
             end,
             order = 8,
@@ -133,10 +133,10 @@ QuickAuras.options = {
             type = "toggle",
             name = "Missing Buffs",
             desc = "Enables showing of list missing buffs/consumables in instances",
-            get = function(info) return QuickAuras.db.profile.missingConsumes end,
+            get = function(info) return QA.db.profile.missingConsumes end,
             set = function(info, value)
-                QuickAuras.db.profile.missingConsumes = value
-                QuickAuras:RefreshMissing()
+                QA.db.profile.missingConsumes = value
+                QA:RefreshMissing()
             end,
             order = 9,
         },
@@ -144,10 +144,10 @@ QuickAuras.options = {
             type = "toggle",
             name = "Reminders",
             desc = "Enables reminders for low consumes, candles, ankh, tracking buffs, etc.",
-            get = function(info) return QuickAuras.db.profile.remindersEnabled end,
+            get = function(info) return QA.db.profile.remindersEnabled end,
             set = function(info, value)
-                QuickAuras.db.profile.remindersEnabled = value
-                QuickAuras:RefreshReminders()
+                QA.db.profile.remindersEnabled = value
+                QA:RefreshReminders()
             end,
             order = 10,
         },
@@ -155,9 +155,9 @@ QuickAuras.options = {
             type = "toggle",
             name = "Raid Bars",
             desc = "Enables tracking of raid players' buffs, cooldowns, etc.",
-            get = function(info) return QuickAuras.db.profile.raidBars end,
+            get = function(info) return QA.db.profile.raidBars end,
             set = function(info, value)
-                QuickAuras.db.profile.raidBars = value
+                QA.db.profile.raidBars = value
             end,
             order = 11,
         },
@@ -178,10 +178,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.barHeight end,
+                    get = function(info) return QA.db.profile.barHeight end,
                     set = function(info, value)
-                        QuickAuras.db.profile.barHeight = value
-                        QuickAuras:TestBars()
+                        QA.db.profile.barHeight = value
+                        QA:TestBars()
                     end,
                     order = 102,
                 },
@@ -192,10 +192,10 @@ QuickAuras.options = {
                     min = 50,
                     max = 200,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.barWidth end,
+                    get = function(info) return QA.db.profile.barWidth end,
                     set = function(info, value)
-                        QuickAuras.db.profile.barWidth = value
-                        QuickAuras:TestBars()
+                        QA.db.profile.barWidth = value
+                        QA:TestBars()
                     end,
                     order = 102,
                 },
@@ -206,10 +206,10 @@ QuickAuras.options = {
                     min = 0,
                     max = 10,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.barGap end,
+                    get = function(info) return QA.db.profile.barGap end,
                     set = function(info, value)
-                        QuickAuras.db.profile.barGap = value
-                        QuickAuras:TestBars()
+                        QA.db.profile.barGap = value
+                        QA:TestBars()
                     end,
                     order = 102,
                 },
@@ -220,10 +220,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.buttonHeight end,
+                    get = function(info) return QA.db.profile.buttonHeight end,
                     set = function(info, value)
-                        QuickAuras.db.profile.buttonHeight = value
-                        QuickAuras:TestCooldowns()
+                        QA.db.profile.buttonHeight = value
+                        QA:TestCooldowns()
                     end,
                     order = 103,
                 },
@@ -234,10 +234,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.gearWarningSize end,
+                    get = function(info) return QA.db.profile.gearWarningSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.gearWarningSize = value
-                        QuickAuras:TestIconWarnings()
+                        QA.db.profile.gearWarningSize = value
+                        QA:TestIconWarnings()
                     end,
                     order = 104,
                 },
@@ -248,10 +248,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.iconAlertSize end,
+                    get = function(info) return QA.db.profile.iconAlertSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.iconAlertSize = value
-                        QuickAuras:TestIconAlerts()
+                        QA.db.profile.iconAlertSize = value
+                        QA:TestIconAlerts()
                     end,
                     order = 105,
                 },
@@ -262,10 +262,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.missingBuffsSize end,
+                    get = function(info) return QA.db.profile.missingBuffsSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.missingBuffsSize = value
-                        QuickAuras:TestIconMissingBuffs()
+                        QA.db.profile.missingBuffsSize = value
+                        QA:TestIconMissingBuffs()
                     end,
                     order = 106,
                 },
@@ -276,10 +276,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.reminderIconSize end,
+                    get = function(info) return QA.db.profile.reminderIconSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.reminderIconSize = value
-                        QuickAuras:TestReminders()
+                        QA.db.profile.reminderIconSize = value
+                        QA:TestReminders()
                     end,
                     order = 107,
                 },
@@ -290,10 +290,10 @@ QuickAuras.options = {
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.crucialIconSize end,
+                    get = function(info) return QA.db.profile.crucialIconSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.crucialIconSize = value
-                        QuickAuras:RefreshCrucial()
+                        QA.db.profile.crucialIconSize = value
+                        QA:RefreshCrucial()
                     end,
                     order = 108,
                 },
@@ -304,9 +304,9 @@ QuickAuras.options = {
                     min = 5,
                     max = 100,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.rangeIconSize end,
+                    get = function(info) return QA.db.profile.rangeIconSize end,
                     set = function(info, value)
-                        QuickAuras.db.profile.rangeIconSize = value
+                        QA.db.profile.rangeIconSize = value
                         --QuickAuras:TestIconAlerts()
                     end,
                     order = 110,
@@ -320,8 +320,8 @@ QuickAuras.options = {
                     type = "toggle",
                     name = "Show Time Left",
                     desc = "Enables showing of time left on timers",
-                    get = function(info) return QuickAuras.db.profile.showTimeOnBars end,
-                    set = function(info, value) QuickAuras.db.profile.showTimeOnBars = value end,
+                    get = function(info) return QA.db.profile.showTimeOnBars end,
+                    set = function(info, value) QA.db.profile.showTimeOnBars = value end,
                     order = 200,
                 },
             },
@@ -336,18 +336,18 @@ QuickAuras.options = {
                     type = "toggle",
                     name = "Announce Interrupts",
                     desc = "Say when you interrupt a spell",
-                    get = function(info) return QuickAuras.db.profile.announceInterrupts end,
-                    set = function(info, value) QuickAuras.db.profile.announceInterrupts = value end,
+                    get = function(info) return QA.db.profile.announceInterrupts end,
+                    set = function(info, value) QA.db.profile.announceInterrupts = value end,
                     order = 10,
                 },
                 outOfRange = {
                     type = "toggle",
                     name = "Out of Range",
                     desc = "Show a noticable warning when you are out of range of your target in combat",
-                    get = function(info) return QuickAuras.db.profile.outOfRange end,
+                    get = function(info) return QA.db.profile.outOfRange end,
                     set = function(info, value)
-                        QuickAuras.db.profile.outOfRange = value
-                        if not value then QuickAuras.db.profile.outOfRangeSound = false end
+                        QA.db.profile.outOfRange = value
+                        if not value then QA.db.profile.outOfRangeSound = false end
                     end,
                     order = 11,
                 },
@@ -355,10 +355,10 @@ QuickAuras.options = {
                     type = "toggle",
                     name = "Out of Range Sound",
                     desc = "Play a warning when you are out of range of your target in combat",
-                    get = function(info) return QuickAuras.db.profile.outOfRangeSound end,
+                    get = function(info) return QA.db.profile.outOfRangeSound end,
                     set = function(info, value)
-                        QuickAuras.db.profile.outOfRangeSound = value
-                        if value then QuickAuras.db.profile.outOfRange = true end
+                        QA.db.profile.outOfRangeSound = value
+                        if value then QA.db.profile.outOfRange = true end
                     end,
                     order = 12,
                 },
@@ -366,31 +366,31 @@ QuickAuras.options = {
                     type = "header",
                     name = "Melee Utils",
                     order = 98,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                 },
                 spacer201 = {
                     type = "description",
                     name = "",
                     order = 99,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                 },
                 harryPaste = {
                     type = "toggle",
                     name = "Harry Paste",
                     desc = "Warn when a mob parries your attack while being tanked",
-                    get = function(info) return QuickAuras.db.profile.harryPaste end,
-                    set = function(info, value) QuickAuras.db.profile.harryPaste = value end,
+                    get = function(info) return QA.db.profile.harryPaste end,
+                    set = function(info, value) QA.db.profile.harryPaste = value end,
                     order = 102,
                 },
                 battleShoutMissing = {
                     type = "toggle",
                     name = "Battle Shout Missing",
                     desc = "Show a warning when Battle Shout is missing",
-                    get = function(info) return QuickAuras.db.profile.battleShoutMissing end,
+                    get = function(info) return QA.db.profile.battleShoutMissing end,
                     set = function(info, value)
-                        QuickAuras.db.profile.battleShoutMissing = value
-                        QuickAuras:ClearIcons(ICON.CRUCIAL)
-                        QuickAuras:CheckAuras()
+                        QA.db.profile.battleShoutMissing = value
+                        QA:ClearIcons(ICON.CRUCIAL)
+                        QA:CheckAuras()
                     end,
                     order = 105,
                 },
@@ -398,9 +398,9 @@ QuickAuras.options = {
                     type = "toggle",
                     name = "Announce Misses",
                     desc = "When tanking a mob in an instance, will say when your swing missed.",
-                    get = function(info) return QuickAuras.db.profile.announceMisses end,
+                    get = function(info) return QA.db.profile.announceMisses end,
                     set = function(info, value)
-                        QuickAuras.db.profile.announceMisses = value
+                        QA.db.profile.announceMisses = value
                     end,
                     order = 106,
                 },
@@ -408,25 +408,25 @@ QuickAuras.options = {
                     type = "header",
                     name = "Rogue Utils",
                     order = 298,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                 },
                 spacer201 = {
                     type = "description",
                     name = "",
                     order = 299,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                 },
                 rogue5Combo = {
                     type = "toggle",
                     name = "5 Combo Points",
                     desc = "Shows a visible indication when you have 5 combo points.",
                     get = function(info)
-                        return QuickAuras.db.profile.rogue5combo
+                        return QA.db.profile.rogue5combo
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.rogue5combo = value
+                        QA.db.profile.rogue5combo = value
                     end,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                     order = 304,
                 },
                 rogueTeaTime = {
@@ -439,12 +439,12 @@ QuickAuras.options = {
                         always = "Always",
                     },
                     get = function(info)
-                        return QuickAuras.db.profile.rogueTeaTime or "always"
+                        return QA.db.profile.rogueTeaTime or "always"
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.rogueTeaTime = value
+                        QA.db.profile.rogueTeaTime = value
                     end,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                     order = 306,
                 },
                 rogueTeaTimeFrame = {
@@ -456,12 +456,12 @@ QuickAuras.options = {
                         alert = "Alert Frame",
                     },
                     get = function(info)
-                        return QuickAuras.db.profile.rogueTeaTimeFrame or "always"
+                        return QA.db.profile.rogueTeaTimeFrame or "always"
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.rogueTeaTimeFrame = value
+                        QA.db.profile.rogueTeaTimeFrame = value
                     end,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                     order = 307,
                 },
                 stealthInInstance = {
@@ -469,12 +469,12 @@ QuickAuras.options = {
                     name = "Stealthed Warn",
                     desc = "Show a warning when stealthed in an instance. Can be useful when vanishing mid combat, it's hard to see whether you're stealthed or not.",
                     get = function(info)
-                        return QuickAuras.db.profile.stealthInInstance
+                        return QA.db.profile.stealthInInstance
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.stealthInInstance = value
+                        QA.db.profile.stealthInInstance = value
                     end,
-                    hidden = not QuickAuras.isRogue,
+                    hidden = not QA.isRogue,
                     order = 308,
                 },
             },
@@ -518,11 +518,11 @@ QuickAuras.options = {
                     name = "Hearthstone",
                     desc = "Shows a warning if your hearthstone is not set to a capital city.",
                     get = function(info)
-                        return QuickAuras.db.profile.hsNotCapitalWarning
+                        return QA.db.profile.hsNotCapitalWarning
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.hsNotCapitalWarning = value
-                        QuickAuras:RefreshWarnings()
+                        QA.db.profile.hsNotCapitalWarning = value
+                        QA:RefreshWarnings()
                     end,
                     order = 50,
                 },
@@ -553,13 +553,13 @@ QuickAuras.options = {
                     name = "Target In Range",
                     desc = "Lets you know when target is in range for casting a spell",
                     get = function(info)
-                        return QuickAuras.db.profile.targetInRangeIndication
+                        return QA.db.profile.targetInRangeIndication
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.targetInRangeIndication = value
+                        QA.db.profile.targetInRangeIndication = value
                         QuickAuras_RangeIndicator:Hide()
-                        QuickAuras.targetInRange = false
-                        QuickAuras:CheckTargetRange()
+                        QA.targetInRange = false
+                        QA:CheckTargetRange()
                     end,
                     order = 50,
                 },
@@ -590,11 +590,11 @@ QuickAuras.options = {
                         raid = "Raid Instances",
                     },
                     get = function(info)
-                        return QuickAuras.db.profile.missingBuffsMode or "raid"
+                        return QA.db.profile.missingBuffsMode or "raid"
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.missingBuffsMode = value
-                        QuickAuras:RefreshMissing()
+                        QA.db.profile.missingBuffsMode = value
+                        QA:RefreshMissing()
                     end,
                     order = 1000,
                 },
@@ -610,11 +610,11 @@ QuickAuras.options = {
                     name = "Low Consumes",
                     desc = "Shows a reminder to get consumes you're low on, at a capital city",
                     get = function(info)
-                        return QuickAuras.db.profile.reminderLowConsumes
+                        return QA.db.profile.reminderLowConsumes
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.reminderLowConsumes = value
-                        QuickAuras:RefreshReminders()
+                        QA.db.profile.reminderLowConsumes = value
+                        QA:RefreshReminders()
                     end,
                     order = 50,
                 },
@@ -623,10 +623,10 @@ QuickAuras.options = {
                     name = "Out of Consume",
                     desc = "Shows a warning if a consumable has been depleted during an instance. Right click icon to dismiss.",
                     get = function(info)
-                        return QuickAuras.db.profile.outOfConsumeWarning
+                        return QA.db.profile.outOfConsumeWarning
                     end,
                     set = function(info, value)
-                        QuickAuras.db.profile.outOfConsumeWarning = value
+                        QA.db.profile.outOfConsumeWarning = value
                     end,
                     order = 51,
                 },
@@ -642,10 +642,10 @@ QuickAuras.options = {
                     min = 0,
                     max = 60*24,
                     step = 1,
-                    get = function(info) return QuickAuras.db.profile.transmutePreReadyTime end,
+                    get = function(info) return QA.db.profile.transmutePreReadyTime end,
                     set = function(info, value)
-                        QuickAuras.db.profile.transmutePreReadyTime = value
-                        QuickAuras:CheckTransmuteCooldownDebounce()
+                        QA.db.profile.transmutePreReadyTime = value
+                        QA:CheckTransmuteCooldownDebounce()
                     end,
                     order = 109,
                 },
@@ -676,16 +676,16 @@ local function AddSpells(cspells, orderStart, categoryHidden)
         order = order + 1
         debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
         if spell.raidBars then
-            if QuickAuras.defaultOptions.profile[spell.option.."_rbars"] == nil then
-                QuickAuras.defaultOptions.profile[spell.option.."_rbars"] = true
+            if QA.defaultOptions.profile[spell.option.."_rbars"] == nil then
+                QA.defaultOptions.profile[spell.option.."_rbars"] = true
             end
-            QuickAuras.options.args.bars.args[spellKey.."_rbars"] = {
+            QA.options.args.bars.args[spellKey.."_rbars"] = {
                 type = "toggle",
                 name = spell.name,
                 desc = "Shows time bar when "..spell.name.." is active for a raid member.",
-                get = function(info) return QuickAuras.db.profile[spell.option.."_rbars"] end,
+                get = function(info) return QA.db.profile[spell.option.."_rbars"] end,
                 set = function(info, value)
-                    QuickAuras.db.profile[spell.option.."_rbars"] = value
+                    QA.db.profile[spell.option.."_rbars"] = value
                 end,
                 order = order + 3000,
             }
@@ -693,10 +693,10 @@ local function AddSpells(cspells, orderStart, categoryHidden)
         if not categoryHidden then
             if spell.visible == nil or spell.visible == true then
                 -- obj.option in format of class_abilityName
-                if QuickAuras.defaultOptions.profile[spell.option] == nil then
-                    QuickAuras.defaultOptions.profile[spell.option] = true
+                if QA.defaultOptions.profile[spell.option] == nil then
+                    QA.defaultOptions.profile[spell.option] = true
                 end
-                local categoryOptions = QuickAuras.options.args[spell.category or "bars"]
+                local categoryOptions = QA.options.args[spell.category or "bars"]
                 if categoryOptions and spell.list and not spell.transmute then
                     -- Buff/Debuff option
                     local args = categoryOptions.args
@@ -704,48 +704,48 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                         type = "toggle",
                         name = spell.name,
                         desc = spell.desc or "Shows "..(spell.offensive and "debuff" or "buff").." time for ".. spell.name..".",
-                        get = function(info) return QuickAuras.db.profile[spell.option] end,
+                        get = function(info) return QA.db.profile[spell.option] end,
                         set = function(info, value)
-                            QuickAuras.db.profile[spell.option] = value
-                            if spell.aura then QuickAuras:CheckAuras() end
+                            QA.db.profile[spell.option] = value
+                            if spell.aura then QA:CheckAuras() end
                         end,
                         order = order + orderStart,
                     }
                 end
-                categoryOptions = QuickAuras.options.args[spell.category or "cooldowns"]
+                categoryOptions = QA.options.args[spell.category or "cooldowns"]
                 if categoryOptions and spell.cooldown then
                     -- Cooldowns option
-                    if QuickAuras.defaultOptions.profile[spell.option.."_cd"] == nil then
-                        QuickAuras.defaultOptions.profile[spell.option.."_cd"] = true
+                    if QA.defaultOptions.profile[spell.option.."_cd"] == nil then
+                        QA.defaultOptions.profile[spell.option.."_cd"] = true
                     end
                     categoryOptions.args[spellKey] = {
                         type = "toggle",
                         name = spell.name,
                         desc = spell.desc or "Shows cooldown for ".. spell.name..".",
-                        get = function(info) return QuickAuras.db.profile[spell.option.."_cd"] end,
+                        get = function(info) return QA.db.profile[spell.option.."_cd"] end,
                         set = function(info, value)
-                            QuickAuras.db.profile[spell.option.."_cd"] = value
-                            QuickAuras:RefreshCooldowns()
-                            if spell.aura then QuickAuras:CheckAuras() end
+                            QA.db.profile[spell.option.."_cd"] = value
+                            QA:RefreshCooldowns()
+                            if spell.aura then QA:CheckAuras() end
                         end,
                         order = order + 1000,
                     }
                 end
                 if spell.transmute then
                     -- Profession cooldowns option
-                    if QuickAuras.defaultOptions.profile[spell.option.."_pcd"] == nil then
-                        QuickAuras.defaultOptions.profile[spell.option.."_pcd"] = true
+                    if QA.defaultOptions.profile[spell.option.."_pcd"] == nil then
+                        QA.defaultOptions.profile[spell.option.."_pcd"] = true
                     end
-                    QuickAuras.options.args.reminders.args[spellKey] = {
+                    QA.options.args.reminders.args[spellKey] = {
                         type = "toggle",
                         name = spell.name,
                         desc = "Reminder icon when "..spell.name.." cooldown is ready.",
                         get = function(info)
-                            return QuickAuras.db.profile[spell.option.."_pcd"]
+                            return QA.db.profile[spell.option.."_pcd"]
                         end,
                         set = function(info, value)
-                            QuickAuras.db.profile[spell.option.."_pcd"] = value
-                            QuickAuras:RefreshReminders()
+                            QA.db.profile[spell.option.."_pcd"] = value
+                            QA:RefreshReminders()
                         end,
                         order = order + 100,
                     }
@@ -755,7 +755,7 @@ local function AddSpells(cspells, orderStart, categoryHidden)
     end
 end
 
-function QuickAuras:AddAbilitiesOptions()
+function QA:AddAbilitiesOptions()
     AddSpells(self.spells.racials)
     AddSpells(self.spells.iconAlerts, 100)
     AddSpells(self.spells.other)
@@ -768,46 +768,46 @@ function QuickAuras:AddAbilitiesOptions()
     AddSpells(self.spells.shaman, 1000, not self.isShaman)
 end
 
-function QuickAuras:AddGearWarningOptions()
+function QA:AddGearWarningOptions()
     local order = 200
-    for itemId, obj in pairs(QuickAuras.trackedGear) do
+    for itemId, obj in pairs(QA.trackedGear) do
         order = order + 1
         obj.option = "gw_"..obj.name:gsub("%s+", "")
-        QuickAuras.defaultOptions.profile[obj.option] = true
-        QuickAuras.options.args.warnings.args[obj.option] = {
+        QA.defaultOptions.profile[obj.option] = true
+        QA.options.args.warnings.args[obj.option] = {
             type = "toggle",
             name = obj.name,
             desc = obj.desc or "Shows a warning when "..obj.name.." is worn.",
             get = function(info)
-                return QuickAuras.db.profile[obj.option]
+                return QA.db.profile[obj.option]
             end,
             set = function(info, value)
-                QuickAuras.db.profile[obj.option] = value
-                QuickAuras:RefreshWarnings()
+                QA.db.profile[obj.option] = value
+                QA:RefreshWarnings()
             end,
             order = order,
         }
     end
 end
 
-function QuickAuras:AddRemindersOptions()
+function QA:AddRemindersOptions()
     local order = 200
 
     local function AddOption(obj, optionsList)
         obj.option = "reminders_"..obj.name:gsub("%s+", "")
         debug(3, "Adding reminder option", obj.name, obj.option)
-        QuickAuras.defaultOptions.profile[obj.option] = true
+        QA.defaultOptions.profile[obj.option] = true
         optionsList.args[obj.option] = {
             type = "toggle",
             name = obj.name,
             desc = obj.desc or "Shows a warning when you're low on "..obj.name,
             get = function(info)
-                return QuickAuras.db.profile[obj.option]
+                return QA.db.profile[obj.option]
             end,
             set = function(info, value)
                 debug(3, "Set reminder", obj.name, obj.option, value)
-                QuickAuras.db.profile[obj.option] = value
-                QuickAuras:RefreshReminders()
+                QA.db.profile[obj.option] = value
+                QA:RefreshReminders()
             end,
             order = order,
         }
@@ -818,33 +818,33 @@ function QuickAuras:AddRemindersOptions()
     --    AddOption(obj)
     --end
     order = 200
-    for _, obj in pairs(QuickAuras.trackedTracking) do
+    for _, obj in pairs(QA.trackedTracking) do
         order = order + 1
-        AddOption(obj, QuickAuras.options.args.reminders)
+        AddOption(obj, QA.options.args.reminders)
     end
 end
 
-function QuickAuras:AddConsumeOptions()
+function QA:AddConsumeOptions()
     local order = 200
     for _, item in ipairs(self.consumes) do
         if item.visible == nil or item.visible then
             order = order + 1
             debug(3, "AddConsumeOptions", item.name, item.option, item.default)
             if item.cooldown then
-                QuickAuras.defaultOptions.profile[item.option.."_cd"] = true
+                QA.defaultOptions.profile[item.option.."_cd"] = true
             end
-            QuickAuras.options.args.consumes.args[item.option] = {
+            QA.options.args.consumes.args[item.option] = {
                 type = "toggle",
                 name = item.name,
                 desc = item.desc or "Shows a warning when ".. item.name.." is missing.",
                 get = function(info)
-                    return QuickAuras.db.profile[item.option]
+                    return QA.db.profile[item.option]
                 end,
                 set = function(info, value)
-                    QuickAuras.db.profile[item.option] = value
-                    QuickAuras:RefreshMissing()
+                    QA.db.profile[item.option] = value
+                    QA:RefreshMissing()
                     if (item.visible == nil or item.visible) and (item.visibleFunc == nil or item.visibleFunc()) then
-                        QuickAuras:RefreshReminders()
+                        QA:RefreshReminders()
                     end
                 end,
                 order = order,
@@ -853,23 +853,23 @@ function QuickAuras:AddConsumeOptions()
     end
 end
 
-function QuickAuras:SetRangeDefaultSpellId()
-    if QuickAuras.isWarrior then
-        QuickAuras.defaultOptions.profile.rangeSpellId = 6178 -- charge
-    elseif QuickAuras.isShaman then
-        QuickAuras.defaultOptions.profile.rangeSpellId = 8056 -- frost shock
-    elseif QuickAuras.isMage then
-        QuickAuras.defaultOptions.profile.rangeSpellId = 116 -- frostbolt
-    elseif QuickAuras.isWarlock then
-        QuickAuras.defaultOptions.profile.rangeSpellId = 686 -- shadow bolt
-    elseif QuickAuras.isHunter then
-        QuickAuras.defaultOptions.profile.rangeSpellId = 3044 -- arcane shot
+function QA:SetRangeDefaultSpellId()
+    if QA.isWarrior then
+        QA.defaultOptions.profile.rangeSpellId = 6178 -- charge
+    elseif QA.isShaman then
+        QA.defaultOptions.profile.rangeSpellId = 8056 -- frost shock
+    elseif QA.isMage then
+        QA.defaultOptions.profile.rangeSpellId = 116 -- frostbolt
+    elseif QA.isWarlock then
+        QA.defaultOptions.profile.rangeSpellId = 686 -- shadow bolt
+    elseif QA.isHunter then
+        QA.defaultOptions.profile.rangeSpellId = 3044 -- arcane shot
     else
-        QuickAuras.defaultOptions.profile.rangeSpellId = nil
+        QA.defaultOptions.profile.rangeSpellId = nil
     end
 end
 
-function QuickAuras:BuildOptions()
+function QA:BuildOptions()
     self:AddAbilitiesOptions()
     self:AddGearWarningOptions()
     self:AddConsumeOptions()
@@ -879,7 +879,7 @@ end
 
 --------
 
-function QuickAuras:SetOptionsDefaults()
+function QA:SetOptionsDefaults()
     for _, item in ipairs(self.consumes) do
         if (item.visible == nil or item.visible) and self.bags[item.itemId] then
             -- enable currently helf consumes for low consumes reminder

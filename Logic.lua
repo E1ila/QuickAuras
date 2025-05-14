@@ -98,7 +98,7 @@ function QA:CheckWarriorOverpower()
                 end)
             end
         else
-            local button = self:AddIcon(self.db.profile.warriorOverpowerFrame, "spell", overpower.spellId[1], QA.spells.warrior.execute)
+            local button = self:AddIcon(self.db.profile.warriorOverpowerFrame, "spell", overpower.spellId[1], QA.spells.warrior.overpower)
             if button then
                 button.glowInCombat = true
                 changed = true
@@ -110,6 +110,44 @@ function QA:CheckWarriorOverpower()
     end
     if changed then
         self:ArrangeIcons(self.db.profile.warriorOverpowerFrame)
+    end
+end
+
+local hasRevengeCooldownCheck = false
+local CheckRevengeFaded = QA:Debounce(function()
+    QA:CheckWarriorRevenge()
+end, 1)
+
+function QA:CheckWarriorRevenge()
+    local changed = false
+    local revenge = QA.spells.warrior.revenge
+    local usable, notEnoughMana = IsUsableSpell(revenge.spellId[1])
+    debug(2, "Checking revenge", usable)
+    if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
+        local start, duration = GetSpellCooldown(revenge.spellId[1])
+        if start > 0 and duration > 0 then
+            -- has cooldown, check again later
+            changed = self:RemoveIcon(self.db.profile.warriorRevengeFrame, revenge.spellId[1])
+            if not hasRevengeCooldownCheck then
+                hasRevengeCooldownCheck = true
+                C_Timer.After(start + duration - GetTime() + 0.1, function()
+                    hasRevengeCooldownCheck = false
+                    QA:CheckWarriorRevenge()
+                end)
+            end
+        else
+            local button = self:AddIcon(self.db.profile.warriorRevengeFrame, "spell", revenge.spellId[1], QA.spells.warrior.revenge)
+            if button then
+                button.glowInCombat = true
+                changed = true
+            end
+            CheckRevengeFaded() -- if not used, it fades. check within 1 sec
+        end
+    else
+        changed = self:RemoveIcon(self.db.profile.warriorRevengeFrame, revenge.spellId[1])
+    end
+    if changed then
+        self:ArrangeIcons(self.db.profile.warriorRevengeFrame)
     end
 end
 

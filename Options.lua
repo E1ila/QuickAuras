@@ -33,6 +33,8 @@ QA.defaultOptions = {
         warriorExecuteFrame = ICON.WARNING,
         warriorOverpower = QA.isWarrior,
         warriorOverpowerFrame = ICON.WARNING,
+        warriorRevenge = QA.isWarrior,
+        warriorRevengeFrame = ICON.WARNING,
         someSetting = 50,
         raidBarHeight = 20,
         barHeight = 25,
@@ -412,13 +414,13 @@ QA.options = {
                     type = "header",
                     name = "Warrior Utils",
                     order = 398,
-                    hidden = not QA.isRogue,
+                    hidden = not QA.isWarrior,
                 },
                 spacer202 = {
                     type = "description",
                     name = "",
                     order = 399,
-                    hidden = not QA.isRogue,
+                    hidden = not QA.isWarrior,
                 },
                 warriorExecute = {
                     type = "toggle",
@@ -431,7 +433,33 @@ QA.options = {
                         QA.db.profile.warriorExecute = value
                     end,
                     hidden = not QA.isWarrior,
-                    order = 406,
+                    order = 400,
+                },
+                warriorOverpower = {
+                    type = "toggle",
+                    name = "Overpower!",
+                    desc = "Shows a visible Overpower indication when enemy has 20% or less HP.",
+                    get = function(info)
+                        return QA.db.profile.warriorOverpower
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorOverpower = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 401,
+                },
+                warriorRevenge = {
+                    type = "toggle",
+                    name = "Revenge!",
+                    desc = "Shows a visible Revenge indication.",
+                    get = function(info)
+                        return QA.db.profile.warriorRevenge
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorRevenge = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 402,
                 },
                 warriorExecuteFrame = {
                     type = "select",
@@ -448,37 +476,41 @@ QA.options = {
                         QA.db.profile.warriorExecuteFrame = value
                     end,
                     hidden = not QA.isWarrior,
-                    order = 407,
-                },
-                warriorOverpower = {
-                    type = "toggle",
-                    name = "Overpower!",
-                    desc = "Shows a visible Overpower indication when enemy has 20% or less HP.",
-                    get = function(info)
-                        return QA.db.profile.warriorOverpower
-                    end,
-                    set = function(info, value)
-                        QA.db.profile.warriorOverpower = value
-                    end,
-                    hidden = not QA.isWarrior,
-                    order = 408,
+                    order = 403,
                 },
                 warriorOverpowerFrame = {
                     type = "select",
-                    name = "Execute! Frame",
+                    name = "Overpower! Frame",
                     desc = "Choose where to show the Overpower indication.",
                     values = {
                         warning = "Warning Frame",
-                        alert = "Overpower Frame",
+                        alert = "Alert Frame",
                     },
                     get = function(info)
-                        return QA.db.profile.warriorOverpowerFrame or "always"
+                        return QA.db.profile.warriorOverpowerFrame or "warning"
                     end,
                     set = function(info, value)
                         QA.db.profile.warriorOverpowerFrame = value
                     end,
                     hidden = not QA.isWarrior,
-                    order = 409,
+                    order = 404,
+                },
+                warriorRevengeFrame = {
+                    type = "select",
+                    name = "Revenge! Frame",
+                    desc = "Choose where to show the Revenge indication.",
+                    values = {
+                        warning = "Warning Frame",
+                        alert = "Alert Frame",
+                    },
+                    get = function(info)
+                        return QA.db.profile.warriorRevengeFrame or "warning"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorRevengeFrame = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 405,
                 },
                 rogueUtilsHeader = {
                     type = "header",

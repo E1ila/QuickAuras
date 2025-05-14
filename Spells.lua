@@ -106,6 +106,16 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    disarm = {
+        spellId = { 676 },
+        name = "Disarm",
+        icon = "Interface\\Icons\\Ability_Warrior_Disarm",
+        color = {0.533, 0.290, 0.173},
+        list = "offensive",
+        duration = 10,
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
     retaliation = {
         spellId = { 20230 },
         name = "Retaliation",
@@ -171,6 +181,9 @@ spells.warrior = {
     },
     overpower = {
         spellId = { 7384, 7887, 11584, 11585 },
+        triggers = {
+            DODGE = true,
+        },
         bySpellId = {
             [7384] = 7384,
             [7887] = 7384,
@@ -179,6 +192,25 @@ spells.warrior = {
         },
         name = "Overpower",
         icon = "Interface\\Icons\\ability_meleedamage",
+        visible = QA.isWarrior,
+    },
+    revenge = {
+        spellId = { 6572, 6574, 7379, 11600, 11601, 25288 },
+        triggers = {
+            DODGE = true,
+            PARRY = true,
+            BLOCK = true,
+        },
+        bySpellId = {
+            [6572] = 6572,
+            [6574] = 6572,
+            [7379] = 6572,
+            [11600] = 6572,
+            [11601] = 6572,
+            [25288] = 6572,
+        },
+        name = "Revenge",
+        icon = "Interface\\Icons\\ability_warrior_revenge",
         visible = QA.isWarrior,
     },
     charge = {

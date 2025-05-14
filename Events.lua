@@ -284,20 +284,34 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
     if QA.isWarrior then
         if QA.db.profile.warriorOverpower and sourceGuid == self.playerGuid then
+            local overpower = QA.spells.warrior.overpower
             -- overpower
-            if subevent == "SWING_MISSED" and p1 == "DODGE" or subevent == "SPELL_MISSED" and p4 == "DODGE" then
+            if subevent == "SWING_MISSED" and overpower.triggers[p1] or subevent == "SPELL_MISSED" and overpower.triggers[p4] then
                 -- someone dodged
                 C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end) -- doesn't become enabled right away
             end
-            if subevent == "SPELL_MISSED" then
-                debug("SPELL_MISSED", p1, p2, p3, p4, p5, p6)
-            end
             if subevent == "SPELL_CAST_SUCCESS"  then
-                local spellId = QA.spells.warrior.overpower.bySpellId[p1]
+                local spellId = overpower.bySpellId[p1]
                 --debug("SPELL_CAST_SUCCESS", p1, spellId)
-                if spellId == QA.spells.warrior.overpower.spellId[1] then
+                if spellId == overpower.spellId[1] then
                     -- used ovepower
                     C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end)
+                end
+            end
+        end
+        if QA.db.profile.warriorRevenge and destGuid == self.playerGuid then
+            local revenge = QA.spells.warrior.revenge
+            -- overpower
+            if subevent == "SWING_MISSED" and revenge.triggers[p1] or subevent == "SPELL_MISSED" and revenge.triggers[p4] then
+                -- someone dodged
+                C_Timer.After(0.05, function() QA:CheckWarriorRevenge() end) -- doesn't become enabled right away
+            end
+            if subevent == "SPELL_CAST_SUCCESS"  then
+                local spellId = revenge.bySpellId[p1]
+                --debug("SPELL_CAST_SUCCESS", p1, spellId)
+                if spellId == revenge.spellId[1] then
+                    -- used ovepower
+                    C_Timer.After(0.05, function() QA:CheckWarriorRevenge() end)
                 end
             end
         end

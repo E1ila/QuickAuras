@@ -287,7 +287,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             -- overpower
             if subevent == "SWING_MISSED" and p1 == "DODGE" or subevent == "SPELL_MISSED" and p4 == "DODGE" then
                 -- someone dodged
-                C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end)
+                C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end) -- doesn't become enabled right away
             end
             if subevent == "SPELL_MISSED" then
                 debug("SPELL_MISSED", p1, p2, p3, p4, p5, p6)

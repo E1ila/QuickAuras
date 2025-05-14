@@ -106,6 +106,23 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    berserkerRage = {
+        spellId = { 18499 },
+        name = "Berserker Rage",
+        icon = "Interface\\Icons\\spell_nature_ancestralguardian",
+        color = {0.914, 0.086, 0.086},
+        list = "watch",
+        duration = 10,
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
+    intercept = {
+        spellId = { 20252, 20616, 20617 },
+        name = "Intercept",
+        icon = "Interface\\Icons\\ability_rogue_sprint",
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
     intimidatingShout = {
         spellId = { 5246 },
         name = "Intimidating Shout",

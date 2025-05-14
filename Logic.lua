@@ -75,6 +75,7 @@ function QA:CheckWarriorExecute()
     end
 end
 
+local hasOverpowerCooldownCheck = false
 local CheckOverpowerFaded = QA:Debounce(function()
     QA:CheckWarriorOverpower()
 end, 1)
@@ -85,12 +86,25 @@ function QA:CheckWarriorOverpower()
     local usable, notEnoughMana = IsUsableSpell(overpower.spellId[1])
     debug(2, "Checking overpower", usable)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
-        local button = self:AddIcon(self.db.profile.warriorOverpowerFrame, "spell", overpower.spellId[1], QA.spells.warrior.execute)
-        if button then
-            button.glowInCombat = true
-            changed = true
+        local start, duration = GetSpellCooldown(overpower.spellId[1])
+        if start > 0 and duration > 0 then
+            -- has cooldown, check again later
+            changed = self:RemoveIcon(self.db.profile.warriorOverpowerFrame, overpower.spellId[1])
+            if not hasOverpowerCooldownCheck then
+                hasOverpowerCooldownCheck = true
+                C_Timer.After(start + duration - GetTime() + 0.05, function()
+                    hasOverpowerCooldownCheck = false
+                    QA:CheckWarriorOverpower()
+                end)
+            end
+        else
+            local button = self:AddIcon(self.db.profile.warriorOverpowerFrame, "spell", overpower.spellId[1], QA.spells.warrior.execute)
+            if button then
+                button.glowInCombat = true
+                changed = true
+            end
+            CheckOverpowerFaded() -- if not used, it fades. check within 1 sec
         end
-        CheckOverpowerFaded() -- if not used, it fades. check within 1 sec
     else
         changed = self:RemoveIcon(self.db.profile.warriorOverpowerFrame, overpower.spellId[1])
     end

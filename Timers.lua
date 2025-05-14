@@ -55,7 +55,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
-            return existingTimer -- already exists
+            return existingTimer, false -- already exists
         end
         debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime)
         -- different timer, remove old
@@ -107,7 +107,7 @@ function QuickAuras:AddTimer(timerType, conf, id, duration, expTime, showAtTime,
     self.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
     onUpdate(timer)
     arrangeFunc(self, list, parent)
-    return timer
+    return timer, true
 end
 
 function QuickAuras:GetTimerKey(name, expTime, uiType)

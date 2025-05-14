@@ -51,6 +51,7 @@ QuickAuras.defaultOptions = {
         offensiveBars = true,
         showTimeOnBars = true,
         battleShoutMissing = QuickAuras.isWarrior or QuickAuras.isRogue,
+        frostResistanceTotemMissing = true,
         lowConsumesMinLevel = 58,
         lowConsumesMinCount = 1,
         manaTideAura = QuickAuras.isManaClass,

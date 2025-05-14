@@ -322,7 +322,7 @@ function QuickAuras:ArrangeIcons(iconType)
             frame:SetSize(self.db.profile.iconAlertSize, self.db.profile.iconAlertSize) -- Width, Height
         elseif iconType == ICON.CRUCIAL then
             if lastFrame then
-                frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4) -- vertical layout
             else
                 frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
             end
@@ -659,6 +659,20 @@ function QuickAuras:TestIconAlerts()
     --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
     self:AddTimer("auras", lip, lip.spellId[1], 6, GetTime()+6)
     DelayedReset_IconAlerts()
+end
+
+local DelayedReset_CrucialAlerts = QuickAuras:Debounce(function()
+    QuickAuras:ClearIcons(ICON.CRUCIAL)
+end, 3)
+
+function QuickAuras:TestCrucial()
+    local bs = self.spells.warrior.battleShout
+    local frr = self.spells.shaman.frostResistanceTotem
+    --  :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
+    self:AddIcon(ICON.CRUCIAL, "spell", bs.spellId[1], bs)
+    self:AddIcon(ICON.CRUCIAL, "spell", frr.spellId[1], frr)
+    self:ArrangeIcons(ICON.CRUCIAL)
+    DelayedReset_CrucialAlerts()
 end
 
 

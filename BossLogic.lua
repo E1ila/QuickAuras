@@ -6,21 +6,25 @@ local ICON = QuickAuras.ICON
 local _c = QuickAuras.colors
 
 local FHM = {
-    ENCOUNTER = 1121,
+    encounterId = 1121,
     timer = nil,
     mark = 0,
 }
 local KT = {
-    ENCOUNTER = 1114,
-    NPC_ID = 15990,
+    encounterId = 1114,
+    npcId = 15990,
     phase = 0,
+}
+QuickAuras.boss = {
+    FHM = FHM,
+    KT = KT,
 }
 
 function QuickAuras:InitBossLogic()
-    self.encounter.OnStart[FHM.ENCOUNTER] = self.FHM_EncounterStart
-    self.encounter.OnEnd[FHM.ENCOUNTER] = self.FHM_EncounterEnd
-    self.encounter.OnStart[KT.ENCOUNTER] = self.KT_EncounterStart
-    self.encounter.OnEnd[KT.ENCOUNTER] = self.KT_EncounterEnd
+    self.encounter.OnStart[FHM.encounterId] = self.FHM_EncounterStart
+    self.encounter.OnEnd[FHM.encounterId] = self.FHM_EncounterEnd
+    self.encounter.OnStart[KT.encounterId] = self.KT_EncounterStart
+    self.encounter.OnEnd[KT.encounterId] = self.KT_EncounterEnd
 end
 
 function QuickAuras:KT_EncounterStart()
@@ -28,7 +32,7 @@ function QuickAuras:KT_EncounterStart()
     KT.phase = 1
 
     self.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
-        if QuickAuras:GetNpcIdFromGuid(sourceGuid) == KT.NPC_ID then
+        if QuickAuras:GetNpcIdFromGuid(sourceGuid) == KT.npcId then
             KT.phase = 2
             QuickAuras.encounter.OnSwingDamage = nil
             out(_c.bold.."KT".."|r Phase 2")
@@ -40,6 +44,7 @@ end
 function QuickAuras:KT_EncounterEnd()
     out(_c.bold.."KT".."|r Encounter ended")
     self.encounter.OnSwingDamage = nil
+    KT.phase = 0
 end
 
 function QuickAuras:FHM_EncounterStart()

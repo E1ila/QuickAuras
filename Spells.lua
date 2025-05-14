@@ -136,6 +136,9 @@ spells.warrior = {
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
         crucial = QuickAuras.isWarrior or QuickAuras.isRogue,
+        crucialCond = function()
+            return QuickAuras.db.profile.battleShoutMissing and (not QuickAuras.isWarrior or QuickAuras.inCombat or IsInGroup()) and (QuickAuras.isWarrior or QuickAuras.hasWarriorInParty)
+        end,
         visible = QuickAuras.isWarrior,
     },
     deathWish = {
@@ -343,6 +346,15 @@ spells.shaman = {
         color = {0.5, 0.5, 0.5},
         visible = QuickAuras.isShaman,
         cooldown = 6
+    },
+    frostResistanceTotem = {
+        spellId = { 10479 },
+        name = "Frost Resistance Totem",
+        icon = "Interface\\Icons\\spell_frostresistancetotem_01",
+        crucial = true,
+        crucialCond = function()
+            return QuickAuras.boss.KT.phase == 2 and QuickAuras.db.profile.frostResistanceTotemMissing
+        end
     },
     reincarnation = {
         spellId = { 20608 },

@@ -29,6 +29,10 @@ QA.defaultOptions = {
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
         rogueTeaTimeFrame = ICON.WARNING,
+        warriorExecute = QA.isWarrior,
+        warriorExecuteFrame = ICON.WARNING,
+        warriorOverpower = QA.isWarrior,
+        warriorOverpowerFrame = ICON.WARNING,
         someSetting = 50,
         raidBarHeight = 20,
         barHeight = 25,
@@ -403,6 +407,78 @@ QA.options = {
                         QA.db.profile.announceMisses = value
                     end,
                     order = 106,
+                },
+                warriorUtilsHeader = {
+                    type = "header",
+                    name = "Warrior Utils",
+                    order = 398,
+                    hidden = not QA.isRogue,
+                },
+                spacer202 = {
+                    type = "description",
+                    name = "",
+                    order = 399,
+                    hidden = not QA.isRogue,
+                },
+                warriorExecute = {
+                    type = "toggle",
+                    name = "Execute!",
+                    desc = "Shows a visible Execute indication when enemy has 20% or less HP.",
+                    get = function(info)
+                        return QA.db.profile.warriorExecute
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorExecute = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 406,
+                },
+                warriorExecuteFrame = {
+                    type = "select",
+                    name = "Execute! Frame",
+                    desc = "Choose where to show the Execute indication.",
+                    values = {
+                        warning = "Warning Frame",
+                        alert = "Alert Frame",
+                    },
+                    get = function(info)
+                        return QA.db.profile.warriorExecuteFrame or "always"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorExecuteFrame = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 407,
+                },
+                warriorOverpower = {
+                    type = "toggle",
+                    name = "Overpower!",
+                    desc = "Shows a visible Overpower indication when enemy has 20% or less HP.",
+                    get = function(info)
+                        return QA.db.profile.warriorOverpower
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorOverpower = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 408,
+                },
+                warriorOverpowerFrame = {
+                    type = "select",
+                    name = "Execute! Frame",
+                    desc = "Choose where to show the Overpower indication.",
+                    values = {
+                        warning = "Warning Frame",
+                        alert = "Overpower Frame",
+                    },
+                    get = function(info)
+                        return QA.db.profile.warriorOverpowerFrame or "always"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorOverpowerFrame = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 409,
                 },
                 rogueUtilsHeader = {
                     type = "header",

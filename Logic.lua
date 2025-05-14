@@ -54,32 +54,87 @@ function QA:CheckHearthstone()
     end
 end
 
-function QA:CheckPower(unit, powerType)
-    if self.isRogue and unit == "player" then
-        if powerType == "ENERGY" then
-            local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
-            if _useTeaShown then
-                -- hide
-                if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
-                    _useTeaShown = false
-                    self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, THISTLE_TEA_ITEMID)
-                end
-            else
-                -- show
-                if  currentEnergy < USE_TEA_ENERGY_THRESHOLD and
-                        (self.db.profile.rogueTeaTime == "always" or
-                                self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[BLADE_FLURRY_SPELLID])
-                then
-                    local start = self:GetItemCooldown(THISTLE_TEA_ITEMID)
-                    local foundItemId = self:FindInBags(THISTLE_TEA_ITEMID)
-                    if start == 0 and foundItemId then
-                        _useTeaShown = true
-                        local button = self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", THISTLE_TEA_ITEMID, { name = "Thistle Tea"})
-                        button.glowInCombat = true
-                        self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
-                    end
-                end
+function QA:CheckWarriorExecute()
+    if QA.db.profile.warriorExecute then
+        local changed = false
+        local executeSpellId = QA.spells.warrior.execute.spellId[1]
+        local usable, notEnoughMana = IsUsableSpell(executeSpellId)
+        --debug(2, "CheckPower", "RAGE", "usable", usable, "notEnoughMana", notEnoughMana)
+        if usable and not notEnoughMana then
+            local button = self:AddIcon(self.db.profile.warriorExecuteFrame, "spell", executeSpellId, QA.spells.warrior.execute)
+            if button then
+                button.glowInCombat = true
+                changed = true
             end
+        else
+            changed = self:RemoveIcon(self.db.profile.warriorExecuteFrame, executeSpellId)
+        end
+        if changed then
+            self:ArrangeIcons(self.db.profile.warriorExecuteFrame)
+        end
+    end
+end
+
+local CheckOverpowerFaded = QA:Debounce(function()
+    QA:CheckWarriorOverpower()
+end, 1)
+
+function QA:CheckWarriorOverpower()
+    local changed = false
+    local overpower = QA.spells.warrior.overpower
+    local usable, notEnoughMana = IsUsableSpell(overpower.spellId[1])
+    debug(2, "Checking overpower", usable)
+    if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
+        local button = self:AddIcon(self.db.profile.warriorOverpowerFrame, "spell", overpower.spellId[1], QA.spells.warrior.execute)
+        if button then
+            button.glowInCombat = true
+            changed = true
+        end
+        CheckOverpowerFaded() -- if not used, it fades. check within 1 sec
+    else
+        changed = self:RemoveIcon(self.db.profile.warriorOverpowerFrame, overpower.spellId[1])
+    end
+    if changed then
+        self:ArrangeIcons(self.db.profile.warriorOverpowerFrame)
+    end
+end
+
+function QA:CheckRogueTeaTime()
+    local currentEnergy = UnitPower("player", Enum.PowerType.Energy)
+    if _useTeaShown then
+        -- hide
+        if currentEnergy >= USE_TEA_ENERGY_THRESHOLD then
+            _useTeaShown = false
+            self:RemoveIcon(self.db.profile.rogueTeaTimeFrame, THISTLE_TEA_ITEMID)
+        end
+    else
+        -- show
+        if  currentEnergy < USE_TEA_ENERGY_THRESHOLD and
+                (self.db.profile.rogueTeaTime == "always" or
+                        self.db.profile.rogueTeaTime == "flurry" and self.playerBuffs[BLADE_FLURRY_SPELLID])
+        then
+            local start = self:GetItemCooldown(THISTLE_TEA_ITEMID)
+            local foundItemId = self:FindInBags(THISTLE_TEA_ITEMID)
+            if start == 0 and foundItemId then
+                _useTeaShown = true
+                local button = self:AddIcon(self.db.profile.rogueTeaTimeFrame, "item", THISTLE_TEA_ITEMID, { name = "Thistle Tea"})
+                button.glowInCombat = true
+                self:ArrangeIcons(self.db.profile.rogueTeaTimeFrame)
+            end
+        end
+    end
+end
+
+function QA:CheckPower(unit, powerType)
+    if not unit == "player" then return end
+    --debug(3, "CheckPower", unit, powerType)
+    if self.isWarrior then
+        if powerType == "RAGE" then
+            QA:CheckWarriorExecute()
+        end
+    elseif self.isRogue then
+        if powerType == "ENERGY" then
+            QA:CheckRogueTeaTime()
         elseif powerType == "COMBO_POINTS" then
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
             self:Rogue_SetCombo(comboPoints)

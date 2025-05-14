@@ -23,7 +23,7 @@ QA.optionalEvents = {
     "PLAYER_REGEN_ENABLED",
     "GROUP_ROSTER_UPDATE",
     "PARTY_MEMBER_ENABLE",
-    "UNIT_TARGETABLE_CHANGED",
+    --"SPELL_UPDATE_USABLE",
 }
 
 QA.adjustableFrames = {

@@ -56,6 +56,8 @@ end
 
 function QA:PLAYER_TARGET_CHANGED(...)
     self:CheckGear("target", ...)
+    self:CheckWarriorExecute()
+    self:CheckWarriorOverpower()
     self:ResetErrorCount()
 end
 
@@ -143,11 +145,8 @@ function QA:PARTY_MEMBER_ENABLE()
     self:CheckIfWarriorInParty()
 end
 
-function QA:UNIT_TARGETABLE_CHANGED(a, b, c)
-    debug("UNIT_TARGETABLE_CHANGED", a, b, c)
-    if self.encounter.UnitTargetableChanged then
-        self.encounter:UnitTargetableChanged()
-    end
+function QA:SPELL_UPDATE_USABLE(a, b, c)
+    -- happens too much
 end
 
 -- OnUpdate
@@ -283,4 +282,24 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         self.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
     end
 
+    if QA.isWarrior then
+        if QA.db.profile.warriorOverpower and sourceGuid == self.playerGuid then
+            -- overpower
+            if subevent == "SWING_MISSED" and p1 == "DODGE" or subevent == "SPELL_MISSED" and p4 == "DODGE" then
+                -- someone dodged
+                C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end)
+            end
+            if subevent == "SPELL_MISSED" then
+                debug("SPELL_MISSED", p1, p2, p3, p4, p5, p6)
+            end
+            if subevent == "SPELL_CAST_SUCCESS"  then
+                local spellId = QA.spells.warrior.overpower.bySpellId[p1]
+                --debug("SPELL_CAST_SUCCESS", p1, spellId)
+                if spellId == QA.spells.warrior.overpower.spellId[1] then
+                    -- used ovepower
+                    C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end)
+                end
+            end
+        end
+    end
 end

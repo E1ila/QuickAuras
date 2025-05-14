@@ -106,6 +106,35 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    intimidatingShout = {
+        spellId = { 5246 },
+        name = "Intimidating Shout",
+        icon = "Interface\\Icons\\ability_golemthunderclap",
+        color = {0.671, 0.251, 0.024},
+        list = "offensive",
+        duration = 8,
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
+    execute = {
+        spellId = { 5308, 20658, 20660, 20661, 20662 },
+        name = "Execute",
+        icon = "Interface\\Icons\\inv_sword_48",
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
+    overpower = {
+        spellId = { 7384, 7887, 11584, 11585 },
+        bySpellId = {
+            [7384] = 7384,
+            [7887] = 7384,
+            [11584] = 7384,
+            [11585] = 7384,
+        },
+        name = "Overpower",
+        icon = "Interface\\Icons\\ability_meleedamage",
+        visible = QA.isWarrior,
+    },
     charge = {
         spellId = { 100, 6178, 11578 },
         name = "Charge",
@@ -137,8 +166,10 @@ spells.warrior = {
         spellId = { 694, 7400, 7402, 20559, 20560 },
         name = "Mocking Blow",
         icon = "Interface\\Icons\\Ability_Warrior_PunishingBlow",
-        cooldown = true,
         list = "offensive",
+        cooldown = true,
+        duration = 6,
+        color = {246/256, 122/256, 0},
         visible = QA.isWarrior,
     },
     battleShout = {
@@ -155,6 +186,7 @@ spells.warrior = {
         spellId = { 12328 },
         name = "Death Wish",
         icon = "Interface\\Icons\\spell_shadow_deathpact",
+        list = "watch",
         raidBars = true,
         cooldown = true,
         duration = 30,
@@ -165,6 +197,7 @@ spells.warrior = {
         spellId = { 1161 },
         name = "Challenging Shout",
         icon = "Interface\\Icons\\ability_bullrush",
+        list = "offensive",
         raidBars = true,
         cooldown = true,
         duration = 6,

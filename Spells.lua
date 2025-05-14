@@ -4,6 +4,16 @@ QA.spells = { }
 local spells = QA.spells
 
 spells.hunter = {
+    scatterShot = {
+        spellId = { 19503 },
+        name = "Scatter Shot",
+        icon = "Interface\\Icons\\ability_golemstormbolt",
+        color = {0.6784, 0.6706, 0.8706},
+        list = "offensive",
+        duration = 4,
+        cooldown = true,
+        visible = QA.isHunter,
+    },
     concussiveShot = {
         spellId = { 5116 },
         name = "Concussive Shot",

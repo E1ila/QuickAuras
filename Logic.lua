@@ -221,7 +221,13 @@ function QA:CheckTransmuteCooldown()
                     out("|cffff0000Transmute|r "..spell.name.." is ready!")
                 end
                 --     :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
-                if self:AddIcon(ICON.REMINDER, "spell", id, spell, nil, nil, TransmuteClick) then changed = true end
+                local button = self:AddIcon(ICON.REMINDER, "spell", id, spell, nil, nil, TransmuteClick)
+                if button then
+                    changed = true
+                    C_Timer.After(0.1, function()
+                        ActionButton_ShowOverlayGlow(button.frame)
+                    end)
+                end
             elseif timeLeft <= self.db.profile.transmutePreReadyTime then
                 local timer = self:AddTimer("reminder", spell, id, duration, start+duration)
                 local fontSize = math.floor(self.db.profile.reminderIconSize/2)

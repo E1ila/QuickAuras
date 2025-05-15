@@ -73,10 +73,7 @@ function QA:ENCOUNTER_START(encounterId, encounterName)
 
     self:CheckMissingBuffs()
 
-    local OnStart = self.encounter.OnStart[encounterId]
-    if OnStart and type(OnStart) == "function" then
-        OnStart(self)
-    end
+    QA:EncounterStarted(encounterId)
 end
 
 function QA:ENCOUNTER_END()
@@ -84,12 +81,9 @@ function QA:ENCOUNTER_END()
     local encounterId = self.encounter.id
     self.encounter.id = nil
 
-    self:CheckMissingBuffs()
+    QA:EncounterEnded(encounterId)
 
-    local OnEnd = self.encounter.OnEnd[encounterId]
-    if OnEnd and type(OnEnd) == "function" then
-        OnEnd(self)
-    end
+    self:CheckMissingBuffs()
 end
 
 function QA:MINIMAP_UPDATE_TRACKING()
@@ -252,8 +246,12 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
-    -- reset buffs/debuffs of dead unit
     if subevent == "UNIT_DIED" then
+        if sourceGuid == self.playerGuid then
+            -- player died
+            QA:ENCOUNTER_END()
+        end
+        -- reset buffs/debuffs of dead unit
         for spellId, conf in pairs(QA.trackedCombatLog) do
             if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGuid] then
                 self:RemoveTimer(enemyDebuffs[spellId][destGuid], "combatlog")

@@ -25,20 +25,34 @@ QA.boss = {
     KT = KT,
     Loatheb = Loatheb,
 }
+QA.trackedEncounters = {}
 
 function QA:InitBossLogic()
-    self.encounter.OnStart[FHM.encounterId] = self.FHM_EncounterStart
-    self.encounter.OnEnd[FHM.encounterId] = self.FHM_EncounterEnd
-    self.encounter.OnStart[KT.encounterId] = self.KT_EncounterStart
-    self.encounter.OnEnd[KT.encounterId] = self.KT_EncounterEnd
-    self.encounter.OnStart[Loatheb.encounterId] = self.Loatheb_EncounterStart
-    self.encounter.OnEnd[Loatheb.encounterId] = self.Loatheb_EncounterEnd
+    for name, boss in pairs(QA.boss) do
+        debug(2, "Adding encounter", name, boss.encounterId)
+        QA.trackedEncounters[boss.encounterId] = boss
+        boss.name = name
+    end
 end
 
-function QA:Loatheb_EncounterStart()
-    out(_c.bold.."Loatheb".."|r Encounter started")
-    Loatheb.spore = 0
+function QA:EncounterStarted(encounterId)
+    local boss = QA.trackedEncounters[encounterId]
+    if boss then
+        out(_c.bold..boss.name.."|r Encounter started")
+        boss:EncounterStart()
+    end
+end
 
+function QA:EncounterEnded(encounterId)
+    local boss = QA.trackedEncounters[encounterId]
+    if boss then
+        out(_c.bold..boss.name.."|r Encounter ended")
+        boss:EncounterEnd()
+    end
+end
+
+function Loatheb:EncounterStart()
+    Loatheb.spore = 0
     self.encounter.OnSpellSummon = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
         if QA:GetNpcIdFromGuid(sourceGuid) == Loatheb.npcId then
             out(_c.bold.."KT".."|r "..destName.." spawned")
@@ -47,16 +61,16 @@ function QA:Loatheb_EncounterStart()
     end
 end
 
-function QA:Loatheb_EncounterEnd()
+function Loatheb:EncounterEnd()
     out(_c.bold.."Loatheb".."|r Encounter ended")
     self.OnSpellSummon = nil
 end
 
-function QA:KT_EncounterStart()
+function KT:EncounterStart()
     out(_c.bold.."KT".."|r Encounter started")
     KT.phase = 1
 
-    self.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
+    self.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
         if QA:GetNpcIdFromGuid(sourceGuid) == KT.npcId then
             KT.phase = 2
             QA.encounter.OnSwingDamage = nil
@@ -66,21 +80,21 @@ function QA:KT_EncounterStart()
     end
 end
 
-function QA:KT_EncounterEnd()
+function KT:EncounterEnd()
     out(_c.bold.."KT".."|r Encounter ended")
     self.encounter.OnSwingDamage = nil
     KT.phase = 0
 end
 
-function QA:FHM_EncounterStart()
+function FHM:EncounterStart()
     out(_c.bold.."4HM".."|r Encounter started")
     FHM.mark = 0
     FHM.timer = C_Timer.NewTimer(21, function()
-        QA:FTM_Mark()
+        FTM:Mark()
     end)
 end
 
-function QA:FHM_EncounterEnd()
+function FHM:EncounterEnd()
     out(_c.bold.."4HM".."|r Encounter ended")
     if FHM.timer then
         FHM.timer:Cancel()
@@ -88,7 +102,7 @@ function QA:FHM_EncounterEnd()
     end
 end
 
-function QA:FTM_Mark()
+function FTM:Mark()
     FHM.mark = FHM.mark + 1
     local extraText = ""
 
@@ -102,6 +116,6 @@ function QA:FTM_Mark()
 
     out(_c.bold.."4HM".."|r Mark "..FHM.mark..extraText)
     FHM.timer = C_Timer.NewTimer(13, function()
-        QA:FTM_Mark()
+        FTM:Mark()
     end)
 end

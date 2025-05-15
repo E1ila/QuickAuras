@@ -526,6 +526,10 @@ function QA:UpdateZone()
     self.ZoneName = newZoneName
     if zoneChanged then
         local inInstance, instanceType = IsInInstance()
+        if not inInstance then
+            -- in case player HS'd out of an instance
+            QA:ENCOUNTER_END()
+        end
         self.InstanceName = nil
         if inInstance and (instanceType == "raid" or instanceType == "party") then
             self.InstanceName = select(1, GetInstanceInfo()) -- Get the instance name

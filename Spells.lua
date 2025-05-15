@@ -106,6 +106,17 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    recklessness = {
+        spellId = { 1719 },
+        name = "Recklessness",
+        icon = "Interface\\Icons\\ability_criticalstrike",
+        color = {0.914, 0.086, 0.086},
+        list = "watch",
+        duration = 15,
+        cooldown = true,
+        raidBars = true,
+        visible = QA.isWarrior,
+    },
     disarm = {
         spellId = { 676 },
         name = "Disarm",

@@ -317,6 +317,20 @@ QA.options = {
                     end,
                     order = 110,
                 },
+                raidBarsHeight = {
+                    type = "range",
+                    name = "Raid Bar Height",
+                    desc = "Set the height of the raid bars",
+                    min = 5,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QA.db.profile.raidBarHeight end,
+                    set = function(info, value)
+                        QA.db.profile.raidBarHeight = value
+                        --QuickAuras:TestIconAlerts()
+                    end,
+                    order = 111,
+                },
                 spacer198 = {
                     type = "description",
                     name = "",

@@ -15,9 +15,15 @@ local KT = {
     npcId = 15990,
     phase = 0,
 }
+local Loatheb = {
+    encounterId = 1115,
+    npcId = 16011,
+    spore = 0,
+}
 QA.boss = {
     FHM = FHM,
     KT = KT,
+    Loatheb = Loatheb,
 }
 
 function QA:InitBossLogic()
@@ -25,6 +31,25 @@ function QA:InitBossLogic()
     self.encounter.OnEnd[FHM.encounterId] = self.FHM_EncounterEnd
     self.encounter.OnStart[KT.encounterId] = self.KT_EncounterStart
     self.encounter.OnEnd[KT.encounterId] = self.KT_EncounterEnd
+    self.encounter.OnStart[Loatheb.encounterId] = self.Loatheb_EncounterStart
+    self.encounter.OnEnd[Loatheb.encounterId] = self.Loatheb_EncounterEnd
+end
+
+function QA:Loatheb_EncounterStart()
+    out(_c.bold.."Loatheb".."|r Encounter started")
+    Loatheb.spore = 0
+
+    self.encounter.OnSpellSummon = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+        if QA:GetNpcIdFromGuid(sourceGuid) == Loatheb.npcId then
+            out(_c.bold.."KT".."|r "..destName.." spawned")
+            Loatheb.spore = Loatheb.spore + 1
+        end
+    end
+end
+
+function QA:Loatheb_EncounterEnd()
+    out(_c.bold.."Loatheb".."|r Encounter ended")
+    self.OnSpellSummon = nil
 end
 
 function QA:KT_EncounterStart()

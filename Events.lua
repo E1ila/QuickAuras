@@ -293,6 +293,10 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         self.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
 
+    if self.encounter.OnSpellSummon and subevent == "SPELL_SUMMON" then
+        self.encounter.OnSpellSummon(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    end
+
     if QA.isWarrior then
         if QA.db.profile.warriorOverpower and QA.shapeshiftForm == QA.warrior.stance.battle and sourceGuid == self.playerGuid then
             local overpower = QA.spells.warrior.overpower

@@ -149,6 +149,11 @@ function QA:SPELL_UPDATE_USABLE(a, b, c)
     -- happens too much
 end
 
+function QA:UPDATE_SHAPESHIFT_FORM(...)
+    self.shapeshiftForm = GetShapeshiftForm()
+    --debug("UPDATE_SHAPESHIFT_FORM", self.shapeshiftForm, ...)
+end
+
 -- OnUpdate
 
 function QA:OnUpdate()
@@ -289,7 +294,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     end
 
     if QA.isWarrior then
-        if QA.db.profile.warriorOverpower and sourceGuid == self.playerGuid then
+        if QA.db.profile.warriorOverpower and QA.shapeshiftForm == QA.warrior.stance.battle and sourceGuid == self.playerGuid then
             local overpower = QA.spells.warrior.overpower
             -- overpower
             if subevent == "SWING_MISSED" and overpower.triggers[extra[1]] or subevent == "SPELL_MISSED" and overpower.triggers[extra[4]] then
@@ -305,7 +310,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 end
             end
         end
-        if QA.db.profile.warriorRevenge and destGuid == self.playerGuid then
+        if QA.db.profile.warriorRevenge and QA.shapeshiftForm == QA.warrior.stance.defensive and destGuid == self.playerGuid then
             local revenge = QA.spells.warrior.revenge
             local partiallyBlocked = false
             local blockIndex = 5

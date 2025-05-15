@@ -24,6 +24,15 @@ QA.optionalEvents = {
     "GROUP_ROSTER_UPDATE",
     "PARTY_MEMBER_ENABLE",
     --"SPELL_UPDATE_USABLE",
+    "UPDATE_SHAPESHIFT_FORM",
+}
+
+QA.warrior = {
+    stance = {
+        battle = 1,
+        defensive = 2,
+        berserker = 3,
+    },
 }
 
 QA.adjustableFrames = {

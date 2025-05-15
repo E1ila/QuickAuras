@@ -134,6 +134,7 @@ function QA:OnInitialize()
         QA:CheckCooldowns()
         QA:CheckGear()
         QA:InitBossLogic()
+        QA:UPDATE_SHAPESHIFT_FORM()
         --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
         --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
         --QuickAuras:CheckLowConsumes() -- updated on load due to zone event

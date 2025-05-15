@@ -162,17 +162,23 @@ end
 
 -- Combat log
 
+local DAMAGE_SUBEVENTS = {
+    SWING_DAMAGE = true,
+    SPELL_DAMAGE = true,
+}
+
 function QA:COMBAT_LOG_EVENT_UNFILTERED()
     self:HandleCombatLogEvent(CombatLogGetCurrentEventInfo())
 end
 
-function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
-    --debug("CombatLog", subevent, sourceName, destName, p1, p2, p3)
+function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    local extra = {...}
+    --debug("CombatLog", subevent, sourceName, destName, ...)
 
     if  -- parry haste
             self.db.profile.harryPaste and
             subevent == "SWING_MISSED" and
-            p1 == "PARRY" and -- missType
+            extra[1] == "PARRY" and -- missType
             destGuid == UnitGUID("target") and
             sourceGuid ~= UnitGUID("targettarget") and
             not UnitIsPlayer("target") and
@@ -186,10 +192,10 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     end
 
     -- tracked spells
-    if type(p1) == "number" and p1 > 0 then
+    if type(extra[1]) == "number" and extra[1] > 0 then
         for spellId, conf in pairs(self.trackedCombatLog) do
-            --debug("CombatLog", "spellId", spellId, "conf.name", conf.name, "p1", p1, "conf.raidBars", conf.raidBars)
-            if p1 == spellId then
+            --debug("CombatLog", "spellId", spellId, "conf.name", conf.name, "extra1", extra[1], "conf.raidBars", conf.raidBars)
+            if extra[1] == spellId then
                 -- offensive debuffs
                 if conf.duration and conf.list then
                     if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
@@ -200,17 +206,17 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                     then
                         -- start offensive timer
                         local timer = self:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
-                        if not enemyDebuffs[p1] then enemyDebuffs[p1] = {} end
-                        enemyDebuffs[p1][destGuid] = timer
+                        if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
+                        enemyDebuffs[extra[1]][destGuid] = timer
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
                             and sourceGuid == self.playerGuid
-                            and enemyDebuffs[p1] and enemyDebuffs[p1][destGuid]
+                            and enemyDebuffs[extra[1]] and enemyDebuffs[extra[1]][destGuid]
                     then
                         -- end offensive timer
-                        self:RemoveTimer(enemyDebuffs[p1][destGuid], "combatlog")
-                        enemyDebuffs[p1][destGuid] = nil
+                        self:RemoveTimer(enemyDebuffs[extra[1]][destGuid], "combatlog")
+                        enemyDebuffs[extra[1]][destGuid] = nil
                     end
                 end
                 -- raid tracking
@@ -224,17 +230,17 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         -- start offensive timer
                         local name = strsplit("-", sourceName)
                         local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name, name)
-                        if not raidBuffs[p1] then raidBuffs[p1] = {} end
-                        raidBuffs[p1][destGuid] = timer
+                        if not raidBuffs[extra[1]] then raidBuffs[extra[1]] = {} end
+                        raidBuffs[extra[1]][destGuid] = timer
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
                             and sourceGuid ~= self.playerGuid
-                            and raidBuffs[p1] and raidBuffs[p1][destGuid]
+                            and raidBuffs[extra[1]] and raidBuffs[extra[1]][destGuid]
                     then
                         -- end offensive timer
-                        self:RemoveTimer(raidBuffs[p1][destGuid], "raidbar")
-                        raidBuffs[p1][destGuid] = nil
+                        self:RemoveTimer(raidBuffs[extra[1]][destGuid], "raidbar")
+                        raidBuffs[extra[1]][destGuid] = nil
                     end
                 end
             end
@@ -261,8 +267,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             self.InstanceName and self.db.profile.announceInterrupts and
             destGuid == UnitGUID("target")
     then
-        if p5 then
-            SendChatMessage(">> Interrupted "..tostring(p5).." <<", "SAY")
+        if extra[5] then
+            SendChatMessage(">> Interrupted "..tostring(extra[5]).." <<", "SAY")
         else
             SendChatMessage(">> Interrupted "..destName.." <<", "SAY")
         end
@@ -273,26 +279,26 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             sourceGuid == self.playerGuid and
             self.InstanceName and self.db.profile.announceMisses and
             destGuid == UnitGUID("target") and
-            sourceGuid == UnitGUID("targettarget") and p1
+            sourceGuid == UnitGUID("targettarget") and extra[1]
     then
-        SendChatMessage(">> "..tostring(p1).." <<", "SAY")
+        SendChatMessage(">> "..tostring(extra[1]).." <<", "SAY")
     end
 
     if self.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then
-        self.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, p1, p2, p3, p4, p5, p6)
+        self.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
 
     if QA.isWarrior then
         if QA.db.profile.warriorOverpower and sourceGuid == self.playerGuid then
             local overpower = QA.spells.warrior.overpower
             -- overpower
-            if subevent == "SWING_MISSED" and overpower.triggers[p1] or subevent == "SPELL_MISSED" and overpower.triggers[p4] then
+            if subevent == "SWING_MISSED" and overpower.triggers[extra[1]] or subevent == "SPELL_MISSED" and overpower.triggers[extra[4]] then
                 -- someone dodged
                 C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end) -- doesn't become enabled right away
             end
             if subevent == "SPELL_CAST_SUCCESS"  then
-                local spellId = overpower.bySpellId[p1]
-                --debug("SPELL_CAST_SUCCESS", p1, spellId)
+                local spellId = overpower.bySpellId[extra[1]]
+                --debug("SPELL_CAST_SUCCESS", extra[1], spellId)
                 if spellId == overpower.spellId[1] then
                     -- used ovepower
                     C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end)
@@ -301,14 +307,25 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
         if QA.db.profile.warriorRevenge and destGuid == self.playerGuid then
             local revenge = QA.spells.warrior.revenge
+            local partiallyBlocked = false
+            local blockIndex = 5
+            if DAMAGE_SUBEVENTS[subevent] then
+                if subevent == "SPELL_DAMAGE" then blockIndex = blockIndex+3 end
+                if extra[blockIndex] and tonumber(extra[blockIndex]) > 0 then -- block amount
+                    partiallyBlocked = true
+                end
+            end
             -- overpower
-            if subevent == "SWING_MISSED" and revenge.triggers[p1] or subevent == "SPELL_MISSED" and revenge.triggers[p4] then
+            if      partiallyBlocked
+                    or subevent == "SWING_MISSED" and revenge.triggers[extra[1]]
+                    or (subevent == "SPELL_MISSED" or subevent == "RANGE_MISSED") and revenge.triggers[extra[4]]
+            then
                 -- someone dodged
                 C_Timer.After(0.05, function() QA:CheckWarriorRevenge() end) -- doesn't become enabled right away
             end
             if subevent == "SPELL_CAST_SUCCESS"  then
-                local spellId = revenge.bySpellId[p1]
-                --debug("SPELL_CAST_SUCCESS", p1, spellId)
+                local spellId = revenge.bySpellId[extra[1]]
+                --debug("SPELL_CAST_SUCCESS", extra[1], spellId)
                 if spellId == revenge.spellId[1] then
                     -- used ovepower
                     C_Timer.After(0.05, function() QA:CheckWarriorRevenge() end)

@@ -258,7 +258,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
-    if subevent == "" then
+    if subevent == "UNIT_DIED" then
         if sourceGuid == self.playerGuid then
             QA:PlayerDied()
         end

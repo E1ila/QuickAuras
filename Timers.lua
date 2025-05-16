@@ -184,3 +184,9 @@ function QA:CheckTimers()
         end
     end
 end
+
+function QA:ClearTimers()
+    for _, timer in pairs(self.list_timers) do
+        self:RemoveTimer(timer, "cleared")
+    end
+end

@@ -62,6 +62,7 @@ QA.adjustableFrames = {
 --}
 
 QA.colors = {
+    alert = "|cffff0000",
     yellow = "|cffffde00",
     bold = "|cffff99cc",
     enabled = "|cff00ff00",

@@ -64,6 +64,8 @@ QA.defaultOptions = {
         innervateAura = QA.isManaClass,
         encounter4hmStartAt = 0, -- 0 = disabled
         encounter4hmMoveEvery = 3,
+        encounterLoathebStartAt = 0, -- 0 = disabled
+        encounterLoathebCycle = 6,
     },
 }
 

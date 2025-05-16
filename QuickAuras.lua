@@ -214,6 +214,14 @@ function QA:HandleSlashCommand(input)
             else
                 out("4HM healer mode disabled.")
             end
+        elseif cmd == "spore" then
+            local startAt = arg1 and tonumber(arg1) or 0
+            self.db.profile.encounterLoathebStartAt = startAt
+            if startAt and startAt > 0 then
+                out("Loatheb set Spore group ".._c.bold..tostring(startAt))
+            else
+                out("Loatheb Spore alert disabled.")
+            end
         else
             out("QuickAuras available commands:")
             out("  |cFF00FFaa/qa|r - Open options")

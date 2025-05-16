@@ -518,7 +518,7 @@ function QA:CheckStealthInInstance(seen)
 end
 
 
--- Zone change
+-- Other
 
 function QA:UpdateZone()
     local newZoneName = GetRealZoneText()
@@ -542,6 +542,15 @@ function QA:UpdateZone()
         self:RefreshWarnings()
     end
 end
+
+function QA:PlayerDied()
+    QA:ENCOUNTER_END()
+    QA:ClearTimers()
+    for _, iconType in pairs(ICON) do
+        QA:ClearIcons(iconType)
+    end
+end
+
 
 -- Icon management
 

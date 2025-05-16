@@ -55,21 +55,21 @@ function Loatheb:EncounterStart()
     Loatheb.spore = 0
     self.encounter.OnSpellSummon = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
         if QA:GetNpcIdFromGuid(sourceGuid) == Loatheb.npcId then
-            out(_c.bold.."KT".."|r "..destName.." spawned")
+            out(_c.bold..self.name.."|r "..destName.." spawned")
             Loatheb.spore = Loatheb.spore + 1
+            if self.db.profile.encounterLoathebStartAt > 0 and Loatheb.spore % self.db.profile.encounterLoathebCycle == self.db.profile.encounterLoathebStartAt then
+                out(_c.bold..self.name.."|r TAKE SPORE!")
+            end
         end
     end
 end
 
 function Loatheb:EncounterEnd()
-    out(_c.bold.."Loatheb".."|r Encounter ended")
     self.OnSpellSummon = nil
 end
 
 function KT:EncounterStart()
-    out(_c.bold.."KT".."|r Encounter started")
     KT.phase = 1
-
     self.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
         if QA:GetNpcIdFromGuid(sourceGuid) == KT.npcId then
             KT.phase = 2
@@ -81,13 +81,11 @@ function KT:EncounterStart()
 end
 
 function KT:EncounterEnd()
-    out(_c.bold.."KT".."|r Encounter ended")
     self.encounter.OnSwingDamage = nil
     KT.phase = 0
 end
 
 function FHM:EncounterStart()
-    out(_c.bold.."4HM".."|r Encounter started")
     FHM.mark = 0
     FHM.timer = C_Timer.NewTimer(21, function()
         FTM:Mark()
@@ -95,14 +93,13 @@ function FHM:EncounterStart()
 end
 
 function FHM:EncounterEnd()
-    out(_c.bold.."4HM".."|r Encounter ended")
     if FHM.timer then
         FHM.timer:Cancel()
         FHM.timer = nil
     end
 end
 
-function FTM:Mark()
+function FHM:Mark()
     FHM.mark = FHM.mark + 1
     local extraText = ""
 
@@ -114,7 +111,7 @@ function FTM:Mark()
         end
     end
 
-    out(_c.bold.."4HM".."|r Mark "..FHM.mark..extraText)
+    out(_c.bold..self.name.."|r Mark "..FHM.mark..extraText)
     FHM.timer = C_Timer.NewTimer(13, function()
         FTM:Mark()
     end)

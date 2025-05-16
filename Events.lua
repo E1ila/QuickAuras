@@ -166,8 +166,20 @@ local DAMAGE_SUBEVENTS = {
     SPELL_DAMAGE = true,
 }
 
+QA.cluMax = 0
 function QA:COMBAT_LOG_EVENT_UNFILTERED()
+    local t1 = debugprofilestop()
     self:HandleCombatLogEvent(CombatLogGetCurrentEventInfo())
+    local t = debugprofilestop() - t1
+    if t > QA.cluMax then
+        QA.cluMax = t
+        if t > 0.01 then
+            debug(2, "CLEU", "max", _c.bold+tostring(t))
+        end
+    end
+    if t >= 1 then
+        debug("Slow CLEU", _c.alert+tostring(t))
+    end
 end
 
 function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
@@ -246,10 +258,9 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
-    if subevent == "UNIT_DIED" then
+    if subevent == "" then
         if sourceGuid == self.playerGuid then
-            -- player died
-            QA:ENCOUNTER_END()
+            QA:PlayerDied()
         end
         -- reset buffs/debuffs of dead unit
         for spellId, conf in pairs(QA.trackedCombatLog) do

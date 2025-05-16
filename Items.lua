@@ -233,17 +233,17 @@ QA.consumes = {
 function QA:BuildTrackedItems()
     local p = QA.defaultOptions.profile
     debug(2, "BuildTrackedItems...")
-    for _, item in ipairs(self.consumes) do
+    for _, item in ipairs(QA.consumes) do
         item.option = "item_".. item.name:gsub("%s+", "")
         debug(3, "BuildTrackedItems", item.name, item.option, item.spellIds, item.visible)
         if item.spellIds then
-            table.insert(self.trackedMissingBuffs, item)
+            table.insert(QA.trackedMissingBuffs, item)
         end
         if (item.visible == nil or item.visible) then
-            table.insert(self.trackedLowConsumes, item)
+            table.insert(QA.trackedLowConsumes, item)
         end
         if item.cooldown then
-            self.trackedSpellCooldowns[item.itemId] = item
+            QA.trackedSpellCooldowns[item.itemId] = item
         end
     end
 end

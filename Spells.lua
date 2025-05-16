@@ -719,14 +719,14 @@ function QA:InitSpells()
             end
         end
     end
-    self.stealthAbilities = {}
-    if self.isRogue then
+    QA.stealthAbilities = {}
+    if QA.isRogue then
         for _, id in ipairs(spells.rogue.stealth.spellId) do
-            self.stealthAbilities[id] = true
+            QA.stealthAbilities[id] = true
         end
-    elseif self.isDruid then
+    elseif QA.isDruid then
         --for _, id in ipairs(spells.druid.stealth.spellId) do
-        --    self.stealthAbilities[id] = true
+        --    QA.stealthAbilities[id] = true
         --end
     end
 end

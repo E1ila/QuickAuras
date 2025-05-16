@@ -880,16 +880,16 @@ local function AddSpells(cspells, orderStart, categoryHidden)
 end
 
 function QA:AddAbilitiesOptions()
-    AddSpells(self.spells.racials)
-    AddSpells(self.spells.iconAlerts, 100)
-    AddSpells(self.spells.other)
-    AddSpells(self.spells.transmutes)
-    --AddSpells(self.spells.reminders)
-    AddSpells(self.spells.trinkets, 2000)
-    AddSpells(self.spells.rogue, 1000, not self.isRogue)
-    AddSpells(self.spells.hunter, 1000, not self.isHunter)
-    AddSpells(self.spells.warrior, 1000, not self.isWarrior)
-    AddSpells(self.spells.shaman, 1000, not self.isShaman)
+    AddSpells(QA.spells.racials)
+    AddSpells(QA.spells.iconAlerts, 100)
+    AddSpells(QA.spells.other)
+    AddSpells(QA.spells.transmutes)
+    --AddSpells(QA.spells.reminders)
+    AddSpells(QA.spells.trinkets, 2000)
+    AddSpells(QA.spells.rogue, 1000, not QA.isRogue)
+    AddSpells(QA.spells.hunter, 1000, not QA.isHunter)
+    AddSpells(QA.spells.warrior, 1000, not QA.isWarrior)
+    AddSpells(QA.spells.shaman, 1000, not QA.isShaman)
 end
 
 function QA:AddGearWarningOptions()
@@ -950,7 +950,7 @@ end
 
 function QA:AddConsumeOptions()
     local order = 200
-    for _, item in ipairs(self.consumes) do
+    for _, item in ipairs(QA.consumes) do
         if item.visible == nil or item.visible then
             order = order + 1
             debug(3, "AddConsumeOptions", item.name, item.option, item.default)
@@ -994,20 +994,20 @@ function QA:SetRangeDefaultSpellId()
 end
 
 function QA:BuildOptions()
-    self:AddAbilitiesOptions()
-    self:AddGearWarningOptions()
-    self:AddConsumeOptions()
-    self:AddRemindersOptions()
-    self:SetRangeDefaultSpellId()
+    QA:AddAbilitiesOptions()
+    QA:AddGearWarningOptions()
+    QA:AddConsumeOptions()
+    QA:AddRemindersOptions()
+    QA:SetRangeDefaultSpellId()
 end
 
 --------
 
 function QA:SetOptionsDefaults()
-    for _, item in ipairs(self.consumes) do
-        if (item.visible == nil or item.visible) and self.bags[item.itemId] then
+    for _, item in ipairs(QA.consumes) do
+        if (item.visible == nil or item.visible) and QA.bags[item.itemId] then
             -- enable currently helf consumes for low consumes reminder
-            self.db.profile[item.option] = true
+            QA.db.profile[item.option] = true
         end
     end
 end

@@ -96,36 +96,36 @@ end
 
 function QA:OnInitialize()
     debug("Initializing...")
-    _c = self.colors
+    _c = QA.colors
 
-    self:InitSpells()
-    self:BuildTrackedGear()
-    self:BuildTrackedSpells()
-    self:BuildTrackedTracking()
-    self:BuildTrackedItems()
-    self:BuildOptions()
+    QA:InitSpells()
+    QA:BuildTrackedGear()
+    QA:BuildTrackedSpells()
+    QA:BuildTrackedTracking()
+    QA:BuildTrackedItems()
+    QA:BuildOptions()
 
-    self.db = LibStub("AceDB-3.0"):New("QuickAurasDB", self.defaultOptions, true)
-    AceConfig:RegisterOptionsTable("QuickAuras", self.options)
-    self.optionsFrame = AceConfigDialog:AddToBlizOptions("QuickAuras", "QuickAuras")
-    self:RegisterChatCommand("qa", "HandleSlashCommand")
+    QA.db = LibStub("AceDB-3.0"):New("QuickAurasDB", QA.defaultOptions, true)
+    AceConfig:RegisterOptionsTable("QuickAuras", QA.options)
+    QA.optionsFrame = AceConfigDialog:AddToBlizOptions("QuickAuras", "QuickAuras")
+    QA:RegisterChatCommand("qa", "HandleSlashCommand")
 
-    self.events:SetScript("OnEvent", function(self, event, ...)
+    QA.events:SetScript("OnEvent", function(self, event, ...)
         QA[event](QA, ...)
     end)
-    self.events:SetScript("OnUpdate", function()
+    QA.events:SetScript("OnUpdate", function()
         QA:OnUpdate()
     end)
 
-    self:RegisterMandatoryEvents()
+    QA:RegisterMandatoryEvents()
 
     C_Timer.After(0.2, function()
         debug("Init delay ended")
-        self:ScanBags()
-        if not self.db.profile.initialized then
+        QA:ScanBags()
+        if not QA.db.profile.initialized then
             debug("First time initialization")
-            self.db.profile.initialized = true
-            self:SetOptionsDefaults()
+            QA.db.profile.initialized = true
+            QA:SetOptionsDefaults()
         end
         QA:InitUI()
         QA:RegisterOptionalEvents()
@@ -145,34 +145,34 @@ end
 
 function QA:RegisterMandatoryEvents()
     debug("Registering mandatory events")
-    self.events:RegisterEvent("ZONE_CHANGED")
-    self.events:RegisterEvent("ZONE_CHANGED_INDOORS")
-    self.events:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-    self.events:RegisterEvent("PLAYER_ENTERING_WORLD")
+    QA.events:RegisterEvent("ZONE_CHANGED")
+    QA.events:RegisterEvent("ZONE_CHANGED_INDOORS")
+    QA.events:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+    QA.events:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function QA:RegisterOptionalEvents()
-    if self.db.profile.enabled  then
+    if QA.db.profile.enabled  then
         debug("Registering events")
-        for _, event in ipairs(self.optionalEvents) do
-            self.events:RegisterEvent(event)
+        for _, event in ipairs(QA.optionalEvents) do
+            QA.events:RegisterEvent(event)
         end
     end
 end
 
 function QA:UnregisterOptionalEvents()
     debug("Unregistering events")
-    for _, event in ipairs(self.optionalEvents) do
-        self.events:UnregisterEvent(event)
+    for _, event in ipairs(QA.optionalEvents) do
+        QA.events:UnregisterEvent(event)
     end
 end
 
 function QA:Options_ToggleEnabled(value)
-    self.db.profile.enabled = value
-    if self.db.profile.enabled then
-        self:RegisterOptionalEvents()
+    QA.db.profile.enabled = value
+    if QA.db.profile.enabled then
+        QA:RegisterOptionalEvents()
     else
-        self:UnregisterOptionalEvents()
+        QA:UnregisterOptionalEvents()
     end
 end
 
@@ -196,19 +196,19 @@ function QA:HandleSlashCommand(input)
             end
         elseif cmd == "c" or cmd == "clear" then
             out("Cleared ignored icons!")
-            self.ignoredIcons = {}
-            self:RefreshAll()
+            QA.ignoredIcons = {}
+            QA:RefreshAll()
         elseif cmd == "test" then
-            self:DemoUI()
+            QA:DemoUI()
         elseif cmd == "test2" then
-            self:DemoUI2()
+            QA:DemoUI2()
         elseif cmd == "lock" or cmd == "l" then
-            self:ToggleLockedState()
+            QA:ToggleLockedState()
         elseif cmd == "reset" then
-            self:ResetWidgets()
+            QA:ResetWidgets()
         elseif cmd == "4hm" then
             local startAt = arg1 and tonumber(arg1) or 0
-            self.db.profile.encounter4hmStartAt = startAt
+            QA.db.profile.encounter4hmStartAt = startAt
             if startAt and startAt > 0 then
                 out("4HM healer mode, start moving set to ".._c.bold..tostring(startAt))
             else
@@ -216,7 +216,7 @@ function QA:HandleSlashCommand(input)
             end
         elseif cmd == "spore" then
             local startAt = arg1 and tonumber(arg1) or 0
-            self.db.profile.encounterLoathebStartAt = startAt
+            QA.db.profile.encounterLoathebStartAt = startAt
             if startAt and startAt > 0 then
                 out("Loatheb set Spore group ".._c.bold..tostring(startAt))
             else
@@ -237,24 +237,24 @@ function QA:ScanBag(bag)
         local id = C_Container.GetContainerItemID(bag, slot)
         if id ~= nil then
             local itemInfo = C_Container.GetContainerItemInfo(bag, slot)
-            if self.bags[id] then
-                self.bags[id].count = self.bags[id].count + itemInfo.stackCount
+            if QA.bags[id] then
+                QA.bags[id].count = QA.bags[id].count + itemInfo.stackCount
             else
-                self.bags[id] = { bag = bag, slot = slot, count = itemInfo.stackCount }
+                QA.bags[id] = { bag = bag, slot = slot, count = itemInfo.stackCount }
             end
         end
     end
 end
 
 function QA:ScanBags()
-    self.bags = {}
+    QA.bags = {}
     for bag = 0, NUM_BAG_SLOTS do -- Iterate through all bags (0 is the backpack)
-        self:ScanBag(bag)
+        QA:ScanBag(bag)
     end
 end
 
 function QA:ScanBank()
-    if not self.bankOpen then return end
+    if not QA.bankOpen then return end
     debug("Scanning bank")
     QuickAurasDB.bank = {}
     QA.bank = QuickAurasDB.bank
@@ -263,7 +263,7 @@ function QA:ScanBank()
         local id = C_Container.GetContainerItemID(-1, slot)
         if id then
             local itemInfo = C_Container.GetContainerItemInfo(-1, slot)
-            self.bank[id] = { bag = -1, slot = slot, count = itemInfo.stackCount }
+            QA.bank[id] = { bag = -1, slot = slot, count = itemInfo.stackCount }
         end
     end
 
@@ -273,10 +273,10 @@ function QA:ScanBank()
             local id = C_Container.GetContainerItemID(bag, slot)
             if id then
                 local itemInfo = C_Container.GetContainerItemInfo(bag, slot)
-                if self.bank[id] then
-                    self.bank[id].count = self.bank[id].count + itemInfo.stackCount
+                if QA.bank[id] then
+                    QA.bank[id].count = QA.bank[id].count + itemInfo.stackCount
                 else
-                    self.bank[id] = { bag = bag, slot = slot, count = itemInfo.stackCount }
+                    QA.bank[id] = { bag = bag, slot = slot, count = itemInfo.stackCount }
                 end
             end
         end

@@ -4,40 +4,40 @@ local debug = QA.Debug
 local ICON = QA.ICON
 
 function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
-    local arrangeFunc = self.ArrangeTimerBars
+    local arrangeFunc = QA.ArrangeTimerBars
     local uiType, list, parent, height
     local widthMul = 1
     keyExtra = keyExtra or ""
     if timerType == "raidbar" then
-        list = self.list_raidBars
+        list = QA.list_raidBars
         parent = QuickAuras_RaidBars
         uiType = "bar"
-        height = self.db.profile.raidBarHeight
+        height = QA.db.profile.raidBarHeight
     elseif timerType == "test-cooldowns" or timerType == "cooldowns" then
-        list = self.list_cooldowns
+        list = QA.list_cooldowns
         parent = QuickAuras_Cooldowns
         uiType = "button"
     elseif conf.list == "watch" then
-        list = self.list_watchBars
+        list = QA.list_watchBars
         parent = QuickAuras_WatchBars
         uiType = "bar"
     elseif conf.list == "offensive" then
-        list = self.list_offensiveBars
+        list = QA.list_offensiveBars
         parent = QuickAuras_OffensiveBars
         uiType = "bar"
         widthMul = 1.5
     elseif conf.list == "alert" then
-        list = self.list_iconAlerts
+        list = QA.list_iconAlerts
         parent = QuickAuras_IconAlerts
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.ALERT) end
     elseif timerType == "reminder" or conf.list == "reminder" then
-        list = self.list_reminders
+        list = QA.list_reminders
         parent = QuickAuras_Reminders
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.REMINDER) end
     elseif timerType == "crucial" or conf.list == "crucial" then
-        list = self.list_crucial
+        list = QA.list_crucial
         parent = QuickAuras_Crucial
         uiType = "button"
         arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.CRUCIAL) end
@@ -51,7 +51,7 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
         index = index + 1
     end
 
-    local existingTimer = self.list_timerByName[keyExtra..conf.name.."-"..uiType]
+    local existingTimer = QA.list_timerByName[keyExtra..conf.name.."-"..uiType]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
@@ -59,7 +59,7 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
         end
         debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime)
         -- different timer, remove old
-        self:RemoveTimer(existingTimer, "replaced")
+        QA:RemoveTimer(existingTimer, "replaced")
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
@@ -68,13 +68,13 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
 
     local frame
     if uiType == "button" then
-        frame = self:CreateTimerButton(parent, index, 2, conf.color, conf.icon)
+        frame = QA:CreateTimerButton(parent, index, 2, conf.color, conf.icon)
         if showAtTime then
             showAtTime = expTime - showAtTime
             frame:Hide()
         end
     else
-        frame = self:CreateTimerBar(parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or self.db.profile.showTimeOnBars and tostring(duration) or nil)
+        frame = QA:CreateTimerBar(parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or QA.db.profile.showTimeOnBars and tostring(duration) or nil)
     end
     local timer = {
         frame = frame,
@@ -101,12 +101,12 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
         arrangeFunc = arrangeFunc,
         isTimer = true
     }
-    timer.key = keyExtra..self:GetTimerKey(conf.name, expTime, uiType)
+    timer.key = keyExtra..QA:GetTimerKey(conf.name, expTime, uiType)
     list[keyExtra..tostring(id)] = timer
-    self.list_timers[timer.key] = timer
-    self.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
+    QA.list_timers[timer.key] = timer
+    QA.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
     onUpdate(timer)
-    arrangeFunc(self, list, parent)
+    arrangeFunc(QA, list, parent)
     return timer, true
 end
 
@@ -165,28 +165,28 @@ function QA:RemoveTimer(timer, reason)
     timer.frame:ClearAllPoints()
     timer.frame = nil
     timer.list[timer.keyExtra..timer.id] = nil
-    self.list_timerByName[timer.keyExtra..timer.name.."-"..timer.uiType] = nil
-    self.list_timers[timer.key] = nil
+    QA.list_timerByName[timer.keyExtra..timer.name.."-"..timer.uiType] = nil
+    QA.list_timers[timer.key] = nil
     --debug(" -- ", timer.key)
     if timer.arrangeFunc then
-        timer.arrangeFunc(self, timer.list, timer.parent)
+        timer.arrangeFunc(QA, timer.list, timer.parent)
     else
-        self:ArrangeTimerBars(timer.list, timer.parent)
+        QA:ArrangeTimerBars(timer.list, timer.parent)
     end
 end
 
 function QA:CheckTimers()
-    for _, timer in pairs(self.list_timers) do
+    for _, timer in pairs(QA.list_timers) do
         if timer.onUpdate then
             if not timer:onUpdate(timer) then
-                self:RemoveTimer(timer, "expired")
+                QA:RemoveTimer(timer, "expired")
             end
         end
     end
 end
 
 function QA:ClearTimers()
-    for _, timer in pairs(self.list_timers) do
-        self:RemoveTimer(timer, "cleared")
+    for _, timer in pairs(QA.list_timers) do
+        QA:RemoveTimer(timer, "cleared")
     end
 end

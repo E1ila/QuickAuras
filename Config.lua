@@ -145,11 +145,11 @@ function QA:BuildTrackedSpells()
                     spellIds = spell.spellId,
                     conf = spell,
                 }
-                table.insert(self.trackedCrucialAuras, obj)
+                table.insert(QA.trackedCrucialAuras, obj)
             end
             if spell.raidBars then
                 for _, spellId in ipairs(spell.spellId) do
-                    self.trackedCombatLog[spellId] = spell
+                    QA.trackedCombatLog[spellId] = spell
                 end
             end
 
@@ -160,17 +160,17 @@ function QA:BuildTrackedSpells()
                 for _, spellId in ipairs(spell.spellId) do
                     --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
                     if spell.aura then
-                        self.trackedAuras[spellId] = spell
+                        QA.trackedAuras[spellId] = spell
                     elseif spell.duration then
-                        self.trackedCombatLog[spellId] = spell -- offensive
+                        QA.trackedCombatLog[spellId] = spell -- offensive
                     end
                     if spell.cooldown then
-                        self.trackedSpellCooldowns[spellId] = spell
+                        QA.trackedSpellCooldowns[spellId] = spell
                     end
                 end
             elseif spell.itemId then
                 if spell.cooldown then
-                    self.trackedItemCooldowns[spell.itemId] = spell
+                    QA.trackedItemCooldowns[spell.itemId] = spell
                 end
             end
         end
@@ -178,6 +178,6 @@ function QA:BuildTrackedSpells()
 end
 
 function QA:BuildTrackedTracking()
-    self.trackedTracking[self.spells.reminders.findHerbs.spellId[1]] = self.spells.reminders.findHerbs
-    self.trackedTracking[self.spells.reminders.findMinerals.spellId[1]] = self.spells.reminders.findMinerals
+    QA.trackedTracking[QA.spells.reminders.findHerbs.spellId[1]] = QA.spells.reminders.findHerbs
+    QA.trackedTracking[QA.spells.reminders.findMinerals.spellId[1]] = QA.spells.reminders.findMinerals
 end

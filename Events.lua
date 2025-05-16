@@ -15,128 +15,128 @@ local BOSS_LEVEL = 63
 -- WoW Events
 
 function QA:ZONE_CHANGED()
-    self:ZoneChanged()
+    QA:ZoneChanged()
 end
 
 function QA:ZONE_CHANGED_INDOORS()
-    self:ZoneChanged()
+    QA:ZoneChanged()
 end
 
 function QA:ZONE_CHANGED_NEW_AREA()
-    self:ZoneChanged()
+    QA:ZoneChanged()
 end
 
 function QA:PLAYER_ENTERING_WORLD()
-    self:ZoneChanged()
+    QA:ZoneChanged()
 end
 
 function QA:UNIT_AURA(unit)
     if unit ~= "player" then return end
-    self:CheckAuras()
+    QA:CheckAuras()
 end
 
 function QA:UI_ERROR_MESSAGE(errorType, errorMessage)
-    if self.db.profile.outOfRange and UnitAffectingCombat("player") then
+    if QA.db.profile.outOfRange and UnitAffectingCombat("player") then
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
         if  errorMessage == ERR_OUT_OF_RANGE
             or errorMessage == ERR_SPELL_OUT_OF_RANGE
             or errorMessage == "You must be behind your target" then
-            self:ShowNoticableError(errorMessage)
+            QA:ShowNoticableError(errorMessage)
         end
     end
 end
 
 function QA:SPELL_UPDATE_COOLDOWN(...)
-    self:CheckCooldowns()
+    QA:CheckCooldowns()
 end
 
 function QA:PLAYER_EQUIPMENT_CHANGED(...)
-    self:CheckGear("equip", ...)
+    QA:CheckGear("equip", ...)
 end
 
 function QA:PLAYER_TARGET_CHANGED(...)
-    self:CheckGear("target", ...)
-    self:CheckWarriorExecute()
-    self:CheckWarriorOverpower()
-    self:ResetErrorCount()
+    QA:CheckGear("target", ...)
+    QA:CheckWarriorExecute()
+    QA:CheckWarriorOverpower()
+    QA:ResetErrorCount()
 end
 
 function QA:BAG_UPDATE(bagId)
     if bagId >= 0 and bagId <= 4 then
-        self:BagsChanged()
+        QA:BagsChanged()
     end
 end
 
 function QA:ENCOUNTER_START(encounterId, encounterName)
-    self.encounter.id = encounterId
-    self.encounter.name = encounterName
+    QA.encounter.id = encounterId
+    QA.encounter.name = encounterName
 
-    self:CheckMissingBuffs()
+    QA:CheckMissingBuffs()
 
     QA:EncounterStarted(encounterId)
 end
 
 function QA:ENCOUNTER_END()
-    if not self.encounter.id then return end -- not in encounter
-    local encounterId = self.encounter.id
-    self.encounter.id = nil
+    if not QA.encounter.id then return end -- not in encounter
+    local encounterId = QA.encounter.id
+    QA.encounter.id = nil
 
     QA:EncounterEnded(encounterId)
 
-    self:CheckMissingBuffs()
+    QA:CheckMissingBuffs()
 end
 
 function QA:MINIMAP_UPDATE_TRACKING()
-    self:CheckTrackingStatus()
+    QA:CheckTrackingStatus()
 end
 
 function QA:PLAYER_ALIVE()
-    self:CheckTrackingStatus()
+    QA:CheckTrackingStatus()
 end
 
 function QA:PLAYER_UNGHOST()
-    self:CheckTrackingStatus()
+    QA:CheckTrackingStatus()
 end
 
 function QA:PLAYER_LEVEL_UP()
-    self.playerLevel = UnitLevel("player")
+    QA.playerLevel = UnitLevel("player")
 end
 
 function QA:BANKFRAME_OPENED()
-    self.bankOpen = true
-    self:ScanBank()
+    QA.bankOpen = true
+    QA:ScanBank()
 end
 
 function QA:BANKFRAME_CLOSED()
-    self.bankOpen = false
+    QA.bankOpen = false
 end
 
 function QA:UNIT_POWER_UPDATE(unit, powerType)
-    self:CheckPower(unit, powerType)
+    QA:CheckPower(unit, powerType)
 end
 
 function QA:PLAYER_REGEN_DISABLED()
     -- in combat
-    self.inCombat = true
-    self:CheckAuras()
+    QA.inCombat = true
+    QA:CheckAuras()
 end
 
 function QA:PLAYER_REGEN_ENABLED()
     -- out of combat
-    self.inCombat = false
-    self:CheckAuras()
+    QA.inCombat = false
+    QA:CheckAuras()
 end
 
 function QA:GROUP_ROSTER_UPDATE()
-    self:CheckIfWarriorInParty()
+    QA:CheckIfWarriorInParty()
 end
 
 function QA:GROUP_ROSTER_UPDATE()
-    self:CheckIfWarriorInParty()
+    QA:CheckIfWarriorInParty()
 end
 
 function QA:PARTY_MEMBER_ENABLE()
-    self:CheckIfWarriorInParty()
+    QA:CheckIfWarriorInParty()
 end
 
 function QA:SPELL_UPDATE_USABLE(a, b, c)
@@ -144,18 +144,18 @@ function QA:SPELL_UPDATE_USABLE(a, b, c)
 end
 
 function QA:UPDATE_SHAPESHIFT_FORM(...)
-    self.shapeshiftForm = GetShapeshiftForm()
-    --debug("UPDATE_SHAPESHIFT_FORM", self.shapeshiftForm, ...)
+    QA.shapeshiftForm = GetShapeshiftForm()
+    --debug("UPDATE_SHAPESHIFT_FORM", QA.shapeshiftForm, ...)
 end
 
 -- OnUpdate
 
 function QA:OnUpdate()
     local currentTime = GetTime()
-    if self.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
+    if QA.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime
-        self:CheckTimers()
-        self:CheckTargetRange()
+        QA:CheckTimers()
+        QA:CheckTargetRange()
     end
 end
 
@@ -169,16 +169,16 @@ local DAMAGE_SUBEVENTS = {
 QA.cluMax = 0
 function QA:COMBAT_LOG_EVENT_UNFILTERED()
     local t1 = debugprofilestop()
-    self:HandleCombatLogEvent(CombatLogGetCurrentEventInfo())
+    QA:HandleCombatLogEvent(CombatLogGetCurrentEventInfo())
     local t = debugprofilestop() - t1
     if t > QA.cluMax then
         QA.cluMax = t
         if t > 0.01 then
-            debug(2, "CLEU", "max", _c.bold+tostring(t))
+            debug(2, "CLEU", "max", _c.bold..tostring(t))
         end
     end
     if t >= 1 then
-        debug("Slow CLEU", _c.alert+tostring(t))
+        debug("Slow CLEU", _c.alert..tostring(t))
     end
 end
 
@@ -187,7 +187,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     --debug("CombatLog", subevent, sourceName, destName, ...)
 
     if  -- parry haste
-            self.db.profile.harryPaste and
+            QA.db.profile.harryPaste and
             subevent == "SWING_MISSED" and
             extra[1] == "PARRY" and -- missType
             destGuid == UnitGUID("target") and
@@ -195,8 +195,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             not UnitIsPlayer("target") and
             IsInInstance()
     then
-        if sourceGuid == self.playerGuid then
-            self:ShowParry()
+        if sourceGuid == QA.playerGuid then
+            QA:ShowParry()
         elseif UnitLevel("target") >= BOSS_LEVEL then
             out("|cffff0000Warning:|r "..destName.." has parried ".._c.bold..sourceName.."|r hit!")
         end
@@ -204,29 +204,29 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
     -- tracked spells
     if type(extra[1]) == "number" and extra[1] > 0 then
-        for spellId, conf in pairs(self.trackedCombatLog) do
+        for spellId, conf in pairs(QA.trackedCombatLog) do
             --debug("CombatLog", "spellId", spellId, "conf.name", conf.name, "extra1", extra[1], "conf.raidBars", conf.raidBars)
             if extra[1] == spellId then
                 -- offensive debuffs
                 if conf.duration and conf.list then
                     if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                            and sourceGuid == self.playerGuid
+                            and sourceGuid == QA.playerGuid
                             --and destGUID == UnitGUID("target")
-                            and self.db.profile.watchBars
-                            and (not conf.option or self.db.profile[conf.option])
+                            and QA.db.profile.watchBars
+                            and (not conf.option or QA.db.profile[conf.option])
                     then
                         -- start offensive timer
-                        local timer = self:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
+                        local timer = QA:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
                         if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
                         enemyDebuffs[extra[1]][destGuid] = timer
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
-                            and sourceGuid == self.playerGuid
+                            and sourceGuid == QA.playerGuid
                             and enemyDebuffs[extra[1]] and enemyDebuffs[extra[1]][destGuid]
                     then
                         -- end offensive timer
-                        self:RemoveTimer(enemyDebuffs[extra[1]][destGuid], "combatlog")
+                        QA:RemoveTimer(enemyDebuffs[extra[1]][destGuid], "combatlog")
                         enemyDebuffs[extra[1]][destGuid] = nil
                     end
                 end
@@ -234,23 +234,23 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 if conf.raidBars and IsInInstance() then
                     debug(2, "Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
                     if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                            and sourceGuid ~= self.playerGuid
-                            and self.db.profile.raidBars
-                            --and (not conf.option or self.db.profile[conf.option.."_rbars"])
+                            and sourceGuid ~= QA.playerGuid
+                            and QA.db.profile.raidBars
+                            --and (not conf.option or QA.db.profile[conf.option.."_rbars"])
                     then
                         -- start offensive timer
                         local name = strsplit("-", sourceName)
-                        local timer = self:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name, name)
+                        local timer = QA:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name, name)
                         if not raidBuffs[extra[1]] then raidBuffs[extra[1]] = {} end
                         raidBuffs[extra[1]][destGuid] = timer
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
-                            and sourceGuid ~= self.playerGuid
+                            and sourceGuid ~= QA.playerGuid
                             and raidBuffs[extra[1]] and raidBuffs[extra[1]][destGuid]
                     then
                         -- end offensive timer
-                        self:RemoveTimer(raidBuffs[extra[1]][destGuid], "raidbar")
+                        QA:RemoveTimer(raidBuffs[extra[1]][destGuid], "raidbar")
                         raidBuffs[extra[1]][destGuid] = nil
                     end
                 end
@@ -259,17 +259,18 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     end
 
     if subevent == "UNIT_DIED" then
-        if sourceGuid == self.playerGuid then
+        if sourceGuid == QA.playerGuid then
+            enemyDebuffs = {}
             QA:PlayerDied()
         end
         -- reset buffs/debuffs of dead unit
         for spellId, conf in pairs(QA.trackedCombatLog) do
             if enemyDebuffs[spellId] and enemyDebuffs[spellId][destGuid] then
-                self:RemoveTimer(enemyDebuffs[spellId][destGuid], "combatlog")
+                QA:RemoveTimer(enemyDebuffs[spellId][destGuid], "combatlog")
                 enemyDebuffs[spellId][destGuid] = nil
             end
             if raidBuffs[spellId] and raidBuffs[spellId][destGuid] then
-                self:RemoveTimer(raidBuffs[spellId][destGuid], "raidbar")
+                QA:RemoveTimer(raidBuffs[spellId][destGuid], "raidbar")
                 raidBuffs[spellId][destGuid] = nil
             end
         end
@@ -277,8 +278,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
     -- announce interrupts
     if      subevent == "SPELL_INTERRUPT" and
-            sourceGuid == self.playerGuid and
-            self.InstanceName and self.db.profile.announceInterrupts and
+            sourceGuid == QA.playerGuid and
+            QA.InstanceName and QA.db.profile.announceInterrupts and
             destGuid == UnitGUID("target")
     then
         if extra[5] then
@@ -290,24 +291,24 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
     -- announce misses
     if      subevent == "SWING_MISSED" and
-            sourceGuid == self.playerGuid and
-            self.InstanceName and self.db.profile.announceMisses and
+            sourceGuid == QA.playerGuid and
+            QA.InstanceName and QA.db.profile.announceMisses and
             destGuid == UnitGUID("target") and
             sourceGuid == UnitGUID("targettarget") and extra[1]
     then
         SendChatMessage(">> "..tostring(extra[1]).." <<", "SAY")
     end
 
-    if self.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then
-        self.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    if QA.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then
+        QA.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
 
-    if self.encounter.OnSpellSummon and subevent == "SPELL_SUMMON" then
-        self.encounter.OnSpellSummon(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    if QA.encounter.OnSpellSummon and subevent == "SPELL_SUMMON" then
+        QA.encounter.OnSpellSummon(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
 
     if QA.isWarrior then
-        if QA.db.profile.warriorOverpower and QA.shapeshiftForm == QA.warrior.stance.battle and sourceGuid == self.playerGuid then
+        if QA.db.profile.warriorOverpower and QA.shapeshiftForm == QA.warrior.stance.battle and sourceGuid == QA.playerGuid then
             local overpower = QA.spells.warrior.overpower
             -- overpower
             if subevent == "SWING_MISSED" and overpower.triggers[extra[1]] or subevent == "SPELL_MISSED" and overpower.triggers[extra[4]] then
@@ -323,7 +324,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 end
             end
         end
-        if QA.db.profile.warriorRevenge and QA.shapeshiftForm == QA.warrior.stance.defensive and destGuid == self.playerGuid then
+        if QA.db.profile.warriorRevenge and QA.shapeshiftForm == QA.warrior.stance.defensive and destGuid == QA.playerGuid then
             local revenge = QA.spells.warrior.revenge
             local partiallyBlocked = false
             local blockIndex = 5

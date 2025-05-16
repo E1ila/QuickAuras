@@ -52,67 +52,67 @@ function QA:EncounterEnded(encounterId)
 end
 
 function Loatheb:EncounterStart()
-    Loatheb.spore = 0
-    self.encounter.OnSpellSummon = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
-        if QA:GetNpcIdFromGuid(sourceGuid) == Loatheb.npcId then
-            out(_c.bold..self.name.."|r "..destName.." spawned")
-            Loatheb.spore = Loatheb.spore + 1
-            if self.db.profile.encounterLoathebStartAt > 0 and Loatheb.spore % self.db.profile.encounterLoathebCycle == self.db.profile.encounterLoathebStartAt then
-                out(_c.bold..self.name.."|r TAKE SPORE!")
+    self.spore = 0
+    QA.encounter.OnSpellSummon = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+        if QA:GetNpcIdFromGuid(sourceGuid) == self.npcId then
+            out(_c.bold..QA.name.."|r "..destName.." spawned")
+            self.spore = self.spore + 1
+            if QA.db.profile.encounterLoathebStartAt > 0 and self.spore % QA.db.profile.encounterLoathebCycle == QA.db.profile.encounterLoathebStartAt then
+                out(_c.bold..QA.name.."|r TAKE SPORE!")
             end
         end
     end
 end
 
 function Loatheb:EncounterEnd()
-    self.OnSpellSummon = nil
+    QA.OnSpellSummon = nil
 end
 
 function KT:EncounterStart()
-    KT.phase = 1
-    self.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
-        if QA:GetNpcIdFromGuid(sourceGuid) == KT.npcId then
-            KT.phase = 2
+    self.phase = 1
+    QA.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+        if QA:GetNpcIdFromGuid(sourceGuid) == self.npcId then
+            self.phase = 2
             QA.encounter.OnSwingDamage = nil
             out(_c.bold.."KT".."|r Phase 2")
-            self:CheckAuras()
+            QA:CheckAuras()
         end
     end
 end
 
 function KT:EncounterEnd()
-    self.encounter.OnSwingDamage = nil
-    KT.phase = 0
+    QA.encounter.OnSwingDamage = nil
+    self.phase = 0
 end
 
 function FHM:EncounterStart()
-    FHM.mark = 0
-    FHM.timer = C_Timer.NewTimer(21, function()
+    self.mark = 0
+    self.timer = C_Timer.NewTimer(21, function()
         FTM:Mark()
     end)
 end
 
 function FHM:EncounterEnd()
-    if FHM.timer then
-        FHM.timer:Cancel()
-        FHM.timer = nil
+    if self.timer then
+        self.timer:Cancel()
+        self.timer = nil
     end
 end
 
 function FHM:Mark()
-    FHM.mark = FHM.mark + 1
+    self.mark = self.mark + 1
     local extraText = ""
 
-    local startAt = self.db.profile.encounter4hmStartAt
+    local startAt = QA.db.profile.encounter4hmStartAt
     if startAt and startAt > 0 then
-        local shouldMove = ((FHM.mark - startAt) % self.db.profile.encounter4hmMoveEvery) == 0
+        local shouldMove = ((self.mark - startAt) % QA.db.profile.encounter4hmMoveEvery) == 0
         if shouldMove then
             extraText = " ".._c.yellow.."MOVE!".."|r"
         end
     end
 
-    out(_c.bold..self.name.."|r Mark "..FHM.mark..extraText)
-    FHM.timer = C_Timer.NewTimer(13, function()
+    out(_c.bold..QA.name.."|r Mark "..self.mark..extraText)
+    self.timer = C_Timer.NewTimer(13, function()
         FTM:Mark()
     end)
 end

@@ -54,100 +54,51 @@ function QA:CheckHearthstone()
     end
 end
 
-function QA:CheckWarriorExecute()
-    if QA.db.profile.warriorExecute then
-        local changed = false
-        local executeSpellId = QA.spells.warrior.execute.spellId[1]
-        local usable, notEnoughMana = IsUsableSpell(executeSpellId)
-        --debug(2, "CheckPower", "RAGE", "usable", usable, "notEnoughMana", notEnoughMana)
-        if usable and not notEnoughMana then
-            local button = QA:AddIcon(QA.db.profile.warriorExecuteFrame, "spell", executeSpellId, QA.spells.warrior.execute)
-            if button then
-                button.glowInCombat = true
-                changed = true
-            end
-        else
-            changed = QA:RemoveIcon(QA.db.profile.warriorExecuteFrame, executeSpellId)
-        end
-        if changed then
-            QA:ArrangeIcons(QA.db.profile.warriorExecuteFrame)
-        end
+function QA:CheckAllProcs()
+    for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
+        QA:CheckProc(spell)
+    end
+    for _, spell in ipairs(QA.trackedProcAbilities.combatLog) do
+        QA:CheckProc(spell)
     end
 end
 
-local hasOverpowerCooldownCheck = false
-local CheckOverpowerFaded = QA:Debounce(function()
-    QA:CheckWarriorOverpower()
-end, 1)
-
-function QA:CheckWarriorOverpower()
+-- Currently supported only target based proc spells
+function QA:CheckProc(spell)
+    if not QA.db.profile[spell.procFrameOption] then return end
     local changed = false
-    local overpower = QA.spells.warrior.overpower
-    local usable, notEnoughMana = IsUsableSpell(overpower.spellId[1])
-    debug(2, "Checking overpower", usable)
+    local spellId = spell.spellId[1]
+    local usable, notEnoughMana = IsUsableSpell(spellId)
+    local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
+    debug(2, "Checking proc: "..spell.name, usable, notEnoughMana)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
-        local start, duration = GetSpellCooldown(overpower.spellId[1])
+        local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then
             -- has cooldown, check again later
-            changed = QA:RemoveIcon(QA.db.profile.warriorOverpowerFrame, overpower.spellId[1])
-            if not hasOverpowerCooldownCheck then
-                hasOverpowerCooldownCheck = true
+            changed = QA:RemoveIcon(iconType, spellId)
+            if spell.procFadeCheck and not procCheck.cooldown[spellId] then
+                QA.procCheck.cooldown[spellId] = true
                 C_Timer.After(start + duration - GetTime() + 0.1, function()
-                    hasOverpowerCooldownCheck = false
-                    QA:CheckWarriorOverpower()
+                    QA.procCheck.cooldown[spellId] = nil
+                    QA:CheckProc(spell)
                 end)
             end
         else
-            local button = QA:AddIcon(QA.db.profile.warriorOverpowerFrame, "spell", overpower.spellId[1], QA.spells.warrior.overpower)
+            local button = QA:AddIcon(iconType, "spell", spellId, spell)
             if button then
                 button.glowInCombat = true
                 changed = true
             end
-            CheckOverpowerFaded() -- if not used, it fades. check within 1 sec
+            local FadeCheck = QA.procCheck.FadeCheck[spellId]
+            if FadeCheck then
+                FadeCheck(QA) -- if not used, it fades. check within 1 sec
+            end
         end
     else
-        changed = QA:RemoveIcon(QA.db.profile.warriorOverpowerFrame, overpower.spellId[1])
+        changed = QA:RemoveIcon(iconType, spellId)
     end
     if changed then
-        QA:ArrangeIcons(QA.db.profile.warriorOverpowerFrame)
-    end
-end
-
-local hasRevengeCooldownCheck = false
-local CheckRevengeFaded = QA:Debounce(function()
-    QA:CheckWarriorRevenge()
-end, 1)
-
-function QA:CheckWarriorRevenge()
-    local changed = false
-    local revenge = QA.spells.warrior.revenge
-    local usable, notEnoughMana = IsUsableSpell(revenge.spellId[1])
-    debug(2, "Checking revenge", usable)
-    if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
-        local start, duration = GetSpellCooldown(revenge.spellId[1])
-        if start > 0 and duration > 0 then
-            -- has cooldown, check again later
-            changed = QA:RemoveIcon(QA.db.profile.warriorRevengeFrame, revenge.spellId[1])
-            if not hasRevengeCooldownCheck then
-                hasRevengeCooldownCheck = true
-                C_Timer.After(start + duration - GetTime() + 0.1, function()
-                    hasRevengeCooldownCheck = false
-                    QA:CheckWarriorRevenge()
-                end)
-            end
-        else
-            local button = QA:AddIcon(QA.db.profile.warriorRevengeFrame, "spell", revenge.spellId[1], QA.spells.warrior.revenge)
-            if button then
-                button.glowInCombat = true
-                changed = true
-            end
-            CheckRevengeFaded() -- if not used, it fades. check within 1 sec
-        end
-    else
-        changed = QA:RemoveIcon(QA.db.profile.warriorRevengeFrame, revenge.spellId[1])
-    end
-    if changed then
-        QA:ArrangeIcons(QA.db.profile.warriorRevengeFrame)
+        QA:ArrangeIcons(iconType)
     end
 end
 
@@ -180,11 +131,7 @@ end
 function QA:CheckPower(unit, powerType)
     if not unit == "player" then return end
     --debug(3, "CheckPower", unit, powerType)
-    if QA.isWarrior then
-        if powerType == "RAGE" then
-            QA:CheckWarriorExecute()
-        end
-    elseif QA.isRogue then
+    if QA.isRogue then
         if powerType == "ENERGY" then
             QA:CheckRogueTeaTime()
         elseif powerType == "COMBO_POINTS" then

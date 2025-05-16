@@ -25,6 +25,7 @@ QA.optionalEvents = {
     "PARTY_MEMBER_ENABLE",
     --"SPELL_UPDATE_USABLE",
     "UPDATE_SHAPESHIFT_FORM",
+    "UNIT_HEALTH",
 }
 
 QA.warrior = {
@@ -111,9 +112,15 @@ QA.trackedLowConsumes = {}
 
 QA.trackedTracking = {}
 
+QA.trackedProcAbilities = {
+    combatLog = {},
+    unitHealth = {},
+}
+
 -- custom events
 
 function QA:BuildTrackedGear()
+    debug(2, "BuildTrackedGear...")
     local MARK_OF_THE_CHAMPION_ITEM_ID = { 23206, 23207 }
     for _, itemId in ipairs(MARK_OF_THE_CHAMPION_ITEM_ID) do
         QA.trackedGear[itemId] = {
@@ -153,24 +160,34 @@ function QA:BuildTrackedSpells()
                 end
             end
 
-            if spell.spellId and (spell.visible == nil or spell.visible) then
-                if not spell.icon then
-                    spell.icon = GetSpellTexture(spell.spellId[1])
-                end
-                for _, spellId in ipairs(spell.spellId) do
-                    --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
-                    if spell.aura then
-                        QA.trackedAuras[spellId] = spell
-                    elseif spell.duration then
-                        QA.trackedCombatLog[spellId] = spell -- offensive
+            if spell.visible == nil or spell.visible then
+                if spell.spellId then
+                    if not spell.icon then
+                        spell.icon = GetSpellTexture(spell.spellId[1])
                     end
+                    if spell.proc then
+                        table.insert(QA.trackedProcAbilities[spell.proc], spell)
+                        if spell.procFadeCheck then
+                            QA.procCheck.FadeCheck[spell.spellId[1]] = QA:Debounce(function()
+                                QA:CheckProc(spell)
+                            end, 1)
+                        end
+                    end
+                    for _, spellId in ipairs(spell.spellId) do
+                        --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
+                        if spell.aura then
+                            QA.trackedAuras[spellId] = spell
+                        elseif spell.duration then
+                            QA.trackedCombatLog[spellId] = spell -- offensive
+                        end
+                        if spell.cooldown then
+                            QA.trackedSpellCooldowns[spellId] = spell
+                        end
+                    end
+                elseif spell.itemId then
                     if spell.cooldown then
-                        QA.trackedSpellCooldowns[spellId] = spell
+                        QA.trackedItemCooldowns[spell.itemId] = spell
                     end
-                end
-            elseif spell.itemId then
-                if spell.cooldown then
-                    QA.trackedItemCooldowns[spell.itemId] = spell
                 end
             end
         end

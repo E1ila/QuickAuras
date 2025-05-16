@@ -16,6 +16,7 @@ QA.playerBuffs = {}
 QA.playerIsStealthed = {}
 QA.existingConsumes = {}
 QA.encounter = { OnStart = {}, OnEnd = {} }
+QA.procCheck = { cooldown = {}, FadeCheck = {} }
 QAG = QA
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,

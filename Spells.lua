@@ -188,6 +188,9 @@ spells.warrior = {
         name = "Execute",
         icon = "Interface\\Icons\\inv_sword_48",
         cooldown = true,
+        proc = "unitHealth",
+        procFrameOption = "warriorExecute",
+        unitHealth = "target",
         visible = QA.isWarrior,
     },
     overpower = {
@@ -195,7 +198,10 @@ spells.warrior = {
         triggers = {
             DODGE = true,
         },
-        bySpellId = {
+        proc = "combatLog",
+        procFadeCheck = true,
+        procFrameOption = "warriorOverpower",
+        bySpellId = { -- mandatory for CLUE proc
             [7384] = 7384,
             [7887] = 7384,
             [11584] = 7384,
@@ -204,6 +210,12 @@ spells.warrior = {
         name = "Overpower",
         icon = "Interface\\Icons\\ability_meleedamage",
         visible = QA.isWarrior,
+        CheckProc = function(spell, subevent, sourceGuid, sourceName, destGuid, destName, extra)
+            if not QA.shapeshiftForm == QA.warrior.stance.battle and sourceGuid == QA.playerGuid then return false end
+
+            return  subevent == "SWING_MISSED" and spell.triggers[extra[1]]
+                    or subevent == "SPELL_MISSED" and spell.triggers[extra[4]]
+        end ,
     },
     revenge = {
         spellId = { 6572, 6574, 7379, 11600, 11601, 25288 },
@@ -212,7 +224,10 @@ spells.warrior = {
             PARRY = true,
             BLOCK = true,
         },
-        bySpellId = {
+        proc = 'combatLog',
+        procFadeCheck = true,
+        procFrameOption = "warriorRevenge",
+        bySpellId = { -- mandatory for CLUE proc
             [6572] = 6572,
             [6574] = 6572,
             [7379] = 6572,
@@ -223,6 +238,28 @@ spells.warrior = {
         name = "Revenge",
         icon = "Interface\\Icons\\ability_warrior_revenge",
         visible = QA.isWarrior,
+        DAMAGE_SUBEVENTS = {
+            SWING_DAMAGE = true,
+            SPELL_DAMAGE = true,
+        },
+        CheckProc = function(spell, subevent, sourceGuid, sourceName, destGuid, destName, extra)
+            if not QA.shapeshiftForm == QA.warrior.stance.defensive and destGuid == QA.playerGuid then return false end
+
+            local partiallyBlocked = false
+            local blockIndex = 5
+            if spell.DAMAGE_SUBEVENTS[subevent] then
+                if subevent == "SPELL_DAMAGE" then blockIndex = blockIndex+3 end
+                if extra[blockIndex] and tonumber(extra[blockIndex]) > 0 then -- block amount
+                    partiallyBlocked = true
+                end
+            end
+            if      partiallyBlocked
+                    or subevent == "SWING_MISSED" and spell.triggers[extra[1]]
+                    or (subevent == "SPELL_MISSED" or subevent == "RANGE_MISSED") and spell.triggers[extra[4]]
+            then
+                return true
+            end
+        end,
     },
     charge = {
         spellId = { 100, 6178, 11578 },

@@ -56,9 +56,8 @@ end
 
 function QA:PLAYER_TARGET_CHANGED(...)
     QA:CheckGear("target", ...)
-    QA:CheckWarriorExecute()
-    QA:CheckWarriorOverpower()
     QA:ResetErrorCount()
+    QA:CheckAllProcs()
 end
 
 function QA:BAG_UPDATE(bagId)
@@ -148,6 +147,12 @@ function QA:UPDATE_SHAPESHIFT_FORM(...)
     --debug("UPDATE_SHAPESHIFT_FORM", QA.shapeshiftForm, ...)
 end
 
+function QA:UNIT_HEALTH()
+    for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
+        QA:CheckProc(spell)
+    end
+end
+
 -- OnUpdate
 
 function QA:OnUpdate()
@@ -160,11 +165,6 @@ function QA:OnUpdate()
 end
 
 -- Combat log
-
-local DAMAGE_SUBEVENTS = {
-    SWING_DAMAGE = true,
-    SPELL_DAMAGE = true,
-}
 
 QA.cluMax = 0
 function QA:COMBAT_LOG_EVENT_UNFILTERED()
@@ -302,53 +302,24 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     if QA.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then
         QA.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
-
     if QA.encounter.OnSpellSummon and subevent == "SPELL_SUMMON" then
         QA.encounter.OnSpellSummon(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
 
-    if QA.isWarrior then
-        if QA.db.profile.warriorOverpower and QA.shapeshiftForm == QA.warrior.stance.battle and sourceGuid == QA.playerGuid then
-            local overpower = QA.spells.warrior.overpower
-            -- overpower
-            if subevent == "SWING_MISSED" and overpower.triggers[extra[1]] or subevent == "SPELL_MISSED" and overpower.triggers[extra[4]] then
-                -- someone dodged
-                C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end) -- doesn't become enabled right away
-            end
-            if subevent == "SPELL_CAST_SUCCESS"  then
-                local spellId = overpower.bySpellId[extra[1]]
-                --debug("SPELL_CAST_SUCCESS", extra[1], spellId)
-                if spellId == overpower.spellId[1] then
-                    -- used ovepower
-                    C_Timer.After(0.05, function() QA:CheckWarriorOverpower() end)
+    -- check procs
+    for _, spell in ipairs(QA.trackedProcAbilities.combatLog) do
+        if QA.db.profile[spell.procFrameOption] then
+            local spellCasted = false
+
+            if subevent == "SPELL_CAST_SUCCESS" then
+                if spell.bySpellId[extra[1]] == spell.spellId[1] then
+                    spellCasted = true
                 end
             end
-        end
-        if QA.db.profile.warriorRevenge and QA.shapeshiftForm == QA.warrior.stance.defensive and destGuid == QA.playerGuid then
-            local revenge = QA.spells.warrior.revenge
-            local partiallyBlocked = false
-            local blockIndex = 5
-            if DAMAGE_SUBEVENTS[subevent] then
-                if subevent == "SPELL_DAMAGE" then blockIndex = blockIndex+3 end
-                if extra[blockIndex] and tonumber(extra[blockIndex]) > 0 then -- block amount
-                    partiallyBlocked = true
-                end
-            end
-            -- overpower
-            if      partiallyBlocked
-                    or subevent == "SWING_MISSED" and revenge.triggers[extra[1]]
-                    or (subevent == "SPELL_MISSED" or subevent == "RANGE_MISSED") and revenge.triggers[extra[4]]
-            then
-                -- someone dodged
-                C_Timer.After(0.05, function() QA:CheckWarriorRevenge() end) -- doesn't become enabled right away
-            end
-            if subevent == "SPELL_CAST_SUCCESS"  then
-                local spellId = revenge.bySpellId[extra[1]]
-                --debug("SPELL_CAST_SUCCESS", extra[1], spellId)
-                if spellId == revenge.spellId[1] then
-                    -- used ovepower
-                    C_Timer.After(0.05, function() QA:CheckWarriorRevenge() end)
-                end
+
+            if spellCasted or spell.CheckProc(spell, subevent, sourceGuid, sourceName, destGuid, destName, extra) then
+                -- doesn't become enabled right away
+                C_Timer.After(0.05, function() QA:CheckProc(spell) end)
             end
         end
     end

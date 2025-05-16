@@ -71,6 +71,7 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
         frame = QA:CreateTimerButton(parent, index, 2, conf.color, conf.icon)
         if showAtTime then
             showAtTime = expTime - showAtTime
+            frame:SetAlpha(0.5)
             frame:Hide()
         end
     else

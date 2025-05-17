@@ -522,7 +522,7 @@ spells.shaman = {
         icon = "Interface\\Icons\\spell_frostresistancetotem_01",
         crucial = true,
         crucialCond = function()
-            return QA.boss.KT.phase == 2 and QA.db.profile.frostResistanceTotemMissing
+            return QA.isHorde and QA.boss.KT.phase == 2 and QA.db.profile.frostResistanceTotemMissing and #QA.partyShamans > 0
         end
     },
     reincarnation = {

@@ -15,6 +15,7 @@ QA.bags = {} -- items in bags
 QA.playerBuffs = {}
 QA.playerIsStealthed = {}
 QA.existingConsumes = {}
+QA.partyShamans = {}
 QA.encounter = { OnStart = {}, OnEnd = {} }
 QA.procCheck = { cooldown = {}, FadeCheck = {} }
 QAG = QA
@@ -57,7 +58,10 @@ QA.isPriest = pclass == "PRIEST"
 QA.isOrc = QA.playerRace == "Orc"
 QA.isTroll = QA.playerRace == "Troll"
 QA.isUndead = QA.playerRace == "Undead"
+QA.isTauren = QA.playerRace == "Tauren"
 QA.isManaClass = QA.isPriest or QA.isMage or QA.isWarlock or QA.isDruid or QA.isPaladin or QA.isShaman or QA.isHunter
+QA.isHorde = QA.isOrc or QA.isTroll or QA.isUndead or QA.isTauren
+QA.isAlliance = not QA.isHorde
 local _c
 
 QA.ICON = {

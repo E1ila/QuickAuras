@@ -8,7 +8,7 @@ local THISTLE_TEA_ITEMID = 7676
 local BLADE_FLURRY_SPELLID = 13877
 local ICON = QA.ICON
 local _c = QA.colors
-local _missingBuffsCombatState = false
+local _aurasCombatState = false
 
 QA.targetInRange = false
 
@@ -70,7 +70,7 @@ function QA:CheckProc(spell)
     local spellId = spell.spellId[1]
     local usable, notEnoughMana = IsUsableSpell(spellId)
     local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
-    debug(2, "Checking proc: "..spell.name, usable, notEnoughMana)
+    debug(3, "Checking proc: "..spell.name, usable, notEnoughMana)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
         local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then
@@ -363,14 +363,19 @@ function QA:CheckAuras()
             QA:RemoveTimer(timer, "unseen")
         end
     end
-    QA:CheckMissingBuffs(seen)
-    QA:CheckCrucialBuffs(seen)
+    local combatStateChanged = _aurasCombatState ~= QA.inCombat
+    _aurasCombatState = QA.inCombat
+    if combatStateChanged then
+        debug("CheckAuras", "combatStateChanged", QA.inCombat)
+    end
+    QA:CheckMissingBuffs(seen, combatStateChanged)
+    QA:CheckCrucialBuffs(seen, combatStateChanged)
     QA:CheckStealthInInstance(seen)
 end
 
-function QA:CheckMissingBuffs(activeAuras)
+function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
     if not QA.db.profile.missingConsumes then return end
-    local buffsChanged = false
+    local buffsChanged = combatStateChanged
     if  QA.db.profile.forceShowMissing or
         QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
         QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
@@ -394,8 +399,7 @@ function QA:CheckMissingBuffs(activeAuras)
             end
         end
     end
-    if buffsChanged or _missingBuffsCombatState ~= QA.inCombat then
-        _missingBuffsCombatState = QA.inCombat
+    if buffsChanged then
         QA:ArrangeIcons(ICON.MISSING)
     end
 end
@@ -406,9 +410,9 @@ local function BattleShoutMissingOnClick()
     end
 end
 
-function QA:CheckCrucialBuffs(activeAuras)
-    local changed = false
-    debug(2, "CheckCrucialBuffs")
+function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
+    local changed = combatStateChanged
+    debug(2, "CheckCrucialBuffs", "combatStateChanged", changed)
     for _, buff in pairs(QA.trackedCrucialAuras) do
         if buff.conf.crucialCond() then
             local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
@@ -436,7 +440,7 @@ function QA:CheckCrucialBuffs(activeAuras)
                 end
             end
         else
-            changed = QA:RemoveIcon(ICON.CRUCIAL, buff.spellIds[1])
+            if QA:RemoveIcon(ICON.CRUCIAL, buff.spellIds[1]) then changed = true end
         end
     end
     if changed then
@@ -461,6 +465,22 @@ function QA:CheckStealthInInstance(seen)
     end
     if changed then
         QA:ArrangeIcons(ICON.WARNING)
+    end
+end
+
+function QA:CheckForShaman()
+    if QA.isAlliance then return end
+    QA.partyShamans = {}
+    if QA.isShaman then
+        table.insert(QA.partyShamans, "player")
+    end
+    if GetNumGroupMembers() == 0 then return end
+    for index = 1, 4 do
+        local pstring = "party" .. index
+        local gclass = select(2, UnitClass(pstring))
+        if (gclass == "SHAMAN") then
+            table.insert(QA.partyShamans, pstring)
+        end
     end
 end
 

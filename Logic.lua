@@ -76,7 +76,7 @@ function QA:CheckProc(spell)
         if start > 0 and duration > 0 then
             -- has cooldown, check again later
             changed = QA:RemoveIcon(iconType, spellId)
-            if spell.procFadeCheck and not procCheck.cooldown[spellId] then
+            if spell.procFadeCheck and not QA.procCheck.cooldown[spellId] then
                 QA.procCheck.cooldown[spellId] = true
                 C_Timer.After(start + duration - GetTime() + 0.1, function()
                     QA.procCheck.cooldown[spellId] = nil

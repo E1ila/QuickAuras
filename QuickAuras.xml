@@ -384,6 +384,156 @@
         </Layers>
     </Frame>
 
+    <Frame name="QuickAuras_XP" parent="UIParent" inherits="QuickAuras_Widget">
+        <Size>
+            <AbsDimension x="250" y="20" /> <!-- Frame size -->
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-200" />
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parent_Texture" file="Interface\AddOns\QuickAuras\assets\PowerAura34.tga">
+                    <Size>
+                        <AbsDimension x="300" y="30" /> <!-- Texture size -->
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="XP Tracker">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parent_Left">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="333 / 444">
+                            <Color r="1" g="1" b="1"/>
+                            <Shadow>
+                                <Offset>
+                                    <AbsDimension x="2" y="-2" />
+                                </Offset>
+                                <Color r="0" g="0" b="0" a="1" />
+                            </Shadow>
+                            <Anchors>
+                                <Anchor point="LEFT" x="8"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame name="$parent_Right">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="52%">
+                            <Color r="1" g="1" b="1"/>
+                            <Shadow>
+                                <Offset>
+                                    <AbsDimension x="2" y="-2" />
+                                </Offset>
+                                <Color r="0" g="0" b="0" a="1" />
+                            </Shadow>
+                            <Anchors>
+                                <Anchor point="RIGHT" x="-8"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame name="$parent_Bottom">
+                <Size>
+                    <AbsDimension y="15" /> <!-- Frame size -->
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM" />
+                    <Anchor point="RIGHT" relativeTo="$parent"  />
+                    <Anchor point="LEFT" relativeTo="$parent" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Completed: 8.2% - Rested: 3.1%">
+                            <Color r="1" g="1" b="1"/>
+                            <Shadow>
+                                <Offset>
+                                    <AbsDimension x="2" y="-2" />
+                                </Offset>
+                                <Color r="0" g="0" b="0" a="1" />
+                            </Shadow>
+                            <Anchors>
+                                <Anchor point="RIGHT" x="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <StatusBar name="$parent_Bar3" inherits="TextStatusBar">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                </Anchors>
+                <BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill"/>
+                <Scripts>
+                    <OnLoad>
+                        self:SetMinMaxValues(0, 1)
+                        self:SetValue(0.3)
+                    </OnLoad>
+                </Scripts>
+            </StatusBar>
+            <StatusBar name="$parent_Bar2" inherits="TextStatusBar">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                </Anchors>
+                <BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill"/>
+                <Scripts>
+                    <OnLoad>
+                        self:SetMinMaxValues(0, 1)
+                        self:SetValue(0.5)
+                    </OnLoad>
+                </Scripts>
+            </StatusBar>
+            <StatusBar name="$parent_Bar1" inherits="TextStatusBar">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                </Anchors>
+                <BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill"/>
+                <Scripts>
+                    <OnLoad>
+                        self:SetMinMaxValues(0, 1)
+                        self:SetValue(0.8)
+                    </OnLoad>
+                </Scripts>
+            </StatusBar>
+        </Frames>
+    </Frame>
+
     <Frame name="QuickAuras_OutOfRange" parent="UIParent" inherits="QuickAuras_Widget">
         <Size>
             <AbsDimension x="400" y="600" /> <!-- Frame size -->

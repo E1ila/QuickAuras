@@ -25,6 +25,7 @@ QA.defaultOptions = {
         announceInterrupts = true,
         announceMisses = false,
         stealthInInstance = true,
+        xpFrameEnabled = true,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -168,6 +169,21 @@ QA.options = {
                 QA.db.profile.raidBars = value
             end,
             order = 11,
+        },
+        xpFrameEnabled = {
+            type = "toggle",
+            name = "XP Bar",
+            desc = "Shows XP bar with rested % and quest XP",
+            get = function(info) return QA.db.profile.xpFrameEnabled end,
+            set = function(info, value)
+                QA.db.profile.xpFrameEnabled = value
+                if value then
+                    QuickAuras_XP:Show()
+                else
+                    QuickAuras_XP:Hide()
+                end
+            end,
+            order = 12,
         },
         spacer99 = {
             type = "description",

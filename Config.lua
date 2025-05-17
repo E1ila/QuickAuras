@@ -26,6 +26,7 @@ QA.optionalEvents = {
     --"SPELL_UPDATE_USABLE",
     "UPDATE_SHAPESHIFT_FORM",
     "UNIT_HEALTH",
+    "PLAYER_XP_UPDATE",
 }
 
 QA.warrior = {
@@ -47,7 +48,7 @@ QA.adjustableFrames = {
     QuickAuras_WeaponEnchants,
     QuickAuras_Crucial,
     QuickAuras_RangeIndicator,
-    QuickAuras_RaidBars
+    QuickAuras_RaidBars,
 }
 
 --QuickAuras.adjustableFrames = {

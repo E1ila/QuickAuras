@@ -99,6 +99,9 @@ end
 
 function QA:PLAYER_LEVEL_UP()
     QA.playerLevel = UnitLevel("player")
+    if QA.playerLevel == 60 then
+        QuickAuras_XP:Hide()
+    end
 end
 
 function QA:BANKFRAME_OPENED()
@@ -151,6 +154,10 @@ function QA:UNIT_HEALTH()
     for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
         QA:CheckProc(spell)
     end
+end
+
+function QA:PLAYER_XP_UPDATE()
+    QA:UpdateXpFrame()
 end
 
 -- OnUpdate

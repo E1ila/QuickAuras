@@ -7,6 +7,9 @@ local _uiLocked = true
 local _c
 local ICON = QA.ICON
 
+local LSM = LibStub("LibSharedMedia-3.0")
+local cleanTexture = LSM:Fetch("statusbar", "Clean")
+
 -- General -----------------------------------------------------------
 
 function QA:InitUI()
@@ -20,6 +23,8 @@ function QA:InitUI()
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     QA:Rogue_SetCombo(0)
     --QA:CheckWeaponEnchant()
+
+    QA:ConfigureXpFrame()
 end
 
 function QA:InitWeaponEnchants()
@@ -72,6 +77,37 @@ function QA:DisableDarkBackdrop(frame)
     frame:SetBackdrop (nil)
 end
 
+-- xp frame -----------------------------------------
+
+function QA:ConfigureXpFrame()
+    QA:SetDarkBackdrop(QuickAuras_XP)
+    QuickAuras_XP_Text:Show()
+    QuickAuras_XP_Left_Text:SetText("35,888 / 76,000")
+    QuickAuras_XP_Left_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
+    QuickAuras_XP_Right_Text:SetText("35%")
+    QuickAuras_XP_Right_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
+    QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff97007.2%|r - Rested: |cff4f90ff2.5%|r")
+    QuickAuras_XP_Bottom_Text:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
+    QuickAuras_XP_Bar1:SetStatusBarTexture(cleanTexture)
+    QuickAuras_XP_Bar1:SetStatusBarColor(0.204, 0.302, 0.471)
+    QuickAuras_XP_Bar2:SetStatusBarTexture(cleanTexture)
+    QuickAuras_XP_Bar2:SetStatusBarColor(0.784, 0.467, 0)
+    QuickAuras_XP_Bar3:SetStatusBarTexture(cleanTexture)
+    QuickAuras_XP_Bar3:SetStatusBarColor(0.337, 0.388, 1.0)
+    if QA.db.profile.xpFrameEnabled and QA.playerLevel < 60 then
+        QuickAuras_XP:Show()
+    else
+        QuickAuras_XP:Hide()
+    end
+end
+
+function QA:UpdateXpFrame()
+    if QA.db.profile.xpFrameEnabled and QA.playerLevel < 60 then
+        QuickAuras_XP_Left_Text:SetText("35,888 / 76,000")
+        QuickAuras_XP_Right_Text:SetText("35%")
+        QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff97007.2%|r - Rested: |cff4f90ff2.5%|r")
+    end
+end
 
 -- frame creation -----------------------------------
 

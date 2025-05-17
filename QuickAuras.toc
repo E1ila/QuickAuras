@@ -18,3 +18,4 @@ Options.lua
 Events.lua
 Logic.lua
 BossLogic.lua
+XP.lua

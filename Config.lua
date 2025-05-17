@@ -27,6 +27,7 @@ QA.optionalEvents = {
     "UPDATE_SHAPESHIFT_FORM",
     "UNIT_HEALTH",
     "PLAYER_XP_UPDATE",
+    "QUEST_TURNED_IN",
 }
 
 QA.warrior = {

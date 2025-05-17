@@ -160,6 +160,10 @@ function QA:PLAYER_XP_UPDATE()
     QA:UpdateXpFrame()
 end
 
+function QA:QUEST_TURNED_IN()
+    QA:UpdateXpFrame()
+end
+
 -- OnUpdate
 
 function QA:OnUpdate()

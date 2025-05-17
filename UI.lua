@@ -10,6 +10,15 @@ local ICON = QA.ICON
 local LSM = LibStub("LibSharedMedia-3.0")
 local cleanTexture = LSM:Fetch("statusbar", "Clean")
 
+local function FormatNumberWithCommas(n)
+    local str = tostring(n)
+    local result = str:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    if result:sub(1,1) == "," then
+        result = result:sub(2)
+    end
+    return result
+end
+
 -- General -----------------------------------------------------------
 
 function QA:InitUI()
@@ -25,6 +34,7 @@ function QA:InitUI()
     --QA:CheckWeaponEnchant()
 
     QA:ConfigureXpFrame()
+    QA:UpdateXpFrame()
 end
 
 function QA:InitWeaponEnchants()
@@ -82,11 +92,8 @@ end
 function QA:ConfigureXpFrame()
     QA:SetDarkBackdrop(QuickAuras_XP)
     QuickAuras_XP_Text:Show()
-    QuickAuras_XP_Left_Text:SetText("35,888 / 76,000")
     QuickAuras_XP_Left_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
-    QuickAuras_XP_Right_Text:SetText("35%")
     QuickAuras_XP_Right_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
-    QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff97007.2%|r - Rested: |cff4f90ff2.5%|r")
     QuickAuras_XP_Bottom_Text:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
     QuickAuras_XP_Bar1:SetStatusBarTexture(cleanTexture)
     QuickAuras_XP_Bar1:SetStatusBarColor(0.204, 0.302, 0.471)
@@ -103,9 +110,27 @@ end
 
 function QA:UpdateXpFrame()
     if QA.db.profile.xpFrameEnabled and QA.playerLevel < 60 then
-        QuickAuras_XP_Left_Text:SetText("35,888 / 76,000")
-        QuickAuras_XP_Right_Text:SetText("35%")
-        QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff97007.2%|r - Rested: |cff4f90ff2.5%|r")
+        QA.xp.UpdateQuestXP(self)
+
+        local currentXP = UnitXP("player")
+        local maxXP = UnitXPMax("player")
+        local restedXP = GetXPExhaustion()
+
+        local p_current = currentXP / maxXP
+        local p_completed = QA.xp.completeXP / maxXP
+        local p_rested = restedXP / maxXP
+
+        local s_current = tostring(math.floor(p_current*1000)/10).."%"
+        local s_completed = tostring(math.floor(p_completed*1000)/10).."%"
+        local s_rested = tostring(math.floor(p_rested*1000)/10).."%"
+
+        QuickAuras_XP_Bar3:SetValue(p_current)
+        QuickAuras_XP_Bar2:SetValue(p_current+p_completed)
+        QuickAuras_XP_Bar1:SetValue(p_current+p_completed+p_rested)
+
+        QuickAuras_XP_Left_Text:SetText(FormatNumberWithCommas(currentXP).." / "..FormatNumberWithCommas(maxXP))
+        QuickAuras_XP_Right_Text:SetText(s_current)
+        QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff9700"..s_completed.."|r - Rested: |cff4f90ff"..s_rested.."|r")
     end
 end
 
@@ -390,6 +415,7 @@ end
 -- Widget Positioning -----------------------------------------------------------
 
 function QA:ParentFramesNormalState()
+    QuickAuras_XP:EnableMouse(false)
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:DisableDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Hide()
@@ -398,6 +424,7 @@ function QA:ParentFramesNormalState()
 end
 
 function QA:ParentFramesEditState()
+    QuickAuras_XP:EnableMouse(true)
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:SetDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Show()
@@ -413,16 +440,6 @@ function QA:ToggleLockedState()
     else
         QA:ParentFramesEditState()
     end
-
-    --for name, obj in ipairs(QA.adjustableFrames) do
-    --    if obj.visible == nil or obj.visible then
-    --        local f = _G[name]
-    --        if f then
-    --            f:EnableMouse(not _uiLocked)
-    --            if _uiLocked then f:Hide() else f:Show() end
-    --        end
-    --    end
-    --end
     out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 end
 

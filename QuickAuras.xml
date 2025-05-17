@@ -389,7 +389,7 @@
             <AbsDimension x="250" y="20" /> <!-- Frame size -->
         </Size>
         <Anchors>
-            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-200" />
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-350" />
         </Anchors>
         <Layers>
             <Layer level="BACKGROUND">

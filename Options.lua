@@ -23,7 +23,8 @@ QA.defaultOptions = {
         hsNotCapitalWarning = true,
         targetInRangeIndication = true,
         announceInterrupts = true,
-        announceMisses = false,
+        announceMisses = QA.isWarrior,
+        announceSquawk = false,
         stealthInInstance = true,
         xpFrameEnabled = true,
         raidBars = true,
@@ -455,6 +456,16 @@ QA.options = {
                     get = function(info) return QA.db.profile.announceMisses end,
                     set = function(info, value)
                         QA.db.profile.announceMisses = value
+                    end,
+                    order = 106,
+                },
+                announceSquawk = {
+                    type = "toggle",
+                    name = "Announce Squawk",
+                    desc = "Say in /p when a Battle Chicken buff is applied.",
+                    get = function(info) return QA.db.profile.announceSquawk end,
+                    set = function(info, value)
+                        QA.db.profile.announceSquawk = value
                     end,
                     order = 106,
                 },

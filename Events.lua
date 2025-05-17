@@ -227,6 +227,9 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                             and (not conf.option or QA.db.profile[conf.option])
                     then
                         -- start offensive timer
+                        if conf.OnDetect then
+                            conf.OnDetect(conf, sourceGuid, sourceName, destGuid, destName)
+                        end
                         local timer = QA:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
                         if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
                         enemyDebuffs[extra[1]][destGuid] = timer

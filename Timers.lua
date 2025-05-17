@@ -8,6 +8,7 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
     local uiType, list, parent, height
     local widthMul = 1
     keyExtra = keyExtra or ""
+    showAtTime = showAtTime or conf.showAtTime
     if timerType == "raidbar" then
         list = QA.list_raidBars
         parent = QuickAuras_RaidBars

@@ -699,6 +699,20 @@ spells.other = {
         cooldown = true,
         evenIfNotInBag = true,
     },
+    chicken = {
+        spellId = { 23060 },
+        name = "Squawk",
+        icon = "Interface\\Icons\\inv_misc_birdbeck_01",
+        color = {0.847, 0.686, 0.541},
+        list = "watch",
+        showAtTime = 5,
+        cooldown = true,
+        OnDetect = function()
+            if QA.db.profile.announceSquawk then
+                SendChatMessage("Squawk!", "PARTY")
+            end
+        end,
+    },
 }
 
 -- will be added to options by AddRemindersOptions and not AddAbilitiesOptions

@@ -3,9 +3,10 @@ local QA = addon.root
 local out = QA.Print
 local debug = QA.Debug
 local pbId = 0
-local _uiLocked = true
 local _c
 local ICON = QA.ICON
+
+QA.uiLocked = true
 
 local LSM = LibStub("LibSharedMedia-3.0")
 local cleanTexture = LSM:Fetch("statusbar", "Clean")
@@ -433,9 +434,9 @@ function QA:ParentFramesEditState()
 end
 
 function QA:ToggleLockedState()
-    _uiLocked = not _uiLocked
+    QA.uiLocked = not QA.uiLocked
 
-    if  _uiLocked then
+    if QA.uiLocked then
         QA:ParentFramesNormalState()
     else
         QA:ParentFramesEditState()

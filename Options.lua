@@ -177,7 +177,7 @@ QA.options = {
             get = function(info) return QA.db.profile.xpFrameEnabled end,
             set = function(info, value)
                 QA.db.profile.xpFrameEnabled = value
-                if value then
+                if value and QA.playerLevel < 60 then
                     QuickAuras_XP:Show()
                 else
                     QuickAuras_XP:Hide()
@@ -195,6 +195,22 @@ QA.options = {
             name = "Look and Feel",
             order = 100,
             args = {
+                lockState = {
+                    type = "execute",
+                    name = "Locked",
+                    desc = "Allows customizing frame positions",
+                    func = function()
+                        QA:ToggleLockedState()
+                        QA.options.args.lookAndFeel.args.lockState.name = QA.uiLocked and "Unlock" or "Lock"
+                        LibStub("AceConfigRegistry-3.0"):NotifyChange("QuickAuras")
+                    end,
+                    order = 1,
+                },
+                spacer98 = {
+                    type = "header",
+                    name = "Dimensions",
+                    order = 98,
+                },
                 barHeight = {
                     type = "range",
                     name = "Bar Height",
@@ -350,8 +366,8 @@ QA.options = {
                     order = 111,
                 },
                 spacer198 = {
-                    type = "description",
-                    name = "",
+                    type = "header",
+                    name = "Other",
                     order = 198,
                 },
                 showTimeOnBars = {

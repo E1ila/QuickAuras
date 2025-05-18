@@ -164,6 +164,17 @@ function QA:UNIT_THREAT_LIST_UPDATE(unit)
     end
 end
 
+function QA:UNIT_SPELLCAST_SENT(unit, target, spellGuid)
+    local id = QA:GetSpellIdFromGuid(spellGuid)
+    local spell =
+            QA.spells.warrior.heroicStrike.bySpellId[id] and QA.spells.warrior.heroicStrike
+            or QA.spells.warrior.cleave.bySpellId[id] and QA.spells.warrior.cleave
+    debug(3, "UNIT_SPELLCAST_SENT", unit, spellGuid, id)
+    if unit == "player" and spell then
+        QA:QueuedSpell(spell, id)
+    end
+end
+
 -- OnUpdate
 
 function QA:OnUpdate()
@@ -324,6 +335,15 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             sourceGuid == UnitGUID("targettarget") and extra[1]
     then
         SendChatMessage(">> "..tostring(extra[1]).." <<", "SAY")
+    end
+
+    -- warrior unqueue spell
+    if QA.isWarrior and subevent == "SPELL_CAST_SUCCESS" and sourceGuid == QA.playerGuid then
+        local spell = QA.spells.warrior.heroicStrike.bySpellId[extra[1]] and QA.spells.warrior.heroicStrike
+                or QA.spells.warrior.cleave.bySpellId[extra[1]] and QA.spells.warrior.cleave
+        if spell then
+            QA:UnQueuedSpell(spell)
+        end
     end
 
     if QA.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then

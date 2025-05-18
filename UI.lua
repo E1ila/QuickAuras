@@ -115,7 +115,7 @@ function QA:UpdateXpFrame()
 
         local currentXP = UnitXP("player")
         local maxXP = UnitXPMax("player")
-        local restedXP = GetXPExhaustion()
+        local restedXP = GetXPExhaustion() or 0
 
         local p_current = currentXP / maxXP
         local p_completed = QA.xp.completeXP / maxXP

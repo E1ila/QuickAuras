@@ -297,3 +297,8 @@ function QA:GetNpcIdFromGuid(guid)
     local npcId = guid:match("Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)")
     return tonumber(npcId)
 end
+
+function QA:GetSpellIdFromGuid(guid)
+    local npcId = guid:match("Cast%-%d+%-%d+%-%d+%-%d+%-(%d+)")
+    return tonumber(npcId)
+end

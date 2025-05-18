@@ -543,7 +543,7 @@
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString name="$parent_Text" inherits="QuickAuras_HugeFont" text="OUT OF RANGE">
+                <FontString name="$parent_Text" inherits="QuickAuras_HugeFont" text="RANGE">
                     <Color r="0.9258" g="0.5195" b="0.0391"/>
                     <Shadow>
                         <Offset>

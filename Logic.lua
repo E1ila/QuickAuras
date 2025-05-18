@@ -14,6 +14,41 @@ QA.targetInRange = false
 
 local targetAggro = {}
 
+-- warrior spell queue ---------------------------------------------------------------------------
+
+local queuedSpell = {}
+
+local function MonitorQueued(spellId, callback)
+    -- in case of /stopcasting
+    C_Timer.After(0.25, function()
+        if spellId ~= queuedSpell.usedId then return end -- spell replaced/removed
+        local is = IsCurrentSpell(spellId)
+        if not is then
+            debug("ABORTED!", spellId)
+            callback()
+        else
+            MonitorQueued(spellId, callback)
+        end
+    end)
+end
+
+function QA:QueuedSpell(spell, spellId)
+    debug("Queued spell: " .. spell.name)
+    queuedSpell = {
+        id = spell.spellId[1],
+        usedId = spellId,
+        spell = spell,
+    }
+    MonitorQueued(spellId, function() QA:UnQueuedSpell(spell) end)
+end
+
+function QA:UnQueuedSpell(spell)
+    debug("Removed spell from queue: " .. spell.name)
+    queuedSpell = {}
+end
+
+-- aggro ---------------------------------------------------------------------------
+
 function QA:CheckPlayerAggro()
     if not QA.inCombat then targetAggro = {} return end
     if not QA.db.profile.overaggroWarning or (not IsInRaid() and not IsInGroup()) then return end

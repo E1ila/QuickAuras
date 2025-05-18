@@ -228,6 +228,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             if extra[1] == spellId then
                 -- taunt
                 if conf.taunt and subevent == "SPELL_AURA_APPLIED" and sourceGuid == QA.playerGuid then
+                    debug("CLEU ".._c.bold.."Taunt|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)
                     QA.hasTaunted = GetTime() + (conf.duration or 1)
                 end
                 -- offensive debuffs

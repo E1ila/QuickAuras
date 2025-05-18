@@ -22,7 +22,7 @@ function QA:CheckPlayerAggro()
     local status = UnitThreatSituation("player", "target")
     local targetGuid = UnitGUID("target")
     local targettargetGuid = UnitGUID("targettarget")
-    debug("UNIT_THREAT_LIST_UPDATE", status, UnitName("targettarget"))
+    --debug(3, "UNIT_THREAT_LIST_UPDATE", status, UnitName("targettarget"))
 
     if      targetAggro.targetGuid == targetGuid
             and targettargetGuid == QA.playerGuid

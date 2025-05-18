@@ -131,19 +131,12 @@ function QA:PLAYER_REGEN_ENABLED()
 end
 
 function QA:GROUP_ROSTER_UPDATE()
-    QA:CheckIfWarriorInParty()
-end
-
-function QA:GROUP_ROSTER_UPDATE()
+    QA.isMainTank = QA.isWarrior and IsInRaid() and (GetPartyAssignment("MAINTANK", "player") or GetPartyAssignment("MAINASSIST", "player"))
     QA:CheckIfWarriorInParty()
 end
 
 function QA:PARTY_MEMBER_ENABLE()
     QA:CheckIfWarriorInParty()
-end
-
-function QA:SPELL_UPDATE_USABLE(a, b, c)
-    -- happens too much
 end
 
 function QA:UPDATE_SHAPESHIFT_FORM(...)
@@ -200,6 +193,14 @@ function QA:COMBAT_LOG_EVENT_UNFILTERED()
     end
 end
 
+local TRACKED_SPELL_EVENTS = {
+    ["SPELL_AURA_APPLIED"] = true,
+    ["SPELL_AURA_REFRESH"] = true,
+    ["SPELL_AURA_REMOVED"] = true,
+    --["SPELL_CAST_SUCCESS"] = true,
+    --["SPELL_SUMMON"] = true,
+}
+
 function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     local extra = {...}
     --debug("CombatLog", subevent, sourceName, destName, ...)
@@ -221,10 +222,14 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     end
 
     -- tracked spells
-    if type(extra[1]) == "number" and extra[1] > 0 then
+    if type(extra[1]) == "number" and extra[1] > 0 and TRACKED_SPELL_EVENTS[subevent] then
         for spellId, conf in pairs(QA.trackedCombatLog) do
             --debug("CombatLog", "spellId", spellId, "conf.name", conf.name, "extra1", extra[1], "conf.raidBars", conf.raidBars)
             if extra[1] == spellId then
+                -- taunt
+                if conf.taunt and subevent == "SPELL_AURA_APPLIED" and sourceGuid == QA.playerGuid then
+                    QA.hasTaunted = GetTime() + (conf.duration or 1)
+                end
                 -- offensive debuffs
                 if conf.duration and conf.list then
                     if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")

@@ -18,6 +18,7 @@ QA.existingConsumes = {}
 QA.partyShamans = {}
 QA.encounter = { OnStart = {}, OnEnd = {} }
 QA.procCheck = { cooldown = {}, FadeCheck = {} }
+QA.hasTaunted = 0
 QAG = QA
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,

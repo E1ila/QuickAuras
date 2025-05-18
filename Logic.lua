@@ -28,7 +28,7 @@ function QA:CheckPlayerAggro()
             and targettargetGuid == QA.playerGuid
             and targetAggro.targettargetGuid ~= QA.playerGuid
     then
-        if targetAggro.targettargetClass == "Warrior" then
+        if targetAggro.targettargetClass == "Warrior" and not QA.isMainTank and (QA.hasTaunted == 0 or QA.hasTaunted < GetTime()) then
             QA:BlinkGotAggro()
         end
     elseif QA.blinkingAggro and targettargetGuid ~= QA.playerGuid then

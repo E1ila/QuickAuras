@@ -22,6 +22,7 @@ QA.defaultOptions = {
         outOfConsumeWarning = true,
         hsNotCapitalWarning = true,
         targetInRangeIndication = true,
+        overaggroWarning = true,
         announceInterrupts = true,
         announceMisses = QA.isWarrior,
         announceSquawk = false,
@@ -68,6 +69,7 @@ QA.defaultOptions = {
         encounter4hmMoveEvery = 3,
         encounterLoathebStartAt = 0, -- 0 = disabled
         encounterLoathebCycle = 6,
+        aggroBlinkCount = 2,
     },
 }
 

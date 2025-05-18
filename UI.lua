@@ -602,6 +602,32 @@ function QA:ResetErrorCount()
     errorCount = 0
 end
 
+local abortBlinkingAggro = false
+function QA:StopBlinkingAggro()
+    abortBlinkingAggro = true
+end
+
+local function _BlinkAggro(count)
+    if count == 0 then
+        QA.blinkingAggro = false
+        return
+    end
+    QuickAuras_Aggro:Show()
+    C_Timer.After(0.5, function()
+        QuickAuras_Aggro:Hide()
+        if abortBlinkingAggro then QA.blinkingAggro = false return end
+        C_Timer.After(0.5, function()
+            _BlinkAggro(count-1)
+        end)
+    end)
+end
+
+function QA:BlinkGotAggro()
+    if QA.blinkingAggro then return end
+    QA.blinkingAggro = true
+    abortBlinkingAggro = false
+    _BlinkAggro(QA.db.profile.aggroBlinkCount)
+end
 
 
 -- Test UI -----------------------------------------------------------

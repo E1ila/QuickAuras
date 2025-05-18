@@ -12,6 +12,33 @@ local _aurasCombatState = false
 
 QA.targetInRange = false
 
+local targetAggro = {}
+
+function QA:CheckPlayerAggro()
+    if not QA.inCombat then targetAggro = {} return end
+    if not QA.db.profile.overaggroWarning or (not IsInRaid() and not IsInGroup()) then return end
+    if not UnitExists("target") or UnitIsDead("target") or UnitIsPlayer("target") then return end
+
+    local status = UnitThreatSituation("player", "target")
+    local targetGuid = UnitGUID("target")
+    local targettargetGuid = UnitGUID("targettarget")
+    debug("UNIT_THREAT_LIST_UPDATE", status, UnitName("targettarget"))
+
+    if      targetAggro.targetGuid == targetGuid
+            and targettargetGuid == QA.playerGuid
+            and targetAggro.targettargetGuid ~= QA.playerGuid
+    then
+        if targetAggro.targettargetClass == "Warrior" then
+            QA:BlinkGotAggro()
+        end
+    elseif QA.blinkingAggro and targettargetGuid ~= QA.playerGuid then
+        QA:StopBlinkingAggro()
+    end
+    targetAggro.targetGuid = targetGuid
+    targetAggro.targettargetGuid = targettargetGuid
+    targetAggro.targettargetClass = UnitClass("targettarget")
+end
+
 function QA:CheckIfWarriorInParty()
     QA.hasWarriorInParty = false
     for i = 1, GetNumGroupMembers() do

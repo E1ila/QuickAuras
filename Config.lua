@@ -28,6 +28,7 @@ QA.optionalEvents = {
     "UNIT_HEALTH",
     "PLAYER_XP_UPDATE",
     "QUEST_TURNED_IN",
+    "UNIT_THREAT_LIST_UPDATE",
 }
 
 QA.warrior = {

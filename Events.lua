@@ -127,6 +127,7 @@ function QA:PLAYER_REGEN_ENABLED()
     -- out of combat
     QA.inCombat = false
     QA:CheckAuras()
+    QA:CheckPlayerAggro()
 end
 
 function QA:GROUP_ROSTER_UPDATE()
@@ -162,6 +163,12 @@ end
 
 function QA:QUEST_TURNED_IN()
     QA:UpdateXpFrame()
+end
+
+function QA:UNIT_THREAT_LIST_UPDATE(unit)
+    if unit == "target" then
+        QA:CheckPlayerAggro()
+    end
 end
 
 -- OnUpdate

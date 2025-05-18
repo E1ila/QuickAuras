@@ -558,4 +558,29 @@
             </Layer>
         </Layers>
     </Frame>
+
+    <Frame name="QuickAuras_Aggro" parent="UIParent" inherits="QuickAuras_Widget">
+        <Size>
+            <AbsDimension x="400" y="600" /> <!-- Frame size -->
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="200" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_HugeFont" text="AGGRO">
+                    <Color r="0.9258" g="0.3195" b="0.0391"/>
+                    <Shadow>
+                        <Offset>
+                            <AbsDimension x="10" y="-10" />
+                        </Offset>
+                        <Color r="0" g="0" b="0" a="1" />
+                    </Shadow>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
 </Ui>

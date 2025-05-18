@@ -164,15 +164,8 @@ function QA:UNIT_THREAT_LIST_UPDATE(unit)
     end
 end
 
-function QA:UNIT_SPELLCAST_SENT(unit, target, spellGuid)
-    local id = QA:GetSpellIdFromGuid(spellGuid)
-    local spell =
-            QA.spells.warrior.heroicStrike.bySpellId[id] and QA.spells.warrior.heroicStrike
-            or QA.spells.warrior.cleave.bySpellId[id] and QA.spells.warrior.cleave
-    debug(3, "UNIT_SPELLCAST_SENT", unit, spellGuid, id)
-    if unit == "player" and spell then
-        QA:QueuedSpell(spell, id)
-    end
+function QA:UNIT_SPELLCAST_SENT(unit, _, spellGuid)
+    QA:CheckSpellQueue(unit, spellGuid)
 end
 
 -- OnUpdate

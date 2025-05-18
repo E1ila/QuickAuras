@@ -28,6 +28,7 @@ QA.defaultOptions = {
         announceSquawk = false,
         stealthInInstance = true,
         xpFrameEnabled = true,
+        spellQueueEnabled = true,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -88,111 +89,133 @@ QA.options = {
             set = function(info, value) QA:Options_ToggleEnabled(value) end,
             order = 4,
         },
-        watchBarsEnabled = {
-            type = "toggle",
-            name = "Watch Bars",
-            desc = "Enables progress bars for player's auras",
-            get = function(info) return QA.db.profile.watchBars end,
-            set = function(info, value)
-                QA.db.profile.watchBars = value
-                if value then
-                    QA:TestProgressBar(QA.trackedAuras)
-                end
-            end,
-            order = 5,
-        },
-        offensiveBarsEnabled = {
-            type = "toggle",
-            name = "Offensive Bars",
-            desc = "Show a progress bar with time left on important abilities",
-            get = function(info) return QA.db.profile.offensiveBars end,
-            set = function(info, value)
-                QA.db.profile.offensiveBars = value
-                if value then
-                    QA:TestProgressBar(QA.trackedCombatLog)
-                end
-            end,
-            order = 6,
-        },
-        cooldownsEnabled = {
-            type = "toggle",
-            name = "Cooldown Timers",
-            desc = "Enables cooldown timers",
-            get = function(info) return QA.db.profile.cooldowns end,
-            set = function(info, value)
-                QA.db.profile.cooldowns = value
-                if value then
-                    QA:TestCooldowns()
-                end
-            end,
-            order = 7,
-        },
-        iconWarningEnabled = {
-            type = "toggle",
-            name = "Warnings",
-            desc = "Enables warnings for gear and other",
-            get = function(info) return QA.db.profile.trackedGear end,
-            set = function(info, value)
-                QA.db.profile.trackedGear = value
-                if value then
-                    QA:CheckGear()
-                else
-                    QA:ClearIcons(ICON.WARNING)
-                end
-            end,
-            order = 8,
-        },
-        missingBuffsEnabled = {
-            type = "toggle",
-            name = "Missing Buffs",
-            desc = "Enables showing of list missing buffs/consumables in instances",
-            get = function(info) return QA.db.profile.missingConsumes end,
-            set = function(info, value)
-                QA.db.profile.missingConsumes = value
-                QA:RefreshMissing()
-            end,
-            order = 9,
-        },
-        remindersEnabled = {
-            type = "toggle",
-            name = "Reminders",
-            desc = "Enables reminders for low consumes, candles, ankh, tracking buffs, etc.",
-            get = function(info) return QA.db.profile.remindersEnabled end,
-            set = function(info, value)
-                QA.db.profile.remindersEnabled = value
-                QA:RefreshReminders()
-            end,
-            order = 10,
-        },
-        raidBars = {
-            type = "toggle",
-            name = "Raid Bars",
-            desc = "Enables tracking of raid players' buffs, cooldowns, etc.",
-            get = function(info) return QA.db.profile.raidBars end,
-            set = function(info, value)
-                QA.db.profile.raidBars = value
-            end,
-            order = 11,
-        },
-        xpFrameEnabled = {
-            type = "toggle",
-            name = "XP Bar",
-            desc = "Shows XP bar with rested % and quest XP",
-            get = function(info) return QA.db.profile.xpFrameEnabled end,
-            set = function(info, value)
-                QA.db.profile.xpFrameEnabled = value
-                if value and QA.playerLevel < 60 then
-                    QuickAuras_XP:Show()
-                else
-                    QuickAuras_XP:Hide()
-                end
-            end,
-            order = 12,
-        },
         spacer99 = {
             type = "description",
             name = "",
-            order = 99,
+            order = 90,
+        },
+        features = {
+            type = "group",
+            name = "Features",
+            order = 91,
+            args = {
+                watchBarsEnabled = {
+                    type = "toggle",
+                    name = "Watch Bars",
+                    desc = "Enables progress bars for player's auras",
+                    get = function(info) return QA.db.profile.watchBars end,
+                    set = function(info, value)
+                        QA.db.profile.watchBars = value
+                        if value then
+                            QA:TestProgressBar(QA.trackedAuras)
+                        end
+                    end,
+                    order = 5,
+                },
+                offensiveBarsEnabled = {
+                    type = "toggle",
+                    name = "Offensive Bars",
+                    desc = "Show a progress bar with time left on important abilities",
+                    get = function(info) return QA.db.profile.offensiveBars end,
+                    set = function(info, value)
+                        QA.db.profile.offensiveBars = value
+                        if value then
+                            QA:TestProgressBar(QA.trackedCombatLog)
+                        end
+                    end,
+                    order = 6,
+                },
+                cooldownsEnabled = {
+                    type = "toggle",
+                    name = "Cooldown Timers",
+                    desc = "Enables cooldown timers",
+                    get = function(info) return QA.db.profile.cooldowns end,
+                    set = function(info, value)
+                        QA.db.profile.cooldowns = value
+                        if value then
+                            QA:TestCooldowns()
+                        end
+                    end,
+                    order = 7,
+                },
+                iconWarningEnabled = {
+                    type = "toggle",
+                    name = "Warnings",
+                    desc = "Enables warnings for gear and other",
+                    get = function(info) return QA.db.profile.trackedGear end,
+                    set = function(info, value)
+                        QA.db.profile.trackedGear = value
+                        if value then
+                            QA:CheckGear()
+                        else
+                            QA:ClearIcons(ICON.WARNING)
+                        end
+                    end,
+                    order = 8,
+                },
+                missingBuffsEnabled = {
+                    type = "toggle",
+                    name = "Missing Buffs",
+                    desc = "Enables showing of list missing buffs/consumables in instances",
+                    get = function(info) return QA.db.profile.missingConsumes end,
+                    set = function(info, value)
+                        QA.db.profile.missingConsumes = value
+                        QA:RefreshMissing()
+                    end,
+                    order = 9,
+                },
+                remindersEnabled = {
+                    type = "toggle",
+                    name = "Reminders",
+                    desc = "Enables reminders for low consumes, candles, ankh, tracking buffs, etc.",
+                    get = function(info) return QA.db.profile.remindersEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.remindersEnabled = value
+                        QA:RefreshReminders()
+                    end,
+                    order = 10,
+                },
+                raidBars = {
+                    type = "toggle",
+                    name = "Raid Bars",
+                    desc = "Enables tracking of raid players' buffs, cooldowns, etc.",
+                    get = function(info) return QA.db.profile.raidBars end,
+                    set = function(info, value)
+                        QA.db.profile.raidBars = value
+                    end,
+                    order = 11,
+                },
+                xpFrameEnabled = {
+                    type = "toggle",
+                    name = "XP Bar",
+                    desc = "Shows XP bar with rested % and quest XP",
+                    get = function(info) return QA.db.profile.xpFrameEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.xpFrameEnabled = value
+                        if value and QA.playerLevel < 60 then
+                            QuickAuras_XP:Show()
+                        else
+                            QuickAuras_XP:Hide()
+                        end
+                    end,
+                    order = 12,
+                },
+                spellQueueEnabled = {
+                    type = "toggle",
+                    name = "Attack Queue",
+                    desc = "Shows attack spell queue",
+                    get = function(info) return QA.db.profile.spellQueueEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.spellQueueEnabled = value
+                        if value then
+                            QuickAuras_SpellQueue:Show()
+                        else
+                            QuickAuras_SpellQueue:Hide()
+                        end
+                    end,
+                    order = 13,
+                },
+            }
         },
         lookAndFeel = {
             type = "group",
@@ -341,7 +364,7 @@ QA.options = {
                     end,
                     order = 108,
                 },
-                crucialIconSize = {
+                spellQueueIconSize = {
                     type = "range",
                     name = "Attack Queue Size",
                     desc = "Set the size of the attack queue icons",
@@ -351,8 +374,10 @@ QA.options = {
                     get = function(info) return QA.db.profile.spellQueueIconSize end,
                     set = function(info, value)
                         QA.db.profile.spellQueueIconSize = value
+                        QA:TestSpellQueue()
                     end,
                     order = 109,
+                    hidden = not QA.isWarrior,
                 },
                 rangeIconSize = {
                     type = "range",

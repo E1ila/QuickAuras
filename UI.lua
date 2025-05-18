@@ -349,7 +349,9 @@ function QA:ArrangeIcons(iconType)
     --debug("Arranging icon warnings")
     local list = GetIconList(iconType)
     local lastFrame = nil
+    local count = 0
     for _, obj in pairs(list) do
+        count = count + 1
         local frame = obj.frame
         frame:ClearAllPoints()
         debug(3, "ArrangeIcons", iconType, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
@@ -396,11 +398,12 @@ function QA:ArrangeIcons(iconType)
             frame:SetSize(QA.db.profile.crucialIconSize, QA.db.profile.crucialIconSize) -- Width, Height
         elseif iconType == ICON.QUEUE then
             if lastFrame then
-                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4) -- vertical layout
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
-                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+            frame:GetParent():SetSize(QA.db.profile.spellQueueIconSize * count, QA.db.profile.spellQueueIconSize) -- Width, Height
             frame:SetSize(QA.db.profile.spellQueueIconSize, QA.db.profile.spellQueueIconSize) -- Width, Height
         elseif iconType == ICON.RANGE then
             if lastFrame then
@@ -651,7 +654,7 @@ function QA:TestProgressBar(spells, limit, includeRaidBars)
     for key, conf in pairs(spells) do
         if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
             if count1 < limit then
-                debug("TestProgressBar", "conf", conf.name, conf.list, limit)
+                debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 seen[conf.name] = true
                 local duration = 15 - (count1*2)
                 local expTime = GetTime() + duration
@@ -660,7 +663,7 @@ function QA:TestProgressBar(spells, limit, includeRaidBars)
             end
         elseif conf.raidBars and includeRaidBars then
             if count2 < limit then
-                debug("TestProgressBar", "conf", conf.name, conf.list, limit)
+                debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 -- we'll inject raidbars separately
                 local duration = math.min(conf.duration, 10)
                 --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
@@ -693,7 +696,7 @@ function QA:TestCooldowns()
 end
 
 local DelayedReset_Reminders = QA:Debounce(function()
-    debug("TestReminders timer ended")
+    --debug("TestReminders timer ended")
     QA:RefreshReminders()
 end, 3)
 
@@ -709,7 +712,7 @@ function QA:TestReminders()
 end
 
 local DelayedReset_IconMissingBuffs = QA:Debounce(function()
-    debug("TestIconMissingBuffs timer ended")
+    --debug("TestIconMissingBuffs timer ended")
     QA:RefreshMissing()
 end, 3)
 
@@ -725,7 +728,7 @@ function QA:TestIconMissingBuffs()
 end
 
 local DelayedReset_IconWarnings = QA:Debounce(function()
-    debug("TestIconWarnings timer ended")
+    --debug("TestIconWarnings timer ended")
     QA:RefreshWarnings()
 end, 3)
 
@@ -742,7 +745,7 @@ function QA:TestIconWarnings()
 end
 
 local DelayedReset_IconAlerts = QA:Debounce(function()
-    debug("TestIconAlerts timer ended")
+    --debug("TestIconAlerts timer ended")
     QA:ClearIcons(ICON.ALERT)
 end, 6)
 
@@ -765,6 +768,19 @@ function QA:TestCrucial()
     QA:AddIcon(ICON.CRUCIAL, "spell", frr.spellId[1], frr)
     QA:ArrangeIcons(ICON.CRUCIAL)
     DelayedReset_CrucialAlerts()
+end
+
+local DelayedReset_SpellQueue = QA:Debounce(function()
+    QA:ClearIcons(ICON.QUEUE)
+end, 3)
+
+function QA:TestSpellQueue()
+    local hs = QA.spells.warrior.heroicStrike
+    local cleave = QA.spells.warrior.cleave
+    QA:AddIcon(ICON.QUEUE, "spell", hs.spellId[1], hs)
+    QA:AddIcon(ICON.QUEUE, "spell", cleave.spellId[1], cleave)
+    QA:ArrangeIcons(ICON.QUEUE)
+    DelayedReset_SpellQueue()
 end
 
 
@@ -815,6 +831,8 @@ function QA:DemoUI()
     QA:TestIconWarnings()
     QA:TestIconAlerts()
     QA:TestReminders()
+    QA:TestCrucial()
+    QA:TestSpellQueue()
 end
 
 function QA:DemoUI2()

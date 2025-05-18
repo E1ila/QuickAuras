@@ -16,6 +16,18 @@ local targetAggro = {}
 
 -- warrior spell queue ---------------------------------------------------------------------------
 
+function QA:CheckSpellQueue(unit, spellGuid)
+    if not QA.db.profile.spellQueueEnabled then return end
+    local id = QA:GetSpellIdFromGuid(spellGuid)
+    local spell =
+    QA.spells.warrior.heroicStrike.bySpellId[id] and QA.spells.warrior.heroicStrike
+            or QA.spells.warrior.cleave.bySpellId[id] and QA.spells.warrior.cleave
+    debug(3, "UNIT_SPELLCAST_SENT", unit, spellGuid, id)
+    if unit == "player" and spell then
+        QA:QueuedSpell(spell, id)
+    end
+end
+
 local queuedSpell = {}
 
 local function MonitorQueued(spellId, callback)

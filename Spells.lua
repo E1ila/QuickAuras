@@ -139,7 +139,7 @@ spells.warrior = {
         color = {0.914, 0.086, 0.086},
         list = "watch",
         duration = 15,
-        cooldown = true,
+        cooldown = true, -- shared with shield wall
         raidBars = true,
         visible = QA.isWarrior,
     },
@@ -160,7 +160,7 @@ spells.warrior = {
         color = {0.5, 0.5, 0.5},
         list = "watch",
         duration = 15,
-        --cooldown = true, -- shares cooldown with shieldwall
+        cooldown = true, -- shares cooldown with shieldwall
         visible = QA.isWarrior,
     },
     shieldWall = {

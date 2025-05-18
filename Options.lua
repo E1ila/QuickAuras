@@ -6,6 +6,12 @@ local debug = QA.Debug
 local _c = QA.colors
 local ICON = QA.ICON
 
+local frameSelection = {
+    warning = "Warning Frame",
+    alert = "Alert Frame",
+    queue = "Queue Frame",
+}
+
 QA.defaultOptions = {
     profile = {
         debug = 0,
@@ -72,6 +78,8 @@ QA.defaultOptions = {
         encounterLoathebStartAt = 0, -- 0 = disabled
         encounterLoathebCycle = 6,
         aggroBlinkCount = 2,
+        warrior_retaliation_cd = false,
+        warrior_shieldWall_cd = false,
     },
 }
 
@@ -377,7 +385,7 @@ QA.options = {
                         QA:TestSpellQueue()
                     end,
                     order = 109,
-                    hidden = not QA.isWarrior,
+                    hidden = not QA.isWarrior and not QA.isRogue,
                 },
                 rangeIconSize = {
                     type = "range",
@@ -565,10 +573,7 @@ QA.options = {
                     type = "select",
                     name = "Execute! Frame",
                     desc = "Choose where to show the Execute indication.",
-                    values = {
-                        warning = "Warning Frame",
-                        alert = "Alert Frame",
-                    },
+                    values = frameSelection,
                     get = function(info)
                         return QA.db.profile.warriorExecuteFrame or "always"
                     end,
@@ -582,10 +587,7 @@ QA.options = {
                     type = "select",
                     name = "Overpower! Frame",
                     desc = "Choose where to show the Overpower indication.",
-                    values = {
-                        warning = "Warning Frame",
-                        alert = "Alert Frame",
-                    },
+                    values = frameSelection,
                     get = function(info)
                         return QA.db.profile.warriorOverpowerFrame or "warning"
                     end,
@@ -599,10 +601,7 @@ QA.options = {
                     type = "select",
                     name = "Revenge! Frame",
                     desc = "Choose where to show the Revenge indication.",
-                    values = {
-                        warning = "Warning Frame",
-                        alert = "Alert Frame",
-                    },
+                    values = frameSelection,
                     get = function(info)
                         return QA.db.profile.warriorRevengeFrame or "warning"
                     end,
@@ -659,10 +658,7 @@ QA.options = {
                     type = "select",
                     name = "Tea Time Frame",
                     desc = "Choose where to show the Thistle Tea indication.",
-                    values = {
-                        warning = "Warning Frame",
-                        alert = "Alert Frame",
-                    },
+                    values = frameSelection,
                     get = function(info)
                         return QA.db.profile.rogueTeaTimeFrame or "always"
                     end,

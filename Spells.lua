@@ -106,6 +106,13 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    whirlwind = {
+        spellId = { 1680 },
+        name = "Whirlwind",
+        icon = "Interface\\Icons\\ability_whirlwind",
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
     heroicStrike = {
         name = "Heroic Strike",
         spellId = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286 },

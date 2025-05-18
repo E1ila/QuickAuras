@@ -47,6 +47,7 @@ QA.defaultOptions = {
         gearWarningSize = 80,
         iconAlertSize = 80,
         crucialIconSize = 50,
+        spellQueueIconSize = 40,
         rangeIconSize = 30,
         missingBuffsSize = 40,
         reminderIconSize = 40,
@@ -339,6 +340,19 @@ QA.options = {
                         QA:RefreshCrucial()
                     end,
                     order = 108,
+                },
+                crucialIconSize = {
+                    type = "range",
+                    name = "Attack Queue Size",
+                    desc = "Set the size of the attack queue icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QA.db.profile.spellQueueIconSize end,
+                    set = function(info, value)
+                        QA.db.profile.spellQueueIconSize = value
+                    end,
+                    order = 109,
                 },
                 rangeIconSize = {
                     type = "range",

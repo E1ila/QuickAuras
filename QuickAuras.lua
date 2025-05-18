@@ -41,6 +41,7 @@ QA.list_reminders = {} -- spell obj
 QA.list_crucial = {} -- timer / icon
 QA.list_range = {}
 QA.list_raidBars = {} -- timer
+QA.list_queue = {}
 
 local pclass = select(2, UnitClass("player"))
 QA.playerClass = pclass
@@ -72,6 +73,7 @@ QA.ICON = {
     MISSING = "missing",
     CRUCIAL = "crucial",
     RANGE = "range",
+    QUEUE = "queue",
 }
 
 local function out(text, ...)

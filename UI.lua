@@ -280,6 +280,10 @@ local function GetIconList(type, idType)
         list = QA.list_range
         parent = QuickAuras_RangeIndicator
         --Refresh = QuickAuras.RefreshReminders
+    elseif type == ICON.QUEUE then
+        list = QA.list_queue
+        parent = QuickAuras_SpellQueue
+        --Refresh = QuickAuras.RefreshReminders
     end
     return list, parent, Create, Refresh, glowInCombat
 end
@@ -390,6 +394,14 @@ function QA:ArrangeIcons(iconType)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:SetSize(QA.db.profile.crucialIconSize, QA.db.profile.crucialIconSize) -- Width, Height
+        elseif iconType == ICON.QUEUE then
+            if lastFrame then
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4) -- vertical layout
+            else
+                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+            end
+            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+            frame:SetSize(QA.db.profile.spellQueueIconSize, QA.db.profile.spellQueueIconSize) -- Width, Height
         elseif iconType == ICON.RANGE then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout

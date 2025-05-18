@@ -57,6 +57,10 @@ QA.adjustableFrames = {
     QuickAuras_RaidBars,
 }
 
+if QA.isWarrior then
+    table.insert(QA.adjustableFrames, QuickAuras_SpellQueue)
+end
+
 --QuickAuras.adjustableFrames = {
 --    ["QuickAuras_Parry"] = {
 --        visible = QuickAuras.isRogue,

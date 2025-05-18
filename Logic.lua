@@ -24,7 +24,6 @@ local function MonitorQueued(spellId, callback)
         if spellId ~= queuedSpell.usedId then return end -- spell replaced/removed
         local is = IsCurrentSpell(spellId)
         if not is then
-            debug("ABORTED!", spellId)
             callback()
         else
             MonitorQueued(spellId, callback)
@@ -33,18 +32,26 @@ local function MonitorQueued(spellId, callback)
 end
 
 function QA:QueuedSpell(spell, spellId)
-    debug("Queued spell: " .. spell.name)
+    debug(3, "Queued spell: " .. spell.name)
+    if queuedSpell.id and queuedSpell.id ~= spell.spellId[1] then
+        QA:RemoveIcon(ICON.QUEUE, queuedSpell.id)
+    end
     queuedSpell = {
         id = spell.spellId[1],
         usedId = spellId,
         spell = spell,
     }
     MonitorQueued(spellId, function() QA:UnQueuedSpell(spell) end)
+    QA:AddIcon(ICON.QUEUE, "spell", spell.spellId[1], spell)
+    QA:ArrangeIcons(ICON.QUEUE)
 end
 
 function QA:UnQueuedSpell(spell)
-    debug("Removed spell from queue: " .. spell.name)
+    debug(3, "Removed spell from queue: " .. spell.name)
     queuedSpell = {}
+    if QA:RemoveIcon(ICON.QUEUE, spell.spellId[1]) then
+        QA:ArrangeIcons(ICON.QUEUE)
+    end
 end
 
 -- aggro ---------------------------------------------------------------------------

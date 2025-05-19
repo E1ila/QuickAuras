@@ -304,3 +304,11 @@ function QA:GetSpellIdFromGuid(guid)
     local npcId = guid:match("Cast%-%d+%-%d+%-%d+%-%d+%-(%d+)")
     return tonumber(npcId)
 end
+
+function QA:IsClassicEra()
+    return true
+end
+
+function QA:IsRetail()
+    return false
+end

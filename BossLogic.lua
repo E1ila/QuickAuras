@@ -88,7 +88,7 @@ end
 function FHM:EncounterStart()
     self.mark = 0
     self.timer = C_Timer.NewTimer(21, function()
-        FTM:Mark()
+        FHM:Mark()
     end)
 end
 
@@ -113,6 +113,6 @@ function FHM:Mark()
 
     out(_c.bold..QA.name.."|r Mark "..self.mark..extraText)
     self.timer = C_Timer.NewTimer(13, function()
-        FTM:Mark()
+        FHM:Mark()
     end)
 end

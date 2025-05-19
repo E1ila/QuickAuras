@@ -27,6 +27,7 @@ function QA:InitUI()
     _c = QA.colors
     QA:ParentFramesNormalState()
     QA:InitWeaponEnchants()
+    QA:InitSwingTimers()
     --QA:InitCrucialBuffMissing()
     QA:InitRangeIndication()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
@@ -65,6 +66,29 @@ function QA:UpdateRangeIndication()
         local texture = GetSpellTexture(QA.db.profile.rangeSpellId)
         QuickAuras_RangeIndicator.icon:SetTexture(texture)
     end
+end
+
+function QA:InitSwingTimers()
+    QuickAuras_SwingTimer:SetBackdrop({
+        bgFile = "Interface\\AddOns\\QuickAuras\\assets\\background", -- Optional background
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", -- Blizzard Tooltip border
+        edgeSize = 8, -- Border thickness
+        insets = { left = 1, right = 1, top = 1, bottom = 1 } -- Padding
+    })
+    QuickAuras_SwingTimer:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
+    QuickAuras_SwingTimer:SetBackdropBorderColor(0, 0, 0, 0.9)
+
+    QuickAuras_SwingTimer_Text:Hide()
+
+    local texture = QuickAuras_SwingTimer_MH:CreateTexture(nil, "BACKGROUND")
+    texture:SetAllPoints(QuickAuras_SwingTimer_MH)
+    texture:SetColorTexture(1, 0.2, 0.2, 1)
+    QuickAuras_SwingTimer_MH.texture = texture
+
+    texture = QuickAuras_SwingTimer_OH:CreateTexture(nil, "BACKGROUND")
+    texture:SetAllPoints(QuickAuras_SwingTimer_OH)
+    texture:SetColorTexture(0.2, 0.2, 1, 1)
+    QuickAuras_SwingTimer_OH.texture = texture
 end
 
 function QA:ResetRogueWidgets()
@@ -432,6 +456,8 @@ end
 
 function QA:ParentFramesNormalState()
     QuickAuras_XP:EnableMouse(false)
+    QuickAuras_SwingTimer_MH:EnableMouse(false)
+    QuickAuras_SwingTimer_Text:Show()
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:DisableDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Hide()
@@ -441,6 +467,8 @@ end
 
 function QA:ParentFramesEditState()
     QuickAuras_XP:EnableMouse(true)
+    QuickAuras_SwingTimer_MH:EnableMouse(true)
+    QuickAuras_SwingTimer_Text:Hide()
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:SetDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Show()

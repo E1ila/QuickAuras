@@ -144,7 +144,7 @@
             <AbsDimension x="128" y="80" />
         </Size>
         <Anchors>
-            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-190" />
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-200" />
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
@@ -602,4 +602,46 @@
             </Layer>
         </Layers>
     </Frame>
+
+    <Frame name="QuickAuras_SwingTimer" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
+        <Size>
+            <AbsDimension x="120" y="15" />
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" x="0" y="-145" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Swing Timer">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parent_MH" inherits="BackdropTemplate">
+                <Size>
+                    <AbsDimension x="4" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2"  />
+                    <Anchor point="LEFT" relativeTo="$parent" x="30" />
+                </Anchors>
+            </Frame>
+            <Frame name="$parent_OH" inherits="BackdropTemplate">
+                <Size>
+                    <AbsDimension x="4" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2"  />
+                    <Anchor point="LEFT" relativeTo="$parent" x="70" />
+                </Anchors>
+            </Frame>
+        </Frames>
+    </Frame>
+
 </Ui>

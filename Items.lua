@@ -105,6 +105,11 @@ QA.consumes = {
         minCount = 10,
     },
     {
+        name = "Free Action Potion",
+        itemId = 5634,
+        minCount = 5,
+    },
+    {
         name = "Frost Power",
         spellIds = { 21920 },
         itemId = 17708,

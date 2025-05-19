@@ -735,6 +735,14 @@ spells.other = {
         cooldown = true,
         evenIfNotInBag = true,
     },
+    freeActionPotion = {
+        name = "Free Action",
+        spellIds = { 6615 },
+        itemId = 5634,
+        list = "watch",
+        duration = 30,
+    },
+
     chicken = {
         spellId = { 23060 },
         name = "Squawk",

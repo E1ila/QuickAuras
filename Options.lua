@@ -35,6 +35,7 @@ QA.defaultOptions = {
         stealthInInstance = true,
         xpFrameEnabled = true,
         spellQueueEnabled = true,
+        swingTimersEnabled = QA.isWarrior or QA.isRogue,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -222,6 +223,21 @@ QA.options = {
                         end
                     end,
                     order = 13,
+                },
+                swingTimersEnabled = {
+                    type = "toggle",
+                    name = "Swing Timers",
+                    desc = "Shows MH and OH swing timers",
+                    get = function(info) return QA.db.profile.swingTimersEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimersEnabled = value
+                        if value then
+                            QuickAuras_SwingTimer:Show()
+                        else
+                            QuickAuras_SwingTimer:Hide()
+                        end
+                    end,
+                    order = 14,
                 },
             }
         },

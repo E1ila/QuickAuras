@@ -405,7 +405,7 @@
 
     <Frame name="QuickAuras_XP" parent="UIParent" inherits="QuickAuras_Widget">
         <Size>
-            <AbsDimension x="250" y="20" /> <!-- Frame size -->
+            <AbsDimension x="250" y="24" /> <!-- Frame size -->
         </Size>
         <Anchors>
             <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" y="-350" />
@@ -507,10 +507,10 @@
             </Frame>
             <StatusBar name="$parent_Bar3" inherits="TextStatusBar">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
-                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
-                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2" />
+                    <Anchor point="LEFT" relativeTo="$parent" x="2" />
+                    <Anchor point="RIGHT" relativeTo="$parent" x="-2" />
                 </Anchors>
                 <BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill"/>
                 <Scripts>
@@ -522,10 +522,10 @@
             </StatusBar>
             <StatusBar name="$parent_Bar2" inherits="TextStatusBar">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
-                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
-                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2" />
+                    <Anchor point="LEFT" relativeTo="$parent" x="2" />
+                    <Anchor point="RIGHT" relativeTo="$parent" x="-2" />
                 </Anchors>
                 <BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill"/>
                 <Scripts>
@@ -537,10 +537,10 @@
             </StatusBar>
             <StatusBar name="$parent_Bar1" inherits="TextStatusBar">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent"  />
-                    <Anchor point="BOTTOMLEFT" relativeTo="$parent"  />
-                    <Anchor point="TOPRIGHT" relativeTo="$parent" />
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" />
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2" />
+                    <Anchor point="LEFT" relativeTo="$parent" x="2" />
+                    <Anchor point="RIGHT" relativeTo="$parent" x="-2" />
                 </Anchors>
                 <BarTexture file="Interface\RaidFrame\Raid-Bar-Hp-Fill"/>
                 <Scripts>

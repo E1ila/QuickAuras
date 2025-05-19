@@ -89,6 +89,12 @@ function QA:InitSwingTimers()
     texture:SetAllPoints(QuickAuras_SwingTimer_OH)
     texture:SetColorTexture(0.2, 0.2, 1, 1)
     QuickAuras_SwingTimer_OH.texture = texture
+
+    if QA.db.profile.swingTimersEnabled then
+        QuickAuras_SwingTimer:Show()
+    else
+        QuickAuras_SwingTimer:Hide()
+    end
 end
 
 function QA:ResetRogueWidgets()
@@ -102,8 +108,22 @@ function QA:ResetRogueWidgets()
 
 end
 
-function QA:SetDarkBackdrop(frame)
-    frame:SetBackdrop ({bgFile = [[Interface\AddOns\QuickAuras\assets\background]], tile = true, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}})
+function QA:SetDarkBackdrop(frame, border)
+    if border then
+        frame:SetBackdrop({
+            bgFile = "Interface\\AddOns\\QuickAuras\\assets\\background", -- Optional background
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", -- Blizzard Tooltip border
+            edgeSize = 8, -- Border thickness
+            insets = { left = 1, right = 1, top = 1, bottom = 1 } -- Padding
+        })
+    else
+        frame:SetBackdrop ({
+            bgFile = [[Interface\AddOns\QuickAuras\assets\background]],
+            tile = true,
+            tileSize = 16,
+            insets = {left = 0, right = 0, top = 0, bottom = 0}
+        })
+    end
     frame:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
     frame:SetBackdropBorderColor(0, 0, 0, 0.9)
 end
@@ -115,7 +135,7 @@ end
 -- xp frame -----------------------------------------
 
 function QA:ConfigureXpFrame()
-    QA:SetDarkBackdrop(QuickAuras_XP)
+    QA:SetDarkBackdrop(QuickAuras_XP, true)
     QuickAuras_XP_Text:Show()
     QuickAuras_XP_Left_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
     QuickAuras_XP_Right_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
@@ -457,7 +477,7 @@ end
 function QA:ParentFramesNormalState()
     QuickAuras_XP:EnableMouse(false)
     QuickAuras_SwingTimer_MH:EnableMouse(false)
-    QuickAuras_SwingTimer_Text:Show()
+    QuickAuras_SwingTimer_Text:Hide()
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:DisableDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Hide()
@@ -468,7 +488,7 @@ end
 function QA:ParentFramesEditState()
     QuickAuras_XP:EnableMouse(true)
     QuickAuras_SwingTimer_MH:EnableMouse(true)
-    QuickAuras_SwingTimer_Text:Hide()
+    QuickAuras_SwingTimer_Text:Show()
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:SetDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Show()

@@ -4,6 +4,14 @@ QA.spells = { }
 local spells = QA.spells
 
 spells.warlock = {
+    corruption = {
+        spellId = { 172, 6222, 6223, 7648, 11671, 11672, 25311 },
+        name = "Corruption",
+        icon = "Interface\\Icons\\Spell_Shadow_AbominationExplosion",
+        list = "offensive",
+        duration = 18,
+        visible = QA.isWarlock,
+    },
     petSpellLock = {
         spellId = { 19647 },
         name = "Spell Lock",

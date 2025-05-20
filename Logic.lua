@@ -137,21 +137,21 @@ end
 
 function QA:CheckAllProcs()
     for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
-        QA:CheckProc(spell)
+        QA:CheckProcSpellUsable(spell)
     end
     for _, spell in ipairs(QA.trackedProcAbilities.combatLog) do
-        QA:CheckProc(spell)
+        QA:CheckProcSpellUsable(spell)
     end
 end
 
 -- Currently supported only target based proc spells
-function QA:CheckProc(spell)
+function QA:CheckProcSpellUsable(spell)
     if not QA.db.profile[spell.procFrameOption] then return end
     local changed = false
     local spellId = spell.spellId[1]
     local usable, notEnoughMana = IsUsableSpell(spellId)
     local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
-    debug(3, "Checking proc: "..spell.name, usable, notEnoughMana)
+    debug(3, "Checking proc spell usable: "..spell.name, usable, notEnoughMana)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
         local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then
@@ -161,7 +161,7 @@ function QA:CheckProc(spell)
                 QA.procCheck.cooldown[spellId] = true
                 C_Timer.After(start + duration - GetTime() + 0.1, function()
                     QA.procCheck.cooldown[spellId] = nil
-                    QA:CheckProc(spell)
+                    QA:CheckProcSpellUsable(spell)
                 end)
             end
         else
@@ -174,6 +174,27 @@ function QA:CheckProc(spell)
             if FadeCheck then
                 FadeCheck(QA) -- if not used, it fades. check within 1 sec
             end
+        end
+    else
+        changed = QA:RemoveIcon(iconType, spellId)
+    end
+    if changed then
+        QA:ArrangeIcons(iconType)
+    end
+end
+
+function QA:CheckProcAura(spell, seen)
+    if not QA.db.profile[spell.procFrameOption] then return end
+    local changed = false
+    local spellId = spell.spellId[1]
+    local hasIt = QA:HasSeenAny(spell.spellId, seen)
+    local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
+    debug("Checking proc aura: "..spell.name, hasIt)
+    if hasIt then
+        local button = QA:AddIcon(iconType, "spell", spellId, spell)
+        if button then
+            button.glowInCombat = true
+            changed = true
         end
     else
         changed = QA:RemoveIcon(iconType, spellId)
@@ -423,7 +444,7 @@ function QA:CheckAuras()
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
         debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
-        seen[spellId] = { duration, expTime }
+        seen[spellId] = { duration, expTime, spellId }
         if QA.stealthAbilities[spellId] then QA.playerIsStealthed = true end
         -- timer auras -----------------------------------------
         local aura = QA.trackedAuras[spellId]
@@ -449,6 +470,9 @@ function QA:CheckAuras()
     if combatStateChanged then
         debug("CheckAuras", "combatStateChanged", QA.inCombat)
     end
+    for _, spell in pairs(QA.trackedProcAbilities.aura) do
+        QA:CheckProcAura(spell, seen)
+    end
     QA:CheckMissingBuffs(seen, combatStateChanged)
     QA:CheckCrucialBuffs(seen, combatStateChanged)
     QA:CheckStealthInInstance(seen)
@@ -457,24 +481,39 @@ end
 function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
     if not QA.db.profile.missingConsumes then return end
     local buffsChanged = combatStateChanged
-    if  QA.db.profile.forceShowMissing or
-        QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
-        QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
-    then
-        for _, buff in ipairs(QA.trackedMissingBuffs) do
-            if not buff.option or QA.db.profile[buff.option] then
+    local showNonSelfBuffs = QA.db.profile.forceShowMissing or
+            QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
+            QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
+    for _, buff in ipairs(QA.trackedMissingBuffs) do
+        debug(3, "CheckMissingBuffs", "(pre)", buff.name, "option", buff.option, buff.option and QA.db.profile[buff.option])
+        if (not buff.option or QA.db.profile[buff.option]) and (showNonSelfBuffs or buff.selfBuff) then
+            if buff.itemIds or buff.itemId then
+                -- missing consume buff
                 local foundBuff = QA:HasSeenAny(buff.spellIds, activeAuras or QA.playerBuffs)
                 local foundItemId = QA:FindInBags(buff.itemIds or buff.itemId)
-                debug(3, "CheckAuras", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId, "option", buff.option, buff.option and QA.db.profile[buff.option])
+                debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId)
                 if  foundBuff
-                    or buff.visibleFunc and not buff.visibleFunc()
-                    or not foundItemId
+                        or buff.visibleFunc and not buff.visibleFunc()
+                        or not foundItemId
                 then
                     if QA:RemoveIcon(ICON.MISSING, buff.usedItemId or buff.itemId) then buffsChanged = true end
                 else
                     if QA:AddIcon(ICON.MISSING, "item", foundItemId, buff) then
                         buffsChanged = true
                         buff.usedItemId = foundItemId
+                    end
+                end
+            else
+                -- missing spell buff
+                local foundBuff = QA:HasSeenAny(buff.spellId, activeAuras or QA.playerBuffs)
+                debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff)
+                if  foundBuff or buff.visibleFunc and not buff.visibleFunc()  then
+                    if QA:RemoveIcon(ICON.MISSING, buff.spellId[1]) then buffsChanged = true end
+                else
+                    local button = QA:AddIcon(ICON.MISSING, "spell", buff.spellId[1], buff)
+                    if button then
+                        buffsChanged = true
+                        button.glowInCombat = true
                     end
                 end
             end

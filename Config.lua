@@ -55,11 +55,8 @@ QA.adjustableFrames = {
     QuickAuras_Crucial,
     QuickAuras_RangeIndicator,
     QuickAuras_RaidBars,
+    QuickAuras_SpellQueue,
 }
-
-if QA.isWarrior or QA.isRogue then
-    table.insert(QA.adjustableFrames, QuickAuras_SpellQueue)
-end
 
 --QuickAuras.adjustableFrames = {
 --    ["QuickAuras_Parry"] = {
@@ -126,6 +123,7 @@ QA.trackedTracking = {}
 QA.trackedProcAbilities = {
     combatLog = {},
     unitHealth = {},
+    aura = {},
 }
 
 -- custom events
@@ -180,7 +178,7 @@ function QA:BuildTrackedSpells()
                         table.insert(QA.trackedProcAbilities[spell.proc], spell)
                         if spell.procFadeCheck then
                             QA.procCheck.FadeCheck[spell.spellId[1]] = QA:Debounce(function()
-                                QA:CheckProc(spell)
+                                QA:CheckProcSpellUsable(spell)
                             end, 1)
                         end
                     end

@@ -3,6 +3,75 @@ local QA = addon.root
 QA.spells = { }
 local spells = QA.spells
 
+spells.warlock = {
+    petSpellLock = {
+        spellId = { 19647 },
+        name = "Spell Lock",
+        icon = "Interface\\Icons\\spell_shadow_mindrot",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    shadowTrance = {
+        spellId = { 17941 },
+        name = "Shadow Trance",
+        icon = "Interface\\Icons\\spell_shadow_twilight",
+        proc = "aura",
+        procFrameOption = "warlockShadowTrance",
+        option = "warlockShadowTrance",
+        visible = QA.isWarlock,
+    },
+    shadowWard = {
+        spellId = { 6229, 11739, 11740, 28610 },
+        name = "Shadow Ward",
+        icon = "Interface\\Icons\\Spell_Shadow_AntiShadow",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    deathCoil = {
+        spellId = { 6789, 17925, 17926 },
+        name = "Death Coil",
+        icon = "Interface\\Icons\\Spell_Shadow_DeathCoil",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    soulstone = {
+        spellId = { 20763, 20764, 20765 },
+        name = "Soulstone",
+        icon = "Interface\\Icons\\Spell_Shadow_SoulGem",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    shadowburn = {
+        spellId = { 17877, 18867, 18868, 18869, 18870, 18871 },
+        name = "Shadowburn",
+        icon = "Interface\\Icons\\spell_shadow_scourgebuild",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    conflagrate = {
+        spellId = { 17962, 18930, 18931, 18932 },
+        name = "Conflagrate",
+        icon = "Interface\\Icons\\spell_fire_fireball",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    amplifyCurse = {
+        spellId = { 18288 },
+        name = "Amplify Curse",
+        icon = "Interface\\Icons\\Spell_Shadow_Contagion",
+        cooldown = true,
+        visible = QA.isWarlock,
+    },
+    demonArmor = {
+        spellId = { 706, 1086, 11733, 11734, 11735 },
+        name = "Demon Armor",
+        icon = "Interface\\Icons\\spell_shadow_ragingscream",
+        visible = QA.isWarlock,
+        buff = true,
+        selfBuff = true,
+    },
+}
+
 spells.hunter = {
     scatterShot = {
         spellId = { 19503 },

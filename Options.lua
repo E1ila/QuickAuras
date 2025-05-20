@@ -639,6 +639,45 @@ QA.options = {
                     hidden = not QA.isWarrior,
                     order = 405,
                 },
+                warlockUtilsHeader = {
+                    type = "header",
+                    name = "Warlock Utils",
+                    order = 450,
+                    hidden = not QA.isWarlock,
+                },
+                spacer451 = {
+                    type = "description",
+                    name = "",
+                    order = 451,
+                    hidden = not QA.isWarlock,
+                },
+                warlockShadowTrance = {
+                    type = "toggle",
+                    name = "Shadow Trance",
+                    desc = "Shows a visible Shadow Trance it procs.",
+                    get = function(info)
+                        return QA.db.profile.warlockShadowTrance
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warlockShadowTrance = value
+                    end,
+                    hidden = not QA.isWarlock,
+                    order = 452,
+                },
+                warlockShadowTranceFrame = {
+                    type = "select",
+                    name = "Shadow Trance Frame",
+                    desc = "Choose where to show the Shadow Trance indication.",
+                    values = frameSelection,
+                    get = function(info)
+                        return QA.db.profile.warlockShadowTranceFrame or "warning"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warlockShadowTranceFrame = value
+                    end,
+                    hidden = not QA.isWarlock,
+                    order = 453,
+                },
                 rogueUtilsHeader = {
                     type = "header",
                     name = "Rogue Utils",
@@ -963,6 +1002,9 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                         order = order + 1000,
                     }
                 end
+                if spell.buff then
+                    table.insert(QA.trackedMissingBuffs, spell)
+                end
                 if spell.transmute then
                     -- Profession cooldowns option
                     if QA.defaultOptions.profile[spell.option.."_pcd"] == nil then
@@ -998,6 +1040,7 @@ function QA:AddAbilitiesOptions()
     AddSpells(QA.spells.hunter, 1000, not QA.isHunter)
     AddSpells(QA.spells.warrior, 1000, not QA.isWarrior)
     AddSpells(QA.spells.shaman, 1000, not QA.isShaman)
+    AddSpells(QA.spells.warlock, 1000, not QA.isWarlock)
 end
 
 function QA:AddGearWarningOptions()

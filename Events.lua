@@ -146,7 +146,7 @@ end
 
 function QA:UNIT_HEALTH()
     for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
-        QA:CheckProc(spell)
+        QA:CheckProcSpellUsable(spell)
     end
 end
 
@@ -359,7 +359,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
             if spellCasted or spell.CheckProc(spell, subevent, sourceGuid, sourceName, destGuid, destName, extra) then
                 -- doesn't become enabled right away
-                C_Timer.After(0.05, function() QA:CheckProc(spell) end)
+                C_Timer.After(0.05, function() QA:CheckProcSpellUsable(spell) end)
             end
         end
     end

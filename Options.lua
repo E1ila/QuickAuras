@@ -36,6 +36,7 @@ QA.defaultOptions = {
         xpFrameEnabled = true,
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue,
+        swingTimerOH = true,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
@@ -533,6 +534,17 @@ QA.options = {
                         QA.db.profile.announceSquawk = value
                     end,
                     order = 106,
+                },
+                swingTimerOH = {
+                    type = "toggle",
+                    name = "Swing Timer OH",
+                    desc = "Show off-hand swing timer",
+                    get = function(info) return QA.db.profile.swingTimerOH end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimerOH = value
+                        QuickAuras_SwingTimer_OH:Hide()
+                    end,
+                    order = 107,
                 },
                 warriorUtilsHeader = {
                     type = "header",

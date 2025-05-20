@@ -675,8 +675,9 @@ function QA:InitSwingTimers()
     })
     QuickAuras_SwingTimer:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
     QuickAuras_SwingTimer:SetBackdropBorderColor(0, 0, 0, 0.9)
-
     QuickAuras_SwingTimer_Text:Hide()
+    QuickAuras_SwingTimer_TimeText:SetText("")
+    QuickAuras_SwingTimer_TimeText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
 
     local texture = QuickAuras_SwingTimer_MH:CreateTexture(nil, "BACKGROUND")
     texture:SetAllPoints(QuickAuras_SwingTimer_MH)
@@ -693,9 +694,10 @@ function QA:InitSwingTimers()
     QuickAuras_SwingTimer:Hide()
 end
 
-function QA:SetSwingProgress(hand, progress)
+function QA:SetSwingProgress(hand, progress, timeLeft)
     local frame = hand == "main" and QuickAuras_SwingTimer_MH or QuickAuras_SwingTimer_OH
     if progress == 0 then
+        QuickAuras_SwingTimer_TimeText:SetText("")
         frame:Hide()
     else
         local width = QuickAuras_SwingTimer:GetWidth()-frame:GetWidth()-2
@@ -705,6 +707,7 @@ function QA:SetSwingProgress(hand, progress)
         frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, -2)
         frame:SetPoint("BOTTOM", frame:GetParent(), "BOTTOM", 0, 2)
         frame:Show()
+        QuickAuras_SwingTimer_TimeText:SetText(string.format("%.1f", timeLeft or 0))
     end
 end
 
@@ -716,12 +719,12 @@ local function CreateSwingConf(hand)
             if not timer.expTime or timer.expTime > 4294967 then return false end
             local timeLeft = timer.expTime - GetTime()
             local progress = timeLeft / timer.duration
-            QA:SetSwingProgress(hand, progress)
+            QA:SetSwingProgress(hand, progress, timeLeft)
             --debug("update", hand, "timeLeft", timeLeft, "progress", progress, "timer.expTime", timer.expTime)
             return timeLeft > 0
         end,
         onEnd = function(timer)
-            QA:SetSwingProgress(hand, 0)
+            QA:SetSwingProgress(hand, 0, 0)
         end,
     }
 end
@@ -733,7 +736,10 @@ local swingConf = {
 function QA:UpdateSwingTimers()
     if not QA.db.profile.swingTimersEnabled then return end
     local mh = QA:UpdateSwingTimer("main")
-    local oh = QA:UpdateSwingTimer("off")
+    local oh = false
+    if QA.db.profile.swingTimerOH then
+        oh = QA:UpdateSwingTimer("off")
+    end
     if not mh and not oh then
         QuickAuras_SwingTimer:Hide()
     else

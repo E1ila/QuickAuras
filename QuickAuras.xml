@@ -619,18 +619,16 @@
                     </Anchors>
                 </FontString>
             </Layer>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_TimeText" inherits="QuickAuras_NormalFont" text="--">
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parent_MH" inherits="BackdropTemplate">
-                <Size>
-                    <AbsDimension x="4" />
-                </Size>
-                <Anchors>
-                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
-                    <Anchor point="BOTTOM" relativeTo="$parent" y="2"  />
-                    <Anchor point="LEFT" relativeTo="$parent" x="30" />
-                </Anchors>
-            </Frame>
             <Frame name="$parent_OH" inherits="BackdropTemplate">
                 <Size>
                     <AbsDimension x="4" />
@@ -639,6 +637,16 @@
                     <Anchor point="TOP" relativeTo="$parent" y="-2" />
                     <Anchor point="BOTTOM" relativeTo="$parent" y="2"  />
                     <Anchor point="LEFT" relativeTo="$parent" x="70" />
+                </Anchors>
+            </Frame>
+            <Frame name="$parent_MH" inherits="BackdropTemplate">
+                <Size>
+                    <AbsDimension x="4" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2"  />
+                    <Anchor point="LEFT" relativeTo="$parent" x="30" />
                 </Anchors>
             </Frame>
         </Frames>

@@ -42,6 +42,7 @@ QA.list_crucial = {} -- timer / icon
 QA.list_range = {}
 QA.list_raidBars = {} -- timer
 QA.list_queue = {}
+QA.list_swingTimers = {}
 
 local pclass = select(2, UnitClass("player"))
 QA.playerClass = pclass
@@ -143,6 +144,7 @@ function QA:OnInitialize()
         QA:CheckGear()
         QA:InitBossLogic()
         QA:UPDATE_SHAPESHIFT_FORM()
+        QA.InitSwingTimer()
         --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
         --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
         --QuickAuras:CheckLowConsumes() -- updated on load due to zone event
@@ -311,4 +313,13 @@ end
 
 function QA:IsRetail()
     return false
+end
+
+function QA:PrintSwing(hand)
+    local duration, expirationTime, weaponName, icon = QA.GetSwingTimerInfo(hand)
+    if duration > 0 then
+        debug("swing", hand, duration, expirationTime, weaponName)
+    else
+        debug("swing", hand, "--")
+    end
 end

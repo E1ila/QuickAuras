@@ -605,7 +605,7 @@
 
     <Frame name="QuickAuras_SwingTimer" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
-            <AbsDimension x="120" y="15" />
+            <AbsDimension x="120" y="18" />
         </Size>
         <Anchors>
             <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" x="0" y="-145" />

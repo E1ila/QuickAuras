@@ -68,35 +68,6 @@ function QA:UpdateRangeIndication()
     end
 end
 
-function QA:InitSwingTimers()
-    QuickAuras_SwingTimer:SetBackdrop({
-        bgFile = "Interface\\AddOns\\QuickAuras\\assets\\background", -- Optional background
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", -- Blizzard Tooltip border
-        edgeSize = 8, -- Border thickness
-        insets = { left = 1, right = 1, top = 1, bottom = 1 } -- Padding
-    })
-    QuickAuras_SwingTimer:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
-    QuickAuras_SwingTimer:SetBackdropBorderColor(0, 0, 0, 0.9)
-
-    QuickAuras_SwingTimer_Text:Hide()
-
-    local texture = QuickAuras_SwingTimer_MH:CreateTexture(nil, "BACKGROUND")
-    texture:SetAllPoints(QuickAuras_SwingTimer_MH)
-    texture:SetColorTexture(1, 0.2, 0.2, 1)
-    QuickAuras_SwingTimer_MH.texture = texture
-
-    texture = QuickAuras_SwingTimer_OH:CreateTexture(nil, "BACKGROUND")
-    texture:SetAllPoints(QuickAuras_SwingTimer_OH)
-    texture:SetColorTexture(0.2, 0.2, 1, 1)
-    QuickAuras_SwingTimer_OH.texture = texture
-
-    if QA.db.profile.swingTimersEnabled then
-        QuickAuras_SwingTimer:Show()
-    else
-        QuickAuras_SwingTimer:Hide()
-    end
-end
-
 function QA:ResetRogueWidgets()
     --QuickAuras_Combo_Texture:ClearAllPoints()
     --QuickAuras_Combo_Texture:SetSize(384, 384) -- Set the frame size
@@ -691,6 +662,100 @@ function QA:BlinkGotAggro()
     abortBlinkingAggro = false
     _BlinkAggro(QA.db.profile.aggroBlinkCount)
 end
+
+
+-- Swing -------------------------------------------------------------
+
+function QA:InitSwingTimers()
+    QuickAuras_SwingTimer:SetBackdrop({
+        bgFile = "Interface\\AddOns\\QuickAuras\\assets\\background", -- Optional background
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", -- Blizzard Tooltip border
+        edgeSize = 8, -- Border thickness
+        insets = { left = 1, right = 1, top = 1, bottom = 1 } -- Padding
+    })
+    QuickAuras_SwingTimer:SetBackdropColor (0.1, 0.1, 0.1, 0.5)
+    QuickAuras_SwingTimer:SetBackdropBorderColor(0, 0, 0, 0.9)
+
+    QuickAuras_SwingTimer_Text:Hide()
+
+    local texture = QuickAuras_SwingTimer_MH:CreateTexture(nil, "BACKGROUND")
+    texture:SetAllPoints(QuickAuras_SwingTimer_MH)
+    texture:SetColorTexture(1.000, 0.000, 0.302, 1) -- ff004d
+    QuickAuras_SwingTimer_MH.texture = texture
+    QuickAuras_SwingTimer_MH:Hide()
+
+    texture = QuickAuras_SwingTimer_OH:CreateTexture(nil, "BACKGROUND")
+    texture:SetAllPoints(QuickAuras_SwingTimer_OH)
+    texture:SetColorTexture(0.2, 0.2, 1, 1)
+    QuickAuras_SwingTimer_OH.texture = texture
+    QuickAuras_SwingTimer_OH:Hide()
+
+    QuickAuras_SwingTimer:Hide()
+end
+
+function QA:SetSwingProgress(hand, progress)
+    local frame = hand == "main" and QuickAuras_SwingTimer_MH or QuickAuras_SwingTimer_OH
+    if progress == 0 then
+        frame:Hide()
+    else
+        local width = QuickAuras_SwingTimer:GetWidth()-frame:GetWidth()-2
+        local offset = width * progress
+        frame:ClearAllPoints()
+        frame:SetPoint("LEFT", frame:GetParent(), "LEFT", 2+offset, 0)
+        frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, -2)
+        frame:SetPoint("BOTTOM", frame:GetParent(), "BOTTOM", 0, 2)
+        frame:Show()
+    end
+end
+
+local function CreateSwingConf(hand)
+    return {
+        name = "swing-"..hand,
+        hand = hand,
+        onUpdate = function(timer)
+            if not timer.expTime or timer.expTime > 4294967 then return false end
+            local timeLeft = timer.expTime - GetTime()
+            local progress = timeLeft / timer.duration
+            QA:SetSwingProgress(hand, progress)
+            --debug("update", hand, "timeLeft", timeLeft, "progress", progress, "timer.expTime", timer.expTime)
+            return timeLeft > 0
+        end,
+        onEnd = function(timer)
+            QA:SetSwingProgress(hand, 0)
+        end,
+    }
+end
+local swingConf = {
+    main = CreateSwingConf("main"),
+    off = CreateSwingConf("off"),
+}
+
+function QA:UpdateSwingTimers()
+    if not QA.db.profile.swingTimersEnabled then return end
+    local mh = QA:UpdateSwingTimer("main")
+    local oh = QA:UpdateSwingTimer("off")
+    if not mh and not oh then
+        QuickAuras_SwingTimer:Hide()
+    else
+        QuickAuras_SwingTimer:Show()
+    end
+end
+
+function QA:UpdateSwingTimer(hand)
+    local duration, expTime, weaponName, icon = QA.GetSwingTimerInfo(hand)
+    --local duration, expTime = 2.7, GetTime() + 2.7
+    local id = "swing-"..hand
+    local conf = swingConf[hand]
+    --debug("UpdateSwingTimer", hand, duration, expTime)
+    --:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+    if not duration or duration == 0 or not expTime then
+        QA:RemoveTimer(id)
+    else
+        QA:AddTimer("swing", conf, id, duration, expTime)
+        return true
+    end
+end
+
 
 
 -- Test UI -----------------------------------------------------------

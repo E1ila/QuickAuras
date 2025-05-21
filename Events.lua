@@ -3,6 +3,7 @@ local QA = addon.root
 local debug = QA.Debug
 local out = QA.Print
 local _c = QA.colors
+local WINDOW = QA.WINDOW
 
 local enemyDebuffs = {}
 local raidBuffs = {}
@@ -251,8 +252,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         if conf.multi then
                             text = destName
                         end
-                        --            QA:AddTimer(timerType,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
-                        local timer = QA:AddTimer("combatlog", conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
+                        --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
+                        local timer = QA:AddTimer(WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
                         if not conf.aoe then
                             if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
                             enemyDebuffs[extra[1]][destGuid] = timer
@@ -279,7 +280,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         -- start offensive timer
                         local name = strsplit("-", sourceName)
                         local duration = QA:GetDuration(conf, spellId)
-                        local timer = QA:AddTimer("raidbar", conf, spellId, duration, GetTime()+duration, nil, name, name)
+                        local timer = QA:AddTimer(WINDOW.RAIDBARS, conf, spellId, duration, GetTime()+duration, nil, name, name)
                         if not raidBuffs[extra[1]] then raidBuffs[extra[1]] = {} end
                         raidBuffs[extra[1]][destGuid] = timer
                     end

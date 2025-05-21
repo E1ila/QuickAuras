@@ -75,6 +75,11 @@ QA.WINDOW = {
     CRUCIAL = "crucial",
     RANGE = "range",
     QUEUE = "queue",
+    SWING = "swing",
+    RAIDBARS = "raidbar",
+    COOLDOWNS = "cooldowns",
+    WATCH = "watch",
+    OFFENSIVE = "offensive",
 }
 
 local function out(text, ...)

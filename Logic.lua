@@ -189,21 +189,21 @@ function QA:CheckProcAura(spell, seen)
     local changed = false
     local spellId = spell.spellId[1]
     local hasIt = QA:HasSeenAny(spell.spellId, seen)
-    local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
+    local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
     debug("Checking proc aura: "..spell.name, hasIt)
     if hasIt then
-        local button = QA:AddIcon(iconType, "spell", spellId, spell)
-        --                AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
-        --local button = QA:AddTimer("button", spell, spellId, hasIt.duration, hasIt.expTime)
+        local button = QA:AddIcon(window, "spell", spellId, spell)
+        --                AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
+        --local button = QA:AddTimer(iconType, spell, spellId, hasIt.duration, hasIt.expTime)
         if button then
             button.glowInCombat = true
             changed = true
         end
     else
-        changed = QA:RemoveIcon(iconType, spellId)
+        changed = QA:RemoveIcon(window, spellId)
     end
     if changed then
-        QA:ArrangeIcons(iconType)
+        QA:ArrangeIcons(window)
     end
 end
 
@@ -281,7 +281,7 @@ function QA:CheckTransmuteCooldown()
                     end)
                 end
             elseif timeLeft <= QA.db.profile.transmutePreReadyTime then
-                local timer = QA:AddTimer("reminder", spell, id, duration, start+duration)
+                local timer = QA:AddTimer(WINDOW.REMINDER, spell, id, duration, start+duration)
                 local fontSize = math.floor(QA.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
             else
@@ -401,7 +401,7 @@ local function _checkCooldown(conf, idType, id, start, duration)
     debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
     if start and start > 0 and duration and duration > 2 and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
-        QA:AddTimer("cooldowns", conf, id, updatedDuration, start + duration)
+        QA:AddTimer(WINDOW.COOLDOWNS, conf, id, updatedDuration, start + duration)
     end
 end
 
@@ -455,7 +455,7 @@ function QA:CheckAuras()
         if aura and (not aura.option or QA.db.profile[aura.option]) and QA.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
             debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, QA.db.profile[aura.option])
-            local timer = QA:AddTimer("auras", aura, spellId, duration, expTime)
+            local timer = QA:AddTimer(WINDOW.WATCH, aura, spellId, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end
@@ -464,7 +464,7 @@ function QA:CheckAuras()
     end
     -- remove missing auras
     for _, timer in pairs(QA.list_timers) do
-        if not seen[timer.key] and timer.timerType == "auras" then
+        if not seen[timer.key] and timer.window == "auras" then
             QA:RemoveTimer(timer, "unseen")
         end
     end
@@ -556,7 +556,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                     QA:RemoveIcon(WINDOW.CRUCIAL, buff.spellIds[1])
                     changed = true
                 end
-                local timer, isNew = QA:AddTimer("crucial", buff.conf, buff.spellIds[1], aura[1], aura[2], QA.db.profile.crucialExpireTime)
+                local timer, isNew = QA:AddTimer(WINDOW.CRUCIAL, buff.conf, buff.spellIds[1], aura[1], aura[2], QA.db.profile.crucialExpireTime)
                 timer.glowOnEnd = false -- no need, the icon will glow
                 if isNew then
                     changed = true

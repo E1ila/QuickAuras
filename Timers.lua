@@ -3,49 +3,55 @@ local QA = addon.root
 local debug = QA.Debug
 local WINDOW = QA.WINDOW
 
-function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
     local arrangeFunc = QA.ArrangeTimerBars
     local uiType, list, parent, height
     local widthMul = 1
     keyExtra = keyExtra or ""
     showAtTime = showAtTime or conf.showAtTime
-    if timerType == "swing" then
+    window = window or conf.window
+    if window == WINDOW.SWING then
         list = QA.list_swingTimers
         uiType = "swing"
         arrangeFunc = function(_list, _parent, _gap)  end
-    elseif timerType == "raidbar" then
+    elseif window == WINDOW.RAIDBARS then
         list = QA.list_raidBars
         parent = QuickAuras_RaidBars
         uiType = "bar"
         height = QA.db.profile.raidBarHeight
-    elseif timerType == "test-cooldowns" or timerType == "cooldowns" then
+    elseif window == WINDOW.COOLDOWNS then
         list = QA.list_cooldowns
         parent = QuickAuras_Cooldowns
         uiType = "button"
-    elseif conf.list == "watch" then
+    elseif window == WINDOW.WATCH then
         list = QA.list_watchBars
         parent = QuickAuras_WatchBars
         uiType = "bar"
-    elseif conf.list == "offensive" then
+    elseif window == WINDOW.OFFENSIVE then
         list = QA.list_offensiveBars
         parent = QuickAuras_OffensiveBars
         uiType = "bar"
         widthMul = 1.5
-    elseif conf.list == "alert" then
+    elseif window == WINDOW.ALERT then
         list = QA.list_iconAlerts
         parent = QuickAuras_IconAlerts
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(WINDOW.ALERT) end
-    elseif timerType == "reminder" or conf.list == "reminder" then
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
+    elseif window == WINDOW.REMINDER then
         list = QA.list_reminders
         parent = QuickAuras_Reminders
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(WINDOW.REMINDER) end
-    elseif timerType == "crucial" or conf.list == "crucial" then
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
+    elseif window == WINDOW.CRUCIAL then
         list = QA.list_crucial
         parent = QuickAuras_Crucial
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(WINDOW.CRUCIAL) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
+    elseif window == WINDOW.QUEUE then
+        list = QA.list_queue
+        parent = QuickAuras_SpellQueue
+        uiType = "button"
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
     end
     if not parent then parent = UIParent end
     local onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate
@@ -100,7 +106,7 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
         onEnd = onEnd,
         uiType = uiType,
         parent = parent,
-        timerType = timerType,
+        window = window,
         flashOnEnd = conf.flashOnEnd,
         glowOnEnd = true,
         widthMul = widthMul,

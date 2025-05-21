@@ -753,11 +753,11 @@ function QA:UpdateSwingTimer(hand)
     local id = "swing-"..hand
     local conf = swingConf[hand]
     --debug("UpdateSwingTimer", hand, duration, expTime)
-    --:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+    --:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
     if not duration or duration == 0 or not expTime then
         QA:RemoveTimer(id)
     else
-        QA:AddTimer("swing", conf, id, duration, expTime)
+        QA:AddTimer(WINDOW.SWING, conf, id, duration, expTime)
         return true
     end
 end
@@ -777,7 +777,7 @@ function QA:TestProgressBar(spells, limit, includeRaidBars)
                 seen[conf.name] = true
                 local duration = 15 - (count1*2)
                 local expTime = GetTime() + duration
-                QA:AddTimer("test", conf, key, duration, expTime)
+                QA:AddTimer(conf.list, conf, key, duration, expTime)
                 count1 = count1 + 1
             end
         elseif conf.raidBars and includeRaidBars then
@@ -785,8 +785,8 @@ function QA:TestProgressBar(spells, limit, includeRaidBars)
                 debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 -- we'll inject raidbars separately
                 local duration = math.min(QA:GetDuration(conf), 10)
-                --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
-                QA:AddTimer("raidbar", conf, conf.spellId[1], duration, GetTime()+duration, nil, "Text", tostring(count2))
+                --   AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
+                QA:AddTimer(WINDOW.RAIDBARS, conf, conf.spellId[1], duration, GetTime()+duration, nil, "Text", tostring(count2))
                 count2 = count2 + 1
             end
         end
@@ -800,13 +800,13 @@ end
 
 function QA:TestFlashBar()
     local snd = QA.trackedAuras[6774]
-    QA:AddTimer("test", snd, "test", 5, GetTime()+5)
+    QA:AddTimer(snd.list, snd, "test", 5, GetTime()+5)
 end
 
 function QA:TestCooldowns()
     local t = 0
     for i, conf in pairs(QA.trackedSpellCooldowns) do
-        --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
+        --   AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
         if conf.spellId then
             QA:AddTimer("test-cooldowns", conf, conf.spellId[1], 15-t, GetTime()+15-t)
             t = t + 1
@@ -870,8 +870,8 @@ end, 6)
 
 function QA:TestIconAlerts()
     local lip = QA.spells.iconAlerts.limitedInvulnerabilityPotion
-    --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
-    QA:AddTimer("auras", lip, lip.spellId[1], 6, GetTime()+6)
+    --   AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
+    QA:AddTimer(WINDOW.ALERT, lip, lip.spellId[1], 6, GetTime()+6)
     DelayedReset_IconAlerts()
 end
 

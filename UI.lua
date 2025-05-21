@@ -784,7 +784,7 @@ function QA:TestProgressBar(spells, limit, includeRaidBars)
             if count2 < limit then
                 debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 -- we'll inject raidbars separately
-                local duration = math.min(conf.duration, 10)
+                local duration = math.min(QA:GetDuration(conf), 10)
                 --   AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
                 QA:AddTimer("raidbar", conf, conf.spellId[1], duration, GetTime()+duration, nil, "Text", tostring(count2))
                 count2 = count2 + 1

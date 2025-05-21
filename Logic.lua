@@ -422,7 +422,7 @@ end
 local manualExpTime = {}
 local function FixAuraExpTime(duration, expTime, aura, spellId)
     if aura.manualExpTime then
-        duration = aura.duration
+        duration = QA:GetDuration(aura, spellId)
         local _exp = manualExpTime[spellId]
         local now = GetTime()
         if _exp and _exp > now + 1 then

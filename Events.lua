@@ -233,7 +233,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 -- taunt
                 if conf.taunt and subevent == "SPELL_AURA_APPLIED" and sourceGuid == QA.playerGuid then
                     debug("CLEU ".._c.bold.."Taunt|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)
-                    QA.hasTaunted = GetTime() + (conf.duration or 1)
+                    QA.hasTaunted = GetTime() + (QA:GetDuration(conf, spellId) or 1)
                 end
                 -- offensive debuffs
                 if conf.duration and conf.list then
@@ -247,9 +247,16 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         if conf.OnDetect then
                             conf.OnDetect(conf, sourceGuid, sourceName, destGuid, destName)
                         end
-                        local timer = QA:AddTimer("combatlog", conf, spellId, conf.duration, GetTime()+conf.duration)
-                        if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
-                        enemyDebuffs[extra[1]][destGuid] = timer
+                        local text, keyExtra, duration = nil, destGuid, QA:GetDuration(conf, spellId)
+                        if conf.multi then
+                            text = destName
+                        end
+                        --            QA:AddTimer(timerType,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
+                        local timer = QA:AddTimer("combatlog", conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
+                        if not conf.aoe then
+                            if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
+                            enemyDebuffs[extra[1]][destGuid] = timer
+                        end
                     end
 
                     if  subevent == "SPELL_AURA_REMOVED"
@@ -271,7 +278,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                     then
                         -- start offensive timer
                         local name = strsplit("-", sourceName)
-                        local timer = QA:AddTimer("raidbar", conf, spellId, conf.duration, GetTime()+conf.duration, nil, name, name)
+                        local duration = QA:GetDuration(conf, spellId)
+                        local timer = QA:AddTimer("raidbar", conf, spellId, duration, GetTime()+duration, nil, name, name)
                         if not raidBuffs[extra[1]] then raidBuffs[extra[1]] = {} end
                         raidBuffs[extra[1]][destGuid] = timer
                     end

@@ -323,3 +323,20 @@ function QA:PrintSwing(hand)
         debug("swing", hand, "--")
     end
 end
+
+function QA:GetDuration(conf, spellId)
+    if not conf.duration then return nil end
+    if type(conf.duration) == "number" then
+        return conf.duration
+    end
+    local index = 1
+    if spellId and type(conf.spellId) == "table" then
+        for i = 1, #conf.spellId do
+            if conf.spellId[i] == spellId then
+                index = i
+                break
+            end
+        end
+    end
+    return conf.duration[index]
+end

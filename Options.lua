@@ -240,6 +240,16 @@ QA.options = {
                     end,
                     order = 14,
                 },
+                overaggroWarning = {
+                    type = "toggle",
+                    name = "Overaggro Warn",
+                    desc = "Shows a visible warning when overaggroing a tanked mob",
+                    get = function(info) return QA.db.profile.overaggroWarning end,
+                    set = function(info, value)
+                        QA.db.profile.overaggroWarning = value
+                    end,
+                    order = 15,
+                },
             }
         },
         lookAndFeel = {

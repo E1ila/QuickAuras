@@ -43,11 +43,12 @@ spells.warlock = {
         visible = QA.isWarlock,
     },
     soulstone = {
-        spellId = { 20763, 20764, 20765 },
         name = "Soulstone",
         icon = "Interface\\Icons\\Spell_Shadow_SoulGem",
         cooldown = true,
         visible = QA.isWarlock,
+        itemId = 16896,
+        evenIfNotInBag = true,
     },
     shadowburn = {
         spellId = { 17877, 18867, 18868, 18869, 18870, 18871 },

@@ -52,7 +52,7 @@ QA.defaultOptions = {
         barHeight = 25,
         barWidth = 128,
         barGap = 2,
-        buttonHeight = 50,
+        cooldownIconSize = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
         crucialIconSize = 50,
@@ -315,16 +315,16 @@ QA.options = {
                     end,
                     order = 102,
                 },
-                buttonHeight = {
+                cooldownIconSize = {
                     type = "range",
                     name = "Cooldown Size",
                     desc = "Set the size of the cooldown icons",
                     min = 10,
                     max = 100,
                     step = 1,
-                    get = function(info) return QA.db.profile.buttonHeight end,
+                    get = function(info) return QA.db.profile.cooldownIconSize end,
                     set = function(info, value)
-                        QA.db.profile.buttonHeight = value
+                        QA.db.profile.cooldownIconSize = value
                         QA:TestCooldowns()
                     end,
                     order = 103,
@@ -395,7 +395,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.crucialIconSize end,
                     set = function(info, value)
                         QA.db.profile.crucialIconSize = value
-                        QA:RefreshCrucial()
+                        QA:TestCrucial()
                     end,
                     order = 108,
                 },
@@ -438,7 +438,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.raidBarHeight end,
                     set = function(info, value)
                         QA.db.profile.raidBarHeight = value
-                        --QuickAuras:TestIconAlerts()
+                        QA:TestBars()
                     end,
                     order = 111,
                 },

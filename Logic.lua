@@ -401,6 +401,7 @@ local function _checkCooldown(conf, idType, id, start, duration)
     debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
     if start and start > 0 and duration and duration > 2 and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
+        debug(3, "_checkCooldown", "FOUND", conf.name)
         QA:AddTimer(WINDOW.COOLDOWNS, conf, id, updatedDuration, start + duration)
     end
 end

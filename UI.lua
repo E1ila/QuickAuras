@@ -266,78 +266,103 @@ end
 
 -- Icon warnings ------------------------------------
 
-local function GetIconList(type, idType)
-    local list, parent, Refresh, glowInCombat
-    local Create = idType == "item" and QA.CreateItemWarningIcon or QA.CreateSpellWarningIcon
-    if type == WINDOW.WARNING then
-        list = QA.list_iconWarnings
-        parent = QuickAuras_IconWarnings
-        Refresh = QA.RefreshWarnings
-    elseif type == WINDOW.MISSING then
-        list = QA.list_missingBuffs
-        parent = QuickAuras_MissingBuffs
-        Refresh = QA.RefreshMissing
-        glowInCombat = true
-    elseif type == WINDOW.ALERT then
-        list = QA.list_iconAlerts
-        parent = QuickAuras_IconAlerts
-        Refresh = QA.RefreshAlerts
-    elseif type == WINDOW.REMINDER then
-        list = QA.list_reminders
-        parent = QuickAuras_Reminders
-        Refresh = QA.RefreshReminders
-    elseif type == WINDOW.CRUCIAL then
-        list = QA.list_crucial
-        parent = QuickAuras_Crucial
-        glowInCombat = true
-        --Refresh = QuickAuras.RefreshReminders
-    elseif type == WINDOW.RANGE then
-        list = QA.list_range
-        parent = QuickAuras_RangeIndicator
-        --Refresh = QuickAuras.RefreshReminders
-    elseif type == WINDOW.QUEUE then
-        list = QA.list_queue
-        parent = QuickAuras_SpellQueue
-        --Refresh = QuickAuras.RefreshReminders
+function QA:GetWindowAttr(window, idType)
+    local attr = {
+        widthMul = 1,
+        parent = UIParent,
+    }
+    if idType then
+        attr.Create = idType == "item" and QA.CreateItemWarningIcon or QA.CreateSpellWarningIcon
     end
-    return list, parent, Create, Refresh, glowInCombat
+    if window == WINDOW.SWING then
+        attr.list = QA.list_swingTimers
+        attr.bar = true
+    elseif window == WINDOW.RAIDBARS then
+        attr.list = QA.list_raidBars
+        attr.parent = QuickAuras_RaidBars
+        attr.bar = true
+        attr.height = QA.db.profile.raidBarHeight
+    elseif window == WINDOW.COOLDOWNS then
+        attr.list = QA.list_cooldowns
+        attr.parent = QuickAuras_Cooldowns
+    elseif window == WINDOW.WARNING then
+        attr.list = QA.list_iconWarnings
+        attr.parent = QuickAuras_IconWarnings
+        attr.Refresh = QA.RefreshWarnings
+    elseif window == WINDOW.MISSING then
+        attr.list = QA.list_missingBuffs
+        attr.parent = QuickAuras_MissingBuffs
+        attr.Refresh = QA.RefreshMissing
+        attr.glowInCombat = true
+    elseif window == WINDOW.ALERT then
+        attr.list = QA.list_iconAlerts
+        attr.parent = QuickAuras_IconAlerts
+        attr.Refresh = QA.RefreshAlerts
+    elseif window == WINDOW.REMINDER then
+        attr.list = QA.list_reminders
+        attr.parent = QuickAuras_Reminders
+        attr.Refresh = QA.RefreshReminders
+    elseif window == WINDOW.CRUCIAL then
+        attr.list = QA.list_crucial
+        attr.parent = QuickAuras_Crucial
+        attr.glowInCombat = true
+        --Refresh = QuickAuras.RefreshReminders
+    elseif window == WINDOW.RANGE then
+        attr.list = QA.list_range
+        attr.parent = QuickAuras_RangeIndicator
+        --Refresh = QuickAuras.RefreshReminders
+    elseif window == WINDOW.QUEUE then
+        attr.list = QA.list_queue
+        attr.parent = QuickAuras_SpellQueue
+        --Refresh = QuickAuras.RefreshReminders
+    elseif window == WINDOW.OFFENSIVE then
+        attr.list = QA.list_offensiveBars
+        attr.parent = QuickAuras_OffensiveBars
+        attr.bar = true
+        attr.widthMul = 1.5
+    elseif window == WINDOW.WATCH then
+        attr.list = QA.list_watchBars
+        attr.parent = QuickAuras_WatchBars
+        attr.bar = true
+    end
+    return attr
 end
 
 function QA:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     local key = iconType.."-"..idType.."-"..tostring(id)
     if QA.ignoredIcons[key] then return nil end
-    local list, parent, Create, Refresh, glowInCombat = GetIconList(iconType, idType)
-    if not list[id] then
-        debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
+    local attr = QA:GetWindowAttr(iconType, idType)
+    if not attr.list[id] then
+        debug(2, "AddIcon", id, "parent", attr.parent:GetName(), "count", count)
         local showCount = iconType == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount)
-        local onRightClick = iconType ~= WINDOW.ALERT and Refresh and function()
+        local onRightClick = iconType ~= WINDOW.ALERT and attr.Refresh and function()
             QA.ignoredIcons[key] = true
-            Refresh(QA)
+            attr.Refresh(QA)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
-        local frame = Create(QA, id, parent, iconType .."-".. id, showTooltip, showCount, onRightClick, onClick)
+        local frame = attr.Create(QA, id, attr.parent, iconType .."-".. id, showTooltip, showCount, onRightClick, onClick)
         local button = {
             name = conf.name,
             conf = conf,
             id = id,
             idType = idType,
             frame = frame,
-            list = list,
-            parent = parent,
+            list = attr.list,
+            parent = attr.parent,
             count = count,
-            glowInCombat = glowInCombat
+            glowInCombat = attr.glowInCombat
         }
-        list[id] = button
+        attr.list[id] = button
         return button
     elseif count ~= nil then
-        list[id].count = count
-        return list[id]
+        attr.list[id].count = count
+        return attr.list[id]
     end
 end
 
 function QA:RemoveIcon(iconType, id)
-    local list = GetIconList(iconType)
-    local obj = list[id]
+    local attr = QA:GetWindowAttr(iconType)
+    local obj = attr.list[id]
     if obj then
         if obj.isTimer then
             QA:RemoveTimer(obj, "removeicon")
@@ -346,7 +371,7 @@ function QA:RemoveIcon(iconType, id)
             frame:Hide()
             frame:SetParent(nil)
             frame:ClearAllPoints()
-            list[id] = nil
+            attr.list[id] = nil
         end
         return true
     end
@@ -354,80 +379,99 @@ end
 
 function QA:ClearIcons(iconType)
     --debug("Clearing icon warnings")
-    local list = GetIconList(iconType)
-    for id, obj in pairs(list) do
+    local attr = QA:GetWindowAttr(iconType)
+    for id, obj in pairs(attr.list) do
         QA:RemoveIcon(iconType, id)
     end
 end
 
-function QA:ArrangeIcons(iconType)
-    --debug("Arranging icon warnings")
-    local list = GetIconList(iconType)
+function QA:ArrangeIcons(window)
+    local attr = QA:GetWindowAttr(window)
+
+    local sortedList = {}
+    for _, timer in pairs(attr.list) do
+        table.insert(sortedList, timer)
+    end
+    table.sort(sortedList, function(a, b)
+        return (a.expTime or 0) > (b.expTime or 0)
+    end)
+    attr.list = sortedList
+
     local lastFrame = nil
     local count = 0
-    for _, obj in pairs(list) do
+    for _, obj in pairs(attr.list) do
         count = count + 1
         local frame = obj.frame
         frame:ClearAllPoints()
-        debug(3, "ArrangeIcons", iconType, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
+        debug(3, "ArrangeIcons", window, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
         if frame.counterText and obj.count and type(obj.count) == "number" then
             --debug(3, "ArrangeIcons", "count", obj.count)
             frame.counterText:SetText(obj.count)
         end
-        if iconType == WINDOW.WARNING then
+        if window == WINDOW.OFFENSIVE or window == WINDOW.WATCH or window == WINDOW.RAIDBARS then
+            -- progress bar, down
             if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -5, 0)
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -QA.db.profile.barGap+4)
+            else
+                frame:SetPoint("TOP", attr.parent, "TOP", 0, 0)
+            end
+            local height = attr.height or QA.db.profile.barHeight or 25
+            local padding = 2
+            frame:SetPoint("CENTER", attr.parent, "CENTER", 0, 0)
+            frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), height)
+            frame.iconFrame:SetSize(height-padding*2, height-padding*2)
+            frame.iconFrame.icon:SetSize(height-padding*2, height-padding*2)
+        elseif window == WINDOW.MISSING or window == WINDOW.COOLDOWNS then
+            -- left
+            if lastFrame then
+                frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
-            frame:SetSize(QA.db.profile.gearWarningSize, QA.db.profile.gearWarningSize) -- Width, Height
-        elseif iconType == WINDOW.MISSING then
+            if window == WINDOW.COOLDOWNS then
+                frame:SetSize(QA.db.profile.cooldownIconSize, QA.db.profile.cooldownIconSize) -- Width, Height
+            else
+                frame:SetSize(QA.db.profile.missingBuffsSize, QA.db.profile.missingBuffsSize) -- Width, Height
+            end
+        elseif window == WINDOW.WARNING or window == WINDOW.REMINDER then
+            -- left
             if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
+                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -2, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
-            frame:SetSize(QA.db.profile.missingBuffsSize, QA.db.profile.missingBuffsSize) -- Width, Height
-        elseif iconType == WINDOW.REMINDER then
-            if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
+            if window == WINDOW.WARNING then
+                frame:SetSize(QA.db.profile.gearWarningSize, QA.db.profile.gearWarningSize) -- Width, Height
             else
-                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+                frame:SetSize(QA.db.profile.reminderIconSize, QA.db.profile.reminderIconSize) -- Width, Height
             end
-            frame:SetSize(QA.db.profile.reminderIconSize, QA.db.profile.reminderIconSize) -- Width, Height
-        elseif iconType == WINDOW.ALERT then
+        elseif window == WINDOW.ALERT or window == WINDOW.CRUCIAL then
+            -- down
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
             else
                 frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            frame:SetSize(QA.db.profile.iconAlertSize, QA.db.profile.iconAlertSize) -- Width, Height
-        elseif iconType == WINDOW.CRUCIAL then
-            if lastFrame then
-                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4) -- vertical layout
+            if window == WINDOW.ALERT then
+                frame:SetSize(QA.db.profile.iconAlertSize, QA.db.profile.iconAlertSize) -- Width, Height
             else
-                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+                frame:SetSize(QA.db.profile.crucialIconSize, QA.db.profile.crucialIconSize) -- Width, Height
             end
-            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            frame:SetSize(QA.db.profile.crucialIconSize, QA.db.profile.crucialIconSize) -- Width, Height
-        elseif iconType == WINDOW.QUEUE then
+        elseif window == WINDOW.QUEUE or window == WINDOW.RANGE then
+            -- vertical center
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            frame:GetParent():SetSize(QA.db.profile.spellQueueIconSize * count, QA.db.profile.spellQueueIconSize) -- Width, Height
-            frame:SetSize(QA.db.profile.spellQueueIconSize, QA.db.profile.spellQueueIconSize) -- Width, Height
-        elseif iconType == WINDOW.RANGE then
-            if lastFrame then
-                frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
+            if window == WINDOW.RANGE then
+                frame:SetSize(QA.db.profile.rangeIconSize, QA.db.profile.rangeIconSize) -- Width, Height
             else
-                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+                frame:GetParent():SetSize(QA.db.profile.spellQueueIconSize * count, QA.db.profile.spellQueueIconSize) -- Width, Height
+                frame:SetSize(QA.db.profile.spellQueueIconSize, QA.db.profile.spellQueueIconSize) -- Width, Height
             end
-            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            frame:SetSize(QA.db.profile.rangeIconSize, QA.db.profile.rangeIconSize) -- Width, Height
         end
         if obj.glowInCombat then
             if QA.inCombat and not obj.frame.glow then
@@ -549,45 +593,6 @@ function QA:CreateTimerButton(parent, index, padding, color, icon)
 
     return frame
 end
-
-function QA:ArrangeTimerBars(list, parent)
-    local sortedList = {}
-    for _, timer in pairs(list) do
-        table.insert(sortedList, timer)
-    end
-    table.sort(sortedList, function(a, b)
-        return a.expTime > b.expTime
-    end)
-    debug(2, "Arranging timer bars", parent:GetName())
-    local lastFrame
-    for _, timer in pairs(sortedList) do
-        debug(3, "Arranging progress frames", timer.key, timer.uiType)
-        timer.frame:ClearAllPoints()
-        if timer.uiType == "bar" then
-            if lastFrame then
-                timer.frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -QA.db.profile.barGap+4)
-            else
-                timer.frame:SetPoint("TOP", parent, "TOP", 0, 0)
-            end
-            local height = timer.height or QA.db.profile.barHeight or 25
-            local padding = 2
-            timer.frame:SetPoint("CENTER", parent, "CENTER", 0, 0)
-            timer.frame:SetSize(QA.db.profile.barWidth * (timer.widthMul or 1), height)
-            timer.frame.iconFrame:SetSize(height-padding*2, height-padding*2)
-            timer.frame.iconFrame.icon:SetSize(height-padding*2, height-padding*2)
-        elseif timer.uiType == "button" then
-            if lastFrame then
-                timer.frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", -QA.db.profile.barGap+4, 0)
-            else
-                timer.frame:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0)
-            end
-            local height = timer.height or QA.db.profile.buttonHeight or 50
-            timer.frame:SetSize(height, height)
-        end
-        lastFrame = timer.frame
-    end
-end
-
 
 -------------------------------------------------------------
 
@@ -766,12 +771,12 @@ end
 
 -- Test UI -----------------------------------------------------------
 
-function QA:TestProgressBar(spells, limit, includeRaidBars)
+function QA:TestProgressBar(spells, limit, onlyRaidBars)
     local count1 = 0
     local count2 = 0
     local seen = {}
     for key, conf in pairs(spells) do
-        if (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
+        if not onlyRaidBars and (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
             if count1 < limit then
                 debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 seen[conf.name] = true
@@ -780,7 +785,7 @@ function QA:TestProgressBar(spells, limit, includeRaidBars)
                 QA:AddTimer(conf.list, conf, key, duration, expTime)
                 count1 = count1 + 1
             end
-        elseif conf.raidBars and includeRaidBars then
+        elseif conf.raidBars and onlyRaidBars then
             if count2 < limit then
                 debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 -- we'll inject raidbars separately
@@ -795,7 +800,8 @@ end
 
 function QA:TestBars()
     QA:TestProgressBar(QA.trackedAuras, 5)
-    QA:TestProgressBar(QA.trackedCombatLog, 3, true)
+    QA:TestProgressBar(QA.trackedCombatLog, 3)
+    QA:TestProgressBar(QA.trackedCombatLog, 5, true)
 end
 
 function QA:TestFlashBar()
@@ -808,7 +814,7 @@ function QA:TestCooldowns()
     for i, conf in pairs(QA.trackedSpellCooldowns) do
         --   AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
         if conf.spellId then
-            QA:AddTimer("test-cooldowns", conf, conf.spellId[1], 15-t, GetTime()+15-t)
+            QA:AddTimer(WINDOW.COOLDOWNS, conf, conf.spellId[1], 15-t, GetTime()+15-t)
             t = t + 1
         end
     end

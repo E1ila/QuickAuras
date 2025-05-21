@@ -4,68 +4,23 @@ local debug = QA.Debug
 local WINDOW = QA.WINDOW
 
 function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
-    local arrangeFunc = QA.ArrangeTimerBars
-    local uiType, list, parent, height
-    local widthMul = 1
     keyExtra = keyExtra or ""
     showAtTime = showAtTime or conf.showAtTime
     window = window or conf.window
-    if window == WINDOW.SWING then
-        list = QA.list_swingTimers
-        uiType = "swing"
-        arrangeFunc = function(_list, _parent, _gap)  end
-    elseif window == WINDOW.RAIDBARS then
-        list = QA.list_raidBars
-        parent = QuickAuras_RaidBars
-        uiType = "bar"
-        height = QA.db.profile.raidBarHeight
-    elseif window == WINDOW.COOLDOWNS then
-        list = QA.list_cooldowns
-        parent = QuickAuras_Cooldowns
-        uiType = "button"
-    elseif window == WINDOW.WATCH then
-        list = QA.list_watchBars
-        parent = QuickAuras_WatchBars
-        uiType = "bar"
-    elseif window == WINDOW.OFFENSIVE then
-        list = QA.list_offensiveBars
-        parent = QuickAuras_OffensiveBars
-        uiType = "bar"
-        widthMul = 1.5
-    elseif window == WINDOW.ALERT then
-        list = QA.list_iconAlerts
-        parent = QuickAuras_IconAlerts
-        uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
-    elseif window == WINDOW.REMINDER then
-        list = QA.list_reminders
-        parent = QuickAuras_Reminders
-        uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
-    elseif window == WINDOW.CRUCIAL then
-        list = QA.list_crucial
-        parent = QuickAuras_Crucial
-        uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
-    elseif window == WINDOW.QUEUE then
-        list = QA.list_queue
-        parent = QuickAuras_SpellQueue
-        uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(window) end
-    end
-    if not parent then parent = UIParent end
+    local attr = QA:GetWindowAttr(window)
     local onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate
     local onEnd = conf.onEnd or QuickAuras_Timer_OnUpdate
+    local uiType = attr.bar and "bar" or "button"
 
     local index = 0
-    for _ in pairs(list) do
+    for _ in pairs(attr.list) do
         index = index + 1
     end
 
     local existingTimer = QA.list_timerByName[keyExtra..conf.name.."-"..uiType]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
-            --debug("Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
+            debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
             return existingTimer, false -- already exists
         end
         debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime)
@@ -78,20 +33,22 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
     end
 
     local frame
-    if uiType == "button" then
-        frame = QA:CreateTimerButton(parent, index, 2, conf.color, conf.icon)
+    if attr.bar then
+        debug(3, "Creating bar timer", "name", conf.name, "expTime", expTime)
+        frame = QA:CreateTimerBar(attr.parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or QA.db.profile.showTimeOnBars and tostring(duration) or nil)
+    else
+        debug(3, "Creating button timer", "name", conf.name, "expTime", expTime)
+        frame = QA:CreateTimerButton(attr.parent, index, 2, conf.color, conf.icon)
         if showAtTime then
             showAtTime = expTime - showAtTime
             frame:SetAlpha(0.5)
             frame:Hide()
         end
-    else
-        frame = QA:CreateTimerBar(parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or QA.db.profile.showTimeOnBars and tostring(duration) or nil)
     end
     local timer = {
         frame = frame,
         index = index,
-        list = list,
+        list = attr.list,
         id = id,
         name = conf.name,
         icon = conf.icon,
@@ -101,24 +58,22 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
         showAtTime = showAtTime,
         keyExtra = keyExtra,
         text = text,
-        height = height,
         onUpdate = onUpdate,
         onEnd = onEnd,
         uiType = uiType,
-        parent = parent,
+        parent = attr.parent,
         window = window,
         flashOnEnd = conf.flashOnEnd,
         glowOnEnd = true,
-        widthMul = widthMul,
-        arrangeFunc = arrangeFunc,
+        widthMul = attr.widthMul,
         isTimer = true
     }
     timer.key = keyExtra..QA:GetTimerKey(conf.name, expTime, uiType)
-    list[keyExtra..tostring(id)] = timer
+    attr.list[keyExtra..tostring(id)] = timer
     QA.list_timers[timer.key] = timer
     QA.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
     onUpdate(timer)
-    arrangeFunc(QA, list, parent)
+    QA:ArrangeIcons(window)
     return timer, true
 end
 
@@ -180,11 +135,7 @@ function QA:RemoveTimer(timer, reason)
     QA.list_timerByName[timer.keyExtra..timer.name.."-"..timer.uiType] = nil
     QA.list_timers[timer.key] = nil
     --debug(" -- ", timer.key)
-    if timer.arrangeFunc then
-        timer.arrangeFunc(QA, timer.list, timer.parent)
-    else
-        QA:ArrangeTimerBars(timer.list, timer.parent)
-    end
+    QA:ArrangeIcons(timer.window)
 end
 
 function QA:CheckTimers()

@@ -505,7 +505,7 @@
                     </Layer>
                 </Layers>
             </Frame>
-            <StatusBar name="$parent_Bar3" inherits="TextStatusBar">
+            <StatusBar name="$parent_Bar_Current" inherits="TextStatusBar">
                 <Anchors>
                     <Anchor point="TOP" relativeTo="$parent" y="-2" />
                     <Anchor point="BOTTOM" relativeTo="$parent" y="2" />
@@ -520,7 +520,7 @@
                     </OnLoad>
                 </Scripts>
             </StatusBar>
-            <StatusBar name="$parent_Bar2" inherits="TextStatusBar">
+            <StatusBar name="$parent_Bar_Completed" inherits="TextStatusBar">
                 <Anchors>
                     <Anchor point="TOP" relativeTo="$parent" y="-2" />
                     <Anchor point="BOTTOM" relativeTo="$parent" y="2" />
@@ -535,7 +535,7 @@
                     </OnLoad>
                 </Scripts>
             </StatusBar>
-            <StatusBar name="$parent_Bar1" inherits="TextStatusBar">
+            <StatusBar name="$parent_Bar_Rested" inherits="TextStatusBar">
                 <Anchors>
                     <Anchor point="TOP" relativeTo="$parent" y="-2" />
                     <Anchor point="BOTTOM" relativeTo="$parent" y="2" />

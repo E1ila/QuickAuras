@@ -107,16 +107,16 @@ end
 
 function QA:ConfigureXpFrame()
     QA:SetDarkBackdrop(QuickAuras_XP, true)
-    QuickAuras_XP_Text:Show()
+    QuickAuras_XP_Text:Hide()
     QuickAuras_XP_Left_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
     QuickAuras_XP_Right_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
     QuickAuras_XP_Bottom_Text:SetFont("Fonts\\FRIZQT__.TTF", 9, "OUTLINE")
-    QuickAuras_XP_Bar1:SetStatusBarTexture(cleanTexture)
-    QuickAuras_XP_Bar1:SetStatusBarColor(0.204, 0.302, 0.471)
-    QuickAuras_XP_Bar2:SetStatusBarTexture(cleanTexture)
-    QuickAuras_XP_Bar2:SetStatusBarColor(0.784, 0.467, 0)
-    QuickAuras_XP_Bar3:SetStatusBarTexture(cleanTexture)
-    QuickAuras_XP_Bar3:SetStatusBarColor(0.337, 0.388, 1.0)
+    QuickAuras_XP_Bar_Rested:SetStatusBarTexture(cleanTexture)
+    QuickAuras_XP_Bar_Rested:SetStatusBarColor(0.304, 0.402, 0.771, 0.6)
+    QuickAuras_XP_Bar_Completed:SetStatusBarTexture(cleanTexture)
+    QuickAuras_XP_Bar_Completed:SetStatusBarColor(0.784, 0.467, 0)
+    QuickAuras_XP_Bar_Current:SetStatusBarTexture(cleanTexture)
+    QuickAuras_XP_Bar_Current:SetStatusBarColor(0.337, 0.388, 1.0)
     if QA.db.profile.xpFrameEnabled and QA.playerLevel < 60 then
         QuickAuras_XP:Show()
     else
@@ -140,9 +140,9 @@ function QA:UpdateXpFrame()
         local s_completed = tostring(math.floor(p_completed*1000)/10).."%"
         local s_rested = tostring(math.floor(p_rested*1000)/10).."%"
 
-        QuickAuras_XP_Bar3:SetValue(p_current)
-        QuickAuras_XP_Bar2:SetValue(p_current+p_completed)
-        QuickAuras_XP_Bar1:SetValue(p_current+p_completed+p_rested)
+        QuickAuras_XP_Bar_Current:SetValue(p_current)
+        QuickAuras_XP_Bar_Completed:SetValue(p_current+p_completed)
+        QuickAuras_XP_Bar_Rested:SetValue(p_current+p_completed+p_rested)
 
         QuickAuras_XP_Left_Text:SetText(FormatNumberWithCommas(currentXP).." / "..FormatNumberWithCommas(maxXP))
         QuickAuras_XP_Right_Text:SetText(s_current)

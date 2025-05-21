@@ -4,7 +4,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local out = QA.Print
 local debug = QA.Debug
 local _c = QA.colors
-local ICON = QA.ICON
+local WINDOW = QA.WINDOW
 
 local frameSelection = {
     warning = "Warning Frame",
@@ -40,13 +40,13 @@ QA.defaultOptions = {
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
-        rogueTeaTimeFrame = ICON.WARNING,
+        rogueTeaTimeFrame = WINDOW.WARNING,
         warriorExecute = QA.isWarrior,
-        warriorExecuteFrame = ICON.WARNING,
+        warriorExecuteFrame = WINDOW.WARNING,
         warriorOverpower = QA.isWarrior,
-        warriorOverpowerFrame = ICON.WARNING,
+        warriorOverpowerFrame = WINDOW.WARNING,
         warriorRevenge = QA.isWarrior,
-        warriorRevengeFrame = ICON.WARNING,
+        warriorRevengeFrame = WINDOW.WARNING,
         someSetting = 50,
         raidBarHeight = 20,
         barHeight = 25,
@@ -158,7 +158,7 @@ QA.options = {
                         if value then
                             QA:CheckGear()
                         else
-                            QA:ClearIcons(ICON.WARNING)
+                            QA:ClearIcons(WINDOW.WARNING)
                         end
                     end,
                     order = 8,
@@ -520,7 +520,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.battleShoutMissing end,
                     set = function(info, value)
                         QA.db.profile.battleShoutMissing = value
-                        QA:ClearIcons(ICON.CRUCIAL)
+                        QA:ClearIcons(WINDOW.CRUCIAL)
                         QA:CheckAuras()
                     end,
                     order = 105,

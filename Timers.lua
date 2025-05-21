@@ -1,7 +1,7 @@
 local ADDON_NAME, addon = ...
 local QA = addon.root
 local debug = QA.Debug
-local ICON = QA.ICON
+local WINDOW = QA.WINDOW
 
 function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, keyExtra)
     local arrangeFunc = QA.ArrangeTimerBars
@@ -35,17 +35,17 @@ function QA:AddTimer(timerType, conf, id, duration, expTime, showAtTime, text, k
         list = QA.list_iconAlerts
         parent = QuickAuras_IconAlerts
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.ALERT) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(WINDOW.ALERT) end
     elseif timerType == "reminder" or conf.list == "reminder" then
         list = QA.list_reminders
         parent = QuickAuras_Reminders
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.REMINDER) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(WINDOW.REMINDER) end
     elseif timerType == "crucial" or conf.list == "crucial" then
         list = QA.list_crucial
         parent = QuickAuras_Crucial
         uiType = "button"
-        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(ICON.CRUCIAL) end
+        arrangeFunc = function(_list, _parent, _gap) QA:ArrangeIcons(WINDOW.CRUCIAL) end
     end
     if not parent then parent = UIParent end
     local onUpdate = conf.onUpdate or QuickAuras_Timer_OnUpdate

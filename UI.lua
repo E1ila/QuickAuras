@@ -4,7 +4,7 @@ local out = QA.Print
 local debug = QA.Debug
 local pbId = 0
 local _c
-local ICON = QA.ICON
+local WINDOW = QA.WINDOW
 
 QA.uiLocked = true
 
@@ -269,33 +269,33 @@ end
 local function GetIconList(type, idType)
     local list, parent, Refresh, glowInCombat
     local Create = idType == "item" and QA.CreateItemWarningIcon or QA.CreateSpellWarningIcon
-    if type == ICON.WARNING then
+    if type == WINDOW.WARNING then
         list = QA.list_iconWarnings
         parent = QuickAuras_IconWarnings
         Refresh = QA.RefreshWarnings
-    elseif type == ICON.MISSING then
+    elseif type == WINDOW.MISSING then
         list = QA.list_missingBuffs
         parent = QuickAuras_MissingBuffs
         Refresh = QA.RefreshMissing
         glowInCombat = true
-    elseif type == ICON.ALERT then
+    elseif type == WINDOW.ALERT then
         list = QA.list_iconAlerts
         parent = QuickAuras_IconAlerts
         Refresh = QA.RefreshAlerts
-    elseif type == ICON.REMINDER then
+    elseif type == WINDOW.REMINDER then
         list = QA.list_reminders
         parent = QuickAuras_Reminders
         Refresh = QA.RefreshReminders
-    elseif type == ICON.CRUCIAL then
+    elseif type == WINDOW.CRUCIAL then
         list = QA.list_crucial
         parent = QuickAuras_Crucial
         glowInCombat = true
         --Refresh = QuickAuras.RefreshReminders
-    elseif type == ICON.RANGE then
+    elseif type == WINDOW.RANGE then
         list = QA.list_range
         parent = QuickAuras_RangeIndicator
         --Refresh = QuickAuras.RefreshReminders
-    elseif type == ICON.QUEUE then
+    elseif type == WINDOW.QUEUE then
         list = QA.list_queue
         parent = QuickAuras_SpellQueue
         --Refresh = QuickAuras.RefreshReminders
@@ -309,8 +309,8 @@ function QA:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     local list, parent, Create, Refresh, glowInCombat = GetIconList(iconType, idType)
     if not list[id] then
         debug(2, "AddIcon", id, "parent", parent:GetName(), "count", count)
-        local showCount = iconType == ICON.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount)
-        local onRightClick = iconType ~= ICON.ALERT and Refresh and function()
+        local showCount = iconType == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount)
+        local onRightClick = iconType ~= WINDOW.ALERT and Refresh and function()
             QA.ignoredIcons[key] = true
             Refresh(QA)
         end or nil
@@ -374,28 +374,28 @@ function QA:ArrangeIcons(iconType)
             --debug(3, "ArrangeIcons", "count", obj.count)
             frame.counterText:SetText(obj.count)
         end
-        if iconType == ICON.WARNING then
+        if iconType == WINDOW.WARNING then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -5, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(QA.db.profile.gearWarningSize, QA.db.profile.gearWarningSize) -- Width, Height
-        elseif iconType == ICON.MISSING then
+        elseif iconType == WINDOW.MISSING then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(QA.db.profile.missingBuffsSize, QA.db.profile.missingBuffsSize) -- Width, Height
-        elseif iconType == ICON.REMINDER then
+        elseif iconType == WINDOW.REMINDER then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetSize(QA.db.profile.reminderIconSize, QA.db.profile.reminderIconSize) -- Width, Height
-        elseif iconType == ICON.ALERT then
+        elseif iconType == WINDOW.ALERT then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
             else
@@ -403,7 +403,7 @@ function QA:ArrangeIcons(iconType)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:SetSize(QA.db.profile.iconAlertSize, QA.db.profile.iconAlertSize) -- Width, Height
-        elseif iconType == ICON.CRUCIAL then
+        elseif iconType == WINDOW.CRUCIAL then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4) -- vertical layout
             else
@@ -411,7 +411,7 @@ function QA:ArrangeIcons(iconType)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:SetSize(QA.db.profile.crucialIconSize, QA.db.profile.crucialIconSize) -- Width, Height
-        elseif iconType == ICON.QUEUE then
+        elseif iconType == WINDOW.QUEUE then
             if lastFrame then
                 frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
             else
@@ -420,7 +420,7 @@ function QA:ArrangeIcons(iconType)
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             frame:GetParent():SetSize(QA.db.profile.spellQueueIconSize * count, QA.db.profile.spellQueueIconSize) -- Width, Height
             frame:SetSize(QA.db.profile.spellQueueIconSize, QA.db.profile.spellQueueIconSize) -- Width, Height
-        elseif iconType == ICON.RANGE then
+        elseif iconType == WINDOW.RANGE then
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
             else
@@ -820,13 +820,13 @@ local DelayedReset_Reminders = QA:Debounce(function()
 end, 3)
 
 function QA:TestReminders()
-    QA:ClearIcons(ICON.REMINDER)
-    --QA:AddIcon(ICON.REMINDER, "spell", 2383, QA.trackedAuras[2383])
+    QA:ClearIcons(WINDOW.REMINDER)
+    --QA:AddIcon(WINDOW.REMINDER, "spell", 2383, QA.trackedAuras[2383])
     for i, conf in ipairs(QA.trackedLowConsumes) do
-        QA:AddIcon(ICON.REMINDER, "item", conf.itemId, conf, i)
+        QA:AddIcon(WINDOW.REMINDER, "item", conf.itemId, conf, i)
         if i == 3 then break end
     end
-    QA:ArrangeIcons(ICON.REMINDER)
+    QA:ArrangeIcons(WINDOW.REMINDER)
     DelayedReset_Reminders()
 end
 
@@ -836,13 +836,13 @@ local DelayedReset_IconMissingBuffs = QA:Debounce(function()
 end, 3)
 
 function QA:TestIconMissingBuffs()
-    QA:ClearIcons(ICON.MISSING)
+    QA:ClearIcons(WINDOW.MISSING)
     local count = 0
     for _, conf in ipairs(QA.trackedMissingBuffs) do
         count = count + 1
-        QA:AddIcon(ICON.MISSING, "item", conf.itemId, conf)
+        QA:AddIcon(WINDOW.MISSING, "item", conf.itemId, conf)
     end
-    QA:ArrangeIcons(ICON.MISSING)
+    QA:ArrangeIcons(WINDOW.MISSING)
     DelayedReset_IconMissingBuffs()
 end
 
@@ -852,20 +852,20 @@ local DelayedReset_IconWarnings = QA:Debounce(function()
 end, 3)
 
 function QA:TestIconWarnings()
-    QA:ClearIcons(ICON.WARNING)
+    QA:ClearIcons(WINDOW.WARNING)
     local count = 0
     for itemId, conf in pairs(QA.trackedGear) do
         count = count + 1
-        QA:AddIcon(ICON.WARNING, "item", itemId, conf)
+        QA:AddIcon(WINDOW.WARNING, "item", itemId, conf)
         if count == 3 then break end
     end
-    QA:ArrangeIcons(ICON.WARNING)
+    QA:ArrangeIcons(WINDOW.WARNING)
     DelayedReset_IconWarnings()
 end
 
 local DelayedReset_IconAlerts = QA:Debounce(function()
     --debug("TestIconAlerts timer ended")
-    QA:ClearIcons(ICON.ALERT)
+    QA:ClearIcons(WINDOW.ALERT)
 end, 6)
 
 function QA:TestIconAlerts()
@@ -876,29 +876,29 @@ function QA:TestIconAlerts()
 end
 
 local DelayedReset_CrucialAlerts = QA:Debounce(function()
-    QA:ClearIcons(ICON.CRUCIAL)
+    QA:ClearIcons(WINDOW.CRUCIAL)
 end, 3)
 
 function QA:TestCrucial()
     local bs = QA.spells.warrior.battleShout
     local frr = QA.spells.shaman.frostResistanceTotem
     --  :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
-    QA:AddIcon(ICON.CRUCIAL, "spell", bs.spellId[1], bs)
-    QA:AddIcon(ICON.CRUCIAL, "spell", frr.spellId[1], frr)
-    QA:ArrangeIcons(ICON.CRUCIAL)
+    QA:AddIcon(WINDOW.CRUCIAL, "spell", bs.spellId[1], bs)
+    QA:AddIcon(WINDOW.CRUCIAL, "spell", frr.spellId[1], frr)
+    QA:ArrangeIcons(WINDOW.CRUCIAL)
     DelayedReset_CrucialAlerts()
 end
 
 local DelayedReset_SpellQueue = QA:Debounce(function()
-    QA:ClearIcons(ICON.QUEUE)
+    QA:ClearIcons(WINDOW.QUEUE)
 end, 3)
 
 function QA:TestSpellQueue()
     local hs = QA.spells.warrior.heroicStrike
     local cleave = QA.spells.warrior.cleave
-    QA:AddIcon(ICON.QUEUE, "spell", hs.spellId[1], hs)
-    QA:AddIcon(ICON.QUEUE, "spell", cleave.spellId[1], cleave)
-    QA:ArrangeIcons(ICON.QUEUE)
+    QA:AddIcon(WINDOW.QUEUE, "spell", hs.spellId[1], hs)
+    QA:AddIcon(WINDOW.QUEUE, "spell", cleave.spellId[1], cleave)
+    QA:ArrangeIcons(WINDOW.QUEUE)
     DelayedReset_SpellQueue()
 end
 

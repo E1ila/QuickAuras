@@ -67,7 +67,7 @@ QA.isHorde = QA.isOrc or QA.isTroll or QA.isUndead or QA.isTauren
 QA.isAlliance = not QA.isHorde
 local _c
 
-QA.ICON = {
+QA.WINDOW = {
     ALERT = "alert",
     REMINDER = "reminder",
     WARNING = "warning",

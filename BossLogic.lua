@@ -2,7 +2,7 @@ local ADDON_NAME, addon = ...
 local QA = addon.root
 local debug = QA.Debug
 local out = QA.Print
-local ICON = QA.ICON
+local WINDOW = QA.WINDOW
 local _c = QA.colors
 
 local FHM = {

@@ -40,9 +40,10 @@ function QA:UI_ERROR_MESSAGE(errorType, errorMessage)
     if QA.db.profile.outOfRange and UnitAffectingCombat("player") then
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
         if  errorMessage == ERR_OUT_OF_RANGE
-            or errorMessage == ERR_SPELL_OUT_OF_RANGE
-            or errorMessage == "You must be behind your target" then
-            QA:ShowNoticableError(errorMessage)
+            or errorMessage == ERR_SPELL_OUT_OF_RANGE then
+            QA:ShowNoticableError("RANGE")
+        elseif errorMessage == "You must be behind your target" then
+            QA:ShowNoticableError("NOT BEHIND")
         end
     end
 end

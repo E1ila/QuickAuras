@@ -502,6 +502,7 @@ end
 
 function QA:ParentFramesEditState()
     QuickAuras_XP:EnableMouse(true)
+    QuickAuras_SwingTimer:Show()
     QuickAuras_SwingTimer_MH:EnableMouse(true)
     QuickAuras_SwingTimer_Text:Show()
     for _, frame in ipairs(QA.adjustableFrames) do
@@ -671,6 +672,15 @@ end
 
 -- Swing -------------------------------------------------------------
 
+local _swing = {
+    mh = {
+        unqueue = { 1.000, 0.000, 0.302, 1 },
+        queue = { 1.000, 1.000, 0.302, 1 },
+        unqueueTime = 0.3,
+    },
+    oh = {0.2, 0.2, 1, 1}
+}
+
 function QA:InitSwingTimers()
     QuickAuras_SwingTimer:SetBackdrop({
         bgFile = "Interface\\AddOns\\QuickAuras\\assets\\background", -- Optional background
@@ -686,13 +696,13 @@ function QA:InitSwingTimers()
 
     local texture = QuickAuras_SwingTimer_MH:CreateTexture(nil, "BACKGROUND")
     texture:SetAllPoints(QuickAuras_SwingTimer_MH)
-    texture:SetColorTexture(1.000, 0.000, 0.302, 1) -- ff004d
+    texture:SetColorTexture(unpack(_swing.mh.unqueue)) -- ff004d
     QuickAuras_SwingTimer_MH.texture = texture
     QuickAuras_SwingTimer_MH:Hide()
 
     texture = QuickAuras_SwingTimer_OH:CreateTexture(nil, "BACKGROUND")
     texture:SetAllPoints(QuickAuras_SwingTimer_OH)
-    texture:SetColorTexture(0.2, 0.2, 1, 1)
+    texture:SetColorTexture(unpack(_swing.oh))
     QuickAuras_SwingTimer_OH.texture = texture
     QuickAuras_SwingTimer_OH:Hide()
 
@@ -721,12 +731,20 @@ local function CreateSwingConf(hand)
         name = "swing-"..hand,
         hand = hand,
         onUpdate = function(timer)
-            if not timer.expTime or timer.expTime > 4294967 then return false end
-            local timeLeft = timer.expTime - GetTime()
-            local progress = timeLeft / timer.duration
-            QA:SetSwingProgress(hand, progress, timeLeft)
-            --debug("update", hand, "timeLeft", timeLeft, "progress", progress, "timer.expTime", timer.expTime)
-            return timeLeft > 0
+            if timer.expTime and timer.expTime < 4294967 then
+                local timeLeft = timer.expTime - GetTime()
+                if timeLeft > 0 then
+                    local progress = timeLeft / timer.duration
+                    QA:SetSwingProgress(hand, progress, timeLeft)
+                else
+                    QA:SetSwingProgress(hand, 0, 0)
+                end
+                --debug("update", hand, "timeLeft", timeLeft, "progress", progress, "timer.expTime", timer.expTime)
+            else
+                QA:SetSwingProgress(hand, 0, 0)
+            end
+            --return timeLeft > 0
+            return true
         end,
         onEnd = function(timer)
             QA:SetSwingProgress(hand, 0, 0)
@@ -738,12 +756,12 @@ local swingConf = {
     off = CreateSwingConf("off"),
 }
 
-function QA:UpdateSwingTimers()
+function QA:UpdateSwingTimers(hand, source)
     if not QA.db.profile.swingTimersEnabled then return end
-    local mh = QA:UpdateSwingTimer("main")
+    local mh = QA:UpdateSwingTimer("main", source)
     local oh = false
-    if QA.db.profile.swingTimerOH then
-        oh = QA:UpdateSwingTimer("off")
+    if QA.db.profile.swingTimerOH and (hand == nil or hand == "off") then
+        oh = QA:UpdateSwingTimer("off", source)
     end
     if not mh and not oh then
         QuickAuras_SwingTimer:Hide()
@@ -752,19 +770,27 @@ function QA:UpdateSwingTimers()
     end
 end
 
-function QA:UpdateSwingTimer(hand)
+function QA:UpdateSwingTimer(hand, source)
     local duration, expTime, weaponName, icon = QA.GetSwingTimerInfo(hand)
     --local duration, expTime = 2.7, GetTime() + 2.7
     local id = "swing-"..hand
     local conf = swingConf[hand]
-    --debug("UpdateSwingTimer", hand, duration, expTime)
+    debug("UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
     --:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
     if not duration or duration == 0 or not expTime then
-        QA:RemoveTimer(id)
+        --QA:RemoveTimer(id)
     else
+        --if hand == "main" then
+        --    local timeLeft = expTime - GetTime()
+        --    if timeLeft <= _swing.mh.unqueueTime then
+        --        QuickAuras_SwingTimer_MH.texture:SetColorTexture(unpack(_swing.mh.unqueue)) -- ff004d
+        --    else
+        --        QuickAuras_SwingTimer_MH.texture:SetColorTexture(unpack(_swing.mh.queue)) -- ff004d
+        --    end
+        --end
         QA:AddTimer(WINDOW.SWING, conf, id, duration, expTime)
-        return true
     end
+    return true
 end
 
 

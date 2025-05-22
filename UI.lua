@@ -758,7 +758,7 @@ local swingConf = {
 
 function QA:UpdateSwingTimers(hand, source)
     if not QA.db.profile.swingTimersEnabled then return end
-    local mh = QA:UpdateSwingTimer("main", source)
+    local mh = (hand == nil or hand == "main") and QA:UpdateSwingTimer("main", source)
     local oh = false
     if QA.db.profile.swingTimerOH and (hand == nil or hand == "off") then
         oh = QA:UpdateSwingTimer("off", source)

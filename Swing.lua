@@ -137,8 +137,12 @@ do
     end
 
     local function swingTriggerUpdate(hand, reason)
-        QA:UpdateSwingTimers(hand, reason)
+        --QA:UpdateSwingTimers(hand, reason)
+        if not QA.queuedSwingUpdate[hand] then QA.queuedSwingUpdateCount = QA.queuedSwingUpdateCount + 1 end
+        QA.queuedSwingUpdate[hand] = reason
     end
+    QA.queuedSwingUpdate = {}
+    QA.queuedSwingUpdateCount = 0
 
     local function swingEnd(hand)
         if(hand == "main") then

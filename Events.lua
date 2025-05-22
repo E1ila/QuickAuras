@@ -173,6 +173,18 @@ end
 -- OnUpdate
 
 function QA:OnUpdate()
+    if QA.queuedSwingUpdateCount > 0 then
+        if QA.queuedSwingUpdateCount == 1 then
+            for hand, reason in pairs(QA.queuedSwingUpdate) do
+                QA:UpdateSwingTimers(hand, reason)
+            end
+        else
+            QA:UpdateSwingTimers()
+        end
+        QA.queuedSwingUpdate = {}
+        QA.queuedSwingUpdateCount = 0
+    end
+
     local currentTime = GetTime()
     if QA.db.profile.watchBars and currentTime - lastUpdate >= updateInterval then
         lastUpdate = currentTime

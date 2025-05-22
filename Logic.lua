@@ -472,7 +472,7 @@ function QA:CheckAuras()
     local combatStateChanged = _aurasCombatState ~= QA.inCombat
     _aurasCombatState = QA.inCombat
     if combatStateChanged then
-        debug("CheckAuras", "combatStateChanged", QA.inCombat)
+        debug("CheckAuras", "combat", QA.inCombat)
     end
     for _, spell in pairs(QA.trackedProcAbilities.aura) do
         QA:CheckProcAura(spell, seen)

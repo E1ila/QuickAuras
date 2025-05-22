@@ -144,8 +144,15 @@ do
 
     local function swingTriggerUpdate(hand, reason)
         --QA:UpdateSwingTimers(hand, reason)
-        if not QA.queuedSwingUpdate[hand] then QA.queuedSwingUpdateCount = QA.queuedSwingUpdateCount + 1 end
-        QA.queuedSwingUpdate[hand] = reason
+        if QA.inCombat then
+            if hand then
+                if not QA.queuedSwingUpdate[hand] then QA.queuedSwingUpdateCount = QA.queuedSwingUpdateCount + 1 end
+                QA.queuedSwingUpdate[hand] = reason or "??"
+            else
+                QA.queuedSwingUpdate["--"] = reason or "??"
+                QA.queuedSwingUpdateCount = 2
+            end
+        end
     end
     QA.queuedSwingUpdate = {}
     QA.queuedSwingUpdateCount = 0
@@ -229,7 +236,7 @@ do
                     if not isSwingDamage then
                         stats.misses = stats.misses + 1
                     end
-                    debug(_c.blue.."SWING OH|r", select(1, ...), QA.queuedSpell.id and "Q" or "-", stats.misses)
+                    --debug(_c.blue.."SWING OH|r", select(1, ...), QA.queuedSpell.id and "Q" or "-", stats.misses)
                     swingStart("off")
                 end
             end

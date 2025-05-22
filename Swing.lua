@@ -4,12 +4,18 @@ local ADDON_NAME, addon = ...
 local QA = addon.root
 local out = QA.Print
 local debug = QA.Debug
+local _c
 
 QuickAurasTimers = setmetatable({}, { __tostring=function() return ADDON_NAME end})
 LibStub("AceTimer-3.0"):Embed(QuickAurasTimers)
 local timer = QuickAurasTimers
 local maxTimerDuration = 604800; -- A week, in seconds
 local maxUpTime = 4294967; -- 2^32 / 1000
+
+QA.OHMissStats = {
+    queued = { hits = 0, misses = 0 },
+    normal = { hits = 0, misses = 0 },
+}
 
 function QuickAurasTimers:ScheduleTimerFixed(func, delay, ...)
     if (delay < maxTimerDuration) then
@@ -203,20 +209,27 @@ do
     local function swingTimerCLEUCheck(ts, event, _, sourceGUID, _, _, _, destGUID, _, _, _, ...)
         --Private.StartProfileSystem("generictrigger swing");
         if(sourceGUID == selfGUID) then
+            local isSwingDamage = event == "SWING_DAMAGE"
             if event == "SPELL_EXTRA_ATTACKS" then
                 skipNextAttack = ts
                 skipNextAttackCount = select(4, ...)
-            elseif(event == "SWING_DAMAGE" or event == "SWING_MISSED") then
+            elseif(isSwingDamage or event == "SWING_MISSED") then
                 if tonumber(skipNextAttack) and (ts - skipNextAttack) < 0.04 and tonumber(skipNextAttackCount) then
                     if skipNextAttackCount > 0 then
                         skipNextAttackCount = skipNextAttackCount - 1
                         return
                     end
                 end
-                local isOffHand = select(event == "SWING_DAMAGE" and 10 or 2, ...);
+                local isOffHand = select(isSwingDamage and 10 or 2, ...);
                 if not isOffHand then
                     swingStart("main")
                 elseif(isOffHand) then
+                    local stats = QA.OHMissStats[QA.queuedSpell.id and "queued" or "normal"]
+                    stats.hits = stats.hits + 1
+                    if not isSwingDamage then
+                        stats.misses = stats.misses + 1
+                    end
+                    debug(_c.blue.."SWING OH|r", select(1, ...), QA.queuedSpell.id and "Q" or "-", stats.misses)
                     swingStart("off")
                 end
             end
@@ -313,6 +326,7 @@ do
 
     function QA.InitSwingTimer()
         if not(swingTimerFrame) then
+            _c = QA.colors
             swingTimerFrame = CreateFrame("Frame");
             swingTimerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
             swingTimerFrame:RegisterEvent("PLAYER_ENTER_COMBAT");

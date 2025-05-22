@@ -76,6 +76,7 @@ QA.colors = {
     bold = "|cffff99cc",
     enabled = "|cff00ff00",
     disabled = "|cffffff00",
+    blue = "|cffcc99ff",
 }
 
 QA.trackedGear = {

@@ -28,12 +28,12 @@ function QA:CheckSpellQueue(unit, spellGuid)
     end
 end
 
-local queuedSpell = {}
+QA.queuedSpell = {}
 
 local function MonitorQueued(spellId, callback)
     -- in case of /stopcasting
     C_Timer.After(0.25, function()
-        if spellId ~= queuedSpell.usedId then return end -- spell replaced/removed
+        if spellId ~= QA.queuedSpell.usedId then return end -- spell replaced/removed
         local is = IsCurrentSpell(spellId)
         if not is then
             callback()
@@ -45,10 +45,10 @@ end
 
 function QA:QueuedSpell(spell, spellId)
     debug(3, "Queued spell: " .. spell.name)
-    if queuedSpell.id and queuedSpell.id ~= spell.spellId[1] then
-        QA:RemoveIcon(WINDOW.QUEUE, queuedSpell.id)
+    if QA.queuedSpell.id and QA.queuedSpell.id ~= spell.spellId[1] then
+        QA:RemoveIcon(WINDOW.QUEUE, QA.queuedSpell.id)
     end
-    queuedSpell = {
+    QA.queuedSpell = {
         id = spell.spellId[1],
         usedId = spellId,
         spell = spell,
@@ -60,7 +60,7 @@ end
 
 function QA:UnQueuedSpell(spell)
     debug(3, "Removed spell from queue: " .. spell.name)
-    queuedSpell = {}
+    QA.queuedSpell = {}
     if QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1]) then
         QA:ArrangeIcons(WINDOW.QUEUE)
     end

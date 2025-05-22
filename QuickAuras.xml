@@ -631,7 +631,7 @@
         <Frames>
             <Frame name="$parent_OH" inherits="BackdropTemplate">
                 <Size>
-                    <AbsDimension x="4" />
+                    <AbsDimension x="5" />
                 </Size>
                 <Anchors>
                     <Anchor point="TOP" relativeTo="$parent" y="-2" />
@@ -641,7 +641,7 @@
             </Frame>
             <Frame name="$parent_MH" inherits="BackdropTemplate">
                 <Size>
-                    <AbsDimension x="4" />
+                    <AbsDimension x="5" />
                 </Size>
                 <Anchors>
                     <Anchor point="TOP" relativeTo="$parent" y="-2" />

@@ -715,10 +715,10 @@ function QA:SetSwingProgress(hand, progress, timeLeft)
         QuickAuras_SwingTimer_TimeText:SetText("")
         frame:Hide()
     else
-        local width = QuickAuras_SwingTimer:GetWidth()-frame:GetWidth()-2
+        local width = QuickAuras_SwingTimer:GetWidth()-frame:GetWidth()
         local offset = width * progress
         frame:ClearAllPoints()
-        frame:SetPoint("LEFT", frame:GetParent(), "LEFT", 2+offset, 0)
+        frame:SetPoint("LEFT", frame:GetParent(), "LEFT", offset, 0)
         frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, -2)
         frame:SetPoint("BOTTOM", frame:GetParent(), "BOTTOM", 0, 2)
         frame:Show()
@@ -775,19 +775,10 @@ function QA:UpdateSwingTimer(hand, source)
     --local duration, expTime = 2.7, GetTime() + 2.7
     local id = "swing-"..hand
     local conf = swingConf[hand]
-    debug("UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
-    --:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
+    --debug(3, "UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
     if not duration or duration == 0 or not expTime then
         --QA:RemoveTimer(id)
     else
-        --if hand == "main" then
-        --    local timeLeft = expTime - GetTime()
-        --    if timeLeft <= _swing.mh.unqueueTime then
-        --        QuickAuras_SwingTimer_MH.texture:SetColorTexture(unpack(_swing.mh.unqueue)) -- ff004d
-        --    else
-        --        QuickAuras_SwingTimer_MH.texture:SetColorTexture(unpack(_swing.mh.queue)) -- ff004d
-        --    end
-        --end
         QA:AddTimer(WINDOW.SWING, conf, id, duration, expTime)
     end
     return true

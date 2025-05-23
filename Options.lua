@@ -498,13 +498,13 @@ QA.options = {
                     type = "header",
                     name = "Melee Utils",
                     order = 98,
-                    hidden = not QA.isRogue,
+                    hidden = not QA.isRogue and not QA.isWarrior,
                 },
                 spacer201 = {
                     type = "description",
                     name = "",
                     order = 99,
-                    hidden = not QA.isRogue,
+                    hidden = not QA.isRogue and not QA.isWarrior,
                 },
                 harryPaste = {
                     type = "toggle",
@@ -714,6 +714,29 @@ QA.options = {
                     hidden = not QA.isRogue,
                     order = 304,
                 },
+                rogueSndMissing = {
+                    type = "toggle",
+                    name = "SnD Missing",
+                    desc = "Show a warning when Slice & Dice is missing during combat",
+                    get = function(info) return QA.db.profile.rogueSndMissing end,
+                    set = function(info, value)
+                        QA.db.profile.rogueSndMissing = value
+                    end,
+                    order = 305,
+                },
+                stealthInInstance = {
+                    type = "toggle",
+                    name = "Stealthed Warn",
+                    desc = "Show a warning when stealthed in an instance. Can be useful when vanishing mid combat, it's hard to see whether you're stealthed or not.",
+                    get = function(info)
+                        return QA.db.profile.stealthInInstance
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.stealthInInstance = value
+                    end,
+                    hidden = not QA.isRogue,
+                    order = 306,
+                },
                 rogueTeaTime = {
                     type = "select",
                     name = "Tea Time!",
@@ -730,7 +753,7 @@ QA.options = {
                         QA.db.profile.rogueTeaTime = value
                     end,
                     hidden = not QA.isRogue,
-                    order = 306,
+                    order = 307,
                 },
                 rogueTeaTimeFrame = {
                     type = "select",
@@ -744,21 +767,9 @@ QA.options = {
                         QA.db.profile.rogueTeaTimeFrame = value
                     end,
                     hidden = not QA.isRogue,
-                    order = 307,
-                },
-                stealthInInstance = {
-                    type = "toggle",
-                    name = "Stealthed Warn",
-                    desc = "Show a warning when stealthed in an instance. Can be useful when vanishing mid combat, it's hard to see whether you're stealthed or not.",
-                    get = function(info)
-                        return QA.db.profile.stealthInInstance
-                    end,
-                    set = function(info, value)
-                        QA.db.profile.stealthInInstance = value
-                    end,
-                    hidden = not QA.isRogue,
                     order = 308,
                 },
+
             },
         },
         bars = {

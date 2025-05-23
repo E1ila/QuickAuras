@@ -580,7 +580,7 @@ spells.rogue = {
         buff = true,
         selfBuff = true,
         visibleFunc = function()
-            return QA.inCombat and UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target")
+            return QA.inCombat and UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and QA.db.profile.rogueSndMissing
         end,
         name = "Slice and Dice",
         icon = "Interface\\Icons\\Ability_Rogue_SliceDice",

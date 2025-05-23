@@ -141,6 +141,7 @@ function QA:OnInitialize()
             QA.db.profile.initialized = true
             QA:SetOptionsDefaults()
         end
+        QA.inCombat = UnitAffectingCombat("player")
         QA:InitUI()
         QA:RegisterOptionalEvents()
         QA:CheckIfWarriorInParty()
@@ -242,6 +243,7 @@ function QA:HandleSlashCommand(input)
             out("  |cFF00FFaa/qa|r - Open options")
             out("  |cFF00FFaa/qa lock|r - Toggle lock/unlock window position")
             out("  |cFF00FFaa/qa clear|r - Clear ignored (right clicked) icons")
+            out("|cff000000-------------------------------|r")
             --out("  |cFF00FFaa/qa reset|r - Reset UI position")
         end
     end

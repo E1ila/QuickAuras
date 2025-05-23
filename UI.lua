@@ -494,6 +494,7 @@ function QA:ParentFramesNormalState()
     QuickAuras_XP:EnableMouse(false)
     QuickAuras_SwingTimer_MH:EnableMouse(false)
     QuickAuras_SwingTimer_Text:Hide()
+    QuickAuras_SwingTimer:Hide()
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:DisableDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Hide()
@@ -515,13 +516,25 @@ end
 
 function QA:ToggleLockedState()
     QA.uiLocked = not QA.uiLocked
+    out("Frames are now "..(QA.uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 
     if QA.uiLocked then
         QA:ParentFramesNormalState()
     else
         QA:ParentFramesEditState()
+        out("")
+        out("  |cFF00FFaa Uptime Bars|r - Time on special buffs or things you need to keep up |cffaaaaaa(AR, BF, etc)")
+        out("  |cFF00FFaa Offensive Bars|r - Time on enemy related debuffs |cffaaaaaa(CC, curses, etc.)")
+        out("  |cFF00FFaa Alerts|r - Short buffs/debuffs you must be aware of |cffaaaaaa(LIP, Innervate, Itch, etc.)")
+        out("  |cFF00FFaa Queue|r - Warrior queue |cffaaaaaa(HS, Cleave)|r, or combat related alerts |cffaaaaaa(Tea, missing SnD, etc.)")
+        out("  |cFF00FFaa Crucial|r - Important missing buffs |cffaaaaaa(Battle Shout, Resistance Totem, etc.)")
+        out("  |cFF00FFaa Warnings|r - Things to be aware of |cffaaaaaa(Onyxia Cloak on, Rocket Helmet on, etc.)")
+        out("  |cFF00FFaa Missing Buffs|r - Missing consumes on raids")
+        out("  |cFF00FFaa Reminders|r - Consumes you're low of, when located at a capital city.")
+        out("  |cFF00FFaa Swing|r - Swing timer for melee classes, MH and OH")
+        out("  |cFF00FFaa Raid Bars|r - Time on important raid player buffs |cffaaaaaa(Taunt, LIP, Death Wish, etc.)")
+        out("  |cFF00FFaa Cooldowns|r - Time on cooldowns")
     end
-    out("Frames are now "..(_uiLocked and _c.disabled.."locked|r" or _c.enabled.."unlocked|r"))
 end
 
 function QA:ResetWidgets()

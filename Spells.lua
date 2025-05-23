@@ -579,7 +579,9 @@ spells.rogue = {
         aura = true,
         buff = true,
         selfBuff = true,
-        visibleFunc = function() return QA.inCombat end,
+        visibleFunc = function()
+            return QA.inCombat and UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target")
+        end,
         name = "Slice and Dice",
         icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
         color = {0, 0.9, 0.2},

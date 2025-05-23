@@ -142,9 +142,9 @@ do
         return 0, math.huge
     end
 
-    local function swingTriggerUpdate(hand, reason)
+    local function swingTriggerUpdate(hand, reason, inCombat)
         --QA:UpdateSwingTimers(hand, reason)
-        if QA.inCombat then
+        if inCombat or QA.inCombat then
             if hand then
                 if not QA.queuedSwingUpdate[hand] then QA.queuedSwingUpdateCount = QA.queuedSwingUpdateCount + 1 end
                 QA.queuedSwingUpdate[hand] = reason or "??"
@@ -165,7 +165,7 @@ do
         elseif(hand == "ranged") then
             lastSwingRange, swingDurationRange = nil, nil;
         end
-        swingTriggerUpdate(hand, "swingEnd")
+        swingTriggerUpdate(hand, "swingEnd", true)
     end
 
     local function swingStart(hand)
@@ -177,12 +177,15 @@ do
             swingDurationMain = mainSpeed
             mainSwingOffset = 0
             if mainTimer then
+                --debug("Cancel main timer")
                 timer:CancelTimer(mainTimer)
             end
             if mainSpeed and mainSpeed > 0 then
+                --debug("Schedule main timer", mainSpeed)
                 mainTimer = timer:ScheduleTimerFixed(swingEnd, mainSpeed, hand)
-                swingTriggerUpdate(hand, "swingStart-"..hand)
+                swingTriggerUpdate(hand, "swingStart-"..hand, true)
             else
+                --debug("Main speed is 0, cancel timer")
                 swingEnd(hand)
             end
         elseif hand == "off" then
@@ -193,7 +196,7 @@ do
             end
             if offSpeed and offSpeed > 0 then
                 offTimer = timer:ScheduleTimerFixed(swingEnd, offSpeed, hand)
-                swingTriggerUpdate(hand, "swingStart-"..hand)
+                swingTriggerUpdate(hand, "swingStart-"..hand, true)
             else
                 swingEnd(hand)
             end
@@ -206,7 +209,7 @@ do
             end
             if rangeSpeed and rangeSpeed > 0 then
                 rangeTimer = timer:ScheduleTimerFixed(swingEnd, rangeSpeed, hand)
-                swingTriggerUpdate(hand, "swingStart-"..hand)
+                swingTriggerUpdate(hand, "swingStart-"..hand, true)
             else
                 swingEnd(hand)
             end
@@ -218,6 +221,7 @@ do
         if(sourceGUID == selfGUID) then
             local isSwingDamage = event == "SWING_DAMAGE"
             if event == "SPELL_EXTRA_ATTACKS" then
+                --debug("SWING_EXTRA_ATTACKS", ...)
                 skipNextAttack = ts
                 skipNextAttackCount = select(4, ...)
             elseif(isSwingDamage or event == "SWING_MISSED") then
@@ -229,6 +233,7 @@ do
                 end
                 local isOffHand = select(isSwingDamage and 10 or 2, ...);
                 if not isOffHand then
+                    --debug("SWING_DAMAGE", "main")
                     swingStart("main")
                 elseif(isOffHand) then
                     local stats = QA.OHMissStats[QA.queuedSpell.id and "queued" or "normal"]
@@ -251,7 +256,7 @@ do
                     timer:CancelTimer(mainTimer);
                     mainTimer = timer:ScheduleTimerFixed(swingEnd, timeLeft - offset, "main");
                     mainSwingOffset = (mainSwingOffset or 0) + offset
-                    swingTriggerUpdate("main", "parry")
+                    swingTriggerUpdate("main", "parry", true)
                 end
             end
         end

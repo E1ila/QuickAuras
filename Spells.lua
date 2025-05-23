@@ -90,6 +90,7 @@ spells.warlock = {
         visible = QA.isWarlock,
         buff = true,
         selfBuff = true,
+        showMissing = "always",
     },
     houleOfTerror = {
         spellId = { 5484, 17928 },
@@ -576,6 +577,9 @@ spells.rogue = {
     sliceAndDice = {
         spellId = { 6774 },
         aura = true,
+        buff = true,
+        selfBuff = true,
+        visibleFunc = function() return QA.inCombat end,
         name = "Slice and Dice",
         icon = "Interface\\Icons\\Ability_Rogue_SliceDice",
         color = {0, 0.9, 0.2},

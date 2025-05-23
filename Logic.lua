@@ -483,7 +483,8 @@ end
 
 function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
     if not QA.db.profile.missingConsumes then return end
-    local buffsChanged = combatStateChanged
+    local buffsChanged = {}
+    if combatStateChanged then buffsChanged[WINDOW.MISSING] = true end
     local showNonSelfBuffs = QA.db.profile.forceShowMissing or
             QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
             QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
@@ -499,31 +500,32 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                         or buff.visibleFunc and not buff.visibleFunc()
                         or not foundItemId
                 then
-                    if QA:RemoveIcon(WINDOW.MISSING, buff.usedItemId or buff.itemId) then buffsChanged = true end
+                    if QA:RemoveIcon(WINDOW.MISSING, buff.usedItemId or buff.itemId) then buffsChanged[WINDOW.MISSING] = true end
                 else
                     if QA:AddIcon(WINDOW.MISSING, "item", foundItemId, buff) then
-                        buffsChanged = true
+                        buffsChanged[WINDOW.MISSING] = true
                         buff.usedItemId = foundItemId
                     end
                 end
             else
                 -- missing spell buff
                 local foundBuff = QA:HasSeenAny(buff.spellId, activeAuras or QA.playerBuffs)
-                debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff)
-                if  foundBuff or buff.visibleFunc and not buff.visibleFunc()  then
-                    if QA:RemoveIcon(WINDOW.MISSING, buff.spellId[1]) then buffsChanged = true end
+                local visible = buff.visibleFunc == nil or buff.visibleFunc()
+                debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "visible", visible)
+                if foundBuff or not visible then
+                    if QA:RemoveIcon(WINDOW.QUEUE, buff.spellId[1]) then buffsChanged[WINDOW.QUEUE] = true end
                 else
-                    local button = QA:AddIcon(WINDOW.MISSING, "spell", buff.spellId[1], buff)
+                    local button = QA:AddIcon(WINDOW.QUEUE, "spell", buff.spellId[1], buff)
                     if button then
-                        buffsChanged = true
+                        buffsChanged[WINDOW.QUEUE] = true
                         button.glowInCombat = true
                     end
                 end
             end
         end
     end
-    if buffsChanged then
-        QA:ArrangeIcons(WINDOW.MISSING)
+    for window, _ in pairs(buffsChanged) do
+        QA:ArrangeIcons(window)
     end
 end
 

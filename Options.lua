@@ -47,6 +47,7 @@ QA.defaultOptions = {
         warriorOverpowerFrame = WINDOW.WARNING,
         warriorRevenge = QA.isWarrior,
         warriorRevengeFrame = WINDOW.WARNING,
+        swingDebug = 3,
         someSetting = 50,
         raidBarHeight = 20,
         barHeight = 25,

@@ -757,6 +757,10 @@ local swingConf = {
     off = CreateSwingConf("off"),
 }
 
+local HideSwingTimers = QA:Debounce(function()
+    QuickAuras_SwingTimer:Hide()
+end, 4)
+
 function QA:UpdateSwingTimers(hand, source)
     if not QA.db.profile.swingTimersEnabled then return end
     local mh = (hand == nil or hand == "main") and QA:UpdateSwingTimer("main", source)
@@ -765,7 +769,7 @@ function QA:UpdateSwingTimers(hand, source)
         oh = QA:UpdateSwingTimer("off", source)
     end
     if not mh and not oh then
-        QuickAuras_SwingTimer:Hide()
+        HideSwingTimers()
     else
         QuickAuras_SwingTimer:Show()
     end
@@ -776,7 +780,7 @@ function QA:UpdateSwingTimer(hand, source)
     --local duration, expTime = 2.7, GetTime() + 2.7
     local id = "swing-"..hand
     local conf = swingConf[hand]
-    --debug(3, "UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
+    debug(QA.db.profile.swingDebug and 1 or 3, "UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
     if not duration or duration == 0 or not expTime then
         --QA:RemoveTimer(id)
     else

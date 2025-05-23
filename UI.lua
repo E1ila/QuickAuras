@@ -416,6 +416,7 @@ function QA:ArrangeIcons(window)
                 frame:SetPoint("TOP", attr.parent, "TOP", 0, 0)
             end
             local height = attr.height or QA.db.profile.barHeight or 25
+            --if window == WINDOW.RAIDBARS and height * QA.list_raidBars
             local padding = 2
             frame:SetPoint("CENTER", attr.parent, "CENTER", 0, 0)
             frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), height)

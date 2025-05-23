@@ -17,19 +17,20 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
         index = index + 1
     end
 
-    local existingTimer = QA.list_timerByName[keyExtra..conf.name.."-"..uiType]
+    local key = keyExtra..conf.name.."-"..uiType
+    local existingTimer = QA.list_timerByName[key]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
             debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
             return existingTimer, false -- already exists
         end
-        debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime)
+        debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime, "key", key)
         -- different timer, remove old
         QA:RemoveTimer(existingTimer, "replaced")
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug(2, "Adding", uiType , "timer", "name", conf.name, "expTime", expTime, "conf.flashOnEnd", conf.flashOnEnd, "showAtTime", showAtTime)
+        debug(2, QA.colors.bold.."Adding", uiType , "timer|r", "name", conf.name, "expTime", expTime, "showAtTime", showAtTime, "key", key)
     end
 
     local frame

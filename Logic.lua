@@ -17,10 +17,9 @@ local targetAggro = {}
 -- warrior spell queue ---------------------------------------------------------------------------
 
 function QA:CheckSpellQueue(unit, spellGuid)
-    if not QA.db.profile.spellQueueEnabled then return end
+    if not QA.db.profile.spellQueueEnabled or not QA.isWarrior then return end
     local id = QA:GetSpellIdFromGuid(spellGuid)
-    local spell =
-    QA.spells.warrior.heroicStrike.bySpellId[id] and QA.spells.warrior.heroicStrike
+    local spell = QA.spells.warrior.heroicStrike.bySpellId[id] and QA.spells.warrior.heroicStrike
             or QA.spells.warrior.cleave.bySpellId[id] and QA.spells.warrior.cleave
     debug(3, "UNIT_SPELLCAST_SENT", unit, spellGuid, id)
     if unit == "player" and spell then
@@ -456,7 +455,7 @@ function QA:CheckAuras()
         if aura and (not aura.option or QA.db.profile[aura.option]) and QA.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
             debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, QA.db.profile[aura.option])
-            local timer = QA:AddTimer(WINDOW.WATCH, aura, spellId, duration, expTime)
+            local timer = QA:AddTimer(aura.list or WINDOW.WATCH, aura, spellId, duration, expTime)
             if timer then
                 seen[timer.key] = true
             end

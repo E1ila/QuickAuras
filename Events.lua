@@ -219,7 +219,12 @@ local TRACKED_SPELL_EVENTS = {
     --["SPELL_SUMMON"] = true,
 }
 
+local IGNORED_EVENTS = {
+    ["UNIT_SPELLCAST_SENT"] = true,
+}
+
 function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    if IGNORED_EVENTS[subevent] then return end
     local extra = {...}
     --debug("CombatLog", subevent, sourceName, destName, ...)
 
@@ -250,7 +255,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                     QA.hasTaunted = GetTime() + (QA:GetDuration(conf, spellId) or 1)
                 end
                 -- offensive debuffs
-                if conf.duration and conf.list then
+                if conf.duration and conf.list and not conf.aura then
                     if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                             and sourceGuid == QA.playerGuid
                             --and destGUID == UnitGUID("target")
@@ -266,7 +271,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                             text = destName
                         end
                         --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
-                        local timer = QA:AddTimer(WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
+                        local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
                         if not conf.aoe then
                             if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
                             enemyDebuffs[extra[1]][destGuid] = timer

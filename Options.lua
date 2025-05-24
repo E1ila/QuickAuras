@@ -983,6 +983,22 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                 order = order + 3000,
             }
         end
+        if spell.enemyAura then
+            local key = (spell.option or spellKey).."_enemy"
+            if QA.defaultOptions.profile[key] == nil then
+                QA.defaultOptions.profile[key] = true
+            end
+            QA.options.args.generalUtils.args[key] = {
+                type = "toggle",
+                name = "Enemy "..spell.name,
+                desc = "Shows indication when "..spell.name.." is missing from target.",
+                get = function(info) return QA.db.profile[key] end,
+                set = function(info, value)
+                    QA.db.profile[key] = value
+                end,
+                order = order + 30,
+            }
+        end
         if not categoryHidden then
             if spell.visible == nil or spell.visible == true then
                 -- obj.option in format of class_abilityName

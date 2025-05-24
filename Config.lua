@@ -127,6 +127,9 @@ QA.trackedProcAbilities = {
     aura = {},
 }
 
+QA.trackedEnemyAurasBySpellId = {}
+QA.trackedEnemyAuras = {}
+
 -- custom events
 
 function QA:BuildTrackedGear()
@@ -167,6 +170,12 @@ function QA:BuildTrackedSpells()
             if spell.raidBars then
                 for _, spellId in ipairs(spell.spellId) do
                     QA.trackedCombatLog[spellId] = spell
+                end
+            end
+            if spell.enemyAura then
+                table.insert(QA.trackedEnemyAuras, spell)
+                for _, spellId in ipairs(spell.spellId) do
+                    QA.trackedEnemyAurasBySpellId[spellId] = spell
                 end
             end
 

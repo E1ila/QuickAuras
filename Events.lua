@@ -32,8 +32,11 @@ function QA:PLAYER_ENTERING_WORLD()
 end
 
 function QA:UNIT_AURA(unit)
-    if unit ~= "player" then return end
-    QA:CheckAuras()
+    if unit == "target" then
+        QA:CheckTargetAuras()
+    elseif unit == "player" then
+        QA:CheckAuras()
+    end
 end
 
 function QA:UI_ERROR_MESSAGE(errorType, errorMessage)
@@ -60,6 +63,7 @@ function QA:PLAYER_TARGET_CHANGED(...)
     QA:CheckGear("target", ...)
     QA:ResetErrorCount()
     QA:CheckAllProcs()
+    QA:CheckTargetAuras()
 end
 
 function QA:BAG_UPDATE(bagId)
@@ -191,6 +195,8 @@ function QA:OnUpdate()
         QA:CheckTimers()
         QA:CheckTargetRange()
     end
+
+    QA:ArrangeWindows()
 end
 
 -- Combat log

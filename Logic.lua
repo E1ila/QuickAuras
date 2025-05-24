@@ -14,6 +14,50 @@ QA.targetInRange = false
 
 local targetAggro = {}
 
+function QA:CheckTargetAuras()
+    local changed = false
+    if UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") then
+        local seen = {}
+        debug(2, "CheckTargetAuras", "target", UnitName("target"))
+        for i = 1, 32 do
+            local name, _, count, dispelType, expires, caster, isStealable, _, _, spellId = UnitDebuff("target", i)
+            if not name then break end
+            local spell = QA.trackedEnemyAurasBySpellId[spellId]
+            debug("CheckTargetAuras", "(scan)", i, name, spellId, count)
+            if spell then
+                seen[spellId] = { count = count, expires = expires, spell = spell, spellId = spellId }
+            end
+        end
+
+        for _, spell in ipairs(QA.trackedEnemyAuras) do
+            local found
+            for _, spellId in ipairs(spell.spellId) do
+                found = seen[spellId]
+                if found then
+                    break
+                end
+            end
+            local missing = not found or found.count < spell.enemyAura.requiredStacks
+            debug("CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
+            if missing then
+                local button = QA:AddIcon(WINDOW.QUEUE, "spell", spell.spellId[1], spell, found and found.count or 0)
+                if button then
+                    changed = true
+                end
+            else
+                if QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1]) then changed = true end
+            end
+        end
+    else
+        for _, spell in ipairs(QA.trackedEnemyAuras) do
+            if QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1]) then changed = true end
+        end
+    end
+    if changed then
+        QA:ArrangeIcons(WINDOW.QUEUE)
+    end
+end
+
 -- warrior spell queue ---------------------------------------------------------------------------
 
 function QA:CheckSpellQueue(unit, spellGuid)

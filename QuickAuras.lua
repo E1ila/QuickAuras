@@ -43,6 +43,7 @@ QA.list_range = {}
 QA.list_raidBars = {} -- timer
 QA.list_queue = {}
 QA.list_swingTimers = {}
+QA.arrangeQueue = {}
 
 local pclass = select(2, UnitClass("player"))
 QA.playerClass = pclass

@@ -328,19 +328,19 @@ function QA:GetWindowAttr(window, idType)
     return attr
 end
 
-function QA:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
-    local key = iconType.."-"..idType.."-"..tostring(id)
+function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
+    local key = window .."-"..idType.."-"..tostring(id)
     if QA.ignoredIcons[key] then return nil end
-    local attr = QA:GetWindowAttr(iconType, idType)
+    local attr = QA:GetWindowAttr(window, idType)
     if not attr.list[id] then
         debug(2, "AddIcon", id, "parent", attr.parent:GetName(), "count", count)
-        local showCount = iconType == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount)
-        local onRightClick = iconType ~= WINDOW.ALERT and attr.Refresh and function()
+        local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount)
+        local onRightClick = window ~= WINDOW.ALERT and attr.Refresh and function()
             QA.ignoredIcons[key] = true
             attr.Refresh(QA)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
-        local frame = attr.Create(QA, id, attr.parent, iconType .."-".. id, showTooltip, showCount, onRightClick, onClick)
+        local frame = attr.Create(QA, id, attr.parent, window .."-".. id, showTooltip, showCount, onRightClick, onClick)
         local button = {
             name = conf.name,
             conf = conf,
@@ -353,6 +353,7 @@ function QA:AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
             glowInCombat = attr.glowInCombat
         }
         attr.list[id] = button
+        QA.arrangeQueue[window] = true
         return button
     elseif count ~= nil then
         attr.list[id].count = count
@@ -389,6 +390,10 @@ function QA:ArrangeIcons(window)
     local attr = QA:GetWindowAttr(window)
 
     local sortedList = {}
+    if not attr.list then
+        debug(_c.alert, "ArrangeIcons", "No list for window", window)
+        return
+    end
     for key, timer in pairs(attr.list) do
         if key ~= "size" then
             table.insert(sortedList, timer)
@@ -487,6 +492,13 @@ function QA:ArrangeIcons(window)
         end
         lastFrame = frame
     end
+end
+
+function QA:ArrangeWindows()
+    for window, _ in pairs(QA.arrangeQueue) do
+        QA:ArrangeIcons(window)
+    end
+    QA.arrangeQueue = {}
 end
 
 
@@ -803,7 +815,7 @@ function QA:UpdateSwingTimer(hand, source)
     --local duration, expTime = 2.7, GetTime() + 2.7
     local id = "swing-"..hand
     local conf = swingConf[hand]
-    debug(QA.db.profile.swingDebug and 1 or 3, "UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
+    debug(QA.db.profile.swingDebug or 3, "UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
     if not duration or duration == 0 or not expTime then
         --QA:RemoveTimer(id)
     else

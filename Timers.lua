@@ -74,7 +74,7 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
     QA.list_timers[timer.key] = timer
     QA.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
     onUpdate(timer)
-    QA:ArrangeIcons(window)
+    QA.arrangeQueue[window] = true
     return timer, true
 end
 

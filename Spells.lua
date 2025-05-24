@@ -286,6 +286,16 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    sunderArmor = {
+        spellId = { 7386, 7405, 8380, 11596, 11597 },
+        name = "Sunder Armor",
+        icon = "Interface\\Icons\\Ability_Warrior_Sunder",
+        duration = 30,
+        enemyAura = {
+            requiredStacks = 5,
+        },
+        visible = QA.isWarrior,
+    },
     whirlwind = {
         spellId = { 1680 },
         name = "Whirlwind",

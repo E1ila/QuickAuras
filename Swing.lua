@@ -241,7 +241,7 @@ do
                     if not isSwingDamage then
                         stats.misses = stats.misses + 1
                     end
-                    --debug(_c.blue.."SWING OH|r", select(1, ...), QA.queuedSpell.id and "Q" or "-", stats.misses)
+                    --debug(_c.purple.."SWING OH|r", select(1, ...), QA.queuedSpell.id and "Q" or "-", stats.misses)
                     swingStart("off")
                 end
             end

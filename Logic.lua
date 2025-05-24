@@ -22,7 +22,7 @@ function QA:CheckTargetAuras()
             local name, _, count, dispelType, expires, caster, isStealable, _, _, spellId = UnitDebuff("target", i)
             if not name then break end
             local spell = QA.trackedEnemyAurasBySpellId[spellId]
-            debug("CheckTargetAuras", "(scan)", i, name, spellId, count)
+            debug(3, "CheckTargetAuras", "(scan)", i, name, spellId, count)
             if spell then
                 seen[spellId] = { count = count, expires = expires, spell = spell, spellId = spellId }
             end
@@ -37,7 +37,7 @@ function QA:CheckTargetAuras()
                 end
             end
             local missing = not found or found.count < spell.enemyAura.requiredStacks
-            debug("CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
+            debug(3, "CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
             if missing then
                 QA:AddIcon(WINDOW.QUEUE, "spell", spell.spellId[1], spell, found and found.count or 0)
             else
@@ -246,7 +246,6 @@ function QA:CheckRogueTeaTime()
                 _useTeaShown = true
                 local button = QA:AddIcon(QA.db.profile.rogueTeaTimeFrame, "item", THISTLE_TEA_ITEMID, { name = "Thistle Tea"})
                 button.glowInCombat = true
-                QA:ArrangeIcons(QA.db.profile.rogueTeaTimeFrame)
             end
         end
     end
@@ -473,7 +472,7 @@ function QA:CheckAuras()
     local combatStateChanged = _aurasCombatState ~= QA.inCombat
     _aurasCombatState = QA.inCombat
     if combatStateChanged then
-        debug("CheckAuras", "combat", QA.inCombat)
+        debug(2, "CheckAuras", "combat", QA.inCombat)
     end
     for _, spell in pairs(QA.trackedProcAbilities.aura) do
         QA:CheckProcAura(spell, seen)

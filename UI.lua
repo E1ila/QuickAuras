@@ -154,7 +154,7 @@ end
 
 QA.ignoredIcons = {}
 
-function QA:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+function QA:CreateItemIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -170,7 +170,7 @@ function QA:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, s
     iconTexture:SetTexture(itemIcon)
     iconTexture:SetAllPoints(frame)
     frame.icon = iconTexture
-    debug(3, "CreateItemWarningIcon", frameName, "itemId", itemId, "icon", itemIcon)
+    debug(3, "CreateItemIcon", frameName, "itemId", itemId, "icon", itemIcon, "showCount", showCount)
 
     if showCount then
         local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -206,7 +206,7 @@ function QA:CreateItemWarningIcon(itemId, parentFrame, frameName, showTooltip, s
     return frame
 end
 
-function QA:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+function QA:CreateSpellIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
@@ -223,7 +223,16 @@ function QA:CreateSpellWarningIcon(spellId, parentFrame, frameName, showTooltip,
     iconTexture:SetTexture(spellIcon)
     iconTexture:SetAllPoints(frame)
     frame.icon = iconTexture
-    debug(3, "CreateSpellWarningIcon", frameName, "spellId", spellId, "icon", spellIcon)
+    debug(3, "CreateSpellIcon", frameName, "spellId", spellId, "icon", spellIcon)
+
+    if showCount then
+        local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(QA.db.profile.reminderIconSize/2), "OUTLINE")
+        counterText:SetTextColor(1, 1, 1, 1)
+        counterText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2) -- Position the counter
+        counterText:SetText("0") -- Default value
+        frame.counterText = counterText -- Store the counter for later updates
+    end
 
     if showTooltip then
         -- Add a tooltip to show the item's name
@@ -272,7 +281,7 @@ function QA:GetWindowAttr(window, idType)
         parent = UIParent,
     }
     if idType then
-        attr.Create = idType == "item" and QA.CreateItemWarningIcon or QA.CreateSpellWarningIcon
+        attr.Create = idType == "item" and QA.CreateItemIcon or QA.CreateSpellIcon
     end
     if window == WINDOW.SWING then
         attr.list = QA.list_swingTimers
@@ -332,16 +341,17 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
     local key = window .."-"..idType.."-"..tostring(id)
     if QA.ignoredIcons[key] then return nil end
     local attr = QA:GetWindowAttr(window, idType)
-    if not attr.list[id] then
-        debug(2, "AddIcon", id, "parent", attr.parent:GetName(), "count", count)
-        local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount)
+    local button = attr.list[id]
+    if not button then
+        local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) or type(count) == "number" and count >= 0
+        debug(2, _c.bold.."AddIcon|r", conf.name, id, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
         local onRightClick = window ~= WINDOW.ALERT and attr.Refresh and function()
             QA.ignoredIcons[key] = true
             attr.Refresh(QA)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
         local frame = attr.Create(QA, id, attr.parent, window .."-".. id, showTooltip, showCount, onRightClick, onClick)
-        local button = {
+        button = {
             name = conf.name,
             conf = conf,
             id = id,
@@ -356,8 +366,10 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
         QA.arrangeQueue[window] = true
         return button
     elseif count ~= nil then
-        attr.list[id].count = count
-        return attr.list[id]
+        debug(2, _c.bold.."AddIcon|r", id, "updating count", count)
+        button.count = count
+        QA.arrangeQueue[window] = true
+        return button
     end
 end
 
@@ -410,9 +422,8 @@ function QA:ArrangeIcons(window)
         count = count + 1
         local frame = obj.frame
         frame:ClearAllPoints()
-        debug(3, "ArrangeIcons", window, obj.id, "frame", frame:GetName(), "parent", frame:GetParent():GetName())
+        debug(3, _c.purple.."ArrangeIcons|r", window, obj.id, parent, frame:GetParent():GetName(), "counterText", frame.counterText, "obj.count", obj.count)
         if frame.counterText and obj.count and type(obj.count) == "number" then
-            --debug(3, "ArrangeIcons", "count", obj.count)
             frame.counterText:SetText(obj.count)
         end
         if window == WINDOW.OFFENSIVE or window == WINDOW.WATCH or window == WINDOW.RAIDBARS then
@@ -889,7 +900,6 @@ function QA:TestReminders()
         QA:AddIcon(WINDOW.REMINDER, "item", conf.itemId, conf, i)
         if i == 3 then break end
     end
-    QA:ArrangeIcons(WINDOW.REMINDER)
     DelayedReset_Reminders()
 end
 
@@ -905,7 +915,6 @@ function QA:TestIconMissingBuffs()
         count = count + 1
         QA:AddIcon(WINDOW.MISSING, "item", conf.itemId, conf)
     end
-    QA:ArrangeIcons(WINDOW.MISSING)
     DelayedReset_IconMissingBuffs()
 end
 
@@ -922,7 +931,6 @@ function QA:TestIconWarnings()
         QA:AddIcon(WINDOW.WARNING, "item", itemId, conf)
         if count == 3 then break end
     end
-    QA:ArrangeIcons(WINDOW.WARNING)
     DelayedReset_IconWarnings()
 end
 
@@ -948,7 +956,6 @@ function QA:TestCrucial()
     --  :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     QA:AddIcon(WINDOW.CRUCIAL, "spell", bs.spellId[1], bs)
     QA:AddIcon(WINDOW.CRUCIAL, "spell", frr.spellId[1], frr)
-    QA:ArrangeIcons(WINDOW.CRUCIAL)
     DelayedReset_CrucialAlerts()
 end
 
@@ -961,7 +968,6 @@ function QA:TestSpellQueue()
     local cleave = QA.spells.warrior.cleave
     QA:AddIcon(WINDOW.QUEUE, "spell", hs.spellId[1], hs)
     QA:AddIcon(WINDOW.QUEUE, "spell", cleave.spellId[1], cleave)
-    QA:ArrangeIcons(WINDOW.QUEUE)
     DelayedReset_SpellQueue()
 end
 

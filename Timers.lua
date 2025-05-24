@@ -136,7 +136,7 @@ function QA:RemoveTimer(timer, reason)
     QA.list_timerByName[timer.keyExtra..timer.name.."-"..timer.uiType] = nil
     QA.list_timers[timer.key] = nil
     --debug(" -- ", timer.key)
-    QA:ArrangeIcons(timer.window)
+    QA.arrangeQueue[timer.window] = true
 end
 
 function QA:CheckTimers()

@@ -15,8 +15,7 @@ QA.targetInRange = false
 local targetAggro = {}
 
 function QA:CheckTargetAuras()
-    local changed = false
-    if UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") then
+    if UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and QA.inCombat then
         local seen = {}
         debug(2, "CheckTargetAuras", "target", UnitName("target"))
         for i = 1, 32 do
@@ -40,21 +39,15 @@ function QA:CheckTargetAuras()
             local missing = not found or found.count < spell.enemyAura.requiredStacks
             debug("CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
             if missing then
-                local button = QA:AddIcon(WINDOW.QUEUE, "spell", spell.spellId[1], spell, found and found.count or 0)
-                if button then
-                    changed = true
-                end
+                QA:AddIcon(WINDOW.QUEUE, "spell", spell.spellId[1], spell, found and found.count or 0)
             else
-                if QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1]) then changed = true end
+                QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1])
             end
         end
     else
         for _, spell in ipairs(QA.trackedEnemyAuras) do
-            if QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1]) then changed = true end
+            QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1])
         end
-    end
-    if changed then
-        QA:ArrangeIcons(WINDOW.QUEUE)
     end
 end
 
@@ -98,15 +91,12 @@ function QA:QueuedSpell(spell, spellId)
     }
     MonitorQueued(spellId, function() QA:UnQueuedSpell(spell) end)
     QA:AddIcon(WINDOW.QUEUE, "spell", spell.spellId[1], spell)
-    QA:ArrangeIcons(WINDOW.QUEUE)
 end
 
 function QA:UnQueuedSpell(spell)
     debug(3, "Removed spell from queue: " .. spell.name)
     QA.queuedSpell = {}
-    if QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1]) then
-        QA:ArrangeIcons(WINDOW.QUEUE)
-    end
+    QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1])
 end
 
 -- aggro ---------------------------------------------------------------------------
@@ -166,15 +156,11 @@ end
 function QA:CheckHearthstone()
     if not QA.db.profile.hsNotCapitalWarning or QA.playerLevel < 60 then return end
     local bindLocation = GetBindLocation()
-    local changed
     if QA.inCapital and not QA.capitalCities[bindLocation] then
-        changed = QA:AddIcon(WINDOW.WARNING, "item", 6948, { name = "Hearthstone" })
+        QA:AddIcon(WINDOW.WARNING, "item", 6948, { name = "Hearthstone" })
         out("|cffff0000Warning:|r Your Hearthstone is set to ".._c.bold..bindLocation.."|r!")
     else
-        changed = QA:RemoveIcon(WINDOW.WARNING, 6948)
-    end
-    if changed then
-        QA:ArrangeIcons(WINDOW.WARNING)
+        QA:RemoveIcon(WINDOW.WARNING, 6948)
     end
 end
 
@@ -191,7 +177,6 @@ end
 -- Currently supported only target based proc spells
 function QA:CheckProcSpellUsable(spell)
     if not QA.db.profile[spell.procFrameOption] then return end
-    local changed = false
     local spellId = spell.spellId[1]
     local usable, notEnoughMana = IsUsableSpell(spellId)
     local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
@@ -200,7 +185,7 @@ function QA:CheckProcSpellUsable(spell)
         local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then
             -- has cooldown, check again later
-            changed = QA:RemoveIcon(iconType, spellId)
+            QA:RemoveIcon(iconType, spellId)
             if spell.procFadeCheck and not QA.procCheck.cooldown[spellId] then
                 QA.procCheck.cooldown[spellId] = true
                 C_Timer.After(start + duration - GetTime() + 0.1, function()
@@ -212,7 +197,6 @@ function QA:CheckProcSpellUsable(spell)
             local button = QA:AddIcon(iconType, "spell", spellId, spell)
             if button then
                 button.glowInCombat = true
-                changed = true
             end
             local FadeCheck = QA.procCheck.FadeCheck[spellId]
             if FadeCheck then
@@ -220,16 +204,12 @@ function QA:CheckProcSpellUsable(spell)
             end
         end
     else
-        changed = QA:RemoveIcon(iconType, spellId)
-    end
-    if changed then
-        QA:ArrangeIcons(iconType)
+        QA:RemoveIcon(iconType, spellId)
     end
 end
 
 function QA:CheckProcAura(spell, seen)
     if not QA.db.profile[spell.procFrameOption] then return end
-    local changed = false
     local spellId = spell.spellId[1]
     local hasIt = QA:HasSeenAny(spell.spellId, seen)
     local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
@@ -240,13 +220,9 @@ function QA:CheckProcAura(spell, seen)
         --local button = QA:AddTimer(iconType, spell, spellId, hasIt.duration, hasIt.expTime)
         if button then
             button.glowInCombat = true
-            changed = true
         end
     else
-        changed = QA:RemoveIcon(window, spellId)
-    end
-    if changed then
-        QA:ArrangeIcons(window)
+        QA:RemoveIcon(window, spellId)
     end
 end
 
@@ -296,7 +272,6 @@ end, 0.25)
 
 function QA:CheckTransmuteCooldown()
     if not QA.db.profile.remindersEnabled or not QA.db.profile.reminderTransmute then return end
-    local changed = false
     for _, spell in pairs(QA.spells.transmutes) do
         local hasIt = true
         local id = spell.spellId[1]
@@ -318,7 +293,6 @@ function QA:CheckTransmuteCooldown()
                 --     :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
                 local button = QA:AddIcon(WINDOW.REMINDER, "spell", id, spell, nil, nil, TransmuteClick)
                 if button then
-                    changed = true
                     C_Timer.After(0.1, function()
                         ActionButton_ShowOverlayGlow(button.frame)
                     end)
@@ -328,14 +302,11 @@ function QA:CheckTransmuteCooldown()
                 local fontSize = math.floor(QA.db.profile.reminderIconSize/2)
                 timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
             else
-                if QA:RemoveIcon(WINDOW.REMINDER, id) then changed = true end
+                QA:RemoveIcon(WINDOW.REMINDER, id)
             end
         else
             debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "hasIt", hasIt)
         end
-    end
-    if changed then
-        QA:ArrangeIcons(WINDOW.REMINDER)
     end
 end
 
@@ -349,7 +320,6 @@ end
 function QA:CheckLowConsumes()
     if not QA.db.profile.remindersEnabled or not QA.db.profile.reminderLowConsumes then return end
     if QA.db.profile.lowConsumesInCapital and not QA.inCapital then return end
-    local changed = false
     for _, consume in pairs(QA.trackedLowConsumes) do
         if not consume.option or QA.db.profile[consume.option] then
             local foundItemId, details = QA:FindInBags(consume.itemIds or consume.itemId)
@@ -359,9 +329,9 @@ function QA:CheckLowConsumes()
                 (not foundItemId or details.count < minCount)
                 and QA.db.profile.lowConsumesMinLevel <= QA.playerLevel
             then
-                if QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, details and details.count or 0) then changed = true end
+                QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, details and details.count or 0)
             else
-                if QA:RemoveIcon(WINDOW.REMINDER, consume.itemId) then changed = true end
+                QA:RemoveIcon(WINDOW.REMINDER, consume.itemId)
             end
             if minCount and QA.db.profile.outOfConsumeWarning then
                 if foundItemId then
@@ -371,26 +341,22 @@ function QA:CheckLowConsumes()
                     QA.existingConsumes[consume.itemId] = nil
                     if IsInInstance() then
                         QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, 0)
-                        changed = true
                     end
                 end
             end
         end
-    end
-    if changed then
-        QA:ArrangeIcons(WINDOW.REMINDER)
     end
 end
 
 function QA:CheckTrackingStatus()
     if not QA.db.profile.remindersEnabled then return end
     local trackingType = GetTrackingTexture()
-    local changed, found, missingSpellId = false, false, nil
+    local found, missingSpellId = false, nil
     for spellId, conf in pairs(QA.trackedTracking) do
         debug(3, "CheckTrackingStatus", "(scan)", conf.name, "spellId", spellId, "option", conf.option, conf.option and QA.db.profile[conf.option])
         if IsSpellKnown(spellId) and QA.db.profile[conf.option] then
             if conf.textureId == trackingType then
-                if QAG:RemoveIcon(WINDOW.REMINDER, spellId) then changed = true end
+                QAG:RemoveIcon(WINDOW.REMINDER, spellId)
                 found = true
                 break
             else
@@ -401,17 +367,13 @@ function QA:CheckTrackingStatus()
     debug(2, "CheckTrackingStatus", "trackingType", trackingType, "found", found, "missingSpellId", missingSpellId)
     if not found and missingSpellId then
         debug(3, "CheckTrackingStatus", "missingSpellId", missingSpellId)
-        if QAG:AddIcon(WINDOW.REMINDER, "spell", missingSpellId, QAG.trackedTracking[missingSpellId]) then changed = true end
-    end
-    if changed then
-        QAG:ArrangeIcons(WINDOW.REMINDER)
+        QAG:AddIcon(WINDOW.REMINDER, "spell", missingSpellId, QAG.trackedTracking[missingSpellId])
     end
 end
 
 function QA:CheckGear(eventType, ...)
     if QA.db.profile.trackedGear then
         local equippedItems = {}
-        local changed = false
 
         for slotId = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
             local equippedItemId = GetInventoryItemID("player", slotId)
@@ -427,15 +389,11 @@ function QA:CheckGear(eventType, ...)
                 if conf.visibleFunc then shouldShow = conf.visibleFunc(isEquipped) end
                 --debug("Checking gear", itemId, QA.colors.bold, conf.name, "|r", "isEquipped", isEquipped, "shouldShow", shouldShow)
                 if shouldShow then
-                    if QA:AddIcon(WINDOW.WARNING, "item", itemId, conf) then changed = true end
+                    QA:AddIcon(WINDOW.WARNING, "item", itemId, conf)
                 else
-                    if QA:RemoveIcon(WINDOW.WARNING, itemId) then changed = true end
+                    QA:RemoveIcon(WINDOW.WARNING, itemId)
                 end
             end
-        end
-
-        if changed then
-            QA:ArrangeIcons(WINDOW.WARNING)
         end
     end
 end
@@ -527,8 +485,6 @@ end
 
 function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
     if not QA.db.profile.missingConsumes then return end
-    local buffsChanged = {}
-    if combatStateChanged then buffsChanged[WINDOW.MISSING] = true end
     local showNonSelfBuffs = QA.db.profile.forceShowMissing or
             QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
             QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
@@ -544,10 +500,9 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                         or buff.visibleFunc and not buff.visibleFunc()
                         or not foundItemId
                 then
-                    if QA:RemoveIcon(WINDOW.MISSING, buff.usedItemId or buff.itemId) then buffsChanged[WINDOW.MISSING] = true end
+                    QA:RemoveIcon(WINDOW.MISSING, buff.usedItemId or buff.itemId)
                 else
                     if QA:AddIcon(WINDOW.MISSING, "item", foundItemId, buff) then
-                        buffsChanged[WINDOW.MISSING] = true
                         buff.usedItemId = foundItemId
                     end
                 end
@@ -557,19 +512,15 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                 local visible = buff.visibleFunc == nil or buff.visibleFunc()
                 debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "visible", visible)
                 if foundBuff or not visible then
-                    if QA:RemoveIcon(WINDOW.QUEUE, buff.spellId[1]) then buffsChanged[WINDOW.QUEUE] = true end
+                    QA:RemoveIcon(WINDOW.QUEUE, buff.spellId[1])
                 else
                     local button = QA:AddIcon(WINDOW.QUEUE, "spell", buff.spellId[1], buff)
                     if button then
-                        buffsChanged[WINDOW.QUEUE] = true
                         button.glowInCombat = true
                     end
                 end
             end
         end
-    end
-    for window, _ in pairs(buffsChanged) do
-        QA:ArrangeIcons(window)
     end
 end
 
@@ -580,8 +531,7 @@ local function BattleShoutMissingOnClick()
 end
 
 function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
-    local changed = combatStateChanged
-    debug(2, "CheckCrucialBuffs", "combatStateChanged", changed)
+    debug(2, "CheckCrucialBuffs", "combatStateChanged")
     for _, buff in pairs(QA.trackedCrucialAuras) do
         if buff.conf.crucialCond() then
             local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
@@ -590,50 +540,35 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
             if not hasIt then
                 if existing and existing.isTimer then
                     QA:RemoveTimer(existing, "crucial")
-                    changed = true
                 end
-                local button = QA:AddIcon(WINDOW.CRUCIAL, "spell", buff.spellIds[1], buff.conf, nil, false, BattleShoutMissingOnClick)
-                if button then
-                    changed = true
-                end
+                QA:AddIcon(WINDOW.CRUCIAL, "spell", buff.spellIds[1], buff.conf, nil, false, BattleShoutMissingOnClick)
             elseif aura and aura[1] and aura[2] and aura[2] > 0 then -- duration, expTime
                 -- has buff, display time to expire
                 if existing and not existing.isTimer then
                     QA:RemoveIcon(WINDOW.CRUCIAL, buff.spellIds[1])
-                    changed = true
                 end
                 local timer, isNew = QA:AddTimer(WINDOW.CRUCIAL, buff.conf, buff.spellIds[1], aura[1], aura[2], QA.db.profile.crucialExpireTime)
                 timer.glowOnEnd = false -- no need, the icon will glow
-                if isNew then
-                    changed = true
-                end
             end
         else
-            if QA:RemoveIcon(WINDOW.CRUCIAL, buff.spellIds[1]) then changed = true end
+            QA:RemoveIcon(WINDOW.CRUCIAL, buff.spellIds[1])
         end
-    end
-    if changed then
-        QA:ArrangeIcons(WINDOW.CRUCIAL)
     end
 end
 
 function QA:CheckStealthInInstance(seen)
     if not QA.db.profile.stealthInInstance or not QA.InstanceName then return end
     local stealth = QA.spells.rogue.stealth
-    local changed = false
     local found = false
     for spellId, _ in pairs(QA.stealthAbilities) do
         found = seen[spellId]
         if found then
-            changed = QA:AddIcon(WINDOW.WARNING, "spell", stealth.spellId[1], stealth)
+            QA:AddIcon(WINDOW.WARNING, "spell", stealth.spellId[1], stealth)
             break
         end
     end
     if not found then
-        changed = QA:RemoveIcon(WINDOW.WARNING, stealth.spellId[1])
-    end
-    if changed then
-        QA:ArrangeIcons(WINDOW.WARNING)
+        QA:RemoveIcon(WINDOW.WARNING, stealth.spellId[1])
     end
 end
 

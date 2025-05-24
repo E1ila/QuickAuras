@@ -389,8 +389,10 @@ function QA:ArrangeIcons(window)
     local attr = QA:GetWindowAttr(window)
 
     local sortedList = {}
-    for _, timer in pairs(attr.list) do
-        table.insert(sortedList, timer)
+    for key, timer in pairs(attr.list) do
+        if key ~= "size" then
+            table.insert(sortedList, timer)
+        end
     end
     table.sort(sortedList, function(a, b)
         return (a.expTime or 0) > (b.expTime or 0)
@@ -492,7 +494,7 @@ end
 
 function QA:ParentFramesNormalState()
     QuickAuras_XP:EnableMouse(false)
-    QuickAuras_SwingTimer_MH:EnableMouse(false)
+    QuickAuras_SwingTimer:EnableMouse(false)
     QuickAuras_SwingTimer_Text:Hide()
     QuickAuras_SwingTimer:Hide()
     for _, frame in ipairs(QA.adjustableFrames) do
@@ -505,7 +507,7 @@ end
 function QA:ParentFramesEditState()
     QuickAuras_XP:EnableMouse(true)
     QuickAuras_SwingTimer:Show()
-    QuickAuras_SwingTimer_MH:EnableMouse(true)
+    QuickAuras_SwingTimer:EnableMouse(true)
     QuickAuras_SwingTimer_Text:Show()
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:SetDarkBackdrop(frame)
@@ -724,9 +726,10 @@ function QA:InitSwingTimers()
 end
 
 function QA:SetSwingProgress(hand, progress, timeLeft)
-    local frame = hand == "main" and QuickAuras_SwingTimer_MH or QuickAuras_SwingTimer_OH
+    local isMain = hand == "main"
+    local frame = isMain and QuickAuras_SwingTimer_MH or QuickAuras_SwingTimer_OH
     if progress == 0 then
-        QuickAuras_SwingTimer_TimeText:SetText("")
+        if isMain then QuickAuras_SwingTimer_TimeText:SetText("") end
         frame:Hide()
     else
         local width = QuickAuras_SwingTimer:GetWidth()-frame:GetWidth()
@@ -736,7 +739,9 @@ function QA:SetSwingProgress(hand, progress, timeLeft)
         frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, -2)
         frame:SetPoint("BOTTOM", frame:GetParent(), "BOTTOM", 0, 2)
         frame:Show()
-        QuickAuras_SwingTimer_TimeText:SetText(string.format("%.1f", timeLeft or 0))
+        if isMain then
+            QuickAuras_SwingTimer_TimeText:SetText(string.format("%.1f", timeLeft or 0))
+        end
     end
 end
 
@@ -770,9 +775,15 @@ local swingConf = {
     off = CreateSwingConf("off"),
 }
 
-local HideSwingTimers = QA:Debounce(function()
-    QuickAuras_SwingTimer:Hide()
-end, 4)
+QA.HideSwingTimers = QA:Debounce(function()
+    local found = false
+    if not QuickAuras_SwingTimer_MH:IsShown() and not QuickAuras_SwingTimer_OH:IsShown() then
+        QuickAuras_SwingTimer:Hide()
+    else
+        -- check again in 1 sec
+        QA.HideSwingTimers()
+    end
+end, 1)
 
 function QA:UpdateSwingTimers(hand, source)
     if not QA.db.profile.swingTimersEnabled then return end
@@ -781,11 +792,10 @@ function QA:UpdateSwingTimers(hand, source)
     if QA.db.profile.swingTimerOH and (hand == nil or hand == "off") then
         oh = QA:UpdateSwingTimer("off", source)
     end
-    if not mh and not oh then
-        HideSwingTimers()
-    else
+    if mh or oh then
         QuickAuras_SwingTimer:Show()
     end
+    QA.HideSwingTimers()
 end
 
 function QA:UpdateSwingTimer(hand, source)

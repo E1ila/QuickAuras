@@ -9,7 +9,7 @@ local _ = LibStub("AceConsole-3.0")
 
 addon.root = AceAddon:NewAddon("QuickAuras", "AceConsole-3.0")
 local QA = addon.root
-QA.version = "0.10"
+QA.version = "0.11"
 QA.events = CreateFrame("Frame")
 QA.bags = {} -- items in bags
 QA.playerBuffs = {}

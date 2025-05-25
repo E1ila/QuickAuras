@@ -639,6 +639,16 @@
                     <Anchor point="LEFT" relativeTo="$parent" x="70" />
                 </Anchors>
             </Frame>
+            <Frame name="$parent_Ranged" inherits="BackdropTemplate">
+                <Size>
+                    <AbsDimension x="5" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent" y="-2" />
+                    <Anchor point="BOTTOM" relativeTo="$parent" y="2"  />
+                    <Anchor point="LEFT" relativeTo="$parent" x="30" />
+                </Anchors>
+            </Frame>
             <Frame name="$parent_MH" inherits="BackdropTemplate">
                 <Size>
                     <AbsDimension x="5" />

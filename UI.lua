@@ -717,7 +717,8 @@ local _swing = {
         queue = { 1.000, 1.000, 0.302, 1 },
         unqueueTime = 0.3,
     },
-    oh = {0.2, 0.2, 1, 1}
+    oh = {0.2, 0.2, 1, 1},
+    ranged = {0.2, 1, 0.2, 1},
 }
 
 function QA:InitSwingTimers()
@@ -739,6 +740,12 @@ function QA:InitSwingTimers()
     QuickAuras_SwingTimer_MH.texture = texture
     QuickAuras_SwingTimer_MH:Hide()
 
+    texture = QuickAuras_SwingTimer_Ranged:CreateTexture(nil, "BACKGROUND")
+    texture:SetAllPoints(QuickAuras_SwingTimer_Ranged)
+    texture:SetColorTexture(unpack(_swing.ranged))
+    QuickAuras_SwingTimer_Ranged.texture = texture
+    QuickAuras_SwingTimer_Ranged:Hide()
+
     texture = QuickAuras_SwingTimer_OH:CreateTexture(nil, "BACKGROUND")
     texture:SetAllPoints(QuickAuras_SwingTimer_OH)
     texture:SetColorTexture(unpack(_swing.oh))
@@ -750,7 +757,7 @@ end
 
 function QA:SetSwingProgress(hand, progress, timeLeft)
     local isMain = hand == "main"
-    local frame = isMain and QuickAuras_SwingTimer_MH or QuickAuras_SwingTimer_OH
+    local frame = isMain and QuickAuras_SwingTimer_MH or (hand == "oh" and QuickAuras_SwingTimer_OH or QuickAuras_SwingTimer_Ranged)
     if progress == 0 then
         if isMain then QuickAuras_SwingTimer_TimeText:SetText("") end
         frame:Hide()
@@ -796,11 +803,12 @@ end
 local swingConf = {
     main = CreateSwingConf("main"),
     off = CreateSwingConf("off"),
+    ranged = CreateSwingConf("ranged"),
 }
 
 QA.HideSwingTimers = QA:Debounce(function()
     local found = false
-    if not QuickAuras_SwingTimer_MH:IsShown() and not QuickAuras_SwingTimer_OH:IsShown() then
+    if not QuickAuras_SwingTimer_MH:IsShown() and not QuickAuras_SwingTimer_OH:IsShown() and not QuickAuras_SwingTimer_Ranged:IsShown() then
         QuickAuras_SwingTimer:Hide()
     else
         -- check again in 1 sec
@@ -815,7 +823,11 @@ function QA:UpdateSwingTimers(hand, source)
     if QA.db.profile.swingTimerOH and (hand == nil or hand == "off") then
         oh = QA:UpdateSwingTimer("off", source)
     end
-    if mh or oh then
+    local ranged = false
+    if QA.db.profile.swingTimerRanged and (hand == nil or hand == "ranged") then
+        ranged = QA:UpdateSwingTimer("ranged", source)
+    end
+    if mh or oh or ranged then
         QuickAuras_SwingTimer:Show()
     end
     QA.HideSwingTimers()

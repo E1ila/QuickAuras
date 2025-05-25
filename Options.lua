@@ -37,6 +37,7 @@ QA.defaultOptions = {
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue,
         swingTimerOH = true,
+        swingTimerRanged = true,
         raidBars = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",

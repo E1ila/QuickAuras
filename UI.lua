@@ -155,26 +155,29 @@ end
 QA.ignoredIcons = {}
 
 function QA:CreateItemIcon(itemId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
-    -- Create a button frame
-    local frame = CreateFrame("Frame", frameName, parentFrame)
-
-    -- Get the item's icon texture
     local itemIcon = GetItemIcon(itemId)
     if not itemIcon then
         print("Invalid itemId:", itemId)
         return nil
     end
+    return QA:CreateIconFrame(itemIcon, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+end
 
-    -- Set the button's normal texture to the item's icon
-    local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
-    iconTexture:SetTexture(itemIcon)
-    iconTexture:SetAllPoints(frame)
-    frame.icon = iconTexture
-    debug(3, "CreateItemIcon", frameName, "itemId", itemId, "icon", itemIcon, "showCount", showCount)
+function QA:CreateSpellIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+    local spellIcon = GetSpellTexture(spellId)
+    if not spellIcon then
+        print("Invalid spellId:", spellId)
+        return nil
+    end
+    return QA:CreateIconFrame(spellIcon, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+end
+
+function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+    local frame = QA:CreateTextureIcon(texture, parentFrame, frameName)
+    debug(3, "CreateItemIcon", frameName, "texture", texture, "showCount", showCount)
 
     if showCount then
         local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-        counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(QA.db.profile.reminderIconSize/2), "OUTLINE")
         counterText:SetTextColor(1, 1, 1, 1)
         counterText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2) -- Position the counter
         counterText:SetText("0") -- Default value
@@ -206,64 +209,10 @@ function QA:CreateItemIcon(itemId, parentFrame, frameName, showTooltip, showCoun
     return frame
 end
 
-function QA:CreateSpellIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
-    -- Create a button frame
-    local frame = CreateFrame("Frame", frameName, parentFrame)
-
-    -- Get the item's icon texture
-    --local spellIcon = GetItemIcon(12457)
-    local spellIcon = GetSpellTexture(spellId)
-    if not spellIcon then
-        print("Invalid spellId:", spellId)
-        return nil
-    end
-
-    -- Set the button's normal texture to the item's icon
-    local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
-    iconTexture:SetTexture(spellIcon)
-    iconTexture:SetAllPoints(frame)
-    frame.icon = iconTexture
-    debug(3, "CreateSpellIcon", frameName, "spellId", spellId, "icon", spellIcon)
-
-    if showCount then
-        local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-        counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(QA.db.profile.reminderIconSize/2), "OUTLINE")
-        counterText:SetTextColor(1, 1, 1, 1)
-        counterText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2) -- Position the counter
-        counterText:SetText("0") -- Default value
-        frame.counterText = counterText -- Store the counter for later updates
-    end
-
-    if showTooltip then
-        -- Add a tooltip to show the item's name
-        frame:SetScript("OnEnter", function(QA)
-            GameTooltip:SetOwner(QA, "ANCHOR_RIGHT")
-            GameTooltip:SetSpellByID(spellId)
-            GameTooltip:Show()
-        end)
-        frame:SetScript("OnLeave", function()
-            GameTooltip:Hide()
-        end)
-    end
-
-    if onRightClick or onClick then
-        frame:SetScript("OnMouseDown", function(QA, button)
-            if onRightClick and button == "RightButton" then
-                onRightClick()
-            elseif onClick and button == "LeftButton" then
-                onClick()
-            end
-        end)
-    end
-
-    return frame
-end
-
 function QA:CreateTextureIcon(texture, parentFrame, frameName)
     -- Create a button frame
     local frame = CreateFrame("Frame", frameName, parentFrame)
 
-    -- Set the button's normal texture to the item's icon
     local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
     iconTexture:SetTexture(texture)
     iconTexture:SetAllPoints(frame)
@@ -279,6 +228,7 @@ function QA:GetWindowAttr(window, idType)
     local attr = {
         widthMul = 1,
         parent = UIParent,
+        height = 10,
     }
     if idType then
         attr.Create = idType == "item" and QA.CreateItemIcon or QA.CreateSpellIcon
@@ -294,45 +244,55 @@ function QA:GetWindowAttr(window, idType)
     elseif window == WINDOW.COOLDOWNS then
         attr.list = QA.list_cooldowns
         attr.parent = QuickAuras_Cooldowns
+        attr.height = QA.db.profile.cooldownIconSize
     elseif window == WINDOW.WARNING then
         attr.list = QA.list_iconWarnings
         attr.parent = QuickAuras_IconWarnings
         attr.Refresh = QA.RefreshWarnings
+        attr.height = QA.db.profile.gearWarningSize
     elseif window == WINDOW.MISSING then
         attr.list = QA.list_missingBuffs
         attr.parent = QuickAuras_MissingBuffs
         attr.Refresh = QA.RefreshMissing
         attr.glowInCombat = true
+        attr.height = QA.db.profile.missingBuffsSize
     elseif window == WINDOW.ALERT then
         attr.list = QA.list_iconAlerts
         attr.parent = QuickAuras_IconAlerts
         attr.Refresh = QA.RefreshAlerts
+        attr.height = QA.db.profile.iconAlertSize
     elseif window == WINDOW.REMINDER then
         attr.list = QA.list_reminders
         attr.parent = QuickAuras_Reminders
         attr.Refresh = QA.RefreshReminders
+        attr.height = QA.db.profile.reminderIconSize
     elseif window == WINDOW.CRUCIAL then
         attr.list = QA.list_crucial
         attr.parent = QuickAuras_Crucial
         attr.glowInCombat = true
+        attr.height = QA.db.profile.crucialIconSize
         --Refresh = QuickAuras.RefreshReminders
     elseif window == WINDOW.RANGE then
         attr.list = QA.list_range
         attr.parent = QuickAuras_RangeIndicator
+        attr.height = QA.db.profile.rangeIconSize
         --Refresh = QuickAuras.RefreshReminders
     elseif window == WINDOW.QUEUE then
         attr.list = QA.list_queue
         attr.parent = QuickAuras_SpellQueue
+        attr.height = QA.db.profile.spellQueueIconSize
         --Refresh = QuickAuras.RefreshReminders
     elseif window == WINDOW.OFFENSIVE then
         attr.list = QA.list_offensiveBars
         attr.parent = QuickAuras_OffensiveBars
         attr.bar = true
         attr.widthMul = 1.5
+        attr.height = QA.db.profile.raidBarHeight
     elseif window == WINDOW.WATCH then
         attr.list = QA.list_watchBars
         attr.parent = QuickAuras_WatchBars
         attr.bar = true
+        attr.height = QA.db.profile.raidBarHeight
     end
     return attr
 end
@@ -433,13 +393,12 @@ function QA:ArrangeIcons(window)
             else
                 frame:SetPoint("TOP", attr.parent, "TOP", 0, 0)
             end
-            local height = attr.height or QA.db.profile.barHeight or 25
             --if window == WINDOW.RAIDBARS and height * QA.list_raidBars
             local padding = 2
             frame:SetPoint("CENTER", attr.parent, "CENTER", 0, 0)
             frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), height)
-            frame.iconFrame:SetSize(height-padding*2, height-padding*2)
-            frame.iconFrame.icon:SetSize(height-padding*2, height-padding*2)
+            frame.iconFrame:SetSize(attr.height-padding*2, attr.height-padding*2)
+            frame.iconFrame.icon:SetSize(attr.height-padding*2, attr.height-padding*2)
         elseif window == WINDOW.MISSING or window == WINDOW.COOLDOWNS then
             -- left
             if lastFrame then
@@ -447,11 +406,7 @@ function QA:ArrangeIcons(window)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
-            if window == WINDOW.COOLDOWNS then
-                frame:SetSize(QA.db.profile.cooldownIconSize, QA.db.profile.cooldownIconSize) -- Width, Height
-            else
-                frame:SetSize(QA.db.profile.missingBuffsSize, QA.db.profile.missingBuffsSize) -- Width, Height
-            end
+            frame:SetSize(attr.height, attr.height) -- Width, Height
         elseif window == WINDOW.WARNING or window == WINDOW.REMINDER then
             -- left
             if lastFrame then
@@ -459,11 +414,7 @@ function QA:ArrangeIcons(window)
             else
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
-            if window == WINDOW.WARNING then
-                frame:SetSize(QA.db.profile.gearWarningSize, QA.db.profile.gearWarningSize) -- Width, Height
-            else
-                frame:SetSize(QA.db.profile.reminderIconSize, QA.db.profile.reminderIconSize) -- Width, Height
-            end
+            frame:SetSize(attr.height, attr.height) -- Width, Height
         elseif window == WINDOW.ALERT or window == WINDOW.CRUCIAL then
             -- down
             if lastFrame then
@@ -472,11 +423,7 @@ function QA:ArrangeIcons(window)
                 frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            if window == WINDOW.ALERT then
-                frame:SetSize(QA.db.profile.iconAlertSize, QA.db.profile.iconAlertSize) -- Width, Height
-            else
-                frame:SetSize(QA.db.profile.crucialIconSize, QA.db.profile.crucialIconSize) -- Width, Height
-            end
+            frame:SetSize(attr.height, attr.height) -- Width, Height
         elseif window == WINDOW.QUEUE or window == WINDOW.RANGE then
             -- vertical center
             if lastFrame then
@@ -485,12 +432,13 @@ function QA:ArrangeIcons(window)
                 frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
             end
             frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            if window == WINDOW.RANGE then
-                frame:SetSize(QA.db.profile.rangeIconSize, QA.db.profile.rangeIconSize) -- Width, Height
-            else
-                frame:GetParent():SetSize(QA.db.profile.spellQueueIconSize * count, QA.db.profile.spellQueueIconSize) -- Width, Height
-                frame:SetSize(QA.db.profile.spellQueueIconSize, QA.db.profile.spellQueueIconSize) -- Width, Height
+            frame:SetSize(attr.height, attr.height)
+            if window == WINDOW.QUEUE then
+                frame:GetParent():SetSize(attr.height * count, attr.height) -- Width, Height
             end
+        end
+        if frame.counterText then
+            frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")
         end
         if obj.glowInCombat then
             if QA.inCombat and not obj.frame.glow then

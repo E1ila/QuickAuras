@@ -210,6 +210,7 @@ spells.hunter = {
         name = "Multi-Shot",
         icon = "Interface\\Icons\\ability_upgrademoonglaive",
         cooldown = true,
+        shootCastTime = 0.5,
         visible = QA.isHunter,
     },
     aimedShot = {
@@ -217,6 +218,7 @@ spells.hunter = {
         name = "Aimed Shot",
         icon = "Interface\\Icons\\inv_spear_07",
         cooldown = true,
+        shootCastTime = 3,
         visible = QA.isHunter,
     },
     flare = {

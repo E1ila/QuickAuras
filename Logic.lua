@@ -14,17 +14,25 @@ QA.targetInRange = false
 
 local targetAggro = {}
 
-function QA:CheckTargetAuras()
-    if UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and QA.inCombat then
+function QA:CheckTargetAuras(targetChanged)
+    local shouldCheck = UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and QA.inCombat
+    local window = QA.db.profile.targetMissingDebuffFrame
+    if targetChanged or not shouldCheck then
+        -- reset
+        for _, spell in ipairs(QA.trackedEnemyAuras) do
+            QA:RemoveIcon(window, spell.spellId[1])
+        end
+    end
+    if shouldCheck then
         local seen = {}
         debug(2, "CheckTargetAuras", "target", UnitName("target"))
         for i = 1, 32 do
-            local name, _, count, dispelType, expires, caster, isStealable, _, _, spellId = UnitDebuff("target", i)
+            local name, _, count, dispelType, duration, expires, isStealable, _, _, spellId = UnitDebuff("target", i)
             if not name then break end
             local spell = QA.trackedEnemyAurasBySpellId[spellId]
             debug(3, "CheckTargetAuras", "(scan)", i, name, spellId, count)
             if spell then
-                seen[spellId] = { count = count, expires = expires, spell = spell, spellId = spellId }
+                seen[spellId] = { count = count, expires = expires, spell = spell, spellId = spellId, duration = duration }
             end
         end
 
@@ -36,17 +44,19 @@ function QA:CheckTargetAuras()
                     break
                 end
             end
-            local missing = not found or found.count < spell.enemyAura.requiredStacks
+            local stackCount = found and found.count or 0
+            local missing = stackCount < spell.enemyAura.requiredStacks
             debug(3, "CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
             if missing then
-                QA:AddIcon(WINDOW.QUEUE, "spell", spell.spellId[1], spell, found and found.count or 0)
+                QA:AddIcon(window, "spell", spell.spellId[1], spell, found and found.count or 0)
             else
-                QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1])
+                QA:RemoveIcon(window, spell.spellId[1])
+                if stackCount == spell.enemyAura.requiredStacks then
+                    debug("AddTimer", "duration", found.duration, "expires", found.expires)
+                    --:AddTimer(window,       conf,  id,               duration,       expTime,       showAtTime,    text,      keyExtra)
+                    QA:AddTimer(window, spell, spell.spellId[1], found.duration, found.expires, QA.db.profile.targetAuraExpireTime)
+                end
             end
-        end
-    else
-        for _, spell in ipairs(QA.trackedEnemyAuras) do
-            QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1])
         end
     end
 end

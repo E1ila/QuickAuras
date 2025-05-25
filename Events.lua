@@ -63,7 +63,7 @@ function QA:PLAYER_TARGET_CHANGED(...)
     QA:CheckGear("target", ...)
     QA:ResetErrorCount()
     QA:CheckAllProcs()
-    QA:CheckTargetAuras()
+    QA:CheckTargetAuras(true)
 end
 
 function QA:BAG_UPDATE(bagId)

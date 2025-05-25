@@ -84,7 +84,7 @@ end
 
 function QA:UpdateProgressBar(timer)
     if not timer or not timer.frame then return end -- timer destroyed
-    if timer.expTime == 0 or (timer.duration > 0 and timer.expTime > GetTime()) then
+    if timer.expTime and timer.expTime == 0 or (timer.duration and timer.duration > 0 and timer.expTime > GetTime()) then
         if not timer.showAtTime or GetTime() >= timer.showAtTime then
             timer.frame:Show()
             if timer.duration > 0 then

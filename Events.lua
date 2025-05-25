@@ -252,71 +252,71 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
     -- tracked spells
     if type(extra[1]) == "number" and extra[1] > 0 and TRACKED_SPELL_EVENTS[subevent] then
-        for spellId, conf in pairs(QA.trackedCombatLog) do
-            --debug("CombatLog", "spellId", spellId, "conf.name", conf.name, "extra1", extra[1], "conf.raidBars", conf.raidBars)
-            if extra[1] == spellId then
-                -- taunt
-                if conf.taunt and subevent == "SPELL_AURA_APPLIED" and sourceGuid == QA.playerGuid then
-                    debug("CLEU ".._c.bold.."Taunt|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)
-                    QA.hasTaunted = GetTime() + (QA:GetDuration(conf, spellId) or 1)
-                end
-                -- offensive debuffs
-                if conf.duration and conf.list and not conf.aura then
-                    if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                            and sourceGuid == QA.playerGuid
-                            --and destGUID == UnitGUID("target")
-                            and QA.db.profile.watchBars
-                            and (not conf.option or QA.db.profile[conf.option])
-                    then
-                        -- start offensive timer
-                        if conf.OnDetect then
-                            conf.OnDetect(conf, sourceGuid, sourceName, destGuid, destName)
-                        end
-                        local text, keyExtra, duration = nil, destGuid, QA:GetDuration(conf, spellId)
-                        if conf.multi then
-                            text = destName
-                        end
-                        --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
-                        local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
-                        if not conf.aoe then
-                            if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
-                            enemyDebuffs[extra[1]][destGuid] = timer
-                        end
+        --debug("CombatLog", subevent, extra[2], extra[1])
+        local conf = QA.trackedCombatLog[extra[1]]
+        if conf then
+            local spellId = extra[1]
+            -- taunt
+            if conf.taunt and subevent == "SPELL_AURA_APPLIED" and sourceGuid == QA.playerGuid then
+                --debug(2, "CLEU ".._c.bold.."Taunt|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)
+                QA.hasTaunted = GetTime() + (QA:GetDuration(conf, spellId) or 1)
+            end
+            -- offensive debuffs
+            if conf.duration and conf.list and not conf.aura then
+                if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+                        and sourceGuid == QA.playerGuid
+                        --and destGUID == UnitGUID("target")
+                        and QA.db.profile.watchBars
+                        and (not conf.option or QA.db.profile[conf.option])
+                then
+                    -- start offensive timer
+                    if conf.OnDetect then
+                        conf.OnDetect(conf, sourceGuid, sourceName, destGuid, destName)
                     end
-
-                    if  subevent == "SPELL_AURA_REMOVED"
-                            and sourceGuid == QA.playerGuid
-                            and enemyDebuffs[extra[1]] and enemyDebuffs[extra[1]][destGuid]
-                    then
-                        -- end offensive timer
-                        QA:RemoveTimer(enemyDebuffs[extra[1]][destGuid], "combatlog")
-                        enemyDebuffs[extra[1]][destGuid] = nil
+                    local text, keyExtra, duration = nil, destGuid, QA:GetDuration(conf, spellId)
+                    if conf.multi then
+                        text = destName
+                    end
+                    --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
+                    local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
+                    if not conf.aoe then
+                        if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
+                        enemyDebuffs[extra[1]][destGuid] = timer
                     end
                 end
-                -- raid tracking
-                if conf.raidBars and IsInInstance() then
-                    debug(2, "Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
-                    if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
-                            and sourceGuid ~= QA.playerGuid
-                            and QA.db.profile.raidBars
-                            --and (not conf.option or QA.db.profile[conf.option.."_rbars"])
-                    then
-                        -- start offensive timer
-                        local name = strsplit("-", sourceName)
-                        local duration = QA:GetDuration(conf, spellId)
-                        local timer = QA:AddTimer(WINDOW.RAIDBARS, conf, spellId, duration, GetTime()+duration, nil, name, name)
-                        if not raidBuffs[extra[1]] then raidBuffs[extra[1]] = {} end
-                        raidBuffs[extra[1]][destGuid] = timer
-                    end
 
-                    if  subevent == "SPELL_AURA_REMOVED"
-                            and sourceGuid ~= QA.playerGuid
-                            and raidBuffs[extra[1]] and raidBuffs[extra[1]][destGuid]
-                    then
-                        -- end offensive timer
-                        QA:RemoveTimer(raidBuffs[extra[1]][destGuid], "raidbar")
-                        raidBuffs[extra[1]][destGuid] = nil
-                    end
+                if  subevent == "SPELL_AURA_REMOVED"
+                        and sourceGuid == QA.playerGuid
+                        and enemyDebuffs[extra[1]] and enemyDebuffs[extra[1]][destGuid]
+                then
+                    -- end offensive timer
+                    QA:RemoveTimer(enemyDebuffs[extra[1]][destGuid], "combatlog")
+                    enemyDebuffs[extra[1]][destGuid] = nil
+                end
+            end
+            -- raid tracking
+            if conf.raidBars and IsInInstance() then
+                debug(2, "Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
+                if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+                        and sourceGuid ~= QA.playerGuid
+                        and QA.db.profile.raidBars
+                --and (not conf.option or QA.db.profile[conf.option.."_rbars"])
+                then
+                    -- start offensive timer
+                    local name = strsplit("-", sourceName)
+                    local duration = QA:GetDuration(conf, spellId)
+                    local timer = QA:AddTimer(WINDOW.RAIDBARS, conf, spellId, duration, GetTime()+duration, nil, name, name)
+                    if not raidBuffs[extra[1]] then raidBuffs[extra[1]] = {} end
+                    raidBuffs[extra[1]][destGuid] = timer
+                end
+
+                if  subevent == "SPELL_AURA_REMOVED"
+                        and sourceGuid ~= QA.playerGuid
+                        and raidBuffs[extra[1]] and raidBuffs[extra[1]][destGuid]
+                then
+                    -- end offensive timer
+                    QA:RemoveTimer(raidBuffs[extra[1]][destGuid], "raidbar")
+                    raidBuffs[extra[1]][destGuid] = nil
                 end
             end
         end

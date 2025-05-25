@@ -193,7 +193,7 @@ function QA:BuildTrackedSpells()
                         end
                     end
                     for _, spellId in ipairs(spell.spellId) do
-                        --debug(3, "BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "[option:", tostring(spell.option).."]")
+                        --debug("BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "duration", spell.duration, "[option:", tostring(spell.option).."]")
                         if spell.aura then
                             QA.trackedAuras[spellId] = spell
                         elseif spell.duration then

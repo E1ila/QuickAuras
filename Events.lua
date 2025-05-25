@@ -262,7 +262,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 QA.hasTaunted = GetTime() + (QA:GetDuration(conf, spellId) or 1)
             end
             -- offensive debuffs
-            if conf.duration and conf.list and not conf.aura then
+            if conf.duration and conf.list then
                 if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                         and sourceGuid == QA.playerGuid
                         --and destGUID == UnitGUID("target")
@@ -273,15 +273,17 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                     if conf.OnDetect then
                         conf.OnDetect(conf, sourceGuid, sourceName, destGuid, destName)
                     end
-                    local text, keyExtra, duration = nil, destGuid, QA:GetDuration(conf, spellId)
-                    if conf.multi then
-                        text = destName
-                    end
-                    --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
-                    local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
-                    if not conf.aoe then
-                        if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
-                        enemyDebuffs[extra[1]][destGuid] = timer
+                    if not conf.aura then -- players aura are not offensive
+                        local text, keyExtra, duration = nil, destGuid, QA:GetDuration(conf, spellId)
+                        if conf.multi then
+                            text = destName
+                        end
+                        --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
+                        local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
+                        if not conf.aoe then
+                            if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
+                            enemyDebuffs[extra[1]][destGuid] = timer
+                        end
                     end
                 end
 

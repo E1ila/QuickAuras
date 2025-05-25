@@ -467,7 +467,7 @@ function QA:ArrangeIcons(window)
         elseif window == WINDOW.ALERT or window == WINDOW.CRUCIAL then
             -- down
             if lastFrame then
-                frame:SetPoint("TOP", lastFrame, "BOTTOM", 2, 0) -- vertical layout
+                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0) -- vertical layout
             else
                 frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
             end

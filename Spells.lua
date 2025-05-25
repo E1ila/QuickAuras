@@ -3,6 +3,7 @@ local QA = addon.root
 QA.spells = { }
 local spells = QA.spells
 local WINDOW = QA.WINDOW
+local out = QA.Print
 
 spells.warlock = {
     corruption = {
@@ -941,18 +942,17 @@ spells.other = {
         list = WINDOW.WATCH,
         duration = 30,
     },
-
     chicken = {
         spellId = { 23060 },
         name = "Squawk",
         icon = "Interface\\Icons\\inv_misc_birdbeck_01",
         color = {0.847, 0.686, 0.541},
         list = WINDOW.WATCH,
-        showAtTime = 5,
-        cooldown = true,
+        duration = 60*4,
         OnDetect = function()
             if QA.db.profile.announceSquawk then
                 SendChatMessage("Squawk!", "PARTY")
+                out("Squawk!")
             end
         end,
     },

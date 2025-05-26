@@ -963,6 +963,13 @@ QA.options = {
                     order = 999,
                 },
             },
+        },
+        naxxramas = {
+            type = "group",
+            name = "Naxxramas",
+            order = 20000,
+            args = {
+            },
         }
     },
 }

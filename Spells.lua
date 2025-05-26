@@ -900,6 +900,17 @@ spells.iconAlerts = {
         duration = 6,
         icon = "Interface\\Icons\\spell_nature_naturetouchdecay",
     },
+    naxxDeathknightCaptainCleave = {
+        spellId = { 28334 },
+        npcId = 16145,
+        list = WINDOW.ALERT,
+        option = "naxxDeathknightCaptainCleave",
+        category = "iconAlerts",
+        name = "Deathknight Captain Cleave",
+        desc = "Alert when Deathknight Captain cleaves in Naxxramas",
+        duration = 6,
+        icon = "Interface\\Icons\\ability_whirlwind",
+    },
 }
 
 spells.racials = {

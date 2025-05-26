@@ -255,6 +255,21 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         local conf = QA.trackedCombatLog[extra[1]]
         if conf then
             local spellId = extra[1]
+            -- npc auras
+            if conf.npcId and QA:GetNpcIdFromGuid(sourceGuid) == conf.npcId then
+                if subevent == "SPELL_AURA_APPLIED" then
+                    local keyExtra, duration = destGuid, QA:GetDuration(conf, spellId)
+                    local timer = QA:AddTimer(conf.list or WINDOW.ALERT, conf, spellId, duration, GetTime()+duration, nil, nil, keyExtra)
+                    if not enemyDebuffs[spellId] then enemyDebuffs[spellId] = {} end
+                    enemyDebuffs[spellId][sourceGuid] = timer
+
+                elseif subevent == "SPELL_AURA_REMOVED" and enemyDebuffs[spellId] and enemyDebuffs[spellId][sourceGuid] then
+                    -- end offensive timer
+                    QA:RemoveTimer(enemyDebuffs[spellId][sourceGuid], "combatlog")
+                    enemyDebuffs[spellId][sourceGuid] = nil
+                end
+            end
+
             -- taunt
             if conf.taunt and subevent == "SPELL_AURA_APPLIED" and sourceGuid == QA.playerGuid then
                 --debug(2, "CLEU ".._c.bold.."Taunt|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)

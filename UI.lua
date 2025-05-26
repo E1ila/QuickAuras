@@ -161,7 +161,7 @@ function QA:CreateItemIcon(itemId, parentFrame, frameName, showTooltip, showCoun
         print("Invalid itemId:", itemId)
         return nil
     end
-    return QA:CreateIconFrame(itemIcon, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+    return QA:CreateIconFrame(itemIcon, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick, itemId)
 end
 
 function QA:CreateSpellIcon(spellId, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
@@ -170,12 +170,12 @@ function QA:CreateSpellIcon(spellId, parentFrame, frameName, showTooltip, showCo
         print("Invalid spellId:", spellId)
         return nil
     end
-    return QA:CreateIconFrame(spellIcon, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+    return QA:CreateIconFrame(spellIcon, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick, nil, spellId)
 end
 
-function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick)
+function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick, itemId, spellId)
     local frame = QA:CreateTextureIcon(texture, parentFrame, frameName)
-    debug(3, "CreateItemIcon", frameName, "texture", texture, "showCount", showCount)
+    debug(3, "CreateIconFrame", frameName, "texture", texture, "showCount", showCount, "itemId", itemId, "spellId", spellId)
 
     if showCount then
         local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -185,11 +185,15 @@ function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCo
         frame.counterText = counterText -- Store the counter for later updates
     end
 
-    if showTooltip then
+    if showTooltip and (itemId or spellId) then
         -- Add a tooltip to show the item's name
-        frame:SetScript("OnEnter", function(QA)
-            GameTooltip:SetOwner(QA, "ANCHOR_RIGHT")
-            GameTooltip:SetItemByID(itemId)
+        frame:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            if itemId then
+                GameTooltip:SetItemByID(itemId)
+            elseif spellId then
+                GameTooltip:SetSpellByID(spellId)
+            end
             GameTooltip:Show()
         end)
         frame:SetScript("OnLeave", function()
@@ -198,7 +202,7 @@ function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCo
     end
 
     if onRightClick or onClick then
-        frame:SetScript("OnMouseDown", function(QA, button)
+        frame:SetScript("OnMouseDown", function(self, button)
             if onRightClick and button == "RightButton" then
                 onRightClick()
             elseif onClick and button == "LeftButton" then
@@ -336,6 +340,7 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
     if QA.ignoredIcons[key] then return nil end
     local attr = QA:GetWindowAttr(window, idType)
     local button = attr.list[id]
+    debug("!!!!! AddIcon", window, "id", id, "button", button)
     if not button then
         local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) or type(count) == "number" and count >= 0
         debug(2, _c.bold.."AddIcon|r", conf.name, id, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
@@ -408,11 +413,10 @@ function QA:ArrangeIcons(window)
     table.sort(sortedList, function(a, b)
         return (a.expTime or 0) > (b.expTime or 0)
     end)
-    attr.list = sortedList
 
-    local lastFrame = nil
+    local lastFrame
     local count = 0
-    for _, obj in pairs(attr.list) do
+    for _, obj in pairs(sortedList) do
         count = count + 1
         local frame = obj.frame
         frame:ClearAllPoints()
@@ -442,6 +446,7 @@ function QA:ArrangeIcons(window)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
+                frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
             elseif attr.align == "left" then
                 -- left
                 if lastFrame then
@@ -449,6 +454,7 @@ function QA:ArrangeIcons(window)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
+                frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
             elseif attr.align == "down" then
                 -- down
                 if lastFrame then
@@ -457,6 +463,7 @@ function QA:ArrangeIcons(window)
                     frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
                 end
                 frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+                frame:GetParent():SetSize(attr.height, attr.height * count)
             elseif attr.align == "hcenter" then
                 if lastFrame then
                     frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
@@ -464,10 +471,8 @@ function QA:ArrangeIcons(window)
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
                 frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+                frame:GetParent():SetSize(attr.height * count, attr.height)
             end
-        end
-        if window == WINDOW.QUEUE then
-            frame:GetParent():SetSize(attr.height * count, attr.height) -- Width, Height
         end
         if frame.counterText then
             frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")
@@ -505,6 +510,7 @@ function QA:ParentFramesNormalState()
         _G[frame:GetName().."_Text"]:Hide()
         frame:EnableMouse(false)
     end
+    QA:RefreshAll()
 end
 
 function QA:ParentFramesEditState()
@@ -512,6 +518,9 @@ function QA:ParentFramesEditState()
     QuickAuras_SwingTimer:Show()
     QuickAuras_SwingTimer:EnableMouse(true)
     QuickAuras_SwingTimer_Text:Show()
+    for window, _ in pairs(QA.windowAttributes) do
+        QA:ClearIcons(window)
+    end
     for _, frame in ipairs(QA.adjustableFrames) do
         QA:SetDarkBackdrop(frame)
         _G[frame:GetName().."_Text"]:Show()

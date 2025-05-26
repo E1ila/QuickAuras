@@ -241,46 +241,55 @@ function QA:GetWindowAttr(window, idType)
         attr.parent = QuickAuras_RaidBars
         attr.bar = true
         attr.height = QA.db.profile.raidBarHeight
+        attr.align = "vbars"
     elseif window == WINDOW.COOLDOWNS then
         attr.list = QA.list_cooldowns
         attr.parent = QuickAuras_Cooldowns
         attr.height = QA.db.profile.cooldownIconSize
+        attr.align = "right"
     elseif window == WINDOW.WARNING then
         attr.list = QA.list_iconWarnings
         attr.parent = QuickAuras_IconWarnings
         attr.Refresh = QA.RefreshWarnings
         attr.height = QA.db.profile.gearWarningSize
+        attr.align = "left"
     elseif window == WINDOW.MISSING then
         attr.list = QA.list_missingBuffs
         attr.parent = QuickAuras_MissingBuffs
         attr.Refresh = QA.RefreshMissing
         attr.glowInCombat = true
         attr.height = QA.db.profile.missingBuffsSize
+        attr.align = "right"
     elseif window == WINDOW.ALERT then
         attr.list = QA.list_iconAlerts
         attr.parent = QuickAuras_IconAlerts
         attr.Refresh = QA.RefreshAlerts
         attr.height = QA.db.profile.iconAlertSize
+        attr.align = "down"
     elseif window == WINDOW.REMINDER then
         attr.list = QA.list_reminders
         attr.parent = QuickAuras_Reminders
         attr.Refresh = QA.RefreshReminders
         attr.height = QA.db.profile.reminderIconSize
+        attr.align = "left"
     elseif window == WINDOW.CRUCIAL then
         attr.list = QA.list_crucial
         attr.parent = QuickAuras_Crucial
         attr.glowInCombat = true
         attr.height = QA.db.profile.crucialIconSize
+        attr.align = "down"
         --Refresh = QuickAuras.RefreshReminders
     elseif window == WINDOW.RANGE then
         attr.list = QA.list_range
         attr.parent = QuickAuras_RangeIndicator
         attr.height = QA.db.profile.rangeIconSize
+        attr.align = "hcenter"
         --Refresh = QuickAuras.RefreshReminders
     elseif window == WINDOW.QUEUE then
         attr.list = QA.list_queue
         attr.parent = QuickAuras_SpellQueue
         attr.height = QA.db.profile.spellQueueIconSize
+        attr.align = "hcenter"
         --Refresh = QuickAuras.RefreshReminders
     elseif window == WINDOW.OFFENSIVE then
         attr.list = QA.list_offensiveBars
@@ -288,11 +297,13 @@ function QA:GetWindowAttr(window, idType)
         attr.bar = true
         attr.widthMul = 1.5
         attr.height = QA.db.profile.raidBarHeight
+        attr.align = "vbars"
     elseif window == WINDOW.WATCH then
         attr.list = QA.list_watchBars
         attr.parent = QuickAuras_WatchBars
         attr.bar = true
         attr.height = QA.db.profile.raidBarHeight
+        attr.align = "vbars"
     end
     return attr
 end
@@ -386,7 +397,7 @@ function QA:ArrangeIcons(window)
         if frame.counterText and obj.count and type(obj.count) == "number" then
             frame.counterText:SetText(obj.count)
         end
-        if window == WINDOW.OFFENSIVE or window == WINDOW.WATCH or window == WINDOW.RAIDBARS then
+        if attr.align == "vbars" then
             -- progress bar, down
             if lastFrame then
                 frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, -QA.db.profile.barGap+4)
@@ -396,46 +407,44 @@ function QA:ArrangeIcons(window)
             --if window == WINDOW.RAIDBARS and height * QA.list_raidBars
             local padding = 2
             frame:SetPoint("CENTER", attr.parent, "CENTER", 0, 0)
-            frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), height)
+            frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), attr.height)
             frame.iconFrame:SetSize(attr.height-padding*2, attr.height-padding*2)
             frame.iconFrame.icon:SetSize(attr.height-padding*2, attr.height-padding*2)
-        elseif window == WINDOW.MISSING or window == WINDOW.COOLDOWNS then
-            -- left
-            if lastFrame then
-                frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
-            else
-                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
-            end
-            frame:SetSize(attr.height, attr.height) -- Width, Height
-        elseif window == WINDOW.WARNING or window == WINDOW.REMINDER then
-            -- left
-            if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -2, 0)
-            else
-                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
-            end
-            frame:SetSize(attr.height, attr.height) -- Width, Height
-        elseif window == WINDOW.ALERT or window == WINDOW.CRUCIAL then
-            -- down
-            if lastFrame then
-                frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0) -- vertical layout
-            else
-                frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
-            end
-            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-            frame:SetSize(attr.height, attr.height) -- Width, Height
-        elseif window == WINDOW.QUEUE or window == WINDOW.RANGE then
-            -- vertical center
-            if lastFrame then
-                frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
-            else
-                frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
-            end
-            frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+        else
             frame:SetSize(attr.height, attr.height)
-            if window == WINDOW.QUEUE then
-                frame:GetParent():SetSize(attr.height * count, attr.height) -- Width, Height
+            if attr.align == "right" then
+                -- right
+                if lastFrame then
+                    frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
+                else
+                    frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+                end
+            elseif attr.align == "left" then
+                -- left
+                if lastFrame then
+                    frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -2, 0)
+                else
+                    frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+                end
+            elseif attr.align == "down" then
+                -- down
+                if lastFrame then
+                    frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0) -- vertical layout
+                else
+                    frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
+                end
+                frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+            elseif attr.align == "hcenter" then
+                if lastFrame then
+                    frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
+                else
+                    frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+                end
+                frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
             end
+        end
+        if window == WINDOW.QUEUE then
+            frame:GetParent():SetSize(attr.height * count, attr.height) -- Width, Height
         end
         if frame.counterText then
             frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")

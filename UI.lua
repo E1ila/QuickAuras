@@ -25,6 +25,7 @@ end
 function QA:InitUI()
     debug("Initializing UI")
     _c = QA.colors
+    QA:InitWindowAttr()
     QA:ParentFramesNormalState()
     QA:InitWeaponEnchants()
     QA:InitSwingTimers()
@@ -224,86 +225,108 @@ end
 
 -- Icon warnings ------------------------------------
 
-function QA:GetWindowAttr(window, idType)
-    local attr = {
-        widthMul = 1,
-        parent = UIParent,
-        height = 10,
+function QA:InitWindowAttr()
+    QA.windowAttributes = {
+        [WINDOW.SWING] = {
+            widthMul = 1,
+            parent = UIParent,
+            height = 10,
+            list = QA.list_swingTimers,
+            bar = true,
+        },
+        [WINDOW.RAIDBARS] = {
+            widthMul = 1,
+            parent = QuickAuras_RaidBars,
+            height = QA.db.profile.raidBarHeight,
+            list = QA.list_raidBars,
+            bar = true,
+            align = "vbars",
+        },
+        [WINDOW.COOLDOWNS] = {
+            widthMul = 1,
+            parent = QuickAuras_Cooldowns,
+            height = QA.db.profile.cooldownIconSize,
+            list = QA.list_cooldowns,
+            align = "right",
+        },
+        [WINDOW.WARNING] = {
+            widthMul = 1,
+            parent = QuickAuras_IconWarnings,
+            height = QA.db.profile.gearWarningSize,
+            list = QA.list_iconWarnings,
+            Refresh = QA.RefreshWarnings,
+            align = "left",
+        },
+        [WINDOW.MISSING] = {
+            widthMul = 1,
+            parent = QuickAuras_MissingBuffs,
+            height = QA.db.profile.missingBuffsSize,
+            list = QA.list_missingBuffs,
+            Refresh = QA.RefreshMissing,
+            glowInCombat = true,
+            align = "right",
+        },
+        [WINDOW.ALERT] = {
+            widthMul = 1,
+            parent = QuickAuras_IconAlerts,
+            height = QA.db.profile.iconAlertSize,
+            list = QA.list_iconAlerts,
+            Refresh = QA.RefreshAlerts,
+            align = "down",
+        },
+        [WINDOW.REMINDER] = {
+            widthMul = 1,
+            parent = QuickAuras_Reminders,
+            height = QA.db.profile.reminderIconSize,
+            list = QA.list_reminders,
+            Refresh = QA.RefreshReminders,
+            align = "left",
+        },
+        [WINDOW.CRUCIAL] = {
+            widthMul = 1,
+            parent = QuickAuras_Crucial,
+            height = QA.db.profile.crucialIconSize,
+            list = QA.list_crucial,
+            glowInCombat = true,
+            align = "down",
+        },
+        [WINDOW.RANGE] = {
+            widthMul = 1,
+            parent = QuickAuras_RangeIndicator,
+            height = QA.db.profile.rangeIconSize,
+            list = QA.list_range,
+            align = "hcenter",
+        },
+        [WINDOW.QUEUE] = {
+            widthMul = 1,
+            parent = QuickAuras_SpellQueue,
+            height = QA.db.profile.spellQueueIconSize,
+            list = QA.list_queue,
+            align = "hcenter",
+        },
+        [WINDOW.OFFENSIVE] = {
+            widthMul = 1.5,
+            parent = QuickAuras_OffensiveBars,
+            height = QA.db.profile.raidBarHeight,
+            list = QA.list_offensiveBars,
+            bar = true,
+            align = "vbars",
+        },
+        [WINDOW.WATCH] = {
+            widthMul = 1,
+            parent = QuickAuras_WatchBars,
+            height = QA.db.profile.raidBarHeight,
+            list = QA.list_watchBars,
+            bar = true,
+            align = "vbars",
+        },
     }
+end
+
+function QA:GetWindowAttr(window, idType)
+    local attr = QA.windowAttributes[window]
     if idType then
         attr.Create = idType == "item" and QA.CreateItemIcon or QA.CreateSpellIcon
-    end
-    if window == WINDOW.SWING then
-        attr.list = QA.list_swingTimers
-        attr.bar = true
-    elseif window == WINDOW.RAIDBARS then
-        attr.list = QA.list_raidBars
-        attr.parent = QuickAuras_RaidBars
-        attr.bar = true
-        attr.height = QA.db.profile.raidBarHeight
-        attr.align = "vbars"
-    elseif window == WINDOW.COOLDOWNS then
-        attr.list = QA.list_cooldowns
-        attr.parent = QuickAuras_Cooldowns
-        attr.height = QA.db.profile.cooldownIconSize
-        attr.align = "right"
-    elseif window == WINDOW.WARNING then
-        attr.list = QA.list_iconWarnings
-        attr.parent = QuickAuras_IconWarnings
-        attr.Refresh = QA.RefreshWarnings
-        attr.height = QA.db.profile.gearWarningSize
-        attr.align = "left"
-    elseif window == WINDOW.MISSING then
-        attr.list = QA.list_missingBuffs
-        attr.parent = QuickAuras_MissingBuffs
-        attr.Refresh = QA.RefreshMissing
-        attr.glowInCombat = true
-        attr.height = QA.db.profile.missingBuffsSize
-        attr.align = "right"
-    elseif window == WINDOW.ALERT then
-        attr.list = QA.list_iconAlerts
-        attr.parent = QuickAuras_IconAlerts
-        attr.Refresh = QA.RefreshAlerts
-        attr.height = QA.db.profile.iconAlertSize
-        attr.align = "down"
-    elseif window == WINDOW.REMINDER then
-        attr.list = QA.list_reminders
-        attr.parent = QuickAuras_Reminders
-        attr.Refresh = QA.RefreshReminders
-        attr.height = QA.db.profile.reminderIconSize
-        attr.align = "left"
-    elseif window == WINDOW.CRUCIAL then
-        attr.list = QA.list_crucial
-        attr.parent = QuickAuras_Crucial
-        attr.glowInCombat = true
-        attr.height = QA.db.profile.crucialIconSize
-        attr.align = "down"
-        --Refresh = QuickAuras.RefreshReminders
-    elseif window == WINDOW.RANGE then
-        attr.list = QA.list_range
-        attr.parent = QuickAuras_RangeIndicator
-        attr.height = QA.db.profile.rangeIconSize
-        attr.align = "hcenter"
-        --Refresh = QuickAuras.RefreshReminders
-    elseif window == WINDOW.QUEUE then
-        attr.list = QA.list_queue
-        attr.parent = QuickAuras_SpellQueue
-        attr.height = QA.db.profile.spellQueueIconSize
-        attr.align = "hcenter"
-        --Refresh = QuickAuras.RefreshReminders
-    elseif window == WINDOW.OFFENSIVE then
-        attr.list = QA.list_offensiveBars
-        attr.parent = QuickAuras_OffensiveBars
-        attr.bar = true
-        attr.widthMul = 1.5
-        attr.height = QA.db.profile.raidBarHeight
-        attr.align = "vbars"
-    elseif window == WINDOW.WATCH then
-        attr.list = QA.list_watchBars
-        attr.parent = QuickAuras_WatchBars
-        attr.bar = true
-        attr.height = QA.db.profile.raidBarHeight
-        attr.align = "vbars"
     end
     return attr
 end

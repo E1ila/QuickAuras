@@ -137,14 +137,11 @@ function QA:PLAYER_REGEN_ENABLED()
 end
 
 function QA:GROUP_ROSTER_UPDATE()
-    QA.isMainTank = QA.isWarrior and IsInRaid() and (GetPartyAssignment("MAINTANK", "player") or GetPartyAssignment("MAINASSIST", "player"))
-    QA:CheckIfWarriorInParty()
-    QA:CheckForShaman()
+    QA:GroupCompoChanged()
 end
 
 function QA:PARTY_MEMBER_ENABLE()
-    QA:CheckIfWarriorInParty()
-    QA:CheckForShaman()
+    QA:GroupCompoChanged()
 end
 
 function QA:UPDATE_SHAPESHIFT_FORM(...)

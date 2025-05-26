@@ -20,10 +20,15 @@ local Loatheb = {
     npcId = 16011,
     spore = 0,
 }
+local Sapphiron = {
+    encounterId = 1119,
+    npcId = 15989,
+}
 QA.boss = {
     FHM = FHM,
     KT = KT,
     Loatheb = Loatheb,
+    Sapphiron = Sapphiron,
 }
 QA.trackedEncounters = {}
 
@@ -39,6 +44,7 @@ function QA:EncounterStarted(encounterId)
     local boss = QA.trackedEncounters[encounterId]
     if boss then
         out(_c.bold..boss.name.."|r Encounter started")
+        boss.active = true
         boss:EncounterStart()
     end
 end
@@ -47,6 +53,7 @@ function QA:EncounterEnded(encounterId)
     local boss = QA.trackedEncounters[encounterId]
     if boss then
         out(_c.bold..boss.name.."|r Encounter ended")
+        boss.active = false
         boss:EncounterEnd()
     end
 end

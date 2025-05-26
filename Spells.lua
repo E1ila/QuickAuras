@@ -768,7 +768,8 @@ spells.shaman = {
             end
         end,
         CrucialCond = function()
-            return QA.isHorde  and QA.db.profile.frostResistanceTotemMissing and #QA.partyShamans > 0
+            return QA.isHorde and QA.db.profile.frostResistanceTotemMissing and #QA.partyShamans > 0
+                    and (QA.boss.KT.phase == 2 or QA.boss.Sapphiron.active)
         end
     },
     reincarnation = {

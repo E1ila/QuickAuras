@@ -14,6 +14,13 @@ QA.targetInRange = false
 
 local targetAggro = {}
 
+function QA:GroupCompoChanged()
+    QA.isMainTank = QA.isWarrior and IsInRaid() and (GetPartyAssignment("MAINTANK", "player") or GetPartyAssignment("MAINASSIST", "player"))
+    QA:CheckIfWarriorInParty()
+    QA:CheckForShaman()
+    QA:CheckAuras()
+end
+
 function QA:CheckTargetAuras(targetChanged)
     local shouldCheck = UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and QA.inCombat
     local window = QA.db.profile.targetMissingDebuffFrame

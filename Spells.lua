@@ -533,9 +533,9 @@ spells.warrior = {
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
         crucial = QA.isWarrior or QA.isRogue,
         OnClick = function()
-            if not QA.isWarrior then
+            --if not QA.isWarrior then
                 SendChatMessage("Battle Shout dropped!", "PARTY")
-            end
+            --end
         end,
         CrucialCond = function()
             return QA.db.profile.battleShoutMissing and (not QA.isWarrior or QA.inCombat or IsInGroup()) and (QA.isWarrior or QA.hasWarriorInParty)
@@ -765,13 +765,10 @@ spells.shaman = {
         OnClick = function()
             if not QA.isShaman then
                 SendChatMessage("Frost Resistance Totem Mssing!", "PARTY")
-            else
-                local spellName = GetSpellInfo(10479)
-                CastSpellByName(spellName)
             end
         end,
         CrucialCond = function()
-            return QA.isHorde and QA.boss.KT.phase == 2 and QA.db.profile.frostResistanceTotemMissing and #QA.partyShamans > 0
+            return QA.isHorde  and QA.db.profile.frostResistanceTotemMissing and #QA.partyShamans > 0
         end
     },
     reincarnation = {

@@ -202,7 +202,7 @@ function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCo
     end
 
     if onRightClick or onClick then
-        if type(onClick == "number") then
+        if type(onClick) == "number" then
             frame:RegisterForClicks("AnyUp")
             local spellName = GetSpellInfo(onClick)
             frame:SetAttribute("type", "spell")

@@ -544,8 +544,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                 end
                 local OnClick = buff.conf.OnClick
                 for _, id in ipairs(buff.spellIds) do
-                    local spellName = GetSpellInfo(id)
-                    if spellName then
+                    if IsSpellKnown(id) then
                         OnClick = id
                         break
                     end

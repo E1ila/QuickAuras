@@ -16,7 +16,7 @@ QA.playerBuffs = {}
 QA.playerIsStealthed = {}
 QA.existingConsumes = {}
 QA.partyShamans = {}
-QA.encounter = { OnStart = {}, OnEnd = {} }
+QA.encounter = { OnStart = {}, OnEnd = {}, CombatLog = {} }
 QA.procCheck = { cooldown = {}, FadeCheck = {} }
 QA.hasTaunted = 0
 QAG = QA

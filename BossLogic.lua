@@ -23,6 +23,9 @@ local Loatheb = {
 local Sapphiron = {
     encounterId = 1119,
     npcId = 15989,
+    phase = 0, -- 1 ground, 2 air
+    sampleInterval = 0.3,
+    minNoTargetTime = 0.5,
 }
 QA.boss = {
     FHM = FHM,
@@ -45,7 +48,9 @@ function QA:EncounterStarted(encounterId)
     if boss then
         out(_c.bold..boss.name.."|r Encounter started")
         boss.active = true
-        boss:EncounterStart()
+        if boss.EncounterStart then
+            boss:EncounterStart()
+        end
     end
 end
 
@@ -54,13 +59,70 @@ function QA:EncounterEnded(encounterId)
     if boss then
         out(_c.bold..boss.name.."|r Encounter ended")
         boss.active = false
-        boss:EncounterEnd()
+        if boss.timer then
+            boss.timer:Cancel()
+            boss.timer = nil
+        end
+        if boss.EncounterEnd then
+            boss:EncounterEnd()
+        end
+    end
+    QA.encounter.CombatLog = {}
+end
+
+function Sapphiron:EncounterStart()
+    self.phase = 1
+    self.noTargetTime = 0
+    QA.encounter.CombatLog.SPELL_CAST_SUCCESS = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, spellId, spellName, ...)
+        if spellId == 28524 then
+            self:GroundPhase()
+        end
+    end
+end
+
+function Sapphiron:GroundPhase()
+    self.phase = 1
+    out(_c.bold..QA.name.."|r Ground Phase")
+end
+
+function Sapphiron:AirPhase()
+    self.phase = 2
+    out(_c.bold..QA.name.."|r Air Phase")
+end
+
+function Sapphiron:ScheduleCheckBossTarget()
+    self.timer = C_Timer.NewTimer(self.sampleInterval, function()
+        if not QA.inCombat then return end
+        self:CheckBossTarget()
+        self:ScheduleCheckBossTarget()
+    end)
+end
+
+function Sapphiron:CheckBossTarget()
+    local foundBoss, target
+    for i = 1, GetNumGroupMembers() do
+        local unitId = "raid"..i.."target"
+        if UnitExists(unitId) and QA:GetNpcIdFromGuid(UnitGUID(unitId)) == self.npcId and UnitAffectingCombat(unitId) then
+            target = UnitName(unitId.."target") -- sapphiron's target
+            foundBoss = true
+            break
+        end
+    end
+    if foundBoss and not target then
+        self.noTargetTime = self.noTargetTime + self.sampleInterval
+    elseif foundBoss then
+        self.noTargetTime = 0
+    end
+    --Timers don't appear right for classic, close but might need some slight tweaking
+    if self.phase ~= 2 and self.noTargetTime > self.minNoTargetTime then
+        self.noTargetTime = 0
+        self:AirPhase()
     end
 end
 
 function Loatheb:EncounterStart()
     self.spore = 0
-    QA.encounter.OnSpellSummon = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    QA.encounter.CombatLog.SPELL_SUMMON = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
         if QA:GetNpcIdFromGuid(sourceGuid) == self.npcId then
             out(_c.bold..QA.name.."|r "..destName.." spawned")
             self.spore = self.spore + 1
@@ -71,16 +133,12 @@ function Loatheb:EncounterStart()
     end
 end
 
-function Loatheb:EncounterEnd()
-    QA.OnSpellSummon = nil
-end
-
 function KT:EncounterStart()
     self.phase = 1
-    QA.encounter.OnSwingDamage = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    QA.encounter.CombatLog.SWING_DAMAGE = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
         if QA:GetNpcIdFromGuid(sourceGuid) == self.npcId then
             self.phase = 2
-            QA.encounter.OnSwingDamage = nil
+            QA.encounter.CombatLog.SWING_DAMAGE = nil
             out(_c.bold.."KT".."|r Phase 2")
             QA:CheckAuras()
         end
@@ -88,7 +146,6 @@ function KT:EncounterStart()
 end
 
 function KT:EncounterEnd()
-    QA.encounter.OnSwingDamage = nil
     self.phase = 0
 end
 
@@ -97,13 +154,6 @@ function FHM:EncounterStart()
     self.timer = C_Timer.NewTimer(21, function()
         FHM:Mark()
     end)
-end
-
-function FHM:EncounterEnd()
-    if self.timer then
-        self.timer:Cancel()
-        self.timer = nil
-    end
 end
 
 function FHM:Mark()

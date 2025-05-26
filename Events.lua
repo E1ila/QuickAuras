@@ -375,11 +375,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
-    if QA.encounter.OnSwingDamage and subevent == "SWING_DAMAGE" then
-        QA.encounter.OnSwingDamage(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
-    end
-    if QA.encounter.OnSpellSummon and subevent == "SPELL_SUMMON" then
-        QA.encounter.OnSpellSummon(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
+    if QA.encounter.CombatLog[subevent] then
+        QA.encounter.CombatLog[subevent](timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end
 
     -- check procs

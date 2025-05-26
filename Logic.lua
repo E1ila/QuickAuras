@@ -52,7 +52,6 @@ function QA:CheckTargetAuras(targetChanged)
             else
                 QA:RemoveIcon(window, spell.spellId[1])
                 if stackCount == spell.enemyAura.requiredStacks then
-                    debug("AddTimer", "duration", found.duration, "expires", found.expires)
                     --:AddTimer(window,       conf,  id,               duration,       expTime,       showAtTime,    text,      keyExtra)
                     QA:AddTimer(window, spell, spell.spellId[1], found.duration, found.expires, QA.db.profile.targetAuraExpireTime)
                 end
@@ -223,7 +222,7 @@ function QA:CheckProcAura(spell, seen)
     local spellId = spell.spellId[1]
     local hasIt = QA:HasSeenAny(spell.spellId, seen)
     local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
-    debug("Checking proc aura: "..spell.name, hasIt)
+    debug(2, "Checking proc aura: "..spell.name, hasIt)
     if hasIt then
         local button = QA:AddIcon(window, "spell", spellId, spell)
         --                AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)

@@ -520,7 +520,6 @@ function QA:ToggleLockedState()
 end
 
 function QA:ResetWidgets()
-    debug("Resetting widgets")
     QA:ResetGeneralWidgets()
     QA:ResetRogueWidgets()
 end

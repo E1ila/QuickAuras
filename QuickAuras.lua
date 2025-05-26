@@ -323,15 +323,6 @@ function QA:IsRetail()
     return false
 end
 
-function QA:PrintSwing(hand)
-    local duration, expirationTime, weaponName, icon = QA.GetSwingTimerInfo(hand)
-    if duration > 0 then
-        debug("swing", hand, duration, expirationTime, weaponName)
-    else
-        debug("swing", hand, "--")
-    end
-end
-
 function QA:GetDuration(conf, spellId)
     if not conf.duration then return nil end
     if type(conf.duration) == "number" then

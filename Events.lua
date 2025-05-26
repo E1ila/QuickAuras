@@ -139,10 +139,12 @@ end
 function QA:GROUP_ROSTER_UPDATE()
     QA.isMainTank = QA.isWarrior and IsInRaid() and (GetPartyAssignment("MAINTANK", "player") or GetPartyAssignment("MAINASSIST", "player"))
     QA:CheckIfWarriorInParty()
+    QA:CheckForShaman()
 end
 
 function QA:PARTY_MEMBER_ENABLE()
     QA:CheckIfWarriorInParty()
+    QA:CheckForShaman()
 end
 
 function QA:UPDATE_SHAPESHIFT_FORM(...)

@@ -202,13 +202,20 @@ function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCo
     end
 
     if onRightClick or onClick then
-        frame:SetScript("OnMouseDown", function(self, button)
-            if onRightClick and button == "RightButton" then
-                onRightClick()
-            elseif onClick and button == "LeftButton" then
-                onClick()
-            end
-        end)
+        if type(onClick == "number") then
+            frame:RegisterForClicks("AnyUp")
+            local spellName = GetSpellInfo(onClick)
+            frame:SetAttribute("type", "spell")
+            frame:SetAttribute("spell", spellName)
+        else
+            frame:SetScript("OnMouseDown", function(self, button)
+                if onRightClick and button == "RightButton" then
+                    onRightClick()
+                elseif onClick and button == "LeftButton" then
+                    onClick()
+                end
+            end)
+        end
     end
 
     return frame
@@ -216,7 +223,7 @@ end
 
 function QA:CreateTextureIcon(texture, parentFrame, frameName)
     -- Create a button frame
-    local frame = CreateFrame("Frame", frameName, parentFrame)
+    local frame = CreateFrame("Button", frameName, parentFrame, "SecureActionButtonTemplate")
 
     local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
     iconTexture:SetTexture(texture)

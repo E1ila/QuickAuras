@@ -528,11 +528,16 @@ spells.warrior = {
         visible = QA.isWarrior,
     },
     battleShout = {
-        spellId = { 6673, 5242, 6192, 11549, 11550, 11551, 25289 },
+        spellId = { 25289, 11551, 11550, 11549, 6192, 5242, 6673 },
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
         crucial = QA.isWarrior or QA.isRogue,
-        crucialCond = function()
+        OnClick = function()
+            if not QA.isWarrior then
+                SendChatMessage("Battle Shout dropped!", "PARTY")
+            end
+        end,
+        CrucialCond = function()
             return QA.db.profile.battleShoutMissing and (not QA.isWarrior or QA.inCombat or IsInGroup()) and (QA.isWarrior or QA.hasWarriorInParty)
         end,
         visible = QA.isWarrior,
@@ -757,7 +762,15 @@ spells.shaman = {
         name = "Frost Resistance Totem",
         icon = "Interface\\Icons\\spell_frostresistancetotem_01",
         crucial = true,
-        crucialCond = function()
+        OnClick = function()
+            if not QA.isShaman then
+                SendChatMessage("Frost Resistance Totem Mssing!", "PARTY")
+            else
+                local spellName = GetSpellInfo(10479)
+                CastSpellByName(spellName)
+            end
+        end,
+        CrucialCond = function()
             return QA.isHorde and QA.boss.KT.phase == 2 and QA.db.profile.frostResistanceTotemMissing and #QA.partyShamans > 0
         end
     },

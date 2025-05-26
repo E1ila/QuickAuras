@@ -328,6 +328,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         if sourceGuid == QA.playerGuid then
             enemyDebuffs = {}
             QA:PlayerDied()
+        else
+            QA:CheckTargetAuras(true)
         end
         -- reset buffs/debuffs of dead unit
         for spellId, conf in pairs(QA.trackedCombatLog) do

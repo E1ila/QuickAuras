@@ -240,7 +240,7 @@ function QA:BuildTrackedItems()
     debug(2, "BuildTrackedItems...")
     for _, item in ipairs(QA.consumes) do
         item.option = "item_".. item.name:gsub("%s+", "")
-        debug(3, "BuildTrackedItems", item.name, item.option, item.spellIds, item.visible)
+        --debug(3, "BuildTrackedItems", item.name, item.option, item.spellIds, item.visible)
         if item.spellIds then
             table.insert(QA.trackedMissingBuffs, item)
         end

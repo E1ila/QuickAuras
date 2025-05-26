@@ -175,7 +175,7 @@ end
 
 function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCount, onRightClick, onClick, itemId, spellId)
     local frame = QA:CreateTextureIcon(texture, parentFrame, frameName)
-    debug(3, "CreateIconFrame", frameName, "texture", texture, "showCount", showCount, "itemId", itemId, "spellId", spellId)
+    --debug(3, "CreateIconFrame", frameName, "texture", texture, "showCount", showCount, "itemId", itemId, "spellId", spellId)
 
     if showCount then
         local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -340,9 +340,8 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
     if QA.ignoredIcons[key] then return nil end
     local attr = QA:GetWindowAttr(window, idType)
     local button = attr.list[id]
-    debug("!!!!! AddIcon", window, "id", id, "button", button)
     if not button then
-        local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) or type(count) == "number" and count >= 0
+        local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) and count ~= nil or type(count) == "number" and count >= 0
         debug(2, _c.bold.."AddIcon|r", conf.name, id, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
         local onRightClick = window ~= WINDOW.ALERT and attr.Refresh and function()
             QA.ignoredIcons[key] = true
@@ -420,7 +419,7 @@ function QA:ArrangeIcons(window)
         count = count + 1
         local frame = obj.frame
         frame:ClearAllPoints()
-        debug(3, _c.purple.."ArrangeIcons|r", window, obj.id, parent, frame:GetParent():GetName(), "counterText", frame.counterText, "obj.count", obj.count)
+        --debug(3, _c.purple.."ArrangeIcons|r", window, obj.id, parent, frame:GetParent():GetName(), "counterText", frame.counterText, "obj.count", obj.count)
         if frame.counterText and obj.count and type(obj.count) == "number" then
             frame.counterText:SetText(obj.count)
         end
@@ -476,6 +475,9 @@ function QA:ArrangeIcons(window)
         end
         if frame.counterText then
             frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")
+        end
+        if frame.cooldownText then
+            frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE") -- Set font, size, and style
         end
         if obj.glowInCombat then
             if QA.inCombat and not obj.frame.glow then
@@ -846,7 +848,7 @@ function QA:TestProgressBar(spells, limit, onlyRaidBars)
     for key, conf in pairs(spells) do
         if not onlyRaidBars and (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
             if count1 < limit then
-                debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
+                --debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 seen[conf.name] = true
                 local duration = 15 - (count1*2)
                 local expTime = GetTime() + duration
@@ -855,7 +857,7 @@ function QA:TestProgressBar(spells, limit, onlyRaidBars)
             end
         elseif conf.raidBars and onlyRaidBars then
             if count2 < limit then
-                debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
+                --debug(3, "TestProgressBar", "conf", conf.name, conf.list, limit)
                 -- we'll inject raidbars separately
                 local duration = math.min(QA:GetDuration(conf), 10)
                 --   AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)

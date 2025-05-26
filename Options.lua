@@ -971,7 +971,7 @@ local function AddSpells(cspells, orderStart, categoryHidden)
     local order = 1
     for spellKey, spell in pairs(cspells) do
         order = order + 1
-        debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
+        --debug(3, "AddAbilitiesOptions", "Adding spell", spellKey, spell.name, spell.spellId, spell.visible)
         if spell.raidBars then
             if QA.defaultOptions.profile[spell.option.."_rbars"] == nil then
                 QA.defaultOptions.profile[spell.option.."_rbars"] = true
@@ -1112,7 +1112,7 @@ function QA:AddRemindersOptions()
 
     local function AddOption(obj, optionsList)
         obj.option = "reminders_"..obj.name:gsub("%s+", "")
-        debug(3, "Adding reminder option", obj.name, obj.option)
+        --debug(3, "Adding reminder option", obj.name, obj.option)
         QA.defaultOptions.profile[obj.option] = true
         optionsList.args[obj.option] = {
             type = "toggle",
@@ -1122,7 +1122,7 @@ function QA:AddRemindersOptions()
                 return QA.db.profile[obj.option]
             end,
             set = function(info, value)
-                debug(3, "Set reminder", obj.name, obj.option, value)
+                --debug(3, "Set reminder", obj.name, obj.option, value)
                 QA.db.profile[obj.option] = value
                 QA:RefreshReminders()
             end,
@@ -1146,7 +1146,7 @@ function QA:AddConsumeOptions()
     for _, item in ipairs(QA.consumes) do
         if item.visible == nil or item.visible then
             order = order + 1
-            debug(3, "AddConsumeOptions", item.name, item.option, item.default)
+            --debug(3, "AddConsumeOptions", item.name, item.option, item.default)
             if item.cooldown then
                 QA.defaultOptions.profile[item.option.."_cd"] = true
             end

@@ -30,7 +30,7 @@ function QA:CheckTargetAuras(targetChanged)
             local name, _, count, dispelType, duration, expires, isStealable, _, _, spellId = UnitDebuff("target", i)
             if not name then break end
             local spell = QA.trackedEnemyAurasBySpellId[spellId]
-            debug(3, "CheckTargetAuras", "(scan)", i, name, spellId, count)
+            --debug(3, "CheckTargetAuras", "(scan)", i, name, spellId, count)
             if spell then
                 seen[spellId] = { count = count, expires = expires, spell = spell, spellId = spellId, duration = duration }
             end
@@ -46,7 +46,7 @@ function QA:CheckTargetAuras(targetChanged)
             end
             local stackCount = found and found.count or 0
             local missing = stackCount < spell.enemyAura.requiredStacks
-            debug(3, "CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
+            --debug(3, "CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
             if missing then
                 QA:AddIcon(window, "spell", spell.spellId[1], spell, found and found.count or 0)
             else
@@ -67,7 +67,7 @@ function QA:CheckSpellQueue(unit, spellGuid)
     local id = QA:GetSpellIdFromGuid(spellGuid)
     local spell = QA.spells.warrior.heroicStrike.bySpellId[id] and QA.spells.warrior.heroicStrike
             or QA.spells.warrior.cleave.bySpellId[id] and QA.spells.warrior.cleave
-    debug(3, "UNIT_SPELLCAST_SENT", unit, spellGuid, id)
+    --debug(3, "UNIT_SPELLCAST_SENT", unit, spellGuid, id)
     if unit == "player" and spell then
         QA:QueuedSpell(spell, id)
     end
@@ -89,7 +89,7 @@ local function MonitorQueued(spellId, callback)
 end
 
 function QA:QueuedSpell(spell, spellId)
-    debug(3, "Queued spell: " .. spell.name)
+    --debug(3, "Queued spell: " .. spell.name)
     if QA.queuedSpell.id and QA.queuedSpell.id ~= spell.spellId[1] then
         QA:RemoveIcon(WINDOW.QUEUE, QA.queuedSpell.id)
     end
@@ -103,7 +103,7 @@ function QA:QueuedSpell(spell, spellId)
 end
 
 function QA:UnQueuedSpell(spell)
-    debug(3, "Removed spell from queue: " .. spell.name)
+    --debug(3, "Removed spell from queue: " .. spell.name)
     QA.queuedSpell = {}
     QA:RemoveIcon(WINDOW.QUEUE, spell.spellId[1])
 end
@@ -189,7 +189,7 @@ function QA:CheckProcSpellUsable(spell)
     local spellId = spell.spellId[1]
     local usable, notEnoughMana = IsUsableSpell(spellId)
     local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
-    debug(3, "Checking proc spell usable: "..spell.name, usable, notEnoughMana)
+    --debug(3, "Checking proc spell usable: "..spell.name, usable, notEnoughMana)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
         local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then
@@ -293,12 +293,12 @@ function QA:CheckTransmuteCooldown()
                 start, duration = GetSpellCooldown(id)
             end
             local timeLeft = math.floor((start + duration - GetTime()) / 60)
-            debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration, "timeLeft", timeLeft)
+            --debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "start", start, "duration", duration, "timeLeft", timeLeft)
             if start == 0 then
                 local TransmuteClick = function()
                     out("|cffff0000Transmute|r "..spell.name.." is ready!")
                 end
-                --     :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
+                --               :AddIcon(iconType,        idType,  id, conf, count, showTooltip, onClick)
                 local button = QA:AddIcon(WINDOW.REMINDER, "spell", id, spell, nil, nil, TransmuteClick)
                 if button then
                     C_Timer.After(0.1, function()
@@ -306,14 +306,12 @@ function QA:CheckTransmuteCooldown()
                     end)
                 end
             elseif timeLeft <= QA.db.profile.transmutePreReadyTime then
-                local timer = QA:AddTimer(WINDOW.REMINDER, spell, id, duration, start+duration)
-                local fontSize = math.floor(QA.db.profile.reminderIconSize/2)
-                timer.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", fontSize, "OUTLINE") -- Set font, size, and style
+                QA:AddTimer(WINDOW.REMINDER, spell, id, duration, start+duration)
             else
                 QA:RemoveIcon(WINDOW.REMINDER, id)
             end
         else
-            debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "hasIt", hasIt)
+            --debug(3, "CheckTransmuteCooldown", "(scan)", spell.name, "hasIt", hasIt)
         end
     end
 end
@@ -332,7 +330,7 @@ function QA:CheckLowConsumes()
         if not consume.option or QA.db.profile[consume.option] then
             local foundItemId, details = QA:FindInBags(consume.itemIds or consume.itemId)
             local minCount = consume.minCount or QA.db.profile.lowConsumesMinCount
-            debug(3, "CheckLowConsumes", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and QA.db.profile[consume.option])
+            --debug(3, "CheckLowConsumes", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and QA.db.profile[consume.option])
             if
                 (not foundItemId or details.count < minCount)
                 and QA.db.profile.lowConsumesMinLevel <= QA.playerLevel
@@ -361,7 +359,7 @@ function QA:CheckTrackingStatus()
     local trackingType = GetTrackingTexture()
     local found, missingSpellId = false, nil
     for spellId, conf in pairs(QA.trackedTracking) do
-        debug(3, "CheckTrackingStatus", "(scan)", conf.name, "spellId", spellId, "option", conf.option, conf.option and QA.db.profile[conf.option])
+        --debug(3, "CheckTrackingStatus", "(scan)", conf.name, "spellId", spellId, "option", conf.option, conf.option and QA.db.profile[conf.option])
         if IsSpellKnown(spellId) and QA.db.profile[conf.option] then
             if conf.textureId == trackingType then
                 QAG:RemoveIcon(WINDOW.REMINDER, spellId)
@@ -374,7 +372,7 @@ function QA:CheckTrackingStatus()
     end
     debug(2, "CheckTrackingStatus", "trackingType", trackingType, "found", found, "missingSpellId", missingSpellId)
     if not found and missingSpellId then
-        debug(3, "CheckTrackingStatus", "missingSpellId", missingSpellId)
+        --debug(3, "CheckTrackingStatus", "missingSpellId", missingSpellId)
         QAG:AddIcon(WINDOW.REMINDER, "spell", missingSpellId, QAG.trackedTracking[missingSpellId])
     end
 end
@@ -407,10 +405,10 @@ function QA:CheckGear(eventType, ...)
 end
 
 local function _checkCooldown(conf, idType, id, start, duration)
-    debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
+    --debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
     if start and start > 0 and duration and duration > 2 and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
-        debug(3, "_checkCooldown", "FOUND", conf.name)
+        --debug(3, "_checkCooldown", "FOUND", conf.name)
         QA:AddTimer(WINDOW.COOLDOWNS, conf, id, updatedDuration, start + duration)
     end
 end
@@ -456,7 +454,7 @@ function QA:CheckAuras()
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
+        --debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
         seen[spellId] = { duration, expTime, spellId }
         if QA.stealthAbilities[spellId] then QA.playerIsStealthed = true end
         -- timer auras -----------------------------------------
@@ -497,13 +495,13 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
             QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
             QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
     for _, buff in ipairs(QA.trackedMissingBuffs) do
-        debug(3, "CheckMissingBuffs", "(pre)", buff.name, "option", buff.option, buff.option and QA.db.profile[buff.option])
+        --debug(3, "CheckMissingBuffs", "(pre)", buff.name, "option", buff.option, buff.option and QA.db.profile[buff.option])
         if (not buff.option or QA.db.profile[buff.option]) and (showNonSelfBuffs or buff.selfBuff) then
             if buff.itemIds or buff.itemId then
                 -- missing consume buff
                 local foundBuff = QA:HasSeenAny(buff.spellIds, activeAuras or QA.playerBuffs)
                 local foundItemId = QA:FindInBags(buff.itemIds or buff.itemId)
-                debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId)
+                --debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId)
                 if  foundBuff
                         or buff.visibleFunc and not buff.visibleFunc()
                         or not foundItemId
@@ -518,7 +516,7 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                 -- missing spell buff
                 local foundBuff = QA:HasSeenAny(buff.spellId, activeAuras or QA.playerBuffs)
                 local visible = buff.visibleFunc == nil or buff.visibleFunc()
-                debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "visible", visible)
+                --debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "visible", visible)
                 if foundBuff or not visible then
                     QA:RemoveIcon(WINDOW.QUEUE, buff.spellId[1])
                 else
@@ -543,7 +541,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
     for _, buff in pairs(QA.trackedCrucialAuras) do
         if buff.conf.crucialCond() then
             local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
-            debug(3, "CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
+            --debug(3, "CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
             local existing = QA.list_crucial[buff.spellIds[1]] -- not necessarly a timer
             if not hasIt then
                 if existing and existing.isTimer then

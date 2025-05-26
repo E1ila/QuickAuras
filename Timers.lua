@@ -21,7 +21,7 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
     local existingTimer = QA.list_timerByName[key]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
-            debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
+            --debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
             return existingTimer, false -- already exists
         end
         debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime, "key", key)
@@ -35,10 +35,10 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
 
     local frame
     if attr.bar then
-        debug(3, "Creating bar timer", "name", conf.name, "expTime", expTime)
+        --debug(3, "Creating bar timer", "name", conf.name, "expTime", expTime)
         frame = QA:CreateTimerBar(attr.parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or QA.db.profile.showTimeOnBars and tostring(duration) or nil)
     else
-        debug(3, "Creating button timer", "name", conf.name, "expTime", expTime)
+        --debug(3, "Creating button timer", "name", conf.name, "expTime", expTime)
         frame = QA:CreateTimerButton(attr.parent, index, 2, conf.color, conf.icon)
         if showAtTime then
             showAtTime = expTime - showAtTime

@@ -19,6 +19,7 @@ local Loatheb = {
     encounterId = 1115,
     npcId = 16011,
     spore = 0,
+    alertDuration = 5,
 }
 local Sapphiron = {
     encounterId = 1119,
@@ -128,9 +129,19 @@ function Loatheb:EncounterStart()
             self.spore = self.spore + 1
             if QA.db.profile.encounterLoathebStartAt > 0 and self.spore % QA.db.profile.encounterLoathebCycle == QA.db.profile.encounterLoathebStartAt then
                 out(_c.bold..QA.name.."|r TAKE SPORE!")
+                self:TakeSpore()
             end
         end
     end
+end
+
+function Loatheb:TakeSpore()
+    local conf = {
+        name = "Spore",
+        icon = "Interface\\Icons\\spell_nature_unyeildingstamina",
+    }
+    QA:AddTimer(WINDOW.ALERT, conf, "loatheb-spore", Loatheb.alertDuration, GetTime() + Loatheb.alertDuration)
+    QA:PlayAirHorn()
 end
 
 function KT:EncounterStart()

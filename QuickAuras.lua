@@ -339,3 +339,9 @@ function QA:GetDuration(conf, spellId)
     end
     return conf.duration[index]
 end
+
+function QA:PlayAirHorn()
+    if QA.db.profile.soundsEnabled then
+        PlaySoundFile("Interface\\AddOns\\QuickAuras\\assets\\AirHorn.ogg", "Master")
+    end
+end

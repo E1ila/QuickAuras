@@ -19,6 +19,7 @@ QA.defaultOptions = {
         cooldowns = true,
         watchBars = true,
         trackedGear = true,
+        soundsEnabled = true,
         missingConsumes = true,
         remindersEnabled = true,
         lowConsumesInCapital = true,

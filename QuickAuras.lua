@@ -26,6 +26,7 @@ QuickAurasDBG = QuickAurasDBG or {
 QuickAurasDB = QuickAurasDB or {}
 QuickAurasDB.bank = QuickAurasDB.bank or {}
 QA.bank = QuickAurasDB.bank
+QA.OnUpdateQueue = {};
 
 -- managed timers
 QA.list_timers = {} -- all active timers
@@ -344,4 +345,15 @@ function QA:PlayAirHorn()
     if QA.db.profile.soundsEnabled then
         PlaySoundFile("Interface\\AddOns\\QuickAuras\\assets\\AirHorn.ogg", "Master")
     end
+end
+
+function QA:GetDebuffStacks(spellId)
+    for i = 1, 40 do
+        local name, _, count, _, _, _, _, _, _, id = UnitDebuff("player", i)
+        if not name then break end
+        if id == spellId then
+            return count or 0
+        end
+    end
+    return 0
 end

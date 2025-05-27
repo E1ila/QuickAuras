@@ -38,8 +38,8 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
         --debug(3, "Creating bar timer", "name", conf.name, "expTime", expTime)
         frame = QA:CreateTimerBar(attr.parent, index, 2, conf.color or {0.5, 0.5, 0.5}, conf.icon, text or QA.db.profile.showTimeOnBars and tostring(duration) or nil)
     else
-        --debug(3, "Creating button timer", "name", conf.name, "expTime", expTime)
-        frame = QA:CreateTimerButton(attr.parent, index, 2, conf.color, conf.icon)
+        --      QA:CreateTimerButton(parent,     index,  icon, showCount)
+        frame = QA:CreateTimerButton(attr.parent, index, conf.icon, conf.count)
         if showAtTime then
             showAtTime = expTime - showAtTime
             frame:SetAlpha(0.5)

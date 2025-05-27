@@ -9,6 +9,13 @@ local FHM = {
     encounterId = 1121,
     timer = nil,
     mark = 0,
+    marks = {
+        [28832] = "Mark of Korthazz",
+        [28833] = "Mark of Blaumeux",
+        [28834] = "Mark of Mograine",
+        [28835] = "Mark of Zeliek",
+    },
+    alertDuration = 5,
 }
 local KT = {
     encounterId = 1114,
@@ -162,9 +169,33 @@ end
 
 function FHM:EncounterStart()
     self.mark = 0
+    self.markTimer = nil
     self.timer = C_Timer.NewTimer(21, function()
         FHM:Mark()
     end)
+    if QA.db.profile.bossFhmLastMark then
+        QA.encounter.CombatLog.SPELL_AURA_APPLIED = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, spellId, spellName, ...)
+            if destGuid == QA.playerGuid and self.marks[spellId] then
+                local stacks = QA:GetDebuffStacks(spellId)
+                out(_c.bold..QA.name.."|r "..self.marks[spellId].." stacks "..tostring(stacks))
+                local conf = {
+                    name = self.marks[spellId],
+                    icon = GetSpellTexture(spellId),
+                    duration = 60,
+                    count = stacks,
+                }
+                --:AddTimer(window,      conf,   id,             duration, expTime)
+                self.markTimer = QA:AddTimer(WINDOW.QUEUE, conf, "4hm-last-mark", 60,       GetTime()+60)
+            end
+        end
+    end
+end
+
+function FHM:EncounterEnd()
+    if self.markTimer then
+        QA:RemoveTimer(self.markTimer, "combat-end")
+        self.markTimer = nil
+    end
 end
 
 function FHM:Mark()
@@ -176,6 +207,12 @@ function FHM:Mark()
         local shouldMove = ((self.mark - startAt) % QA.db.profile.encounter4hmMoveEvery) == 0
         if shouldMove then
             extraText = " ".._c.yellow.."MOVE!".."|r"
+            local conf = {
+                name = "Move",
+                icon = "Interface\\Icons\\spell_shadow_metamorphosis",
+            }
+            QA:AddTimer(WINDOW.ALERT, conf, "4hm-move", self.alertDuration, GetTime() + self.alertDuration)
+            QA:PlayAirHorn()
         end
     end
 

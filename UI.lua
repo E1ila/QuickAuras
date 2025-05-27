@@ -25,7 +25,6 @@ end
 function QA:InitUI()
     debug("Initializing UI")
     _c = QA.colors
-    QA:InitWindowAttr()
     QA:ParentFramesNormalState()
     QA:InitWeaponEnchants()
     QA:InitSwingTimers()
@@ -236,39 +235,43 @@ end
 
 -- Icon warnings ------------------------------------
 
-function QA:InitWindowAttr()
-    QA.windowAttributes = {
-        [WINDOW.SWING] = {
+function QA:GetWindowAttributes(window)
+    if window == WINDOW.SWING then
+        return {
             widthMul = 1,
             parent = UIParent,
             height = 10,
             list = QA.list_swingTimers,
             bar = true,
-        },
-        [WINDOW.RAIDBARS] = {
+        }
+    elseif window == WINDOW.RAIDBARS then
+        return {
             widthMul = 1,
             parent = QuickAuras_RaidBars,
             height = QA.db.profile.raidBarHeight,
             list = QA.list_raidBars,
             bar = true,
             align = "vbars",
-        },
-        [WINDOW.COOLDOWNS] = {
+        }
+    elseif window == WINDOW.COOLDOWNS then
+        return {
             widthMul = 1,
             parent = QuickAuras_Cooldowns,
             height = QA.db.profile.cooldownIconSize,
             list = QA.list_cooldowns,
             align = "right",
-        },
-        [WINDOW.WARNING] = {
+        }
+    elseif window == WINDOW.WARNING then
+        return {
             widthMul = 1,
             parent = QuickAuras_IconWarnings,
             height = QA.db.profile.gearWarningSize,
             list = QA.list_iconWarnings,
             Refresh = QA.RefreshWarnings,
             align = "left",
-        },
-        [WINDOW.MISSING] = {
+        }
+    elseif window == WINDOW.MISSING then
+        return {
             widthMul = 1,
             parent = QuickAuras_MissingBuffs,
             height = QA.db.profile.missingBuffsSize,
@@ -276,66 +279,73 @@ function QA:InitWindowAttr()
             Refresh = QA.RefreshMissing,
             glowInCombat = true,
             align = "right",
-        },
-        [WINDOW.ALERT] = {
+        }
+    elseif window == WINDOW.ALERT then
+        return {
             widthMul = 1,
             parent = QuickAuras_IconAlerts,
             height = QA.db.profile.iconAlertSize,
             list = QA.list_iconAlerts,
             Refresh = QA.RefreshAlerts,
             align = "down",
-        },
-        [WINDOW.REMINDER] = {
+        }
+    elseif window == WINDOW.REMINDER then
+        return {
             widthMul = 1,
             parent = QuickAuras_Reminders,
             height = QA.db.profile.reminderIconSize,
             list = QA.list_reminders,
             Refresh = QA.RefreshReminders,
             align = "left",
-        },
-        [WINDOW.CRUCIAL] = {
+        }
+    elseif window == WINDOW.CRUCIAL then
+        return {
             widthMul = 1,
             parent = QuickAuras_Crucial,
             height = QA.db.profile.crucialIconSize,
             list = QA.list_crucial,
             glowInCombat = true,
             align = "down",
-        },
-        [WINDOW.RANGE] = {
+        }
+    elseif window == WINDOW.RANGE then
+        return {
             widthMul = 1,
             parent = QuickAuras_RangeIndicator,
             height = QA.db.profile.rangeIconSize,
             list = QA.list_range,
             align = "hcenter",
-        },
-        [WINDOW.QUEUE] = {
+        }
+    elseif window == WINDOW.QUEUE then
+        return {
             widthMul = 1,
             parent = QuickAuras_SpellQueue,
             height = QA.db.profile.spellQueueIconSize,
             list = QA.list_queue,
             align = "hcenter",
-        },
-        [WINDOW.OFFENSIVE] = {
+        }
+    elseif window == WINDOW.OFFENSIVE then
+        return {
             widthMul = 1.5,
             parent = QuickAuras_OffensiveBars,
-            height = QA.db.profile.raidBarHeight,
+            height = QA.db.profile.barHeight,
             list = QA.list_offensiveBars,
             bar = true,
             align = "vbars",
-        },
-        [WINDOW.WATCH] = {
+        }
+    elseif window == WINDOW.WATCH then
+        return {
             widthMul = 1,
             parent = QuickAuras_WatchBars,
-            height = QA.db.profile.raidBarHeight,
+            height = QA.db.profile.barHeight,
             list = QA.list_watchBars,
             bar = true,
             align = "vbars",
-        },
-    }
+        }
+    end
 end
 
 function QA:GetWindowAttr(window, idType)
-    local attr = QA.windowAttributes[window]
+    local attr = QA:GetWindowAttributes(window)
     if idType then
         attr.Create = idType == "item" and QA.CreateItemIcon or QA.CreateSpellIcon
     end
@@ -610,7 +620,7 @@ function QA:CreateTimerBar(parent, index, padding, color, icon, text)
     return frame
 end
 
-function QA:CreateTimerButton(parent, index, padding, color, icon)
+function QA:CreateTimerButton(parent, index, icon, showCount)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
@@ -626,6 +636,14 @@ function QA:CreateTimerButton(parent, index, padding, color, icon)
     frame.cooldownText = frame.cooldown:GetRegions() -- Get the font region
     if frame.cooldownText and frame.cooldownText.SetFont then
         frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", 20, "OUTLINE") -- Set font, size, and style
+    end
+
+    if showCount then
+        local counterText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        counterText:SetTextColor(1, 1, 1, 1)
+        counterText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2) -- Position the counter
+        counterText:SetText("0") -- Default value
+        frame.counterText = counterText -- Store the counter for later updates
     end
 
     return frame

@@ -31,6 +31,7 @@ QA.defaultOptions = {
         targetInRangeIndication = true,
         overaggroWarning = true,
         announceInterrupts = true,
+        bossFhmLastMark = true,
         announceMisses = QA.isWarrior,
         announceSquawk = true,
         announceCcBreak = true,
@@ -255,6 +256,16 @@ QA.options = {
                         QA.db.profile.overaggroWarning = value
                     end,
                     order = 15,
+                },
+                soundsEnabled = {
+                    type = "toggle",
+                    name = "Sounds",
+                    desc = "Enable or disable all sounds",
+                    get = function(info) return QA.db.profile.soundsEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.soundsEnabled = value
+                    end,
+                    order = 99,
                 },
             }
         },

@@ -196,7 +196,8 @@ function QA:BuildTrackedSpells()
                         --debug("BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "duration", spell.duration, "[option:", tostring(spell.option).."]")
                         if spell.aura then
                             QA.trackedAuras[spellId] = spell
-                        elseif spell.duration then
+                        end
+                        if (not spell.aura and spell.duration) or spell.OnSpellDetectCombatLog then
                             QA.trackedCombatLog[spellId] = spell -- offensive
                         end
                         if spell.cooldown then

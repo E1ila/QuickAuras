@@ -480,8 +480,8 @@ function QA:CheckAuras()
             if timer then
                 seen[timer.key] = true
             end
-            if aura.OnDetect and not lastSeen[spellId] then
-                aura.OnDetect(aura, duration, expTime)
+            if aura.OnDetectAura and not lastSeen[spellId] then
+                aura.OnDetectAura(aura, duration, expTime)
             end
         end
         i = i + 1

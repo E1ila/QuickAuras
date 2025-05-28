@@ -255,6 +255,10 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         local conf = QA.trackedCombatLog[extra[1]]
         if conf then
             local spellId = extra[1]
+            debug("CLEU", subevent, "spellId", spellId, conf and conf.name, conf and conf.OnSpellDetectCombatLog)
+            if conf.OnSpellDetectCombatLog then
+                conf.OnSpellDetectCombatLog(conf, subevent, sourceGuid, sourceName, destGuid, destName, ...)
+            end
             -- npc auras
             if conf.npcId and QA:GetNpcIdFromGuid(sourceGuid) == conf.npcId then
                 if subevent == "SPELL_AURA_APPLIED" then
@@ -284,9 +288,6 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         and (not conf.option or QA.db.profile[conf.option])
                 then
                     -- start offensive timer
-                    if conf.OnDetect then
-                        conf.OnDetect(conf, sourceGuid, sourceName, destGuid, destName)
-                    end
                     if not conf.aura then -- players aura are not offensive
                         local text, keyExtra, duration = nil, destGuid, QA:GetDuration(conf, spellId)
                         if conf.multi then

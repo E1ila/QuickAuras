@@ -891,6 +891,12 @@ spells.iconAlerts = {
         name = "Innervate Buff",
         icon = "Interface\\Icons\\spell_nature_lightning",
         visible = QA.isManaClass,
+        OnSpellDetectCombatLog = function(self, subevent, sourceGuid, sourceName, destGuid, destName, ...)
+            if subevent == "SPELL_AURA_APPLIED" then
+                local name = strsplit("-", sourceName)
+                out("Innervated by "..QA.colors.bold..name)
+            end
+        end,
     },
     powerInfusion = {
         spellId = { 10060 },
@@ -985,7 +991,7 @@ spells.other = {
         color = {0.847, 0.686, 0.541},
         list = WINDOW.WATCH,
         duration = 60*4,
-        OnDetect = function(self, aura, duration, expTime)
+        OnDetectAura = function(self, aura, duration, expTime)
             if QA.db.profile.announceSquawk then
                 SendChatMessage("Squawk!", "PARTY")
             end

@@ -224,6 +224,8 @@ function QA:HandleSlashCommand(input)
             QA:ToggleLockedState()
         elseif cmd == "reset" then
             QA:ResetWidgets()
+        elseif cmd == "inj" then
+            QA:TestInject()
         elseif cmd == "4hm" then
             local startAt = arg1 and tonumber(arg1) or 0
             QA.db.profile.encounter4hmStartAt = startAt

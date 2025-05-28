@@ -106,7 +106,7 @@ function QA:UpdateProgressBar(timer)
                         timer.frame.text:SetText(string.format("%.1f", timer.expTime - GetTime()))
                     end
                 elseif timer.uiType == "button" then
-                    if timer.glowOnEnd and not timer.glow and timer.expTime - GetTime() < 0.35 then
+                    if timer.glowOnEnd and not timer.glow and timer.expTime - GetTime() < 0.30 then
                         ActionButton_ShowOverlayGlow(timer.frame)
                         timer.glow = true
                     end

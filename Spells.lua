@@ -297,6 +297,9 @@ spells.warrior = {
         duration = 30,
         enemyAura = {
             requiredStacks = 5,
+            ShowCond = function()
+                return QA.isWarrior or QA.hasWarriorInParty
+            end,
         },
         visible = QA.isWarrior,
     },

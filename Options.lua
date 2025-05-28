@@ -1018,6 +1018,7 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                 get = function(info) return QA.db.profile[key] end,
                 set = function(info, value)
                     QA.db.profile[key] = value
+                    debug("Set enemy aura", key, value)
                 end,
                 order = order + 30,
             }

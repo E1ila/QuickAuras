@@ -453,6 +453,8 @@ local function FixAuraExpTime(duration, expTime, aura, spellId)
     return duration, expTime
 end
 
+local lastSeen = {}
+
 function QA:CheckAuras()
     local i = 1
     local seen = {}
@@ -474,6 +476,9 @@ function QA:CheckAuras()
             if timer then
                 seen[timer.key] = true
             end
+            if aura.OnDetect and not lastSeen[spellId] then
+                aura.OnDetect(aura, duration, expTime)
+            end
         end
         i = i + 1
     end
@@ -483,6 +488,7 @@ function QA:CheckAuras()
             QA:RemoveTimer(timer, "unseen")
         end
     end
+    lastSeen = seen
     local combatStateChanged = _aurasCombatState ~= QA.inCombat
     _aurasCombatState = QA.inCombat
     if combatStateChanged then

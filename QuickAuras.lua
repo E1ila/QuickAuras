@@ -274,7 +274,7 @@ end
 
 function QA:ScanBank()
     if not QA.bankOpen then return end
-    debug("Scanning bank")
+    --debug(2, "Scanning bank")
     QuickAurasDB.bank = {}
     QA.bank = QuickAurasDB.bank
     -- Scan the main bank slots (bag ID -1)

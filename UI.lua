@@ -537,7 +537,7 @@ function QA:ParentFramesEditState()
     QuickAuras_SwingTimer:Show()
     QuickAuras_SwingTimer:EnableMouse(true)
     QuickAuras_SwingTimer_Text:Show()
-    for window, _ in pairs(QA.windowAttributes) do
+    for _, window in pairs(WINDOW) do
         QA:ClearIcons(window)
     end
     for _, frame in ipairs(QA.adjustableFrames) do

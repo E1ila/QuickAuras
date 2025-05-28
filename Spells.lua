@@ -716,6 +716,16 @@ spells.rogue = {
 }
 
 spells.shaman = {
+    flurry = {
+        spellId = { 16280 },
+        aura = true,
+        name = "Flurry",
+        icon = "Interface\\Icons\\ability_ghoulfrenzy",
+        color = {0.933, 0.471, 0.373},
+        list = WINDOW.WATCH,
+        duration = 60*4,
+        visible = QA.isShaman,
+    },
     chainLightning = {
         spellId = { 10605 },
         name = "Chain Lightning",
@@ -967,14 +977,14 @@ spells.other = {
     chicken = {
         spellId = { 23060 },
         name = "Squawk",
+        aura = true,
         icon = "Interface\\Icons\\inv_misc_birdbeck_01",
         color = {0.847, 0.686, 0.541},
         list = WINDOW.WATCH,
         duration = 60*4,
-        OnDetect = function()
+        OnDetect = function(self, aura, duration, expTime)
             if QA.db.profile.announceSquawk then
                 SendChatMessage("Squawk!", "PARTY")
-                out("Squawk!")
             end
         end,
     },

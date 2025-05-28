@@ -200,21 +200,34 @@ function QA:CreateIconFrame(texture, parentFrame, frameName, showTooltip, showCo
         end)
     end
 
-    if onRightClick or onClick then
-        if type(onClick) == "number" then
-            frame:RegisterForClicks("AnyUp")
-            local spellName = GetSpellInfo(onClick)
-            frame:SetAttribute("type", "spell")
-            frame:SetAttribute("spell", spellName)
+    if onClick then
+        if type(onClick) == "string" then
+            local cmd, id = strsplit(" ", onClick)
+            id = tonumber(id)
+            frame:RegisterForClicks("LeftButtonUp")
+            if cmd == "use" then
+                local itemName = GetItemInfo(id)
+                frame:SetAttribute("type", "item")
+                frame:SetAttribute("item", itemName)
+            elseif cmd == "cast" then
+                local spellName = GetSpellInfo(id)
+                frame:SetAttribute("type", "spell")
+                frame:SetAttribute("spell", spellName)
+            end
         else
             frame:SetScript("OnMouseDown", function(self, button)
-                if onRightClick and button == "RightButton" then
-                    onRightClick()
-                elseif onClick and button == "LeftButton" then
+                if button == "LeftButton" then
                     onClick()
                 end
             end)
         end
+    end
+    if onRightClick then
+        frame:SetScript("OnMouseDown", function(self, button)
+            if button == "RightButton" then
+                onRightClick()
+            end
+        end)
     end
 
     return frame

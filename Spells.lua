@@ -892,7 +892,7 @@ spells.iconAlerts = {
         icon = "Interface\\Icons\\spell_nature_lightning",
         visible = QA.isManaClass,
         OnSpellDetectCombatLog = function(self, subevent, sourceGuid, sourceName, destGuid, destName, ...)
-            if subevent == "SPELL_AURA_APPLIED" then
+            if subevent == "SPELL_AURA_APPLIED" and destGuid == QA.playerGuid then
                 local name = strsplit("-", sourceName)
                 out("Innervated by "..QA.colors.bold..name)
             end

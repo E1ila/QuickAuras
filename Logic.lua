@@ -525,7 +525,8 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                 then
                     QA:RemoveIcon(WINDOW.MISSING, buff.usedItemId or buff.itemId)
                 else
-                    if QA:AddIcon(WINDOW.MISSING, "item", foundItemId, buff) then
+                    -- QA:AddIcon(window,         idType, id,          conf, count, showTooltip, onClick)
+                    if QA:AddIcon(WINDOW.MISSING, "item", foundItemId, buff, nil, nil, "use "..tostring(foundItemId)) then
                         buff.usedItemId = foundItemId
                     end
                 end
@@ -562,7 +563,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                 local OnClick = buff.conf.OnClick
                 for _, id in ipairs(buff.spellIds) do
                     if IsSpellKnown(id) then
-                        OnClick = id
+                        OnClick = "cast "..tostring(id)
                         break
                     end
                 end

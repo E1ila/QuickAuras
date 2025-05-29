@@ -354,6 +354,15 @@ function QA:GetWindowAttributes(window)
             bar = true,
             align = "vbars",
         }
+    elseif window == WINDOW.READY then
+        return {
+            widthMul = 1,
+            parent = QuickAuras_Ready,
+            height = QA.db.profile.readyIconSize,
+            list = QA.list_ready,
+            align = "left",
+            glowInCombat = true,
+        }
     end
 end
 
@@ -991,12 +1000,24 @@ local DelayedReset_CrucialAlerts = QA:Debounce(function()
 end, 3)
 
 function QA:TestCrucial()
+    QA:ClearIcons(WINDOW.CRUCIAL)
     local bs = QA.spells.warrior.battleShout
     local frr = QA.spells.shaman.frostResistanceTotem
     --  :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
     QA:AddIcon(WINDOW.CRUCIAL, "spell", bs.spellId[1], bs)
     QA:AddIcon(WINDOW.CRUCIAL, "spell", frr.spellId[1], frr)
     DelayedReset_CrucialAlerts()
+end
+
+local DelayedReset_ReadyAlerts = QA:Debounce(function()
+    QA:ClearIcons(WINDOW.READY)
+end, 3)
+
+function QA:TestReady()
+    QA:ClearIcons(WINDOW.READY)
+    --  :AddIcon(iconType, idType, id, conf, count, showTooltip, onClick)
+    QA:AddIcon(WINDOW.READY, "item", QA.explosives.goblinSapperCharge.itemId, QA.explosives.goblinSapperCharge)
+    DelayedReset_ReadyAlerts()
 end
 
 local DelayedReset_SpellQueue = QA:Debounce(function()

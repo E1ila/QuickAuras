@@ -29,6 +29,7 @@ QA.bank = QuickAurasDB.bank
 QA.OnUpdateQueue = {};
 
 -- managed timers
+QA.list = {}
 QA.list_timers = {} -- all active timers
 QA.list_timerByName = {}
 -- managed timers by frame type
@@ -44,6 +45,7 @@ QA.list_range = {}
 QA.list_raidBars = {} -- timer
 QA.list_queue = {}
 QA.list_swingTimers = {}
+QA.list_ready = {}
 QA.arrangeQueue = {}
 
 local pclass = select(2, UnitClass("player"))
@@ -82,6 +84,7 @@ QA.WINDOW = {
     COOLDOWNS = "cooldowns",
     WATCH = "watch",
     OFFENSIVE = "offensive",
+    READY = "ready",
 }
 
 local function out(text, ...)

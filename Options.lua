@@ -66,6 +66,7 @@ QA.defaultOptions = {
         rangeIconSize = 30,
         missingBuffsSize = 40,
         reminderIconSize = 40,
+        readyIconSize = 50,
         weaponEnchantSize = 40,
         crucialExpireTime = 5,
         targetAuraExpireTime = 8,
@@ -404,7 +405,7 @@ QA.options = {
                 },
                 crucialIconSize = {
                     type = "range",
-                    name = "Crucial Alert Size",
+                    name = "Crucial Icon Size",
                     desc = "Set the size of the alert icons",
                     min = 10,
                     max = 100,
@@ -413,6 +414,20 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.crucialIconSize = value
                         QA:TestCrucial()
+                    end,
+                    order = 108,
+                },
+                readyIconSize = {
+                    type = "range",
+                    name = "Ready Icon Size",
+                    desc = "Set the size of ready icons",
+                    min = 10,
+                    max = 100,
+                    step = 1,
+                    get = function(info) return QA.db.profile.readyIconSize end,
+                    set = function(info, value)
+                        QA.db.profile.readyIconSize = value
+                        QA:TestReady()
                     end,
                     order = 108,
                 },

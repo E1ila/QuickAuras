@@ -423,6 +423,11 @@ local function _checkCooldown(conf, idType, id, start, duration)
     end
 end
 
+local function isItemReady(item)
+    local start, duration = QA:GetItemCooldown(item.itemId)
+    return start == 0 and duration == 0
+end
+
 function QA:CheckCooldowns()
     if not QA.db.profile.cooldowns then return end
     for spellId, conf in pairs(QA.trackedSpellCooldowns) do
@@ -436,6 +441,30 @@ function QA:CheckCooldowns()
         if conf.evenIfNotInBag or QA.bags[conf.itemId] then
             local start, duration = QA:GetItemCooldown(itemId)
             _checkCooldown(conf, "item", itemId, start, duration)
+        end
+    end
+    -- check ready items
+    if QA.db.profile.notifyExplosivesReady then
+        local sapper = QA.explosives.goblinSapperCharge
+        local sapperReady = QA.bags[sapper.itemId] and isItemReady(sapper)
+        local otherReady
+        for _, conf in pairs(QA.explosives) do
+            if QA.bags[conf.itemId] and conf.itemId ~= sapper.itemId then
+                local start, duration = QA:GetItemCooldown(conf.itemId)
+                if start == 0 and duration == 0 then
+                    otherReady = conf
+                else
+                    QA:RemoveIcon(WINDOW.READY, conf.itemId)
+                end
+            else
+                QA:RemoveIcon(WINDOW.READY, conf.itemId)
+            end
+        end
+        if sapperReady then
+            --:AddIcon(window,       idType, id, conf, count, showTooltip, onClick)
+            QA:AddIcon(WINDOW.READY, "item", sapper.itemId, sapper)
+        elseif otherReady then
+            QA:AddIcon(WINDOW.READY, "item", otherReady.itemId, otherReady)
         end
     end
 end
@@ -682,6 +711,11 @@ end
 function QA:RefreshCrucial()
     QA:ClearIcons(WINDOW.CRUCIAL)
     QA:CheckAuras()
+end
+
+function QA:RefreshReady()
+    QA:ClearIcons(WINDOW.READY)
+    QA:CheckCooldowns()
 end
 
 function QA:RefreshAll()

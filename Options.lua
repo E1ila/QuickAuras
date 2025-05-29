@@ -42,6 +42,7 @@ QA.defaultOptions = {
         swingTimerOH = true,
         swingTimerRanged = true,
         raidBars = true,
+        notifyExplosivesReady = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
         rogueTeaTimeFrame = WINDOW.WARNING,
@@ -524,6 +525,17 @@ QA.options = {
                         if value then QA.db.profile.outOfRange = true end
                     end,
                     order = 12,
+                },
+                notifyExplosivesReady = {
+                    type = "toggle",
+                    name = "Explosives Ready",
+                    desc = "Show an icon when Sapper or Dynamite are ready to use",
+                    get = function(info) return QA.db.profile.notifyExplosivesReady end,
+                    set = function(info, value)
+                        QA.db.profile.notifyExplosivesReady = value
+                        QA:RefreshReady()
+                    end,
+                    order = 13,
                 },
                 meleeUtilsHeader = {
                     type = "header",

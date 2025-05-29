@@ -255,7 +255,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         local conf = QA.trackedCombatLog[extra[1]]
         if conf then
             local spellId = extra[1]
-            debug("CLEU", subevent, "spellId", spellId, conf and conf.name, conf and conf.OnSpellDetectCombatLog)
+            --debug("CLEU", subevent, "spellId", spellId, conf and conf.name, conf and conf.OnSpellDetectCombatLog)
             if conf.OnSpellDetectCombatLog then
                 conf.OnSpellDetectCombatLog(conf, subevent, sourceGuid, sourceName, destGuid, destName, ...)
             end

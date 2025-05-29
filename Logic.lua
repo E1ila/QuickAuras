@@ -45,7 +45,6 @@ function QA:CheckTargetAuras(targetChanged)
 
         for _, spell in ipairs(QA.trackedEnemyAuras) do
             local key = spell.option.."_enemy"
-            debug("CheckTargetAuras", "(check)", key, spell.name, "spell.ShowCond", spell.enemyAura.ShowCond, "=", spell.enemyAura.ShowCond and spell.ShowCond())
             if QA.db.profile[key] and (not spell.enemyAura.ShowCond or spell.enemyAura.ShowCond()) then
                 local found
                 for _, spellId in ipairs(spell.spellId) do
@@ -310,7 +309,7 @@ function QA:CheckTransmuteCooldown()
                     out("|cffff0000Transmute|r "..spell.name.." is ready!")
                 end
                 --               :AddIcon(iconType,        idType,  id, conf, count, showTooltip, onClick)
-                local button = QA:AddIcon(WINDOW.REMINDER, "spell", id, spell, nil, nil, TransmuteClick)
+                local button = QA:AddIcon(WINDOW.REMINDER, "spell", id, spell, nil, nil, "cast "..tostring(id))
                 if button then
                     C_Timer.After(0.1, function()
                         ActionButton_ShowOverlayGlow(button.frame)

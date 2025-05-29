@@ -11,7 +11,38 @@ local function InEncounters(ids)
     end
 end
 
+QA.explosives = {
+    thoriumGrenade = {
+        name = "Thorium Grenade",
+        itemId = 15993,
+        minCount = 5,
+        icon = "Interface\\Icons\\inv_misc_bomb_08",
+    },
+    ironGranade = {
+        name = "Iron Grenade",
+        itemId = 4390,
+        minCount = 5,
+        icon = "Interface\\Icons\\inv_misc_bomb_08",
+    },
+    denseDynamite = {
+        name = "Dense Dynamite",
+        itemId = 18641,
+        minCount = 10,
+        icon = "Interface\\Icons\\inv_misc_bomb_06",
+    },
+    goblinSapperCharge = {
+        name = "Goblin Sapper Charge",
+        itemId = 10646,
+        minCount = 5,
+        icon = "Interface\\Icons\\spell_fire_selfdestruct",
+    },
+}
+
 QA.consumes = {
+    QA.explosives.denseDynamite,
+    QA.explosives.goblinSapperCharge,
+    QA.explosives.ironGranade,
+    QA.explosives.thoriumGrenade,
     {
         name = "Ankh",
         itemId = 17030,
@@ -208,6 +239,7 @@ QA.consumes = {
         itemId = 7676,
         cooldown = true,
         minCount = 10,
+        icon = "Interface\\Icons\\inv_drink_milk_05",
     },
     {
         name = "Troll's Blood Potion",
@@ -235,7 +267,14 @@ QA.consumes = {
     },
 }
 
+function QA:SortConsumes()
+    table.sort(QA.consumes, function(a, b)
+        return a.name < b.name
+    end)
+end
+
 function QA:BuildTrackedItems()
+    QA:SortConsumes()
     local p = QA.defaultOptions.profile
     debug(2, "BuildTrackedItems...")
     for _, item in ipairs(QA.consumes) do
@@ -248,7 +287,7 @@ function QA:BuildTrackedItems()
             table.insert(QA.trackedLowConsumes, item)
         end
         if item.cooldown then
-            QA.trackedSpellCooldowns[item.itemId] = item
+            QA.trackedItemCooldowns[item.itemId] = item
         end
     end
 end

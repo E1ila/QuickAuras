@@ -150,7 +150,7 @@ function QA:CheckIfWarriorInParty()
     for i = 1, GetNumGroupMembers() do
         local unitId = "party"..i
         debug(2, "CheckIfWarriorInParty", unitId, UnitClass(unitId))
-        if UnitClass(unitId) == "Warrior" then
+        if UnitClass(unitId) == "Warrior" and UnitIsConnected(unitId) then
             QA.hasWarriorInParty = true
             break
         end

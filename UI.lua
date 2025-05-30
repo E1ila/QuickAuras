@@ -477,16 +477,14 @@ function QA:ArrangeIcons(window)
             frame.iconFrame.icon:SetSize(attr.height-padding*2, attr.height-padding*2)
         else
             frame:SetSize(attr.height, attr.height)
-            if attr.align == "right" then
-                -- right
+            if attr.align == "left" then
                 if lastFrame then
                     frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
                 frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
-            elseif attr.align == "left" then
-                -- left
+            elseif attr.align == "right" then
                 if lastFrame then
                     frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -2, 0)
                 else
@@ -494,7 +492,6 @@ function QA:ArrangeIcons(window)
                 end
                 frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
             elseif attr.align == "down" then
-                -- down
                 if lastFrame then
                     frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0) -- vertical layout
                 else

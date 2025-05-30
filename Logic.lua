@@ -580,7 +580,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
     for _, buff in pairs(QA.trackedCrucialAuras) do
         local spellId = buff.spellIds[1]
         if buff.conf.CrucialCond() then
-            local hasIt,  = QA:HasSeenAny(buff.spellIds, actives)
+            local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
             debug("CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
             local existing = QA.list_crucial[spellId] -- not necessarly a timer
             if not hasIt then

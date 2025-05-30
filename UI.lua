@@ -410,9 +410,10 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
     end
 end
 
-function QA:RemoveIcon(iconType, id)
-    local attr = QA:GetWindowAttr(iconType)
+function QA:RemoveIcon(window, id)
+    local attr = QA:GetWindowAttr(window)
     local obj = attr.list[id]
+    --debug("RemoveIcon", id, "window", window, "obj", obj)
     if obj then
         if obj.isTimer then
             QA:RemoveTimer(obj, "removeicon")
@@ -444,7 +445,7 @@ function QA:ArrangeIcons(window)
         return
     end
     for key, timer in pairs(attr.list) do
-        if key ~= "size" then
+        if key ~= "size" and timer.frame then
             table.insert(sortedList, timer)
         end
     end

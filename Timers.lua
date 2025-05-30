@@ -70,7 +70,11 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
         isTimer = true
     }
     timer.key = keyExtra..QA:GetTimerKey(conf.name, expTime, uiType)
-    attr.list[keyExtra..tostring(id)] = timer
+    if #keyExtra > 0 then
+        attr.list[keyExtra..tostring(id)] = timer
+    else
+        attr.list[id] = timer -- we want int key
+    end
     QA.list_timers[timer.key] = timer
     QA.list_timerByName[keyExtra..conf.name.."-"..uiType] = timer
     onUpdate(timer)
@@ -123,7 +127,7 @@ end
 
 function QA:RemoveTimer(timer, reason)
     if not timer or not timer.frame then return false end -- target died, already removed
-    debug(2, "Removing timer", "["..tostring(reason)..","..tostring(timer.key).."]")
+    debug(2, "Removing timer", timer.key, reason, "map key", timer.keyExtra..timer.id)
     if timer.onEnd then
         timer:onEnd(timer)
     end
@@ -132,7 +136,11 @@ function QA:RemoveTimer(timer, reason)
     timer.frame:SetParent(nil)
     timer.frame:ClearAllPoints()
     timer.frame = nil
-    timer.list[timer.keyExtra..timer.id] = nil
+    if #timer.keyExtra > 0 or type(timer.id) == "string" then
+        timer.list[timer.keyExtra..tostring(timer.id)] = nil
+    else
+        timer.list[tonumber(timer.id)] = nil
+    end
     QA.list_timerByName[timer.keyExtra..timer.name.."-"..timer.uiType] = nil
     QA.list_timers[timer.key] = nil
     --debug(" -- ", timer.key)

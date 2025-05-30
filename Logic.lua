@@ -24,9 +24,11 @@ end
 function QA:CheckTargetAuras(targetChanged)
     local shouldCheck = UnitExists("target") and not UnitIsDead("target") and not UnitIsPlayer("target") and QA.inCombat
     local window = QA.db.profile.targetMissingDebuffFrame
+    --debug("CheckTargetAuras", "shouldCheck", shouldCheck, "targetChanged", targetChanged, "window", window)
     if targetChanged or not shouldCheck then
         -- reset
         for _, spell in ipairs(QA.trackedEnemyAuras) do
+            --debug("CheckTargetAuras", "reset", _c.yellow..spell.name.."|r", spell.spellId[1])
             QA:RemoveIcon(window, spell.spellId[1])
         end
     end
@@ -37,14 +39,15 @@ function QA:CheckTargetAuras(targetChanged)
             local name, _, count, dispelType, duration, expires, isStealable, _, _, spellId = UnitDebuff("target", i)
             if not name then break end
             local spell = QA.trackedEnemyAurasBySpellId[spellId]
-            --debug(3, "CheckTargetAuras", "(scan)", i, name, spellId, count)
             if spell then
+                --debug("CheckTargetAuras", "seen", i, _c.bold..name.."|r", spellId, count)
                 seen[spellId] = { count = count, expires = expires, spell = spell, spellId = spellId, duration = duration }
             end
         end
 
         for _, spell in ipairs(QA.trackedEnemyAuras) do
             local key = spell.option.."_enemy"
+            --debug("CheckTargetAuras", "(scan)", _c.yellow..spell.name.."|r", "option", key, "enabled", QA.db.profile[key])
             if QA.db.profile[key] and (not spell.enemyAura.ShowCond or spell.enemyAura.ShowCond()) then
                 local found
                 for _, spellId in ipairs(spell.spellId) do
@@ -55,7 +58,7 @@ function QA:CheckTargetAuras(targetChanged)
                 end
                 local stackCount = found and found.count or 0
                 local missing = stackCount < spell.enemyAura.requiredStacks
-                --debug(3, "CheckTargetAuras", "(check)", spell.name, "missing", missing, "count", found and found.count or 0)
+                --debug("CheckTargetAuras", "(check)", _c.yellow..spell.name.."|r", "missing", missing, "count", found and found.count or 0)
                 if missing then
                     QA:AddIcon(window, "spell", spell.spellId[1], spell, found and found.count or 0)
                 else
@@ -68,6 +71,11 @@ function QA:CheckTargetAuras(targetChanged)
             end
         end
     end
+end
+
+function QAG:TestSA()
+    local spell = QA.trackedEnemyAuras[1]
+    QA:AddTimer(WINDOW.WARNING, spell, spell.spellId[1], 10, GetTime()+10, 9)
 end
 
 -- warrior spell queue ---------------------------------------------------------------------------

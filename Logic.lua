@@ -437,18 +437,20 @@ local function isItemReady(item)
 end
 
 function QA:CheckCooldowns()
-    if not QA.db.profile.cooldowns then return end
-    for spellId, conf in pairs(QA.trackedSpellCooldowns) do
-        if not (conf.ignoreCooldownInStealth and QA.playerIsStealthed) then
-            local start, duration = GetSpellCooldown(spellId)
-            _checkCooldown(conf, "spell", spellId, start, duration)
+    if QA.db.profile.cooldowns then
+        debug("CheckCooldowns", "Checking cooldowns...")
+        for spellId, conf in pairs(QA.trackedSpellCooldowns) do
+            if not (conf.ignoreCooldownInStealth and QA.playerIsStealthed) then
+                local start, duration = GetSpellCooldown(spellId)
+                _checkCooldown(conf, "spell", spellId, start, duration)
+            end
         end
-    end
-    for itemId, conf in pairs(QA.trackedItemCooldowns) do
-        -- show cooldown only if item is in bags
-        if conf.evenIfNotInBag or QA.bags[conf.itemId] then
-            local start, duration = QA:GetItemCooldown(itemId)
-            _checkCooldown(conf, "item", itemId, start, duration)
+        for itemId, conf in pairs(QA.trackedItemCooldowns) do
+            -- show cooldown only if item is in bags
+            if conf.evenIfNotInBag or QA.bags[conf.itemId] then
+                local start, duration = QA:GetItemCooldown(itemId)
+                _checkCooldown(conf, "item", itemId, start, duration)
+            end
         end
     end
     QA:CheckExplosives()
@@ -457,32 +459,25 @@ end
 function QA:CheckExplosives()
     if QA.db.profile.notifyExplosivesReady then
         local sapper = QA.explosives.goblinSapperCharge
-        local sapperReady = QA.bags[sapper.itemId] and isItemReady(sapper)
-        local otherReady
-        for _, conf in pairs(QA.explosives) do
-            if QA.bags[conf.itemId] and conf.itemId ~= sapper.itemId then
-                local start, duration = QA:GetItemCooldown(conf.itemId)
-                if start == 0 and duration == 0 then
-                    otherReady = conf
-                else
-                    if QA:RemoveIcon(WINDOW.READY, conf.itemId) then
-                        debug("CheckCooldowns", "REMOVING 1", conf.name)
+        local readyItem = QA.bags[sapper.itemId] and isItemReady(sapper) and sapper
+        if not readyItem then
+            for _, conf in pairs(QA.explosives) do
+                if QA.bags[conf.itemId] then
+                    local start, duration = QA:GetItemCooldown(conf.itemId)
+                    if start == 0 and duration == 0 then
+                        readyItem = conf
                     end
-                end
-            else
-                if QA:RemoveIcon(WINDOW.READY, conf.itemId) then
-                    debug("CheckCooldowns", "REMOVING 2", conf.name)
                 end
             end
         end
-        if sapperReady then
-            --:AddIcon(window,       idType, id, conf, count, showTooltip, onClick)
-            if QA:AddIcon(WINDOW.READY, "item", sapper.itemId, sapper) then
-                debug("CheckCooldowns", "ADDING 1", sapper.name)
+        if readyItem then
+            --:AddIcon(window,       idType, id, conf, count, showTooltip, onClick, id)
+            if QA:AddIcon(WINDOW.READY, "item", sapper.itemId, readyItem, nil, nil, nil, readyItem.itemId) then
+                debug("CheckCooldowns", "ADDING", readyItem.name)
             end
-        elseif otherReady then
-            if QA:AddIcon(WINDOW.READY, "item", otherReady.itemId, otherReady) then
-                debug("CheckCooldowns", "ADDING 2", otherReady.name)
+        else
+            if QA:RemoveIcon(WINDOW.READY, sapper.itemId) then
+                debug("CheckCooldowns", "REMOVING")
             end
         end
     end

@@ -55,6 +55,10 @@ function QA:SPELL_UPDATE_COOLDOWN(...)
     QA:CheckCooldowns()
 end
 
+function QA:BAG_UPDATE_COOLDOWN(...)
+    QA:CheckCooldowns()
+end
+
 function QA:PLAYER_EQUIPMENT_CHANGED(...)
     QA:CheckGear("equip", ...)
 end
@@ -173,6 +177,10 @@ end
 
 function QA:UNIT_SPELLCAST_SENT(unit, _, spellGuid)
     QA:CheckSpellQueue(unit, spellGuid)
+end
+
+function QA:ADDON_ACTION_BLOCKED(a, b, c)
+    debug("ADDON_ACTION_BLOCKED", a, b, c)
 end
 
 -- OnUpdate

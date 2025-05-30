@@ -374,24 +374,25 @@ function QA:GetWindowAttr(window, idType)
     return attr
 end
 
-function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
-    local key = window .."-"..idType.."-"..tostring(id)
-    if QA.ignoredIcons[key] then return nil end
+function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
+    id = id or key
+    local ignoreKey = window .."-"..idType.."-"..tostring(key)
+    if QA.ignoredIcons[ignoreKey] then return nil end
     local attr = QA:GetWindowAttr(window, idType)
-    local button = attr.list[id]
+    local button = attr.list[key]
     if not button then
         local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) and count ~= nil or type(count) == "number" and count >= 0
-        debug(2, _c.bold.."AddIcon|r", conf.name, id, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
+        debug(2, _c.bold.."AddIcon|r", conf.name, key, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
         local onRightClick = window ~= WINDOW.ALERT and attr.Refresh and function()
-            QA.ignoredIcons[key] = true
+            QA.ignoredIcons[ignoreKey] = true
             attr.Refresh(QA)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
-        local frame = attr.Create(QA, id, attr.parent, window .."-".. id, showTooltip, showCount, onRightClick, onClick)
+        local frame = attr.Create(QA, id, attr.parent, window .."-".. key, showTooltip, showCount, onRightClick, onClick)
         button = {
             name = conf.name,
             conf = conf,
-            id = id,
+            id = key,
             idType = idType,
             frame = frame,
             list = attr.list,
@@ -399,13 +400,13 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
             count = count,
             glowInCombat = attr.glowInCombat
         }
-        attr.list[id] = button
+        attr.list[key] = button
         QA.arrangeQueue[window] = true
         return button
     else
         QA:CheckCombatGlow(button)
         if count ~= nil then
-            debug(2, _c.bold.."AddIcon|r", id, "updating count", count)
+            debug(2, _c.bold.."AddIcon|r", key, "updating count", count)
             button.count = count
             QA.arrangeQueue[window] = true
             return button

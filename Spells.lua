@@ -290,6 +290,13 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    bloodthirst = {
+        spellId = { 23881, 23892, 23893, 23894 },
+        name = "Bloodthirst",
+        icon = "Interface\\Icons\\spell_nature_bloodlust",
+        cooldown = true,
+        visible = QA.isWarrior,
+    },
     sunderArmor = {
         spellId = { 7386, 7405, 8380, 11596, 11597 },
         name = "Sunder Armor",

@@ -391,6 +391,7 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
         local frame = attr.Create(QA, id, attr.parent, window .."-".. key, showTooltip, showCount, onRightClick, onClick)
+        frame:SetSize(attr.height, attr.height)
         button = {
             name = conf.name,
             conf = conf,
@@ -508,6 +509,12 @@ function QA:ArrangeIcons(window)
                 frame:GetParent():SetSize(attr.height * count, attr.height)
             end
         end
+        if obj.frame.counterText then
+            obj.frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/3), "OUTLINE")
+        end
+        if obj.frame.cooldownText then
+            obj.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/3), "OUTLINE") -- Set font, size, and style
+        end
         QA:UpdateIcon(obj, attr)
         lastFrame = frame
     end
@@ -522,12 +529,6 @@ function QA:UpdateIcon(obj, attr, count)
     end
     if obj.frame.counterText and obj.count and type(obj.count) == "number" then
         obj.frame.counterText:SetText(obj.count)
-    end
-    if obj.frame.counterText then
-        obj.frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")
-    end
-    if obj.frame.cooldownText then
-        obj.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE") -- Set font, size, and style
     end
     QA:CheckCombatGlow(obj)
 end

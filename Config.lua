@@ -107,7 +107,7 @@ QA.capitalCities = {
 
 -- these will be detected through UNIT_AURA event
 QA.trackedAuras = {}
-QA.trackedCrucialAuras = {}
+QA.trackedCrucialAuras = {} -- list
 
 -- these will be detected through COMBAT_LOG_EVENT_UNFILTERED
 QA.trackedCombatLog = {}

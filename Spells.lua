@@ -771,7 +771,7 @@ spells.shaman = {
         cooldown = 6
     },
     frostResistanceTotem = {
-        spellId = { 10479 },
+        spellId = { 10479, 10477 },
         name = "Frost Resistance Totem",
         icon = "Interface\\Icons\\spell_frostresistancetotem_01",
         crucial = true,

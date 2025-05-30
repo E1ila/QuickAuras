@@ -577,14 +577,16 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
 end
 
 function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
-    for _, buff in pairs(QA.trackedCrucialAuras) do
+    for _, buff in ipairs(QA.trackedCrucialAuras) do
         local spellId = buff.spellIds[1]
         if buff.conf.CrucialCond() then
             local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
-            debug("CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
+            local timeLeft = aura and aura.expTime or 0
             local existing = QA.list_crucial[spellId] -- not necessarly a timer
+            debug("CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt, "timeLeft", timeLeft, "existing", existing ~= nil)
             if not hasIt then
                 if existing and existing.isTimer then
+                    -- convert from timer to icon
                     QA:RemoveTimer(existing, "crucial")
                 end
                 local OnClick = buff.conf.OnClick
@@ -594,13 +596,16 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                         break
                     end
                 end
+                --:AddIcon(window,         idType,  id,      conf,    count, showTooltip, onClick)
                 QA:AddIcon(WINDOW.CRUCIAL, "spell", spellId, buff.conf, nil, false, OnClick)
-            elseif existing then
+            else
                 -- has buff, display time to expire
-                if not existing.isTimer then
+                if existing and not existing.isTimer then
+                    -- remove icon
                     debug("CheckCrucialBuffs", "removing existing icon", spellId)
                     QA:RemoveIcon(WINDOW.CRUCIAL, spellId)
-                elseif aura and aura.duration and aura.expTime and aura.expTime > 0 then -- duration, expTime
+                end
+                if timeLeft > 0 then -- duration, expTime
                     local timer, isNew = QA:AddTimer(WINDOW.CRUCIAL, buff.conf, spellId, aura.duration, aura.expTime, QA.db.profile.crucialExpireTime)
                     timer.glowOnEnd = false -- no need, the icon will glow
                 end

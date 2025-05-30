@@ -459,13 +459,16 @@ end
 function QA:CheckExplosives()
     if QA.db.profile.notifyExplosivesReady then
         local sapper = QA.explosives.goblinSapperCharge
-        local readyItem = QA.bags[sapper.itemId] and isItemReady(sapper) and sapper
-        if not readyItem then
-            for _, conf in pairs(QA.explosives) do
-                if QA.bags[conf.itemId] then
-                    local start, duration = QA:GetItemCooldown(conf.itemId)
-                    if start == 0 and duration == 0 then
-                        readyItem = conf
+        local readyItem
+        if QA.inInstance then
+            readyItem = QA.bags[sapper.itemId] and isItemReady(sapper) and sapper
+            if not readyItem then
+                for _, conf in pairs(QA.explosives) do
+                    if QA.bags[conf.itemId] then
+                        local start, duration = QA:GetItemCooldown(conf.itemId)
+                        if start == 0 and duration == 0 then
+                            readyItem = conf
+                        end
                     end
                 end
             end

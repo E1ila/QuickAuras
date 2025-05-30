@@ -496,7 +496,7 @@ function QA:CheckAuras()
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
         --debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
-        seen[spellId] = { duration, expTime, spellId }
+        seen[spellId] = { duration = duration, expTime = expTime, spellId = spellId }
         if QA.stealthAbilities[spellId] then QA.playerIsStealthed = true end
         -- timer auras -----------------------------------------
         local aura = QA.trackedAuras[spellId]
@@ -577,12 +577,11 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
 end
 
 function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
-    debug(2, "CheckCrucialBuffs", "combatStateChanged")
     for _, buff in pairs(QA.trackedCrucialAuras) do
         local spellId = buff.spellIds[1]
         if buff.conf.CrucialCond() then
-            local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
-            --debug(3, "CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
+            local hasIt,  = QA:HasSeenAny(buff.spellIds, actives)
+            debug("CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt)
             local existing = QA.list_crucial[spellId] -- not necessarly a timer
             if not hasIt then
                 if existing and existing.isTimer then
@@ -596,13 +595,15 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                     end
                 end
                 QA:AddIcon(WINDOW.CRUCIAL, "spell", spellId, buff.conf, nil, false, OnClick)
-            elseif aura and aura[1] and aura[2] and aura[2] > 0 then -- duration, expTime
+            elseif existing then
                 -- has buff, display time to expire
-                if existing and not existing.isTimer then
+                if not existing.isTimer then
+                    debug("CheckCrucialBuffs", "removing existing icon", spellId)
                     QA:RemoveIcon(WINDOW.CRUCIAL, spellId)
+                elseif aura and aura.duration and aura.expTime and aura.expTime > 0 then -- duration, expTime
+                    local timer, isNew = QA:AddTimer(WINDOW.CRUCIAL, buff.conf, spellId, aura.duration, aura.expTime, QA.db.profile.crucialExpireTime)
+                    timer.glowOnEnd = false -- no need, the icon will glow
                 end
-                local timer, isNew = QA:AddTimer(WINDOW.CRUCIAL, buff.conf, spellId, aura[1], aura[2], QA.db.profile.crucialExpireTime)
-                timer.glowOnEnd = false -- no need, the icon will glow
             end
         else
             QA:RemoveIcon(WINDOW.CRUCIAL, spellId)

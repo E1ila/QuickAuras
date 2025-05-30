@@ -402,11 +402,14 @@ function QA:AddIcon(window, idType, id, conf, count, showTooltip, onClick)
         attr.list[id] = button
         QA.arrangeQueue[window] = true
         return button
-    elseif count ~= nil then
-        debug(2, _c.bold.."AddIcon|r", id, "updating count", count)
-        button.count = count
-        QA.arrangeQueue[window] = true
-        return button
+    else
+        QA:CheckCombatGlow(button)
+        if count ~= nil then
+            debug(2, _c.bold.."AddIcon|r", id, "updating count", count)
+            button.count = count
+            QA.arrangeQueue[window] = true
+            return button
+        end
     end
 end
 
@@ -516,16 +519,20 @@ function QA:ArrangeIcons(window)
         if frame.cooldownText then
             frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE") -- Set font, size, and style
         end
-        if obj.glowInCombat then
-            if QA.inCombat and not obj.frame.glow then
-                ActionButton_ShowOverlayGlow(obj.frame)
-                obj.frame.glow = true
-            elseif not QA.inCombat and obj.frame.glow then
-                ActionButton_HideOverlayGlow(obj.frame)
-                obj.frame.glow = false
-            end
-        end
+        QA:CheckCombatGlow(obj)
         lastFrame = frame
+    end
+end
+
+function QA:CheckCombatGlow(obj)
+    if obj.glowInCombat then
+        if QA.inCombat and not obj.frame.glow then
+            ActionButton_ShowOverlayGlow(obj.frame)
+            obj.frame.glow = true
+        elseif not QA.inCombat and obj.frame.glow then
+            ActionButton_HideOverlayGlow(obj.frame)
+            obj.frame.glow = false
+        end
     end
 end
 

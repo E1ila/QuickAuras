@@ -127,6 +127,7 @@ function QA:PLAYER_REGEN_DISABLED()
     -- in combat
     QA.inCombat = true
     QA:CheckAuras()
+    QA:CheckCooldowns()
 end
 
 function QA:PLAYER_REGEN_ENABLED()
@@ -134,6 +135,7 @@ function QA:PLAYER_REGEN_ENABLED()
     QA.inCombat = false
     QA:CheckAuras()
     QA:CheckPlayerAggro()
+    QA:CheckCooldowns()
 end
 
 function QA:GROUP_ROSTER_UPDATE()

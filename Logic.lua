@@ -451,7 +451,10 @@ function QA:CheckCooldowns()
             _checkCooldown(conf, "item", itemId, start, duration)
         end
     end
-    -- check ready items
+    QA:CheckExplosives()
+end
+
+function QA:CheckExplosives()
     if QA.db.profile.notifyExplosivesReady then
         local sapper = QA.explosives.goblinSapperCharge
         local sapperReady = QA.bags[sapper.itemId] and isItemReady(sapper)
@@ -462,17 +465,25 @@ function QA:CheckCooldowns()
                 if start == 0 and duration == 0 then
                     otherReady = conf
                 else
-                    QA:RemoveIcon(WINDOW.READY, conf.itemId)
+                    if QA:RemoveIcon(WINDOW.READY, conf.itemId) then
+                        debug("CheckCooldowns", "REMOVING 1", conf.name)
+                    end
                 end
             else
-                QA:RemoveIcon(WINDOW.READY, conf.itemId)
+                if QA:RemoveIcon(WINDOW.READY, conf.itemId) then
+                    debug("CheckCooldowns", "REMOVING 2", conf.name)
+                end
             end
         end
         if sapperReady then
             --:AddIcon(window,       idType, id, conf, count, showTooltip, onClick)
-            QA:AddIcon(WINDOW.READY, "item", sapper.itemId, sapper)
+            if QA:AddIcon(WINDOW.READY, "item", sapper.itemId, sapper) then
+                debug("CheckCooldowns", "ADDING 1", sapper.name)
+            end
         elseif otherReady then
-            QA:AddIcon(WINDOW.READY, "item", otherReady.itemId, otherReady)
+            if QA:AddIcon(WINDOW.READY, "item", otherReady.itemId, otherReady) then
+                debug("CheckCooldowns", "ADDING 2", otherReady.name)
+            end
         end
     end
 end
@@ -733,6 +744,7 @@ function QA:RefreshReady()
 end
 
 function QA:RefreshAll()
+    debug("Refresh all windows")
     QA:RefreshWarnings()
     QA:RefreshMissing()
     QA:RefreshAlerts()

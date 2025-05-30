@@ -438,7 +438,7 @@ end
 
 function QA:CheckCooldowns()
     if QA.db.profile.cooldowns then
-        debug("CheckCooldowns", "Checking cooldowns...")
+        debug(2, "CheckCooldowns", "Checking cooldowns...")
         for spellId, conf in pairs(QA.trackedSpellCooldowns) do
             if not (conf.ignoreCooldownInStealth and QA.playerIsStealthed) then
                 local start, duration = GetSpellCooldown(spellId)

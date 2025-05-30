@@ -227,6 +227,7 @@ QA.consumes = {
         itemIds = { 13452, 9187, 8949 },
         itemId = 13452,
         default = QA.isRogue or QA.isWarrior or QA.isHunter,
+        minCount = 5,
     },
     {
         name = "Sweet Surprise",

@@ -291,7 +291,7 @@ function QA:GetWindowAttributes(window)
             list = QA.list_missingBuffs,
             Refresh = QA.RefreshMissing,
             glowInCombat = true,
-            align = "right",
+            align = "left",
         }
     elseif window == WINDOW.ALERT then
         return {
@@ -478,14 +478,14 @@ function QA:ArrangeIcons(window)
             frame.iconFrame.icon:SetSize(attr.height-padding*2, attr.height-padding*2)
         else
             frame:SetSize(attr.height, attr.height)
-            if attr.align == "left" then
+            if attr.align == "right" then --     <-------
                 if lastFrame then
                     frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
                 frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
-            elseif attr.align == "right" then
+            elseif attr.align == "left" then --    ------->
                 if lastFrame then
                     frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -2, 0)
                 else
@@ -529,7 +529,7 @@ function QA:ArrangeIcons(window)
     end
 end
 
-function QA:ArrangeWindows()
+function QAG:ArrangeWindows()
     for window, _ in pairs(QA.arrangeQueue) do
         QA:ArrangeIcons(window)
     end

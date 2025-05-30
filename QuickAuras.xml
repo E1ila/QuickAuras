@@ -277,7 +277,7 @@
             <AbsDimension x="90" y="40" />
         </Size>
         <Anchors>
-            <Anchor point="LEFT" relativePoint="CENTER" relativeTo="UIParent" x="-650" y="50" />
+            <Anchor point="RIGHT" relativePoint="CENTER" relativeTo="UIParent" x="-650" y="50" />
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">

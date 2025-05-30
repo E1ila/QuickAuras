@@ -169,6 +169,7 @@ end
 
 function FHM:EncounterStart()
     self.mark = 0
+    self.stacks = 0
     self.markTimer = nil
     self.timer = C_Timer.NewTimer(21, function()
         FHM:Mark()
@@ -176,7 +177,8 @@ function FHM:EncounterStart()
     if QA.db.profile.bossFhmLastMark then
         QA.encounter.CombatLog.SPELL_AURA_APPLIED = function(timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, spellId, spellName, ...)
             if destGuid == QA.playerGuid and self.marks[spellId] then
-                local stacks = QA:GetDebuffStacks(spellId)
+                self.stacks = self.stacks + 1
+                local stacks = self.stacks -- QA:GetDebuffStacks(spellId)
                 out(_c.bold..QA.name.."|r "..self.marks[spellId].." stacks "..tostring(stacks))
                 local conf = {
                     name = self.marks[spellId],
@@ -184,7 +186,7 @@ function FHM:EncounterStart()
                     duration = 60,
                     count = stacks,
                 }
-                --:AddTimer(window,      conf,   id,             duration, expTime)
+                --               QA:AddTimer(window,       conf, id,              duration, expTime,    showAtTime, text, keyExtra)
                 self.markTimer = QA:AddTimer(WINDOW.QUEUE, conf, "4hm-last-mark", 60,       GetTime()+60)
             end
         end

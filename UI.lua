@@ -380,7 +380,9 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
     if QA.ignoredIcons[ignoreKey] then return nil end
     local attr = QA:GetWindowAttr(window, idType)
     local button = attr.list[key]
+    local isNew = false
     if not button then
+        isNew = true
         local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) and count ~= nil or type(count) == "number" and count >= 0
         debug(2, _c.bold.."AddIcon|r", conf.name, key, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
         local onRightClick = window ~= WINDOW.ALERT and attr.Refresh and function()
@@ -398,20 +400,15 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
             list = attr.list,
             parent = attr.parent,
             count = count,
-            glowInCombat = attr.glowInCombat
+            glowInCombat = attr.glowInCombat,
+            window = window,
         }
         attr.list[key] = button
         QA.arrangeQueue[window] = true
-        return button
     else
-        QA:CheckCombatGlow(button)
-        if count ~= nil then
-            debug(2, _c.bold.."AddIcon|r", key, "updating count", count)
-            button.count = count
-            QA.arrangeQueue[window] = true
-            return button
-        end
+        QA:UpdateIcon(button, attr, count)
     end
+    return button, isNew
 end
 
 function QA:RemoveIcon(window, id)
@@ -464,9 +461,6 @@ function QA:ArrangeIcons(window)
         local frame = obj.frame
         frame:ClearAllPoints()
         --debug(3, _c.purple.."ArrangeIcons|r", window, obj.id, parent, frame:GetParent():GetName(), "counterText", frame.counterText, "obj.count", obj.count)
-        if frame.counterText and obj.count and type(obj.count) == "number" then
-            frame.counterText:SetText(obj.count)
-        end
         if attr.align == "vbars" then
             -- progress bar, down
             if lastFrame then
@@ -514,15 +508,28 @@ function QA:ArrangeIcons(window)
                 frame:GetParent():SetSize(attr.height * count, attr.height)
             end
         end
-        if frame.counterText then
-            frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")
-        end
-        if frame.cooldownText then
-            frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE") -- Set font, size, and style
-        end
-        QA:CheckCombatGlow(obj)
+        QA:UpdateIcon(obj, attr)
         lastFrame = frame
     end
+end
+
+function QA:UpdateIcon(obj, attr, count)
+    if not attr then
+        attr = QA:GetWindowAttributes(obj.window)
+    end
+    if count ~= nil then
+        obj.count = count
+    end
+    if obj.frame.counterText and obj.count and type(obj.count) == "number" then
+        obj.frame.counterText:SetText(obj.count)
+    end
+    if obj.frame.counterText then
+        obj.frame.counterText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE")
+    end
+    if obj.frame.cooldownText then
+        obj.frame.cooldownText:SetFont("Fonts\\FRIZQT__.TTF", math.floor(attr.height/2), "OUTLINE") -- Set font, size, and style
+    end
+    QA:CheckCombatGlow(obj)
 end
 
 function QA:CheckCombatGlow(obj)
@@ -1067,16 +1074,17 @@ end
 
 function QA:TestInject()
     local log = {
-        "SPELL_AURA_APPLIED,Player-5233-012CE9FE,\"Kentosuh-Firemaw-EU\",0x514,0x0,Player-5233-012CE9FE,\"Talz-Firemaw-EU\",0x514,0x0,29166,\"Innervate\",0x8,BUFF",
-        "SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
-        "SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
-        "SPELL_AURA_APPLIED,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
-        "SPELL_AURA_APPLIED,Player-5233-01F4ABDF,\"Defchad-Firemaw-EU\",0x40514,0x0,Creature-0-5253-533-7736-16453-00019CF387,\"Necro Stalker\",0x10a48,0x80,355,\"Taunt\",0x1,DEBUFF",
-        "SPELL_AURA_APPLIED,Player-5233-033F9882,\"Dirge-Firemaw-EU\",0x514,0x0,Player-5233-033F9882,\"Dirge-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
-        "SPELL_AURA_APPLIED,Player-5233-026BAE34,\"Brucice-Firemaw-EU\",0x514,0x0,Player-5233-026BAE34,\"Brucice-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
-        "SPELL_AURA_APPLIED,Player-5233-02671588,\"Shorukh-Firemaw-EU\",0x514,0x0,Player-5233-02671588,\"Shorukh-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
-        "SPELL_AURA_APPLIED,Player-5233-027AEBDF,\"Blenders-Firemaw-EU\",0x514,0x0,Player-5233-027AEBDF,\"Blenders-Firemaw-EU\",0x514,0x0,13877,\"Blade Flurry\",0x1,BUFF",
-        "SPELL_AURA_APPLIED,Player-5233-029401E9,\"Derpymcderp-Skullflame-EU\",0x514,0x0,Player-5233-029401E9,\"Derpymcderp-Skullflame-EU\",0x514,0x0,13750,\"Adrenaline Rush\",0x1,BUFF"
+        "SPELL_AURA_APPLIED,Creature-0-5211-533-6255-16063-00002F62B4,\"Sir Zeliek\",0xa48,0x10,Player-5233-0189014E,\"Galz-Firemaw-EU\",0x511,0x0,28835,\"Mark of Zeliek\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-012CE9FE,\"Kentosuh-Firemaw-EU\",0x514,0x0,Player-5233-012CE9FE,\"Talz-Firemaw-EU\",0x514,0x0,29166,\"Innervate\",0x8,BUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,Player-5233-018ED242,\"Aivengard-Earthshaker-EU\",0x512,0x0,3169,\"Invulnerability\",0x1,BUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,Player-5233-024D46FB,\"Rähan-Firemaw-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,Player-5233-01CD0550,\"Ayablackpaw-Gandling-EU\",0x514,0x0,3169,\"Invulnerability\",0x1,BUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-01F4ABDF,\"Defchad-Firemaw-EU\",0x40514,0x0,Creature-0-5253-533-7736-16453-00019CF387,\"Necro Stalker\",0x10a48,0x80,355,\"Taunt\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-033F9882,\"Dirge-Firemaw-EU\",0x514,0x0,Player-5233-033F9882,\"Dirge-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-026BAE34,\"Brucice-Firemaw-EU\",0x514,0x0,Player-5233-026BAE34,\"Brucice-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-02671588,\"Shorukh-Firemaw-EU\",0x514,0x0,Player-5233-02671588,\"Shorukh-Firemaw-EU\",0x514,0x0,12328,\"Death Wish\",0x1,DEBUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-027AEBDF,\"Blenders-Firemaw-EU\",0x514,0x0,Player-5233-027AEBDF,\"Blenders-Firemaw-EU\",0x514,0x0,13877,\"Blade Flurry\",0x1,BUFF",
+        --"SPELL_AURA_APPLIED,Player-5233-029401E9,\"Derpymcderp-Skullflame-EU\",0x514,0x0,Player-5233-029401E9,\"Derpymcderp-Skullflame-EU\",0x514,0x0,13750,\"Adrenaline Rush\",0x1,BUFF"
     }
     QA:InjectLog(log)
 end

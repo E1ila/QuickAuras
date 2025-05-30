@@ -21,7 +21,8 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
     local existingTimer = QA.list_timerByName[key]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
-            --debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime)
+            --debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime, conf.count)
+            QA:UpdateIcon(existingTimer, attr, conf.count)
             return existingTimer, false -- already exists
         end
         debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime, "key", key)
@@ -53,6 +54,7 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
         id = id,
         name = conf.name,
         icon = conf.icon,
+        count = conf.count,
         color = conf.color or {0.5, 0.5, 0.5},
         expTime = expTime,
         duration = duration,

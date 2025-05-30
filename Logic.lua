@@ -472,13 +472,9 @@ function QA:CheckExplosives()
         end
         if readyItem then
             --:AddIcon(window,       idType, id, conf, count, showTooltip, onClick, id)
-            if QA:AddIcon(WINDOW.READY, "item", sapper.itemId, readyItem, nil, nil, nil, readyItem.itemId) then
-                debug("CheckCooldowns", "ADDING", readyItem.name)
-            end
+            QA:AddIcon(WINDOW.READY, "item", sapper.itemId, readyItem, nil, nil, nil, readyItem.itemId)
         else
-            if QA:RemoveIcon(WINDOW.READY, sapper.itemId) then
-                debug("CheckCooldowns", "REMOVING")
-            end
+            QA:RemoveIcon(WINDOW.READY, sapper.itemId)
         end
     end
 end

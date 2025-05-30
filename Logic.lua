@@ -32,7 +32,7 @@ function QA:CheckTargetAuras(targetChanged)
     end
     if shouldCheck then
         local seen = {}
-        debug(2, "CheckTargetAuras", "target", UnitName("target"))
+        --debug("CheckTargetAuras", "target", UnitName("target"))
         for i = 1, 32 do
             local name, _, count, dispelType, duration, expires, isStealable, _, _, spellId = UnitDebuff("target", i)
             if not name then break end
@@ -583,7 +583,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
             local hasIt, aura = QA:HasSeenAny(buff.spellIds, activeAuras)
             local timeLeft = aura and aura.expTime or 0
             local existing = QA.list_crucial[spellId] -- not necessarly a timer
-            debug("CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt, "timeLeft", timeLeft, "existing", existing ~= nil)
+            --debug("CheckCrucialBuffs", "(scan)", buff.conf.name, "hasIt", hasIt, "timeLeft", timeLeft, "existing", existing ~= nil)
             if not hasIt then
                 if existing and existing.isTimer then
                     -- convert from timer to icon
@@ -602,7 +602,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                 -- has buff, display time to expire
                 if existing and not existing.isTimer then
                     -- remove icon
-                    debug("CheckCrucialBuffs", "removing existing icon", spellId)
+                    --debug("CheckCrucialBuffs", "removing existing icon", spellId)
                     QA:RemoveIcon(WINDOW.CRUCIAL, spellId)
                 end
                 if timeLeft > 0 then -- duration, expTime

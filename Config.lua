@@ -129,7 +129,7 @@ QA.trackedProcAbilities = {
 }
 
 QA.trackedEnemyAurasBySpellId = {}
-QA.trackedEnemyAuras = {}
+QA.trackedEnemyAuras = {} -- list
 
 -- custom events
 

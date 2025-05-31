@@ -55,19 +55,19 @@ function QA:SetWeaponEnchantsOnClick()
             SendChatMessage("WF DROPPED!", "PARTY")
         end)
     end
-    if QA.isShaman then
-        -- check if spell is known
-        QuickAuras_WeaponEnchant1:RegisterForClicks("LeftButtonUp")
-        if IsSpellKnown(QA.spells.shaman.stormstrike.spellId[1]) then
-            local spellName = GetSpellInfo(QA.spells.shaman.windfuryWeapon.spellId[1])
-            QuickAuras_WeaponEnchant1:SetAttribute("type", "spell")
-            QuickAuras_WeaponEnchant1:SetAttribute("spell", spellName)
-        else
-            local spellName = GetSpellInfo(QA.spells.shaman.windfuryTotem.spellId[1])
-            QuickAuras_WeaponEnchant1:SetAttribute("type", "spell")
-            QuickAuras_WeaponEnchant1:SetAttribute("spell", spellName)
-        end
-    end
+    --if QA.isShaman then
+    --    -- check if spell is known
+    --    QuickAuras_WeaponEnchant1:RegisterForClicks("LeftButtonUp")
+    --    if IsSpellKnown(QA.spells.shaman.stormstrike.spellId[1]) then
+    --        local spellName = GetSpellInfo(QA.spells.shaman.windfuryWeapon.spellId[1])
+    --        QuickAuras_WeaponEnchant1:SetAttribute("type", "spell")
+    --        QuickAuras_WeaponEnchant1:SetAttribute("spell", spellName)
+    --    else
+    --        local spellName = GetSpellInfo(QA.spells.shaman.windfuryTotem.spellId[1])
+    --        QuickAuras_WeaponEnchant1:SetAttribute("type", "spell")
+    --        QuickAuras_WeaponEnchant1:SetAttribute("spell", spellName)
+    --    end
+    --end
     --QuickAuras_WeaponEnchant2:SetScript("OnMouseDown", function(self, button)
     --    if button == "RightButton" then
     --        QA:SetWeaponEnchantIcon(2, nil)

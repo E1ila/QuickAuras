@@ -310,16 +310,16 @@
             </Layer>
         </Layers>
         <Frames>
-            <Button name="QuickAuras_WeaponEnchant1" inherits="SecureActionButtonTemplate">
+            <Frame name="QuickAuras_WeaponEnchant1">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0" />
                 </Anchors>
-            </Button>
-            <Button name="QuickAuras_WeaponEnchant2">
+            </Frame>
+            <Frame name="QuickAuras_WeaponEnchant2">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="0" />
                 </Anchors>
-            </Button>
+            </Frame>
         </Frames>
     </Frame>
 

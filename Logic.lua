@@ -339,23 +339,13 @@ function QA:CheckWeaponEnchants()
     local mh, mhExp, _, mhEnchId, oh, ohExp, _, ohEnchId, rng, rngExp, _, rngEnchId = GetWeaponEnchantInfo("player")
     local mhItemId = GetInventoryItemID("player", 16)
     local ohItemId = GetInventoryItemID("player", 17)
-    local changed = QA.tempEnchant == nil or QA.inCombat ~= QA.tempEnchant.inCombat or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp or mhItemId ~= QA.tempEnchant.mhItemId or ohItemId ~= QA.tempEnchant.ohItemId
+    local changed = QA.tempEnchant == nil or QA.inCombat ~= QA.tempEnchant.inCombat
+            or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp
+            or mhItemId ~= QA.tempEnchant.mhItemId or ohItemId ~= QA.tempEnchant.ohItemId
     if changed then
         debug(2, "CheckWeaponEnchant", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
-        if not QA.tempEnchant or QA.tempEnchant.mhExp ~= mhExp or mhItemId ~= QA.tempEnchant.mhItemId then
-            if mh then
-                QA:SetWeaponEnchantIcon(1, nil)
-            else
-                QA:SetWeaponEnchantIcon(1, mhItemId)
-            end
-        end
-        if not QA.tempEnchant or QA.tempEnchant.ohExp ~= ohExp or ohItemId ~= QA.tempEnchant.ohItemId then
-            if oh then
-                QA:SetWeaponEnchantIcon(2, nil)
-            else
-                QA:SetWeaponEnchantIcon(2, ohItemId)
-            end
-        end
+        QA:SetWeaponEnchantIcon(1, not mh and mhItemId or nil)
+        QA:SetWeaponEnchantIcon(2, not oh and ohItemId or nil)
         QA.tempEnchant = {
             mhExp = mhExp,
             mhEnchId = mhEnchId,

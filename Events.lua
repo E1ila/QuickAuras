@@ -181,8 +181,8 @@ function QA:UNIT_SPELLCAST_SENT(unit, _, spellGuid)
     QA:CheckSpellQueue(unit, spellGuid)
 end
 
-function QA:ADDON_ACTION_BLOCKED(a, b, c)
-    debug("ADDON_ACTION_BLOCKED", a, b, c)
+function QA:ADDON_ACTION_BLOCKED(...)
+    debug("ADDON_ACTION_BLOCKED", _c.alert, ...)
 end
 
 function QA:UNIT_INVENTORY_CHANGED()

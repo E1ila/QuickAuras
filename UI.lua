@@ -39,6 +39,8 @@ function QA:InitUI()
     QA:UpdateXpFrame()
 end
 
+-- weapon enchants --------------------------------
+
 function QA:InitWeaponEnchants()
     QuickAuras_WeaponEnchant1.icon = QuickAuras_WeaponEnchant1:CreateTexture(nil, "BACKGROUND")
     QuickAuras_WeaponEnchant1.icon:SetAllPoints(QuickAuras_WeaponEnchant1)
@@ -47,11 +49,25 @@ function QA:InitWeaponEnchants()
 end
 
 function QA:SetWeaponEnchantIcon(slot, itemId)
-    local itemIcon = GetItemIcon(itemId)
     local frame = slot == 1 and QuickAuras_WeaponEnchant1 or QuickAuras_WeaponEnchant2
-    frame.icon:SetTexture(itemIcon)
-    frame:SetSize(QA.db.profile.weaponEnchantSize, QA.db.profile.weaponEnchantSize)
+    if itemId then
+        local itemIcon = GetItemIcon(itemId)
+        frame.icon:SetTexture(itemIcon)
+        frame:SetSize(QA.db.profile.weaponEnchantSize, QA.db.profile.weaponEnchantSize)
+        frame:Show()
+        if QA.inCombat and not frame.glowing then
+            ActionButton_ShowOverlayGlow(frame)
+            frame.glowing = true
+        elseif not QA.inCombat and frame.glowing then
+            ActionButton_HideOverlayGlow(frame)
+            frame.glowing = false
+        end
+    else
+        frame:Hide()
+    end
 end
+
+-- range indication --------------------------------
 
 function QA:InitRangeIndication(frame)
     QuickAuras_RangeIndicator.icon = QuickAuras_RangeIndicator:CreateTexture(nil, "BACKGROUND")

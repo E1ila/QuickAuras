@@ -132,6 +132,7 @@ function QA:PLAYER_REGEN_DISABLED()
     QA.inCombat = true
     QA:CheckAuras()
     QA:CheckCooldowns()
+    QA:CheckWeaponEnchant()
 end
 
 function QA:PLAYER_REGEN_ENABLED()
@@ -140,6 +141,7 @@ function QA:PLAYER_REGEN_ENABLED()
     QA:CheckAuras()
     QA:CheckPlayerAggro()
     QA:CheckCooldowns()
+    QA:CheckWeaponEnchant()
 end
 
 function QA:GROUP_ROSTER_UPDATE()
@@ -181,6 +183,10 @@ end
 
 function QA:ADDON_ACTION_BLOCKED(a, b, c)
     debug("ADDON_ACTION_BLOCKED", a, b, c)
+end
+
+function QA:UNIT_INVENTORY_CHANGED()
+    QA:CheckWeaponEnchant()
 end
 
 -- OnUpdate

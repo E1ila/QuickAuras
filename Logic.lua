@@ -335,10 +335,28 @@ function QA:CheckTransmuteCooldown()
 end
 
 function QA:CheckWeaponEnchant()
-    local mh, expiration, _, enchid, _, _, _, _ = GetWeaponEnchantInfo("player")
-    local mhItemId = GetInventoryItemID("player", 16)
-    debug("CheckWeaponEnchant", "mh", mh, "expiration", expiration, "enchid", enchid, "mhItemId", mhItemId)
-    QA:SetWeaponEnchantIcon(1, mhItemId)
+    local mh, mhExp, _, mhEnchId, oh, ohExp, _, ohEnchId, rng, rngExp, _, rngEnchId = GetWeaponEnchantInfo("player")
+    local changed = QA.tempEnchant == nil or QA.inCombat ~= QA.tempEnchant.inCombat or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp
+    if changed then
+        debug(2, "CheckWeaponEnchant", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
+        if not QA.tempEnchant or QA.tempEnchant.mhExp ~= mhExp then
+            if mh then
+                QA:SetWeaponEnchantIcon(1, nil)
+            else
+                local mhItemId = GetInventoryItemID("player", 16)
+                QA:SetWeaponEnchantIcon(1, mhItemId)
+            end
+        end
+        if not QA.tempEnchant or QA.tempEnchant.ohExp ~= ohExp then
+            if oh then
+                QA:SetWeaponEnchantIcon(2, nil)
+            else
+                local ohItemId = GetInventoryItemID("player", 17)
+                QA:SetWeaponEnchantIcon(2, ohItemId)
+            end
+        end
+        QA.tempEnchant = { mhExp = mhExp, mhEnchId = mhEnchId, ohExp = ohExp, ohEnchId = ohEnchId, combat = QA.inCombat }
+    end
 end
 
 function QA:CheckLowConsumes()
@@ -438,7 +456,7 @@ end
 
 function QA:CheckCooldowns()
     if QA.db.profile.cooldowns then
-        debug(2, "CheckCooldowns", "Checking cooldowns...")
+        --debug(2, "CheckCooldowns", "check")
         for spellId, conf in pairs(QA.trackedSpellCooldowns) do
             if not (conf.ignoreCooldownInStealth and QA.playerIsStealthed) then
                 local start, duration = GetSpellCooldown(spellId)
@@ -748,7 +766,7 @@ end
 -- DEBOUNCE FUNCTIONS
 
 QA.BagsChanged = QA:Debounce(function()
-    debug(2, "BAG_UPDATE", bagId)
+    --debug(2, "BAG_UPDATE", bagId)
     QA:ScanBags()
     QA:ScanBank()
     QA:CheckMissingBuffs()

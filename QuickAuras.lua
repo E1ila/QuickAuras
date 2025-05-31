@@ -92,10 +92,21 @@ local function out(text, ...)
 end
 QA.Print = out
 
-local function debug(text, ...)
-    local minLevel = type(text) == "number" and text or 1
+local function debug(text, func, ...)
+    local textIsNumber = type(text) == "number"
+    local minLevel = textIsNumber and text or 1
     if QuickAurasDBG.debug and QuickAurasDBG.debug >= minLevel then
-        print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r","|cff009999DEBUG|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", text, ...)
+        local argc = select("#", ...)
+        if textIsNumber and argc > 1 then
+            local s = ""
+            for i = 1, argc do
+                local c = i % 2 == 0 and _c.gray or _c.white
+                s = c .. s .. tostring(select(i, ...)) .. (#c == 0 and "" or "|r") .. " "
+            end
+            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r","|cff009999DEBUG|r|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", "["..text.."]", _c.purple..func.."|r", s)
+        else
+            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r","|cff009999DEBUG|r|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", text, func, ...)
+        end
     end
 end
 QA.Debug = debug
@@ -148,14 +159,15 @@ function QA:OnInitialize()
         end
         QA.inCombat = UnitAffectingCombat("player")
         QA:InitUI()
+        QA:InitBossLogic()
+        QA.InitSwingTimer()
         QA:RegisterOptionalEvents()
         QA:GroupCompoChanged()
         QA:CheckAuras()
         QA:CheckCooldowns()
         QA:CheckGear()
-        QA:InitBossLogic()
         QA:UPDATE_SHAPESHIFT_FORM()
-        QA.InitSwingTimer()
+        QA:CheckWeaponEnchant(true)
         --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
         --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
         --QuickAuras:CheckLowConsumes() -- updated on load due to zone event

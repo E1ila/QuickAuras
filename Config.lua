@@ -32,6 +32,7 @@ QA.optionalEvents = {
     "UNIT_THREAT_LIST_UPDATE",
     "UNIT_SPELLCAST_SENT",
     "ADDON_ACTION_BLOCKED",
+    "UNIT_INVENTORY_CHANGED",
     --"ACTIONBAR_SLOT_CHANGED",
     --"ACTIONBAR_PAGE_CHANGED",
     --"ACTIONBAR_UPDATE_STATE",
@@ -80,6 +81,8 @@ QA.colors = {
     enabled = "|cff00ff00",
     disabled = "|cffffff00",
     purple = "|cffcc99ff",
+    white = "|cffeeeeee",
+    gray = "|cffaaaaaa",
 }
 
 QA.trackedGear = {

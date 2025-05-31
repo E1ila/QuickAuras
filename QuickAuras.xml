@@ -293,7 +293,7 @@
 
     <Frame name="QuickAuras_WeaponEnchants" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
-            <AbsDimension x="90" y="40" />
+            <AbsDimension x="84" y="40" />
         </Size>
         <Anchors>
             <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="PlayerFrame" x="0" y="15" />

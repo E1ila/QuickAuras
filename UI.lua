@@ -427,7 +427,7 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
     if not button then
         isNew = true
         local showCount = window == WINDOW.REMINDER and (conf.minCount or QA.db.profile.lowConsumesMinCount) and count ~= nil or type(count) == "number" and count >= 0
-        debug(2, _c.bold.."AddIcon|r", conf.name, key, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
+        debug(2, "AddIcon", idType, conf.name, "key (id)", key, "parent", attr.parent:GetName(), "count", count, "showCount", showCount)
         local onRightClick = window ~= WINDOW.ALERT and attr.Refresh and function()
             QA.ignoredIcons[ignoreKey] = true
             attr.Refresh(QA)
@@ -458,7 +458,7 @@ end
 function QA:RemoveIcon(window, id)
     local attr = QA:GetWindowAttr(window)
     local obj = attr.list[id]
-    --debug("RemoveIcon", id, "window", window, "obj", obj)
+    debug(3, "RemoveIcon", "id", id, "window", window, "obj", obj)
     if obj then
         if obj.isTimer then
             QA:RemoveTimer(obj, "removeicon")
@@ -703,7 +703,7 @@ function QA:CreateTimerButton(parent, index, icon, showCount)
     local frame
     pbId = pbId + 1
     frame = CreateFrame("Frame", "QuickAuras_PBTN"..tostring(pbId), parent, "QuickAuras_ProgressButton")
-    debug(2, "Created progress button", "name", frame:GetName(), "index", index, "parent", parent)
+    debug(2, "CreateTimerButton", "name", frame:GetName(), "index", index, "parent", parent)
 
     frame.icon = frame:CreateTexture(nil, "ARTWORK")
     frame.icon:SetAllPoints(frame)
@@ -932,7 +932,7 @@ function QA:UpdateSwingTimer(hand, source)
     --local duration, expTime = 2.7, GetTime() + 2.7
     local id = "swing-"..hand
     local conf = swingConf[hand]
-    debug(QA.db.profile.swingDebug or 3, "UpdateSwingTimer", _c.bold..hand.."|r", _c.yellow..tostring(source).."|r", math.floor(duration*100)/100, math.floor(expTime))
+    debug(QA.db.profile.swingDebug or 3, "UpdateSwingTimer", hand, source, "t", math.floor(duration*100)/100, "exp", math.floor(expTime))
     if not duration or duration == 0 or not expTime then
         --QA:RemoveTimer(id)
     else

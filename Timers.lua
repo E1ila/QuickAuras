@@ -25,13 +25,13 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
             QA:UpdateIcon(existingTimer, attr, conf.count)
             return existingTimer, false -- already exists
         end
-        debug(2, "Replacing timer", "name", existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime, "key", key)
+        debug(2, "AddTimer", "Replacing", uiType, existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime, "key", key)
         -- different timer, remove old
         QA:RemoveTimer(existingTimer, "replaced")
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug(2, QA.colors.bold.."Adding", uiType , "timer|r", "name", conf.name, "expTime", expTime, "showAtTime", showAtTime, "key", key)
+        debug(2, "Addtimer", "Adding", uiType , "name", conf.name, "expTime", expTime, "showAtTime", showAtTime, "key", key)
     end
 
     local frame
@@ -127,9 +127,9 @@ function QA:UpdateProgressBar(timer)
     end
 end
 
-function QA:RemoveTimer(timer, reason)
+function QA:RemoveTimer(timer, source)
     if not timer or not timer.frame then return false end -- target died, already removed
-    debug(2, "Removing timer", timer.key, reason, "map key", timer.keyExtra..timer.id)
+    debug(2, "RemoveTimer", "key", timer.key, "source", source, "map key", timer.keyExtra..timer.id)
     if timer.onEnd then
         timer:onEnd(timer)
     end

@@ -45,7 +45,7 @@ QA.trackedEncounters = {}
 
 function QA:InitBossLogic()
     for name, boss in pairs(QA.boss) do
-        debug(2, "Adding encounter", name, boss.encounterId)
+        debug(2, "InitBossLogic", "encounter", name, "id", boss.encounterId)
         QA.trackedEncounters[boss.encounterId] = boss
         boss.name = name
     end

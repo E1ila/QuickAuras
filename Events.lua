@@ -329,7 +329,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             end
             -- raid tracking
             if conf.raidBars and IsInInstance() then
-                debug(2, "Raid tracking", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
+                debug(2, "CLEU", "raid bar", conf.name, "spellId", spellId, "subevent", subevent, "sourceGUID", sourceGuid, "destGUID", destGuid)
                 if      (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                         and sourceGuid ~= QA.playerGuid
                         and QA.db.profile.raidBars

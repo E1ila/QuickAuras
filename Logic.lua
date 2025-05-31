@@ -157,7 +157,7 @@ function QA:CheckIfWarriorInParty()
     QA.hasWarriorInParty = false
     for i = 1, GetNumGroupMembers() do
         local unitId = "party"..i
-        debug(2, "CheckIfWarriorInParty", unitId, UnitClass(unitId))
+        debug(2, "CheckIfWarriorInParty", "unit", unitId, "class", UnitClass(unitId))
         if UnitClass(unitId) == "Warrior" and UnitIsConnected(unitId) then
             QA.hasWarriorInParty = true
             break
@@ -171,7 +171,7 @@ function QA:CheckTargetRange()
     local inRange = IsSpellInRange(spellName, "target") == 1
     if inRange ~= QA.targetInRange then
         QA.targetInRange = inRange
-        debug(2, "inRange", spellName, inRange)
+        debug(2, "CheckTargetRange", "spellName", spellName, "inRange", inRange)
         if inRange then
             QuickAuras_RangeIndicator:Show()
         else
@@ -240,7 +240,7 @@ function QA:CheckProcAura(spell, seen)
     local spellId = spell.spellId[1]
     local hasIt = QA:HasSeenAny(spell.spellId, seen)
     local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
-    debug(2, "Checking proc aura: "..spell.name, hasIt)
+    debug(2, "CheckProcAura", "spellName", spell.name, "hasIt", hasIt)
     if hasIt then
         local button = QA:AddIcon(window, "spell", spellId, spell)
         --                AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyExtra)
@@ -343,7 +343,7 @@ function QA:CheckWeaponEnchants()
             or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp
             or mhItemId ~= QA.tempEnchant.mhItemId or ohItemId ~= QA.tempEnchant.ohItemId
     if changed then
-        debug(2, "CheckWeaponEnchant", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
+        debug(2, "CheckWeaponEnchants", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
         QA:SetWeaponEnchantIcon(1, not mh and mhItemId or nil)
         QA:SetWeaponEnchantIcon(2, not oh and ohItemId or nil)
         QA.tempEnchant = {

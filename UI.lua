@@ -548,8 +548,8 @@ function QA:ArrangeIcons(window)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
-                --frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-                --frame:GetParent():SetSize(attr.height * count, attr.height)
+                frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+                frame:GetParent():SetSize(attr.height * count, attr.height)
             end
         end
         if obj.frame.counterText then

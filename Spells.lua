@@ -726,6 +726,19 @@ spells.rogue = {
 }
 
 spells.shaman = {
+    windfuryWeapon = {
+        spellId = { 8232, 8235, 10486, 16362 },
+        aura = true,
+        name = "Windfury Weapon",
+        icon = "Interface\\Icons\\Spell_Nature_Cyclone",
+        visible = QA.isShaman,
+    },
+    windfuryTotem = {
+        spellId = { 8512, 10613, 10614 },
+        name = "Windfury Totem",
+        icon = "Interface\\Icons\\Spell_Nature_Windfury",
+        visible = QA.isShaman,
+    },
     flurry = {
         spellId = { 16280 },
         aura = true,

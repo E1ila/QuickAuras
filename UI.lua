@@ -33,7 +33,7 @@ function QA:InitUI()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     QA:Rogue_SetCombo(0)
-    --QA:CheckWeaponEnchant()
+    --QA:CheckWeaponEnchants()
 
     QA:ConfigureXpFrame()
     QA:UpdateXpFrame()
@@ -46,6 +46,33 @@ function QA:InitWeaponEnchants()
     QuickAuras_WeaponEnchant1.icon:SetAllPoints(QuickAuras_WeaponEnchant1)
     QuickAuras_WeaponEnchant2.icon = QuickAuras_WeaponEnchant2:CreateTexture(nil, "BACKGROUND")
     QuickAuras_WeaponEnchant2.icon:SetAllPoints(QuickAuras_WeaponEnchant2)
+    QA:SetWeaponEnchantsOnClick()
+end
+
+function QA:SetWeaponEnchantsOnClick()
+    if QA.isWarrior or QA.isRogue then
+        QuickAuras_WeaponEnchant1:SetScript("OnMouseDown", function(self, button)
+            SendChatMessage("WF DROPPED!", "PARTY")
+        end)
+    end
+    if QA.isShaman then
+        -- check if spell is known
+        QuickAuras_WeaponEnchant1:RegisterForClicks("LeftButtonUp")
+        if IsSpellKnown(QA.spells.shaman.stormstrike.spellId[1]) then
+            local spellName = GetSpellInfo(QA.spells.shaman.windfuryWeapon.spellId[1])
+            QuickAuras_WeaponEnchant1:SetAttribute("type", "spell")
+            QuickAuras_WeaponEnchant1:SetAttribute("spell", spellName)
+        else
+            local spellName = GetSpellInfo(QA.spells.shaman.windfuryTotem.spellId[1])
+            QuickAuras_WeaponEnchant1:SetAttribute("type", "spell")
+            QuickAuras_WeaponEnchant1:SetAttribute("spell", spellName)
+        end
+    end
+    --QuickAuras_WeaponEnchant2:SetScript("OnMouseDown", function(self, button)
+    --    if button == "RightButton" then
+    --        QA:SetWeaponEnchantIcon(2, nil)
+    --    end
+    --end)
 end
 
 function QA:SetWeaponEnchantIcon(slot, itemId)

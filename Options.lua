@@ -72,6 +72,7 @@ QA.defaultOptions = {
         crucialExpireTime = 5,
         targetAuraExpireTime = 8,
         transmutePreReadyTime = 60,
+        missingWeaponEnchant = true,
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,

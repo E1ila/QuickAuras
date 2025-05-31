@@ -334,28 +334,37 @@ function QA:CheckTransmuteCooldown()
     end
 end
 
-function QA:CheckWeaponEnchant()
+function QA:CheckWeaponEnchants()
+    if not QA.db.profile.missingWeaponEnchant then return end
     local mh, mhExp, _, mhEnchId, oh, ohExp, _, ohEnchId, rng, rngExp, _, rngEnchId = GetWeaponEnchantInfo("player")
-    local changed = QA.tempEnchant == nil or QA.inCombat ~= QA.tempEnchant.inCombat or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp
+    local mhItemId = GetInventoryItemID("player", 16)
+    local ohItemId = GetInventoryItemID("player", 17)
+    local changed = QA.tempEnchant == nil or QA.inCombat ~= QA.tempEnchant.inCombat or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp or mhItemId ~= QA.tempEnchant.mhItemId or ohItemId ~= QA.tempEnchant.ohItemId
     if changed then
         debug(2, "CheckWeaponEnchant", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
-        if not QA.tempEnchant or QA.tempEnchant.mhExp ~= mhExp then
+        if not QA.tempEnchant or QA.tempEnchant.mhExp ~= mhExp or mhItemId ~= QA.tempEnchant.mhItemId then
             if mh then
                 QA:SetWeaponEnchantIcon(1, nil)
             else
-                local mhItemId = GetInventoryItemID("player", 16)
                 QA:SetWeaponEnchantIcon(1, mhItemId)
             end
         end
-        if not QA.tempEnchant or QA.tempEnchant.ohExp ~= ohExp then
+        if not QA.tempEnchant or QA.tempEnchant.ohExp ~= ohExp or ohItemId ~= QA.tempEnchant.ohItemId then
             if oh then
                 QA:SetWeaponEnchantIcon(2, nil)
             else
-                local ohItemId = GetInventoryItemID("player", 17)
                 QA:SetWeaponEnchantIcon(2, ohItemId)
             end
         end
-        QA.tempEnchant = { mhExp = mhExp, mhEnchId = mhEnchId, ohExp = ohExp, ohEnchId = ohEnchId, combat = QA.inCombat }
+        QA.tempEnchant = {
+            mhExp = mhExp,
+            mhEnchId = mhEnchId,
+            ohExp = ohExp,
+            ohEnchId = ohEnchId,
+            combat = QA.inCombat,
+            mhItemId = mhItemId,
+            ohItemId = ohItemId,
+        }
     end
 end
 

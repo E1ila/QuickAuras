@@ -33,7 +33,7 @@ function QA:InitUI()
     QuickAuras_Parry_Texture:SetVertexColor(1, 0, 0)
     QuickAuras_Combo_Texture:SetVertexColor(0, 0.9, 0.2)
     QA:Rogue_SetCombo(0)
-    --QA:CheckWeaponEnchants()
+    QA:CheckWeaponEnchants()
 
     QA:ConfigureXpFrame()
     QA:UpdateXpFrame()

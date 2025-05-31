@@ -167,7 +167,6 @@ function QA:OnInitialize()
         QA:CheckCooldowns()
         QA:CheckGear()
         QA:UPDATE_SHAPESHIFT_FORM()
-        QA:CheckWeaponEnchants()
         --QuickAuras:CheckTrackingStatus() -- updated on load due to zone event
         --QuickAuras:CheckMissingBuffs() -- updated on load due to zone event
         --QuickAuras:CheckLowConsumes() -- updated on load due to zone event

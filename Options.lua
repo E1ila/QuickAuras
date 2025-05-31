@@ -538,6 +538,23 @@ QA.options = {
                     end,
                     order = 13,
                 },
+                missingWeaponEnchant = {
+                    type = "toggle",
+                    name = "Weapon Enchant Missing",
+                    desc = "Shows a warning when your weapons doesn't have temp enchant (WF, Poison, Oil, etc.)",
+                    get = function(info) return QA.db.profile.missingWeaponEnchant end,
+                    set = function(info, value)
+                        QA.db.profile.missingWeaponEnchant = value
+                        QA.tempEnchant = nil
+                        if value then
+                            QA:CheckWeaponEnchants()
+                        else
+                            QuickAuras_WeaponEnchant1:Hide()
+                            QuickAuras_WeaponEnchant2:Hide()
+                        end
+                    end,
+                    order = 13,
+                },
                 meleeUtilsHeader = {
                     type = "header",
                     name = "Melee Utils",

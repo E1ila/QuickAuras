@@ -458,8 +458,8 @@ end
 function QA:RemoveIcon(window, id)
     local attr = QA:GetWindowAttr(window)
     local obj = attr.list[id]
-    debug(3, "RemoveIcon", "id", id, "window", window, "obj", obj)
     if obj then
+        debug(3, "RemoveIcon", "id", id, "window", window, "timer", obj.isTimer)
         if obj.isTimer then
             QA:RemoveTimer(obj, "removeicon")
         else

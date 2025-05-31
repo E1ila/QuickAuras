@@ -74,17 +74,6 @@ QA.adjustableFrames = {
 --    },
 --}
 
-QA.colors = {
-    alert = "|cffff0000",
-    yellow = "|cffffde00",
-    bold = "|cffff99cc",
-    enabled = "|cff00ff00",
-    disabled = "|cffffff00",
-    purple = "|cffcc99ff",
-    white = "|cffeeeeee",
-    gray = "|cffaaaaaa",
-}
-
 QA.trackedGear = {
     [15138] = {
         name = "Onyxia Scale Cloak",

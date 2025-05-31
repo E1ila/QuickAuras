@@ -21,17 +21,17 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
     local existingTimer = QA.list_timerByName[key]
     if existingTimer then
         if existingTimer.expTime == expTime and existingTimer.name == conf.name then
-            --debug(3, "Timer already exists", "name", conf.name, "ui", uiType, "expTime", expTime, conf.count)
+            debug(3, "AddTimer", "Updating", uiType, conf.name, "parent", attr.parent:GetName(), "expTime", expTime, "count", conf.count)
             QA:UpdateIcon(existingTimer, attr, conf.count)
             return existingTimer, false -- already exists
         end
-        debug(2, "AddTimer", "Replacing", uiType, existingTimer.name, conf.name, "expTime", existingTimer.expTime, expTime, "key", key)
+        debug(2, "AddTimer", "Replacing", uiType, conf.name, "parent", attr.parent:GetName(), "expTime", expTime, "key", key)
         -- different timer, remove old
         QA:RemoveTimer(existingTimer, "replaced")
         --debug("Replacing", uiType, "timer", "name", conf.name, "expTime", expTime)
         index = existingTimer.index
     else
-        debug(2, "Addtimer", "Adding", uiType , "name", conf.name, "expTime", expTime, "showAtTime", showAtTime, "key", key)
+        debug(2, "AddTimer", "Creating", uiType, conf.name, "parent", attr.parent:GetName(), "expTime", expTime, "showAtTime", showAtTime, "key", key)
     end
 
     local frame
@@ -48,28 +48,28 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
         end
     end
     local timer = {
-        frame = frame,
-        index = index,
-        list = attr.list,
-        id = id,
-        name = conf.name,
-        icon = conf.icon,
-        count = conf.count,
         color = conf.color or {0.5, 0.5, 0.5},
-        expTime = expTime,
+        count = conf.count,
         duration = duration,
-        showAtTime = showAtTime,
-        keyExtra = keyExtra,
-        text = text,
-        onUpdate = onUpdate,
-        onEnd = onEnd,
-        uiType = uiType,
-        parent = attr.parent,
-        window = window,
+        expTime = expTime,
         flashOnEnd = conf.flashOnEnd,
+        frame = frame,
         glowOnEnd = true,
+        icon = conf.icon,
+        id = id,
+        index = index,
+        isTimer = true,
+        keyExtra = keyExtra,
+        list = attr.list,
+        name = conf.name,
+        onEnd = onEnd,
+        onUpdate = onUpdate,
+        parent = attr.parent,
+        showAtTime = showAtTime,
+        text = text,
+        uiType = uiType,
+        window = window,
         widthMul = attr.widthMul,
-        isTimer = true
     }
     timer.key = keyExtra..QA:GetTimerKey(conf.name, expTime, uiType)
     if #keyExtra > 0 then

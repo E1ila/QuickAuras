@@ -525,15 +525,14 @@ function QA:CheckAuras()
     while true do
         local name, icon, _, _, duration, expTime, _, _, _, spellId = UnitAura("player", i)
         if not name then break end -- Exit the loop when no more auras are found
-        --debug(3, "CheckAuras", "(scan)", i, name, icon, duration, expTime, spellId)
         seen[spellId] = { duration = duration, expTime = expTime, spellId = spellId }
         if QA.stealthAbilities[spellId] then QA.playerIsStealthed = true end
         -- timer auras -----------------------------------------
         local aura = QA.trackedAuras[spellId]
-        --debug(3, "CheckAuras", "(scan)", "spellId", spellId, name, "aura", aura, "option", aura and aura.option)
+        debug(3, "CheckAuras (scan)", "spellId", spellId, "name", name, "found", aura ~= nil, "option", aura and aura.option)
         if aura and (not aura.option or QA.db.profile[aura.option]) and QA.db.profile.watchBars then
             duration, expTime = FixAuraExpTime(duration, expTime, aura, spellId)
-            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "option", aura.option, QA.db.profile[aura.option])
+            debug(2, "CheckAuras", "aura", aura.name, "duration", duration, "expTime", expTime, "enabled", QA.db.profile[aura.option])
             local timer = QA:AddTimer(aura.list or WINDOW.WATCH, aura, spellId, duration, expTime)
             if timer then
                 seen[timer.key] = true
@@ -546,7 +545,8 @@ function QA:CheckAuras()
     end
     -- remove missing auras
     for _, timer in pairs(QA.list_timers) do
-        if not seen[timer.key] and timer.window == "auras" then
+        debug(3, "CheckAuras (unseen)", "timer", timer.key, "window", timer.window, "seen", seen[timer.key] ~= nil)
+        if not seen[timer.key] and timer.duration == 0 then
             QA:RemoveTimer(timer, "unseen")
         end
     end

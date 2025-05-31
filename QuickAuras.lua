@@ -69,7 +69,19 @@ QA.isTauren = QA.playerRace == "Tauren"
 QA.isManaClass = QA.isPriest or QA.isMage or QA.isWarlock or QA.isDruid or QA.isPaladin or QA.isShaman or QA.isHunter
 QA.isHorde = QA.isOrc or QA.isTroll or QA.isUndead or QA.isTauren
 QA.isAlliance = not QA.isHorde
-local _c
+QA.colors = {
+    alert = "|cffff0000",
+    yellow = "|cffffde00",
+    brown = "|cffbb9977",
+    bold = "|cffff99cc",
+    enabled = "|cff00ff00",
+    disabled = "|cffffff00",
+    purple = "|cffcc99ff",
+    white = "|cffeeeeee",
+    gray = "|cffaaaaaa",
+    cyan = "|cff009999",
+}
+local _c = QA.colors
 
 QA.WINDOW = {
     ALERT = "alert",
@@ -100,12 +112,12 @@ local function debug(text, func, ...)
         if textIsNumber and argc > 1 then
             local s = ""
             for i = 1, argc do
-                local c = i % 2 == 0 and _c.gray or _c.white
-                s = c .. s .. tostring(select(i, ...)) .. (#c == 0 and "" or "|r") .. " "
+                local c = (i % 2 == 0) and _c.gray or _c.brown
+                s = s .. c .. tostring(select(i, ...)) .. "|r "
             end
-            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r","|cff009999DEBUG|r|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", "["..text.."]", _c.purple..func.."|r", s)
+            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r", _c.cyan.."DEBUG|r", _c.brown..tostring(GetTime()).."|r", "["..text.."]", _c.purple..func.."|r", s)
         else
-            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r","|cff009999DEBUG|r|cff999999", "|cffbb9977"..tostring(GetTime()).."|r", text, func, ...)
+            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r", _c.cyan.."DEBUG|r", _c.brown..tostring(GetTime()).."|r".._c.gray, text, func, ...)
         end
     end
 end
@@ -126,7 +138,6 @@ end
 
 function QA:OnInitialize()
     debug("Initializing...")
-    _c = QA.colors
 
     QA:InitSpells()
     QA:BuildTrackedGear()

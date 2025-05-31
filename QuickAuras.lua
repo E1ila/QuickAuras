@@ -115,9 +115,9 @@ local function debug(text, func, ...)
                 local c = (i % 2 == 0) and _c.gray or _c.brown
                 s = s .. c .. tostring(select(i, ...)) .. "|r "
             end
-            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r", _c.cyan.."DEBUG|r", _c.brown..tostring(GetTime()).."|r", "["..text.."]", _c.purple..func.."|r", s)
+            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r", _c.cyan.."DEBUG|r", _c.gray..tostring(GetTime()), "["..text.."]|r", _c.purple..func.."|r", s)
         else
-            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r", _c.cyan.."DEBUG|r", _c.brown..tostring(GetTime()).."|r".._c.gray, text, func, ...)
+            print("|cff0088ff{|r|cff00bbff"..ADDON_NAME.."|r|cff0088ff}|r", _c.cyan.."DEBUG|r", _c.gray..tostring(GetTime()).."|r".._c.gray, text, func, ...)
         end
     end
 end

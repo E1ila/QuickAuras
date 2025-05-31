@@ -72,7 +72,7 @@ QA.defaultOptions = {
         crucialExpireTime = 5,
         targetAuraExpireTime = 8,
         transmutePreReadyTime = 60,
-        missingWeaponEnchant = true,
+        missingWeaponEnchant = "always",
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
@@ -539,14 +539,21 @@ QA.options = {
                     order = 13,
                 },
                 missingWeaponEnchant = {
-                    type = "toggle",
+                    type = "select",
                     name = "Weapon Enchant Missing",
                     desc = "Shows a warning when your weapons doesn't have temp enchant (WF, Poison, Oil, etc.)",
-                    get = function(info) return QA.db.profile.missingWeaponEnchant end,
+                    values = {
+                        never = "Never",
+                        group = "In Group",
+                        instance = "In Instance",
+                        shaman = "With Shaman",
+                        always = "Always",
+                    },
+                    get = function(info) return QA.db.profile.missingWeaponEnchant or "always" end,
                     set = function(info, value)
                         QA.db.profile.missingWeaponEnchant = value
                         QA.tempEnchant = nil
-                        if value then
+                        if value ~= "never" then
                             QA:CheckWeaponEnchants()
                         else
                             QuickAuras_WeaponEnchant1:Hide()
@@ -555,13 +562,18 @@ QA.options = {
                     end,
                     order = 13,
                 },
+                spacer29 = {
+                    type = "description",
+                    name = "",
+                    order = 29,
+                },
                 meleeUtilsHeader = {
                     type = "header",
                     name = "Melee Utils",
                     order = 98,
                     hidden = not QA.isRogue and not QA.isWarrior,
                 },
-                spacer201 = {
+                spacer99 = {
                     type = "description",
                     name = "",
                     order = 99,

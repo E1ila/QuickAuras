@@ -520,36 +520,36 @@ function QA:ArrangeIcons(window)
             frame.iconFrame.icon:SetSize(attr.height-padding*2, attr.height-padding*2)
         else
             frame:SetSize(attr.height, attr.height)
-            if attr.align == "right" then --     <-------
+            if attr.align == "right" then --      ------->
                 if lastFrame then
                     frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
                 else
                     frame:SetPoint("TOPLEFT", frame:GetParent(), "TOPLEFT", 0, 0)
                 end
-                frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
-            elseif attr.align == "left" then --    ------->
+                --frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
+            elseif attr.align == "left" then --    <-------
                 if lastFrame then
                     frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", -2, 0)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
-                frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
+                --frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
             elseif attr.align == "down" then
                 if lastFrame then
                     frame:SetPoint("TOP", lastFrame, "BOTTOM", 0, 0) -- vertical layout
                 else
                     frame:SetPoint("TOP", frame:GetParent(), "TOP", 0, 0)
                 end
-                frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-                frame:GetParent():SetSize(attr.height, attr.height * count)
+                --frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+                --frame:GetParent():SetSize(attr.height, attr.height * count)
             elseif attr.align == "hcenter" then
                 if lastFrame then
                     frame:SetPoint("TOPRIGHT", lastFrame, "TOPLEFT", 0, 0)
                 else
                     frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
                 end
-                frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
-                frame:GetParent():SetSize(attr.height * count, attr.height)
+                --frame:SetPoint("CENTER", frame:GetParent(), "CENTER", 0, 0)
+                --frame:GetParent():SetSize(attr.height * count, attr.height)
             end
         end
         if obj.frame.counterText then
@@ -1004,7 +1004,7 @@ function QA:TestReminders()
     --QA:AddIcon(WINDOW.REMINDER, "spell", 2383, QA.trackedAuras[2383])
     for i, conf in ipairs(QA.trackedLowConsumes) do
         QA:AddIcon(WINDOW.REMINDER, "item", conf.itemId, conf, i)
-        if i == 3 then break end
+        if i == 5 then break end
     end
     DelayedReset_Reminders()
 end

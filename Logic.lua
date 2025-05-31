@@ -19,6 +19,7 @@ function QA:GroupCompoChanged()
     QA:CheckIfWarriorInParty()
     QA:CheckForShaman()
     QA:CheckAuras()
+    QA:CheckWeaponEnchants()
 end
 
 function QA:CheckTargetAuras(targetChanged)
@@ -335,7 +336,17 @@ function QA:CheckTransmuteCooldown()
 end
 
 function QA:CheckWeaponEnchants()
-    if not QA.db.profile.missingWeaponEnchant then return end
+    if
+        QA.db.profile.missingWeaponEnchant == "never" or
+        QA.db.profile.missingWeaponEnchant == "shaman" and #QA.partyShamans == 0 or
+        QA.db.profile.missingWeaponEnchant == "group" and not IsInGroup() or
+        QA.db.profile.missingWeaponEnchant == "instance" and not IsInInstance()
+    then
+        QuickAuras_WeaponEnchant1:Hide()
+        QuickAuras_WeaponEnchant2:Hide()
+        return
+    end
+
     local mh, mhExp, _, mhEnchId, oh, ohExp, _, ohEnchId, rng, rngExp, _, rngEnchId = GetWeaponEnchantInfo("player")
     local mhItemId = GetInventoryItemID("player", 16)
     local ohItemId = GetInventoryItemID("player", 17)

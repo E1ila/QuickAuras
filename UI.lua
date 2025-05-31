@@ -481,7 +481,7 @@ function QA:ArrangeIcons(window)
                 if lastFrame then
                     frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)
                 else
-                    frame:SetPoint("TOPRIGHT", frame:GetParent(), "TOPRIGHT", 0, 0)
+                    frame:SetPoint("TOPLEFT", frame:GetParent(), "TOPLEFT", 0, 0)
                 end
                 frame:GetParent():SetSize((attr.height + 2) * count, attr.height)
             elseif attr.align == "left" then --    ------->

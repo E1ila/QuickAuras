@@ -29,6 +29,7 @@ QA.defaultOptions = {
         outOfConsumeWarning = true,
         hsNotCapitalWarning = true,
         targetInRangeIndication = true,
+        weaponEnchantEnabled = true,
         overaggroWarning = true,
         announceInterrupts = true,
         bossFhmLastMark = true,
@@ -270,7 +271,39 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.soundsEnabled = value
                     end,
-                    order = 99,
+                    order = 16,
+                },
+                targetInRangeIndication = {
+                    type = "toggle",
+                    name = "Target In Range",
+                    desc = "Lets you know when target is in range for casting a spell",
+                    get = function(info)
+                        return QA.db.profile.targetInRangeIndication
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.targetInRangeIndication = value
+                        QuickAuras_RangeIndicator:Hide()
+                        QA.targetInRange = false
+                        QA:CheckTargetRange()
+                    end,
+                    order = 17,
+                },
+                weaponEnchantEnabled = {
+                    type = "toggle",
+                    name = "Weapon Enchants",
+                    desc = "Shows info about missing weapon enchants (Windfury, Poison, etc.)",
+                    get = function(info)
+                        return QA.db.profile.weaponEnchantEnabled
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.weaponEnchantEnabled = value
+                        if value then
+                            QuickAuras_WeaponEnchants:Show()
+                        else
+                            QuickAuras_WeaponEnchants:Hide()
+                        end
+                    end,
+                    order = 18,
                 },
             }
         },
@@ -563,6 +596,24 @@ QA.options = {
                         end
                     end,
                     order = 13,
+                },
+                missingBuffsMode = {
+                    type = "select",
+                    name = "Show Missing Buffs",
+                    desc = "Choose when to show missing buffs.",
+                    values = {
+                        never = "Never",
+                        instance = "Any Instance",
+                        raid = "Raid Instances",
+                    },
+                    get = function(info)
+                        return QA.db.profile.missingBuffsMode or "raid"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.missingBuffsMode = value
+                        QA:RefreshMissing()
+                    end,
+                    order = 15,
                 },
                 spacer29 = {
                     type = "description",
@@ -943,26 +994,11 @@ QA.options = {
             name = "Icon Alerts",
             order = 10001,
             args = {
-                targetInRangeIndication = {
-                    type = "toggle",
-                    name = "Target In Range",
-                    desc = "Lets you know when target is in range for casting a spell",
-                    get = function(info)
-                        return QA.db.profile.targetInRangeIndication
-                    end,
-                    set = function(info, value)
-                        QA.db.profile.targetInRangeIndication = value
-                        QuickAuras_RangeIndicator:Hide()
-                        QA.targetInRange = false
-                        QA:CheckTargetRange()
-                    end,
-                    order = 50,
-                },
-                header1 = {
-                    type = "header",
-                    name = "Buff/Debuff Alert",
-                    order = 99,
-                },
+                --header1 = {
+                --    type = "header",
+                --    name = "Buff/Debuff Alert",
+                --    order = 99,
+                --},
             },
         },
         consumes = {
@@ -970,29 +1006,11 @@ QA.options = {
             name = "Consumes",
             order = 10002,
             args = {
-                header1 = {
-                    type = "header",
-                    name = "Consumables Options",
-                    order = 999,
-                },
-                missingBuffsMode = {
-                    type = "select",
-                    name = "Show Missing Buffs",
-                    desc = "Choose when to show missing buffs.",
-                    values = {
-                        never = "Never",
-                        instance = "Any Instance",
-                        raid = "Raid Instances",
-                    },
-                    get = function(info)
-                        return QA.db.profile.missingBuffsMode or "raid"
-                    end,
-                    set = function(info, value)
-                        QA.db.profile.missingBuffsMode = value
-                        QA:RefreshMissing()
-                    end,
-                    order = 1000,
-                },
+                --header1 = {
+                --    type = "header",
+                --    name = "Consumables Options",
+                --    order = 999,
+                --},
             },
         },
         reminders = {

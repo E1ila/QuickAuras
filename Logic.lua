@@ -340,6 +340,7 @@ function QA:CheckTransmuteCooldown()
 end
 
 function QA:CheckWeaponEnchants()
+    if not QA.db.profile.weaponEnchantEnabled then return end
     if
         QA.db.profile.missingWeaponEnchant == "never" or
         QA.db.profile.missingWeaponEnchant == "shaman" and #QA.partyShamans == 0 or

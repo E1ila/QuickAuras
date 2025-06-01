@@ -120,6 +120,7 @@ QA.trackedProcAbilities = {
     combatLog = {},
     unitHealth = {},
     aura = {},
+    powerUpdate = {},
 }
 
 QA.trackedEnemyAurasBySpellId = {}

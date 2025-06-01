@@ -193,11 +193,12 @@ function QA:CheckHearthstone()
 end
 
 function QA:CheckAllProcs()
-    for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
-        QA:CheckProcSpellUsable(spell)
-    end
-    for _, spell in ipairs(QA.trackedProcAbilities.combatLog) do
-        QA:CheckProcSpellUsable(spell)
+    for key, spells in pairs(QA.trackedProcAbilities) do
+        if key ~= "aura" then
+            for _, spell in ipairs(spells) do
+                QA:CheckProcSpellUsable(spell)
+            end
+        end
     end
     QA:CheckAuras()
 end
@@ -207,13 +208,13 @@ function QA:CheckProcSpellUsable(spell)
     if not QA.db.profile[spell.procFrameOption] then return end
     local spellId = spell.spellId[1]
     local usable, notEnoughMana = IsUsableSpell(spellId)
-    local iconType = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
+    local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
     --debug(3, "Checking proc spell usable: "..spell.name, usable, notEnoughMana)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
         local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then
             -- has cooldown, check again later
-            QA:RemoveIcon(iconType, spellId)
+            QA:RemoveIcon(window, spellId)
             if spell.procFadeCheck and not QA.procCheck.cooldown[spellId] then
                 QA.procCheck.cooldown[spellId] = true
                 C_Timer.After(start + duration - GetTime() + 0.1, function()
@@ -222,7 +223,7 @@ function QA:CheckProcSpellUsable(spell)
                 end)
             end
         else
-            local button = QA:AddIcon(iconType, "spell", spellId, spell)
+            local button = QA:AddIcon(window, "spell", spellId, spell)
             if button then
                 button.glowInCombat = true
             end
@@ -232,7 +233,7 @@ function QA:CheckProcSpellUsable(spell)
             end
         end
     else
-        QA:RemoveIcon(iconType, spellId)
+        QA:RemoveIcon(window, spellId)
     end
 end
 
@@ -289,6 +290,9 @@ function QA:CheckPower(unit, powerType)
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
             QA:Rogue_SetCombo(comboPoints)
         end
+    end
+    for _, spell in ipairs(QA.trackedProcAbilities.powerUpdate) do
+        QA:CheckProcSpellUsable(spell)
     end
 end
 

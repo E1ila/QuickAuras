@@ -295,6 +295,8 @@ spells.warrior = {
         name = "Bloodthirst",
         icon = "Interface\\Icons\\spell_nature_bloodlust",
         cooldown = true,
+        proc = "powerUpdate",
+        procFrameOption = "warriorBloodthirst",
         visible = QA.isWarrior,
     },
     sunderArmor = {

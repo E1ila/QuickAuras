@@ -52,6 +52,8 @@ QA.defaultOptions = {
         warriorOverpowerFrame = WINDOW.WARNING,
         warriorRevenge = QA.isWarrior,
         warriorRevengeFrame = WINDOW.WARNING,
+        warriorBloodthirst = QA.isWarrior,
+        warriorBloodthirstFrame = WINDOW.QUEUE,
         targetMissingDebuffFrame = WINDOW.WARNING,
         swingDebug = 3,
         someSetting = 50,
@@ -687,7 +689,7 @@ QA.options = {
                     desc = "Choose where to show the Execute indication.",
                     values = frameSelection,
                     get = function(info)
-                        return QA.db.profile.warriorExecuteFrame or "always"
+                        return QA.db.profile.warriorExecuteFrame or WINDOW.QUEUE
                     end,
                     set = function(info, value)
                         QA.db.profile.warriorExecuteFrame = value
@@ -701,7 +703,7 @@ QA.options = {
                     desc = "Choose where to show the Overpower indication.",
                     values = frameSelection,
                     get = function(info)
-                        return QA.db.profile.warriorOverpowerFrame or "warning"
+                        return QA.db.profile.warriorOverpowerFrame or WINDOW.QUEUE
                     end,
                     set = function(info, value)
                         QA.db.profile.warriorOverpowerFrame = value
@@ -715,13 +717,40 @@ QA.options = {
                     desc = "Choose where to show the Revenge indication.",
                     values = frameSelection,
                     get = function(info)
-                        return QA.db.profile.warriorRevengeFrame or "warning"
+                        return QA.db.profile.warriorRevengeFrame or WINDOW.QUEUE
                     end,
                     set = function(info, value)
                         QA.db.profile.warriorRevengeFrame = value
                     end,
                     hidden = not QA.isWarrior,
                     order = 405,
+                },
+                warriorBloodthirst = {
+                    type = "toggle",
+                    name = "Bloodthirst!",
+                    desc = "Shows a visible Bloodthirst ready indication.",
+                    get = function(info)
+                        return QA.db.profile.warriorBloodthirst
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorBloodthirst = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 406,
+                },
+                warriorBloodthirstFrame = {
+                    type = "select",
+                    name = "Bloodthirst Frame",
+                    desc = "Choose where to show the Bloodthirst indication.",
+                    values = frameSelection,
+                    get = function(info)
+                        return QA.db.profile.warriorBloodthirstFrame or WINDOW.QUEUE
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorBloodthirstFrame = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 409,
                 },
                 warlockUtilsHeader = {
                     type = "header",

@@ -130,7 +130,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.watchBars = value
                         if value then
-                            QA:TestProgressBar(QA.trackedAuras)
+                            QA:TestProgressBar(QA.trackedAuras, 5)
                         end
                     end,
                     order = 5,
@@ -143,7 +143,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.offensiveBars = value
                         if value then
-                            QA:TestProgressBar(QA.trackedCombatLog)
+                            QA:TestProgressBar(QA.trackedCombatLog, 3)
                         end
                     end,
                     order = 6,

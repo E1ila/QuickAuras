@@ -949,6 +949,7 @@ function QA:TestProgressBar(spells, limit, onlyRaidBars)
     local count1 = 0
     local count2 = 0
     local seen = {}
+    limit = limit or 4
     for key, conf in pairs(spells) do
         if not onlyRaidBars and (conf.list == "watch" or conf.list == "offensive") and not seen[conf.name] then
             if count1 < limit then

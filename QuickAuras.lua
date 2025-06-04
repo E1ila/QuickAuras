@@ -192,6 +192,7 @@ function QA:RegisterMandatoryEvents()
     QA.events:RegisterEvent("ZONE_CHANGED_INDOORS")
     QA.events:RegisterEvent("ZONE_CHANGED_NEW_AREA")
     QA.events:RegisterEvent("PLAYER_ENTERING_WORLD")
+    QA.events:RegisterEvent("ADDON_ACTION_BLOCKED")
 end
 
 function QA:RegisterOptionalEvents()

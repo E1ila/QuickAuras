@@ -1084,6 +1084,68 @@ QA.options = {
             name = "Naxxramas",
             order = 20000,
             args = {
+                header1 = {
+                    type = "header",
+                    name = "4 Horse Man",
+                    order = 100,
+                },
+                encounter4hmStartAt = {
+                    type = "range",
+                    name = "Start Moving At",
+                    desc = "Will start notify you to move at this mark. Set to 0 to disable.",
+                    min = 0,
+                    max = 10,
+                    step = 1,
+                    get = function(info) return QA.db.profile.encounter4hmStartAt end,
+                    set = function(info, value)
+                        QA.db.profile.encounter4hmStartAt = value
+                    end,
+                    order = 101,
+                },
+                encounter4hmMoveEvery = {
+                    type = "range",
+                    name = "Then Move Every",
+                    desc = "After starting to move, will notify you to move again every this many marks.",
+                    min = 1,
+                    max = 10,
+                    step = 1,
+                    get = function(info) return QA.db.profile.encounter4hmMoveEvery end,
+                    set = function(info, value)
+                        QA.db.profile.encounter4hmMoveEvery = value
+                    end,
+                    order = 102,
+                },
+                header2 = {
+                    type = "header",
+                    name = "Loatheb",
+                    order = 100,
+                },
+                encounterLoathebStartAt = {
+                    type = "range",
+                    name = "First Spore",
+                    desc = "Will notify you to take a spore at this Nth spawn. Set to 0 to disable.",
+                    min = 0,
+                    max = 10,
+                    step = 1,
+                    get = function(info) return QA.db.profile.encounterLoathebStartAt end,
+                    set = function(info, value)
+                        QA.db.profile.encounterLoathebStartAt = value
+                    end,
+                    order = 101,
+                },
+                encounterLoathebCycle = {
+                    type = "range",
+                    name = "Spore Cycle",
+                    desc = "Set how many spore groups are in your raid, usually 6.",
+                    min = 1,
+                    max = 10,
+                    step = 1,
+                    get = function(info) return QA.db.profile.encounterLoathebCycle end,
+                    set = function(info, value)
+                        QA.db.profile.encounterLoathebCycle = value
+                    end,
+                    order = 102,
+                },
             },
         }
     },

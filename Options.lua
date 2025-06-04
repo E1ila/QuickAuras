@@ -92,6 +92,7 @@ QA.defaultOptions = {
         encounter4hmMoveEvery = 3,
         encounterLoathebStartAt = 0, -- 0 = disabled
         encounterLoathebCycle = 6,
+        naxxDeathknightCleave = true,
         aggroBlinkCount = 2,
         warrior_retaliation_cd = false,
         warrior_shieldWall_cd = false,
@@ -1087,7 +1088,7 @@ QA.options = {
                 header1 = {
                     type = "header",
                     name = "4 Horse Man",
-                    order = 100,
+                    order = 200,
                 },
                 encounter4hmStartAt = {
                     type = "range",
@@ -1100,7 +1101,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.encounter4hmStartAt = value
                     end,
-                    order = 101,
+                    order = 201,
                 },
                 encounter4hmMoveEvery = {
                     type = "range",
@@ -1113,16 +1114,16 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.encounter4hmMoveEvery = value
                     end,
-                    order = 102,
+                    order = 202,
                 },
                 header2 = {
                     type = "header",
                     name = "Loatheb",
-                    order = 100,
+                    order = 210,
                 },
                 encounterLoathebStartAt = {
                     type = "range",
-                    name = "First Spore",
+                    name = "Take Spore No.",
                     desc = "Will notify you to take a spore at this Nth spawn. Set to 0 to disable.",
                     min = 0,
                     max = 10,
@@ -1131,7 +1132,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.encounterLoathebStartAt = value
                     end,
-                    order = 101,
+                    order = 211,
                 },
                 encounterLoathebCycle = {
                     type = "range",
@@ -1144,12 +1145,14 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.encounterLoathebCycle = value
                     end,
-                    order = 102,
+                    order = 212,
                 },
             },
         }
     },
 }
+
+local categoryOrder = {}
 
 local function AddSpells(cspells, orderStart, categoryHidden)
     orderStart = orderStart or 0
@@ -1195,8 +1198,10 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                 if QA.defaultOptions.profile[spell.option] == nil then
                     QA.defaultOptions.profile[spell.option] = true
                 end
-                local categoryOptions = QA.options.args[spell.category or "bars"]
-                if categoryOptions and spell.list and not spell.transmute then
+                if spell.category then
+                    local categoryOptions = QA.options.args[spell.category]
+                    local corder = categoryOrder[spell.category] or 1
+                    categoryOrder[spell.category] = corder + 1
                     -- Buff/Debuff option
                     local args = categoryOptions.args
                     args[spellKey] = {
@@ -1208,7 +1213,7 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                             QA.db.profile[spell.option] = value
                             if spell.aura then QA:CheckAuras() end
                         end,
-                        order = order + orderStart,
+                        order = corder + orderStart,
                     }
                 end
                 categoryOptions = QA.options.args[spell.category or "cooldowns"]

@@ -276,7 +276,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 conf.OnSpellDetectCombatLog(conf, subevent, sourceGuid, sourceName, destGuid, destName, ...)
             end
             -- npc auras
-            if conf.npcId and QA:GetNpcIdFromGuid(sourceGuid) == conf.npcId then
+            if conf.npcId and QA:GetNpcIdFromGuid(sourceGuid) == conf.npcId and QA.db.profile[conf.option] then
                 if subevent == "SPELL_AURA_APPLIED" then
                     local keyExtra, duration = destGuid, QA:GetDuration(conf, spellId)
                     local timer = QA:AddTimer(conf.list or WINDOW.ALERT, conf, spellId, duration, GetTime()+duration, nil, nil, keyExtra)

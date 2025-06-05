@@ -46,6 +46,7 @@ QA.defaultOptions = {
         notifyExplosivesReady = true,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
+        rogueTeaTimeEnabled = QA.isRogue,
         rogueTeaTimeFrame = WINDOW.WARNING,
         warriorExecute = QA.isWarrior,
         warriorExecuteFrame = WINDOW.WARNING,
@@ -159,6 +160,7 @@ QA.options = {
                         if value then
                             QA:TestCooldowns()
                         end
+                        QA:RegisterOptionalEvents()
                     end,
                     order = 7,
                 },
@@ -169,6 +171,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.trackedGear end,
                     set = function(info, value)
                         QA.db.profile.trackedGear = value
+                        QA:RegisterOptionalEvents()
                         if value then
                             QA:CheckGear()
                         else
@@ -195,6 +198,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.remindersEnabled end,
                     set = function(info, value)
                         QA.db.profile.remindersEnabled = value
+                        QA:RegisterOptionalEvents()
                         QA:RefreshReminders()
                     end,
                     order = 10,
@@ -216,6 +220,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.xpFrameEnabled end,
                     set = function(info, value)
                         QA.db.profile.xpFrameEnabled = value
+                        QA:RegisterOptionalEvents()
                         if value and QA.playerLevel < 60 then
                             QuickAuras_XP:Show()
                         else
@@ -236,6 +241,7 @@ QA.options = {
                         else
                             QuickAuras_SpellQueue:Hide()
                         end
+                        QA:RegisterOptionalEvents()
                     end,
                     order = 13,
                 },
@@ -261,6 +267,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.overaggroWarning end,
                     set = function(info, value)
                         QA.db.profile.overaggroWarning = value
+                        QA:RegisterOptionalEvents()
                     end,
                     order = 15,
                 },
@@ -303,6 +310,7 @@ QA.options = {
                         else
                             QuickAuras_WeaponEnchants:Hide()
                         end
+                        QA:RegisterOptionalEvents()
                     end,
                     order = 18,
                 },
@@ -549,6 +557,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.outOfRange = value
                         if not value then QA.db.profile.outOfRangeSound = false end
+                        QA:RegisterOptionalEvents()
                     end,
                     order = 11,
                 },
@@ -570,6 +579,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.notifyExplosivesReady end,
                     set = function(info, value)
                         QA.db.profile.notifyExplosivesReady = value
+                        QA:RegisterOptionalEvents()
                         QA:RefreshReady()
                     end,
                     order = 13,
@@ -864,6 +874,7 @@ QA.options = {
                     end,
                     set = function(info, value)
                         QA.db.profile.rogue5combo = value
+                        --QA:RegisterOptionalEvents()
                     end,
                     hidden = not QA.isRogue,
                     order = 304,
@@ -905,6 +916,8 @@ QA.options = {
                     end,
                     set = function(info, value)
                         QA.db.profile.rogueTeaTime = value
+                        QA.db.profile.rogueTeaTimeEnabled = value ~= "never"
+                        --QA:RegisterOptionalEvents()
                     end,
                     hidden = not QA.isRogue,
                     order = 307,
@@ -1395,3 +1408,4 @@ function QA:SetOptionsDefaults()
         end
     end
 end
+

@@ -99,6 +99,10 @@ QA.WINDOW = {
     READY = "ready",
 }
 
+QA.FEATUERS = {
+
+}
+
 local function out(text, ...)
     print("|cff0088ff{|cff00bbff"..ADDON_NAME.."|cff0088ff}|r |cffaaeeff"..text, ...)
 end
@@ -147,8 +151,12 @@ function QA:OnInitialize()
     QA:BuildOptions()
 
     QA.db = LibStub("AceDB-3.0"):New("QuickAurasDB", QA.defaultOptions, true)
+    QA.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
+
     AceConfig:RegisterOptionsTable("QuickAuras", QA.options)
+
     QA.optionsFrame = AceConfigDialog:AddToBlizOptions("QuickAuras", "QuickAuras")
+
     QA:RegisterChatCommand("qa", "HandleSlashCommand")
 
     QA.events:SetScript("OnEvent", function(self, event, ...)
@@ -186,6 +194,13 @@ function QA:OnInitialize()
     end)
 end
 
+function QA:OnProfileChanged(a, b)
+    debug("Profile changed", a, b)
+    --QA:UnregisterOptionalEvents()
+    --QA:RegisterOptionalEvents()
+    --QA:RefreshAll()
+end
+
 function QA:RegisterMandatoryEvents()
     debug("Registering mandatory events")
     QA.events:RegisterEvent("ZONE_CHANGED")
@@ -195,19 +210,41 @@ function QA:RegisterMandatoryEvents()
     QA.events:RegisterEvent("ADDON_ACTION_BLOCKED")
 end
 
+local registeredEvents = {}
+
 function QA:RegisterOptionalEvents()
     if QA.db.profile.enabled  then
         debug("Registering events")
-        for _, event in ipairs(QA.optionalEvents) do
-            QA.events:RegisterEvent(event)
+        for event, optionKeys in pairs(QA.optionalEvents) do
+            local enabled = true
+            for _, optionKey in ipairs(optionKeys) do
+                if not QA.db.profile[optionKey] then
+                    enabled = false
+                    break
+                end
+            end
+            if enabled and not registeredEvents[event] then
+                QA.events:RegisterEvent(event)
+                registeredEvents[event] = true
+                debug(2, "++ "..event)
+            elseif not enabled and registeredEvents[event] then
+                QA.events:UnregisterEvent(event)
+                debug(2, "-- "..event)
+                registeredEvents[event] = false
+            end
         end
+    else
+        QA:UnregisterOptionalEvents()
     end
 end
 
 function QA:UnregisterOptionalEvents()
-    debug("Unregistering events")
-    for _, event in ipairs(QA.optionalEvents) do
-        QA.events:UnregisterEvent(event)
+    debug("Unregistering all events")
+    for event, enabled in pairs(registeredEvents) do
+        if enabled then
+            QA.events:UnregisterEvent(event)
+            registeredEvents[event] = false
+        end
     end
 end
 

@@ -284,9 +284,9 @@ function QA:CheckPower(unit, powerType)
     if not unit == "player" then return end
     --debug(3, "CheckPower", unit, powerType)
     if QA.isRogue then
-        if powerType == "ENERGY" then
+        if powerType == "ENERGY" and QA.db.profile.rogueTeaTimeEnabled then
             QA:CheckRogueTeaTime()
-        elseif powerType == "COMBO_POINTS" then
+        elseif powerType == "COMBO_POINTS" and QA.db.profile.rogue5combo then
             local comboPoints = UnitPower("player", Enum.PowerType.ComboPoints)
             QA:Rogue_SetCombo(comboPoints)
         end
@@ -486,10 +486,6 @@ function QA:CheckCooldowns()
             end
         end
     end
-    QA:CheckExplosives()
-end
-
-function QA:CheckExplosives()
     if QA.db.profile.notifyExplosivesReady then
         local sapper = QA.explosives.goblinSapperCharge
         local readyItem

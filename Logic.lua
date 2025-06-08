@@ -343,7 +343,6 @@ function QA:CheckWeaponEnchants()
     if not QA.db.profile.weaponEnchantEnabled then return end
     if
         QA.db.profile.missingWeaponEnchant == "never" or
-        QA.db.profile.missingWeaponEnchant == "shaman" and #QA.partyShamans == 0 or
         QA.db.profile.missingWeaponEnchant == "group" and not IsInGroup() or
         QA.db.profile.missingWeaponEnchant == "instance" and not IsInInstance()
     then
@@ -360,8 +359,16 @@ function QA:CheckWeaponEnchants()
             or mhItemId ~= QA.tempEnchant.mhItemId or ohItemId ~= QA.tempEnchant.ohItemId
     if changed then
         debug(2, "CheckWeaponEnchants", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
-        QA:SetWeaponEnchantIcon(1, not mh and mhItemId or nil)
-        QA:SetWeaponEnchantIcon(2, not oh and ohItemId or nil)
+        if QA.db.profile.missingWeaponEnchant == "shaman" and #QA.partyShamans == 0 then
+            QuickAuras_WeaponEnchant1:Hide()
+        else
+            QA:SetWeaponEnchantIcon(1, not mh and mhItemId or nil)
+        end
+        if not QA.db.profile.missingWeaponEnchantOH then
+            QuickAuras_WeaponEnchant2:Hide()
+        else
+            QA:SetWeaponEnchantIcon(2, not oh and ohItemId or nil)
+        end
         QA.tempEnchant = {
             mhExp = mhExp,
             mhEnchId = mhEnchId,

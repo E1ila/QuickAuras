@@ -30,6 +30,7 @@ QA.defaultOptions = {
         hsNotCapitalWarning = not QA.isMage,
         targetInRangeIndication = true,
         weaponEnchantEnabled = true,
+        missingWeaponEnchantOH = QA.isWarrior or QA.isRogue or QA.isHunter,
         overaggroWarning = true,
         announceInterrupts = true,
         bossFhmLastMark = true,
@@ -584,6 +585,29 @@ QA.options = {
                     end,
                     order = 13,
                 },
+                missingBuffsMode = {
+                    type = "select",
+                    name = "Show Missing Buffs",
+                    desc = "Choose when to show missing buffs.",
+                    values = {
+                        never = "Never",
+                        instance = "Any Instance",
+                        raid = "Raid Instances",
+                    },
+                    get = function(info)
+                        return QA.db.profile.missingBuffsMode or "raid"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.missingBuffsMode = value
+                        QA:RefreshMissing()
+                    end,
+                    order = 14,
+                },
+                spacer20 = {
+                    type = "description",
+                    name = "",
+                    order = 20,
+                },
                 missingWeaponEnchant = {
                     type = "select",
                     name = "Weapon Enchant Missing",
@@ -606,25 +630,16 @@ QA.options = {
                             QuickAuras_WeaponEnchant2:Hide()
                         end
                     end,
-                    order = 13,
+                    order = 21,
                 },
-                missingBuffsMode = {
-                    type = "select",
-                    name = "Show Missing Buffs",
-                    desc = "Choose when to show missing buffs.",
-                    values = {
-                        never = "Never",
-                        instance = "Any Instance",
-                        raid = "Raid Instances",
-                    },
-                    get = function(info)
-                        return QA.db.profile.missingBuffsMode or "raid"
-                    end,
-                    set = function(info, value)
-                        QA.db.profile.missingBuffsMode = value
-                        QA:RefreshMissing()
-                    end,
-                    order = 15,
+                missingWeaponEnchantOH = {
+                    type = "toggle",
+                    name = "Off-Hand Missing Enchant",
+                    desc = "Warn when a your off-hand weapon doesn't have a temp enchant (Poison, Stone, etc.)",
+                    get = function(info) return QA.db.profile.missingWeaponEnchantOH end,
+                    set = function(info, value) QA.db.profile.missingWeaponEnchantOH = value end,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isHunter,
+                    order = 22,
                 },
                 spacer29 = {
                     type = "description",
@@ -635,13 +650,13 @@ QA.options = {
                     type = "header",
                     name = "Melee Utils",
                     order = 98,
-                    hidden = not QA.isRogue and not QA.isWarrior,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                 },
                 spacer99 = {
                     type = "description",
                     name = "",
                     order = 99,
-                    hidden = not QA.isRogue and not QA.isWarrior,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                 },
                 harryPaste = {
                     type = "toggle",
@@ -649,6 +664,7 @@ QA.options = {
                     desc = "Warn when a mob parries your attack while being tanked",
                     get = function(info) return QA.db.profile.harryPaste end,
                     set = function(info, value) QA.db.profile.harryPaste = value end,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                     order = 102,
                 },
                 battleShoutMissing = {
@@ -661,6 +677,7 @@ QA.options = {
                         QA:ClearIcons(WINDOW.CRUCIAL)
                         QA:CheckAuras()
                     end,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                     order = 105,
                 },
                 announceMisses = {
@@ -671,6 +688,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.announceMisses = value
                     end,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                     order = 106,
                 },
                 announceSquawk = {
@@ -692,6 +710,7 @@ QA.options = {
                         QA.db.profile.swingTimerOH = value
                         QuickAuras_SwingTimer_OH:Hide()
                     end,
+                    hidden = not QA.isRogue and not QA.isWarrior and not QA.isWarrior,
                     order = 107,
                 },
                 warriorUtilsHeader = {
@@ -887,6 +906,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.rogueSndMissing = value
                     end,
+                    hidden = not QA.isRogue,
                     order = 305,
                 },
                 stealthInInstance = {

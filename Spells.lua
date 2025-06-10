@@ -660,6 +660,27 @@ spells.rogue = {
         flashOnEnd = 5,
         visible = QA.isRogue,
     },
+    riposte = {
+        spellId = { 14251 },
+        name = "Riposte",
+        icon = "Interface\\Icons\\ability_warrior_challange",
+        proc = "combatLog",
+        procFadeCheck = true,
+        procFrameOption = "rogueRiposte",
+        triggers = {
+            PARRY = true,
+        },
+        bySpellId = { -- mandatory for CLUE proc
+            [14251] = 14251,
+        },
+        CheckProc = function(spell, subevent, sourceGuid, sourceName, destGuid, destName, extra)
+            if destGuid ~= QA.playerGuid then return false end
+
+            return  subevent == "SWING_MISSED" and spell.triggers[extra[1]]
+                    or subevent == "SPELL_MISSED" and spell.triggers[extra[4]]
+        end ,
+        visible = QA.isRogue,
+    },
     gouge = {
         spellId = { 1776, 1777, 8629, 11285, 11286 },
         name = "Gouge",

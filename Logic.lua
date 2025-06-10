@@ -361,6 +361,8 @@ function QA:CheckWeaponEnchants()
         debug(2, "CheckWeaponEnchants", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
         if QA.db.profile.missingWeaponEnchant == "shaman" and #QA.partyShamans == 0 then
             QuickAuras_WeaponEnchant1:Hide()
+            QuickAuras_WeaponEnchant2:Hide()
+            return
         else
             QA:SetWeaponEnchantIcon(1, not mh and mhItemId or nil)
         end

@@ -205,7 +205,8 @@ end
 
 -- Currently supported only target based proc spells
 function QA:CheckProcSpellUsable(spell)
-    if not QA.db.profile[spell.procFrameOption] then return end
+    local isKnown = IsPlayerSpell(spellId)
+    if not QA.db.profile[spell.procFrameOption] or not isKnown then return end
     local spellId = spell.spellId[1]
     local usable, notEnoughMana = IsUsableSpell(spellId)
     local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"

@@ -418,7 +418,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
 
             if subevent == "SPELL_CAST_SUCCESS" then
                 if spell.bySpellId[extra[1]] == spell.spellId[1] then
-                    spellCasted = true
+                    spellCasted = true -- spell was used, remove it
                 end
             end
 

@@ -159,6 +159,7 @@ end
 
 function QA:UNIT_HEALTH()
     for _, spell in ipairs(QA.trackedProcAbilities.unitHealth) do
+        --debug(1, "UNIT_HEALTH", spell.name, spell.procFrameOption)
         QA:CheckProcSpellUsable(spell)
     end
 end

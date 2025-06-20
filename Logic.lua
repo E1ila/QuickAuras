@@ -205,12 +205,20 @@ end
 
 -- Currently supported only target based proc spells
 function QA:CheckProcSpellUsable(spell)
-    local isKnown = IsPlayerSpell(spellId)
-    if not QA.db.profile[spell.procFrameOption] or not isKnown then return end
     local spellId = spell.spellId[1]
+    local isKnown = false
+    for _, id in ipairs(spell.spellId) do
+        if IsPlayerSpell(id) then
+            isKnown = true
+            spellId = id -- use the first known spellId
+            break
+        end
+    end
+    --debug(1, "CheckProcSpellUsable", spell.name, spellId, "isKnown", isKnown, "procFrameOption", spell.procFrameOption, "enabled", QA.db.profile[spell.procFrameOption])
+    if not QA.db.profile[spell.procFrameOption] or not isKnown then return end
     local usable, notEnoughMana = IsUsableSpell(spellId)
     local window = spell.procFrameOption and QA.db.profile[spell.procFrameOption.."Frame"] or "warning"
-    --debug(3, "Checking proc spell usable: "..spell.name, usable, notEnoughMana)
+    --debug(1, "CheckProcSpellUsable", spell.name, usable, "enoughMana", not notEnoughMana)
     if usable and not notEnoughMana and UnitExists("target") and not UnitIsDead("target") then
         local start, duration = GetSpellCooldown(spellId)
         if start > 0 and duration > 0 then

@@ -606,7 +606,7 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                 -- missing consume buff
                 local foundBuff = QA:HasSeenAny(buff.spellIds, activeAuras or QA.playerBuffs)
                 local foundItemId = QA:FindInBags(buff.itemIds or buff.itemId)
-                debug(1, "CheckMissingBuffs", buff.name, "found", foundBuff, "foundItemId", foundItemId)
+                --debug(1, "CheckMissingBuffs", buff.name, "found", foundBuff, "foundItemId", foundItemId)
                 if  foundBuff
                         or buff.visibleFunc and not buff.visibleFunc()
                         or not foundItemId

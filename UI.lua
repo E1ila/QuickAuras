@@ -278,7 +278,7 @@ end
 
 function QA:CreateTextureIcon(texture, parentFrame, frameName)
     -- Create a button frame
-    local frame = CreateFrame("Button", frameName, parentFrame, "SecureActionButtonTemplate")
+    local frame = CreateFrame("Button", frameName, parentFrame)
 
     local iconTexture = frame:CreateTexture(nil, "BACKGROUND")
     iconTexture:SetTexture(texture)

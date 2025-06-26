@@ -600,13 +600,13 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
             QA.db.profile.missingBuffsMode == "instance" and IsInInstance() or
             QA.db.profile.missingBuffsMode == "raid" and IsInInstance() and IsInRaid()
     for _, buff in ipairs(QA.trackedMissingBuffs) do
-        --debug(3, "CheckMissingBuffs", "(pre)", buff.name, "option", buff.option, buff.option and QA.db.profile[buff.option])
+        --debug(1, "CheckMissingBuffs", "(pre)", buff.name, "option", buff.option, buff.option and QA.db.profile[buff.option])
         if (not buff.option or QA.db.profile[buff.option]) and (showNonSelfBuffs or buff.selfBuff) then
             if buff.itemIds or buff.itemId then
                 -- missing consume buff
                 local foundBuff = QA:HasSeenAny(buff.spellIds, activeAuras or QA.playerBuffs)
                 local foundItemId = QA:FindInBags(buff.itemIds or buff.itemId)
-                --debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "foundItemId", foundItemId)
+                debug(1, "CheckMissingBuffs", buff.name, "found", foundBuff, "foundItemId", foundItemId)
                 if  foundBuff
                         or buff.visibleFunc and not buff.visibleFunc()
                         or not foundItemId
@@ -622,7 +622,7 @@ function QA:CheckMissingBuffs(activeAuras, combatStateChanged)
                 -- missing spell buff
                 local foundBuff = QA:HasSeenAny(buff.spellId, activeAuras or QA.playerBuffs)
                 local visible = buff.visibleFunc == nil or buff.visibleFunc()
-                --debug(3, "CheckMissingBuffs", "(scan)", buff.name, "found", foundBuff, "visible", visible)
+                --debug(1, "CheckMissingBuffs", buff.name, "found", foundBuff, "visible", visible)
                 if foundBuff or not visible then
                     QA:RemoveIcon(WINDOW.QUEUE, buff.spellId[1])
                 else

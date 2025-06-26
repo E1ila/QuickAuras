@@ -468,13 +468,14 @@ function QA:RemoveIcon(window, id)
             frame:SetParent(nil)
             frame:ClearAllPoints()
             attr.list[id] = nil
+            QA.arrangeQueue[window] = true
         end
         return true
     end
 end
 
 function QA:ClearIcons(iconType)
-    --debug("Clearing icon warnings")
+    debug(3, "Clearing icons", iconType)
     local attr = QA:GetWindowAttr(iconType)
     for id, obj in pairs(attr.list) do
         QA:RemoveIcon(iconType, id)
@@ -500,11 +501,12 @@ function QA:ArrangeIcons(window)
 
     local lastFrame
     local count = 0
+    debug(3, "ArrangeIcons", window)
     for _, obj in pairs(sortedList) do
         count = count + 1
         local frame = obj.frame
         frame:ClearAllPoints()
-        --debug(3, _c.purple.."ArrangeIcons|r", window, obj.id, parent, frame:GetParent():GetName(), "counterText", frame.counterText, "obj.count", obj.count)
+        --debug(3, "ArrangeIcons", window, obj.id, "counterText", frame.counterText, "obj.count", obj.count)
         if attr.align == "vbars" then
             -- progress bar, down
             if lastFrame then

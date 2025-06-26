@@ -84,6 +84,12 @@ QA.consumes = {
         itemId = 3825,
         minCount = 5,
     },
+    --{
+    --    name = "Elixir of Minor Fortitude",
+    --    spellIds = { 2378 },
+    --    itemId = 2458,
+    --    minCount = 1,
+    --},
     {
         name = "Firepower Elixir",
         spellIds = { 26276, 7844 },

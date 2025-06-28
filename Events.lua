@@ -415,8 +415,15 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
-    -- warrior unqueue spell
+    -- warrior spell cast success events
     if QA.isWarrior and subevent == "SPELL_CAST_SUCCESS" and sourceGuid == QA.playerGuid then
+        -- announce Shield Wall activation
+        if QA.db.profile.announceShieldWall and QA.spells.warrior.shieldWall.bySpellId[extra[1]] then
+            SendChatMessage(">> SHIELD WALL ACTIVATED <<", "PARTY")
+            SendChatMessage(">> SHIELD WALL ACTIVATED <<", "YELL")
+        end
+        
+        -- warrior unqueue spell
         local spell = QA.spells.warrior.heroicStrike.bySpellId[extra[1]] and QA.spells.warrior.heroicStrike
                 or QA.spells.warrior.cleave.bySpellId[extra[1]] and QA.spells.warrior.cleave
         if spell then

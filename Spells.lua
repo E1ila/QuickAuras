@@ -396,6 +396,9 @@ spells.warrior = {
     },
     shieldWall = {
         spellId = { 871 },
+        bySpellId = {
+            [871] = 871,
+        },
         name = "Shield Wall",
         icon = "Interface\\Icons\\Ability_Warrior_ShieldWall",
         color = {0.6784, 0.6706, 0.8706},

@@ -36,6 +36,7 @@ QA.defaultOptions = {
         bossFhmLastMark = true,
         announceMisses = QA.isWarrior,
         announceTauntResists = QA.isWarrior,
+        announceShieldWall = QA.isWarrior,
         announceSquawk = true,
         announceCcBreak = true,
         stealthInInstance = true,
@@ -704,6 +705,17 @@ QA.options = {
                     end,
                     hidden = not QA.isWarrior,
                     order = 107,
+                },
+                announceShieldWall = {
+                    type = "toggle",
+                    name = "Announce Shield Wall",
+                    desc = "Announce in PARTY and YELL when Shield Wall is activated.",
+                    get = function(info) return QA.db.profile.announceShieldWall end,
+                    set = function(info, value)
+                        QA.db.profile.announceShieldWall = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 107.5,
                 },
                 announceSquawk = {
                     type = "toggle",

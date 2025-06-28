@@ -399,6 +399,22 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         SendChatMessage(">> "..tostring(extra[1]).." <<", "SAY")
     end
 
+    -- announce taunt resists
+    if      subevent == "SPELL_MISSED" and
+            sourceGuid == QA.playerGuid and
+            QA.InstanceName and QA.db.profile.announceTauntResists and
+            destGuid == UnitGUID("target") and
+            type(extra[1]) == "number" and extra[1] > 0
+    then
+        local spellId = extra[1]
+        local missType = extra[4]
+        local conf = QA.trackedCombatLog[spellId]
+        if conf and conf.taunt and missType == "RESIST" then
+            local spellName = conf.name or GetSpellInfo(spellId)
+            SendChatMessage(">> "..string.upper(tostring(spellName)).." RESISTED <<", "SAY")
+        end
+    end
+
     -- warrior unqueue spell
     if QA.isWarrior and subevent == "SPELL_CAST_SUCCESS" and sourceGuid == QA.playerGuid then
         local spell = QA.spells.warrior.heroicStrike.bySpellId[extra[1]] and QA.spells.warrior.heroicStrike

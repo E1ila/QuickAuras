@@ -35,6 +35,7 @@ QA.defaultOptions = {
         announceInterrupts = true,
         bossFhmLastMark = true,
         announceMisses = QA.isWarrior,
+        announceTauntResists = QA.isWarrior,
         announceSquawk = true,
         announceCcBreak = true,
         stealthInInstance = true,
@@ -693,6 +694,17 @@ QA.options = {
                     hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                     order = 106,
                 },
+                announceTauntResists = {
+                    type = "toggle",
+                    name = "Announce Taunt Resists",
+                    desc = "When in an instance, will say when your taunt spell is resisted.",
+                    get = function(info) return QA.db.profile.announceTauntResists end,
+                    set = function(info, value)
+                        QA.db.profile.announceTauntResists = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 107,
+                },
                 announceSquawk = {
                     type = "toggle",
                     name = "Announce Squawk",
@@ -701,7 +713,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.announceSquawk = value
                     end,
-                    order = 106,
+                    order = 108,
                 },
                 swingTimerOH = {
                     type = "toggle",
@@ -713,7 +725,7 @@ QA.options = {
                         QuickAuras_SwingTimer_OH:Hide()
                     end,
                     hidden = not QA.isRogue and not QA.isWarrior and not QA.isWarrior,
-                    order = 107,
+                    order = 109,
                 },
                 warriorUtilsHeader = {
                     type = "header",

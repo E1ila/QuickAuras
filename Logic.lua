@@ -232,12 +232,14 @@ function QA:CheckProcSpellUsable(spell)
                 end)
             end
         else
+            --debug(2, "CheckProcSpellUsable", spell.name, "Not on cooldown")
             local button = QA:AddIcon(window, "spell", spellId, spell)
             if button then
                 button.glowInCombat = true
             end
-            local FadeCheck = QA.procCheck.FadeCheck[spellId]
+            local FadeCheck = QA.procCheck.FadeCheck[spell.spellId[1]]
             if FadeCheck then
+                --debug(2, "CheckProcSpellUsable", spell.name, "Scheduling fade check")
                 FadeCheck(QA) -- if not used, it fades. check within 1 sec
             end
         end
@@ -367,7 +369,7 @@ function QA:CheckWeaponEnchants()
             or QA.tempEnchant.mhExp ~= mhExp or QA.tempEnchant.ohExp ~= ohExp
             or mhItemId ~= QA.tempEnchant.mhItemId or ohItemId ~= QA.tempEnchant.ohItemId
     if changed then
-        debug(2, "CheckWeaponEnchants", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
+        --debug(2, "CheckWeaponEnchants", "mh", mh, "mhExp", mhExp, "oh", oh, "ohExp", ohExp, "rng", rng, "rngExp", rngExp)
         if QA.db.profile.missingWeaponEnchant == "shaman" and #QA.partyShamans == 0 then
             QuickAuras_WeaponEnchant1:Hide()
             QuickAuras_WeaponEnchant2:Hide()

@@ -182,6 +182,7 @@ function QA:BuildTrackedSpells()
                         table.insert(QA.trackedProcAbilities[spell.proc], spell)
                         if spell.procFadeCheck then
                             QA.procCheck.FadeCheck[spell.spellId[1]] = QA:Debounce(function()
+                                debug(1, "FadeCheck Debounce", spell.name, spell.spellId[1])
                                 QA:CheckProcSpellUsable(spell)
                             end, 1)
                         end

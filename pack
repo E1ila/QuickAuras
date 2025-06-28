@@ -3,6 +3,7 @@ rm -rf ~/tmp/QuickAuras
 #mkdir ~/tmp/QuickAuras
 cp -r QuickAuras ~/tmp/
 rm ~/tmp/QuickAuras/pack
+rm -rk ~/tmp/QuickAuras/QuickAuras.code-workspace
 rm -rf ~/tmp/QuickAuras/.git
 rm -rf ~/tmp/QuickAuras/.idea
 rm -rf ~/tmp/QuickAuras/media

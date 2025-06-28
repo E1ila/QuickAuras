@@ -421,6 +421,13 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         if QA.db.profile.announceShieldWall and QA.spells.warrior.shieldWall.bySpellId[extra[1]] then
             SendChatMessage(">> SHIELD WALL ACTIVATED <<", "PARTY")
             SendChatMessage(">> SHIELD WALL ACTIVATED <<", "YELL")
+            
+            -- countdown in PARTY chat from 5 to 1 seconds remaining
+            C_Timer.After(5, function() SendChatMessage(">> Shield Wall: 5 <<", "YELL") end)
+            C_Timer.After(6, function() SendChatMessage(">> Shield Wall: 4 <<", "YELL") end)
+            C_Timer.After(7, function() SendChatMessage(">> Shield Wall: 3 <<", "YELL") end)
+            C_Timer.After(8, function() SendChatMessage(">> Shield Wall: 2 <<", "YELL") end)
+            C_Timer.After(9, function() SendChatMessage(">> Shield Wall: 1 <<", "YELL") end)
         end
         
         -- warrior unqueue spell

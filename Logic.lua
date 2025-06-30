@@ -508,24 +508,69 @@ function QA:CheckCooldowns()
     end
     if QA.db.profile.notifyExplosivesReady then
         local sapper = QA.explosives.goblinSapperCharge
-        local readyItem
-        if QA.inInstance then
-            readyItem = QA.bags[sapper.itemId] and isItemReady(sapper) and sapper
-            if not readyItem then
-                for _, conf in pairs(QA.explosives) do
-                    if QA.bags[conf.itemId] then
-                        local start, duration = QA:GetItemCooldown(conf.itemId)
-                        if start == 0 and duration == 0 then
+        local readyItem = nil
+        local shortestCooldownItem = nil
+        local shortestCooldownTime = math.huge
+        
+        -- Check sapper first (priority when ready)
+        if QA.bags[sapper.itemId] then
+            if isItemReady(sapper) then
+                readyItem = sapper
+            else
+                local start, duration = QA:GetItemCooldown(sapper.itemId)
+                shortestCooldownTime = start + duration - GetTime()
+                shortestCooldownItem = sapper
+            end
+        end
+        
+        -- Check other explosives if sapper not ready
+        if not readyItem then
+            for _, conf in pairs(QA.explosives) do
+                if conf ~= sapper and QA.bags[conf.itemId] then
+                    local start, duration = QA:GetItemCooldown(conf.itemId)
+                    if start == 0 and duration == 0 then
+                        if not readyItem then -- Take first ready item if sapper not ready
                             readyItem = conf
+                        end
+                    else
+                        local remainingTime = start + duration - GetTime()
+                        if remainingTime < shortestCooldownTime then
+                            shortestCooldownTime = remainingTime
+                            shortestCooldownItem = conf
                         end
                     end
                 end
             end
         end
+        
+        local existing = QA.list_ready[sapper.itemId] -- not necessarily a timer
+        
         if readyItem then
-            --:AddIcon(window,       idType, id, conf, count, showTooltip, onClick, id)
+            -- Show ready explosive (prioritize sapper)
+            if existing and existing.isTimer then
+                -- convert from timer to icon
+                QA:RemoveTimer(existing, "explosives")
+            end
             QA:AddIcon(WINDOW.READY, "item", sapper.itemId, readyItem, nil, nil, nil, readyItem.itemId)
+        elseif shortestCooldownItem and shortestCooldownTime < math.huge then
+            -- Show timer for shortest cooldown
+            if existing and not existing.isTimer then
+                -- remove existing icon
+                QA:RemoveIcon(WINDOW.READY, sapper.itemId)
+            end
+            local start, duration = QA:GetItemCooldown(shortestCooldownItem.itemId)
+            local timerConf = {
+                name = shortestCooldownItem.name,
+                icon = shortestCooldownItem.icon,
+                onEnd = function()
+                    C_Timer.After(0.01, function()
+                        QA:CheckCooldowns()
+                    end)
+                end
+            }
+            QA:AddTimer(WINDOW.READY, timerConf, sapper.itemId, duration, start + duration)
         else
+            -- No explosives in bags or available
             QA:RemoveIcon(WINDOW.READY, sapper.itemId)
         end
     end

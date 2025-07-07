@@ -847,6 +847,9 @@ function QA:InitSwingTimers()
     texture:SetColorTexture(unpack(_swing.oh))
     QuickAuras_SwingTimer_OH.texture = texture
     QuickAuras_SwingTimer_OH:Hide()
+    
+    -- Initialize Flurry icon as hidden
+    QuickAuras_SwingTimer_FlurryIcon:Hide()
 
     QuickAuras_SwingTimer:Hide()
 end
@@ -926,7 +929,26 @@ function QA:UpdateSwingTimers(hand, source)
     if mh or oh or ranged then
         QuickAuras_SwingTimer:Show()
     end
+    
+    -- Show/hide the Flurry icon based on aura state
+    QA:UpdateFlurryIcon()
+    
     QA.HideSwingTimers()
+end
+
+function QA:UpdateFlurryIcon()
+    if QA.isWarrior or QA.isShaman then 
+        local WARRIOR_FLURRY_SPELL_ID = QA.spells.warrior.flurry.spellId[1]
+        local SHAMAN_FRENZY_SPELL_ID = QA.spells.shaman.flurry.spellId[1] 
+        
+        local hasFlurry = QA.playerBuffs and (QA.playerBuffs[WARRIOR_FLURRY_SPELL_ID] or QA.playerBuffs[SHAMAN_FRENZY_SPELL_ID])
+        
+        if hasFlurry then
+            QuickAuras_SwingTimer_FlurryIcon:Show()
+        else
+            QuickAuras_SwingTimer_FlurryIcon:Hide()
+        end
+    end 
 end
 
 function QA:UpdateSwingTimer(hand, source)

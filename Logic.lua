@@ -639,6 +639,7 @@ function QA:CheckAuras()
     QA:CheckMissingBuffs(seen, combatStateChanged)
     QA:CheckCrucialBuffs(seen, combatStateChanged)
     QA:CheckStealthInInstance(seen)
+    QA:UpdateFlurryIcon()
 end
 
 function QA:CheckMissingBuffs(activeAuras, combatStateChanged)

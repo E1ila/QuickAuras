@@ -305,6 +305,12 @@ spells.hunter = {
 }
 
 spells.warrior = {
+    flurry = {
+        spellId = { 12970 },
+        name = "Flurry",
+        icon = "Interface\\Icons\\ability_ghoulfrenzy",
+        color = {0.933, 0.471, 0.373},
+    },
     bloodthirst = {
         spellId = { 23881, 23892, 23893, 23894 },
         name = "Bloodthirst",

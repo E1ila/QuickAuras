@@ -733,6 +733,7 @@ end
 -------------------------------------------------------------
 
 function QA:Rogue_SetCombo(n)
+    QA.comboPoints = n
     if n < 5 then
         QuickAuras_Combo:Hide()
     else

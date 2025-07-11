@@ -506,7 +506,7 @@ function QA:CheckCooldowns()
             end
         end
     end
-    if QA.db.profile.notifyExplosivesReady then
+    if QA.db.profile.notifyExplosivesReady and QA.instanceName then
         local sapper = QA.explosives.goblinSapperCharge
         local readyItem = nil
         local shortestCooldownItem = nil
@@ -779,6 +779,7 @@ function QA:UpdateZone()
         QA:RefreshReminders()
         QA:RefreshMissing()
         QA:RefreshWarnings()
+        QA:ClearICons(WINDOW.READY)
     end
 end
 

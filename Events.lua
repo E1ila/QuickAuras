@@ -394,7 +394,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             sourceGuid == QA.playerGuid and
             QA.InstanceName and QA.db.profile.announceMisses and
             destGuid == UnitGUID("target") and
-            sourceGuid == UnitGUID("targettarget") and extra[1]
+            sourceGuid == UnitGUID("targettarget") and extra[1] and
+            QA.shapeshiftForm ~= QA.warrior.stance.berserker
     then
         SendChatMessage(">> "..tostring(extra[1]).." <<", "SAY")
     end

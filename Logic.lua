@@ -350,6 +350,13 @@ function QA:CheckTransmuteCooldown()
     end
 end
 
+function QA:IsItemShield(itemId)
+    if not itemId then return false end
+    local _, _, _, _, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID = GetItemInfo(itemId)
+    -- Shield class is 4 (Armor), subclass 6 (Shield)
+    return itemClassID == 4 and itemSubClassID == 6
+end
+
 function QA:CheckWeaponEnchants()
     if not QA.db.profile.weaponEnchantEnabled then return end
     if
@@ -380,7 +387,12 @@ function QA:CheckWeaponEnchants()
         if not QA.db.profile.missingWeaponEnchantOH then
             QuickAuras_WeaponEnchant2:Hide()
         else
-            QA:SetWeaponEnchantIcon(2, not oh and ohItemId or nil)
+            -- Don't show enchant missing indication for shields
+            if QA:IsItemShield(ohItemId) then
+                QuickAuras_WeaponEnchant2:Hide()
+            else
+                QA:SetWeaponEnchantIcon(2, not oh and ohItemId or nil)
+            end
         end
         QA.tempEnchant = {
             mhExp = mhExp,
@@ -779,7 +791,7 @@ function QA:UpdateZone()
         QA:RefreshReminders()
         QA:RefreshMissing()
         QA:RefreshWarnings()
-        QA:ClearICons(WINDOW.READY)
+        QA:ClearIcons(WINDOW.READY)
     end
 end
 

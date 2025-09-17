@@ -330,6 +330,9 @@ spells.warrior = {
             ShowCond = function()
                 return QA.isWarrior or QA.hasWarriorInParty
             end,
+            glowInCombat = function()
+                return QA.isWarrior and IsInRaid()
+            end,
         },
         visible = QA.isWarrior,
     },

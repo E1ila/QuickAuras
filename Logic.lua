@@ -61,7 +61,12 @@ function QA:CheckTargetAuras(targetChanged)
                 local missing = stackCount < spell.enemyAura.requiredStacks
                 --debug("CheckTargetAuras", "(check)", _c.yellow..spell.name.."|r", "missing", missing, "count", found and found.count or 0)
                 if missing then
-                    QA:AddIcon(window, "spell", spell.spellId[1], spell, found and found.count or 0)
+                    local button = QA:AddIcon(window, "spell", spell.spellId[1], spell, found and found.count or 0)
+                    -- Check if spell has glowInCombat function and apply it
+                    if button and spell.enemyAura.glowInCombat and spell.enemyAura.glowInCombat() then
+                        button.glowInCombat = true
+                        QA:CheckCombatGlow(button)
+                    end
                 else
                     QA:RemoveIcon(window, spell.spellId[1])
                     if stackCount == spell.enemyAura.requiredStacks then

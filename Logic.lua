@@ -904,3 +904,78 @@ function QA:GetItemCooldown(itemId)
         return GetItemCooldown(itemId)
     end
 end
+
+-- Warrior Stance Portrait
+
+QA.stancePortrait = {
+    currentStance = 0,
+    stanceTextures = {},
+}
+
+function QA:GetStanceTexture(stanceIndex)
+    if not self.stancePortrait.stanceTextures[stanceIndex] then
+        local texture, name, isActive, isCastable = GetShapeshiftFormInfo(stanceIndex)
+        if texture then
+            self.stancePortrait.stanceTextures[stanceIndex] = texture
+            debug(2, "StancePortrait", "Cached stance texture", stanceIndex, name, texture)
+        end
+    end
+    return self.stancePortrait.stanceTextures[stanceIndex]
+end
+
+function QA:ApplyStancePortrait(stanceIndex)
+    if not self.isWarrior or not self.db or not self.db.profile.warriorStancePortrait then
+        return
+    end
+
+    if not PlayerFrame or not PlayerFrame.portrait then
+        debug(2, "StancePortrait", "PlayerFrame or portrait not available")
+        return
+    end
+
+    if stanceIndex and stanceIndex > 0 then
+        local texture = self:GetStanceTexture(stanceIndex)
+        if texture then
+            SetPortraitToTexture(PlayerFrame.portrait, texture)
+            self.stancePortrait.currentStance = stanceIndex
+            debug(2, "StancePortrait", "Applied stance portrait", stanceIndex, texture)
+        else
+            debug(1, "StancePortrait", "Failed to get texture for stance", stanceIndex)
+        end
+    else
+        self:RestorePlayerPortrait()
+    end
+end
+
+function QA:RestorePlayerPortrait()
+    if PlayerFrame and PlayerFrame.portrait then
+        SetPortraitTexture(PlayerFrame.portrait, "player")
+        self.stancePortrait.currentStance = 0
+        debug(2, "StancePortrait", "Restored default portrait")
+    end
+end
+
+function QA:UpdateStancePortrait()
+    if not self.isWarrior then return end
+
+    if not self.db or not self.db.profile.warriorStancePortrait then
+        if self.stancePortrait.currentStance ~= 0 then
+            self:RestorePlayerPortrait()
+        end
+        return
+    end
+
+    local stanceIndex = GetShapeshiftForm()
+    if stanceIndex ~= self.stancePortrait.currentStance then
+        self:ApplyStancePortrait(stanceIndex)
+    end
+end
+
+function QA:InitStancePortrait()
+    if not self.isWarrior then return end
+
+    debug(2, "StancePortrait", "Initializing warrior stance portraits")
+    C_Timer.After(0.5, function()
+        self:UpdateStancePortrait()
+    end)
+end

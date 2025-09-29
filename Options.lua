@@ -869,12 +869,10 @@ QA.options = {
                     end,
                     set = function(info, value)
                         QA.db.profile.warriorStancePortrait = value
-                        if QA.StancePortrait then
-                            if value then
-                                QA.StancePortrait:Initialize()
-                            else
-                                QA.StancePortrait:RestorePortrait()
-                            end
+                        if value then
+                            QA:InitStancePortrait()
+                        else
+                            QA:RestorePlayerPortrait()
                         end
                     end,
                     hidden = not QA.isWarrior,

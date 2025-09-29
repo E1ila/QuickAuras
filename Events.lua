@@ -10,6 +10,8 @@ local raidBuffs = {}
 
 local lastUpdate = 0
 local updateInterval = 0.01 -- Execute every 0.1 seconds
+local lastStancePortraitCheck = 0
+local stancePortraitCheckInterval = 0.2
 
 local BOSS_LEVEL = 63
 
@@ -193,6 +195,17 @@ function QA:UNIT_INVENTORY_CHANGED()
     QA:CheckWeaponEnchants()
 end
 
+function QA:UNIT_PORTRAIT_UPDATE(unit)
+    -- Reapply stance portrait when the portrait updates
+    if unit == "player" and QA.isWarrior and QA.db and QA.db.profile.warriorStancePortrait then
+        local stanceIndex = GetShapeshiftForm()
+        if stanceIndex and stanceIndex > 0 then
+            -- Force reapply even if stance hasn't changed, because WoW reset the texture
+            QA:ApplyStancePortrait(stanceIndex)
+        end
+    end
+end
+
 -- OnUpdate
 
 function QA:OnUpdate()
@@ -213,6 +226,15 @@ function QA:OnUpdate()
         lastUpdate = currentTime
         QA:CheckTimers()
         QA:CheckTargetRange()
+    end
+
+    -- Periodically check and reapply stance portrait to combat WoW UI resets
+    if QA.isWarrior and QA.db and QA.db.profile.warriorStancePortrait and currentTime - lastStancePortraitCheck >= stancePortraitCheckInterval then
+        lastStancePortraitCheck = currentTime
+        local stanceIndex = GetShapeshiftForm()
+        if stanceIndex and stanceIndex > 0 then
+            QA:ApplyStancePortrait(stanceIndex)
+        end
     end
 
     QA:ArrangeWindows()

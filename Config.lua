@@ -32,6 +32,7 @@ QA.optionalEvents = {
     UNIT_THREAT_LIST_UPDATE = { "overaggroWarning" },
     UNIT_SPELLCAST_SENT = { "spellQueueEnabled" },
     UNIT_INVENTORY_CHANGED = { "weaponEnchantEnabled" },
+    UNIT_PORTRAIT_UPDATE = { "warriorStancePortrait" },
     --ACTIONBAR_SLOT_CHANGED = {},
     --ACTIONBAR_PAGE_CHANGED = {},
     --ACTIONBAR_UPDATE_STATE = {},

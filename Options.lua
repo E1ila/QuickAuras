@@ -59,6 +59,7 @@ QA.defaultOptions = {
         warriorRevengeFrame = WINDOW.WARNING,
         warriorBloodthirst = QA.isWarrior,
         warriorBloodthirstFrame = WINDOW.QUEUE,
+        warriorStancePortrait = QA.isWarrior,
         targetMissingDebuffFrame = WINDOW.WARNING,
         rogueRiposte = QA.isRogue,
         rogueRiposteFrame = WINDOW.QUEUE,
@@ -858,6 +859,26 @@ QA.options = {
                     end,
                     hidden = not QA.isWarrior,
                     order = 409,
+                },
+                warriorStancePortrait = {
+                    type = "toggle",
+                    name = "Stance on Portrait",
+                    desc = "Replaces the player's portrait with the current stance icon. Shows Battle, Defensive, or Berserker stance icon on your portrait frame, updating automatically when you change stances.",
+                    get = function(info)
+                        return QA.db.profile.warriorStancePortrait
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorStancePortrait = value
+                        if QA.StancePortrait then
+                            if value then
+                                QA.StancePortrait:Initialize()
+                            else
+                                QA.StancePortrait:RestorePortrait()
+                            end
+                        end
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 410,
                 },
                 warlockUtilsHeader = {
                     type = "header",

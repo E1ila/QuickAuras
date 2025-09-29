@@ -155,6 +155,11 @@ end
 function QA:UPDATE_SHAPESHIFT_FORM(...)
     QA.shapeshiftForm = GetShapeshiftForm()
     --debug("UPDATE_SHAPESHIFT_FORM", QA.shapeshiftForm, ...)
+
+    -- Update stance portrait for warriors
+    if QA.StancePortrait then
+        QA.StancePortrait:OnShapeshiftFormChanged()
+    end
 end
 
 function QA:UNIT_HEALTH()

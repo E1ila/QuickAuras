@@ -576,7 +576,7 @@ spells.warrior = {
         visible = QA.isWarrior,
     },
     battleShout = {
-        spellId = { 25289, 11551, 11550, 11549, 6192, 5242, 6673 },
+        spellId = { 25289, 11551, 11550, 11549, 6192, 5242, 6673, 25101 },
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
         crucial = QA.isWarrior or QA.isRogue,

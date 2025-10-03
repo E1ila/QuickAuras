@@ -306,11 +306,14 @@ function QA:HandleSlashCommand(input)
             else
                 out("Loatheb Spore alert disabled.")
             end
+        elseif cmd == "xp" then
+            QA:ResetXpTracker()
         else
             out("QuickAuras available commands:")
             out("  |cFF00FFaa/qa|r - Open options")
             out("  |cFF00FFaa/qa lock|r - Toggle lock/unlock window position")
             out("  |cFF00FFaa/qa clear|r - Clear ignored (right clicked) icons")
+            out("  |cFF00FFaa/qa xp|r - Reset XP session tracker")
             out("|cff000000-------------------------------|r")
             --out("  |cFF00FFaa/qa reset|r - Reset UI position")
         end

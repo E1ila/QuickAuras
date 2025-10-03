@@ -167,6 +167,16 @@ function QA:ConfigureXpFrame()
     end
 end
 
+function QA:ResetXpTracker()
+    local currentXP = UnitXP("player")
+    QA.xpTracker = {
+        sessionStartXP = currentXP,
+        sessionStartTime = GetTime(),
+    }
+    out("XP session tracker reset!")
+    QA:UpdateXpFrame()
+end
+
 function QA:UpdateXpFrame()
     if QA.db.profile.xpFrameEnabled and QA.playerLevel < 60 then
         QA.xp.UpdateQuestXP(self)
@@ -187,9 +197,38 @@ function QA:UpdateXpFrame()
         QuickAuras_XP_Bar_Completed:SetValue(p_current+p_completed)
         QuickAuras_XP_Bar_Rested:SetValue(p_current+p_completed+p_rested)
 
+        -- Calculate time until level based on session XP gains
+        local xpNeeded = maxXP - currentXP
+        local timeToLevel = "??"
+
+        -- Track XP gains from session start for rate calculation
+        if not QA.xpTracker then
+            QA.xpTracker = {
+                sessionStartXP = currentXP,
+                sessionStartTime = GetTime(),
+            }
+        end
+
+        local sessionTime = GetTime() - QA.xpTracker.sessionStartTime
+        local sessionXP = currentXP - QA.xpTracker.sessionStartXP
+
+        -- Calculate XP rate based on session progress (minimum 60 seconds of data)
+        if sessionTime >= 60 and sessionXP > 0 then
+            local xpPerSec = sessionXP / sessionTime
+            local xpPerHour = xpPerSec * 3600
+            local secondsToLevel = xpNeeded / xpPerSec
+            timeToLevel = QA.xp.FormatTime(secondsToLevel)
+            debug(1, "UpdateXpFrame", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP, "xpPerSec", string.format("%.2f", xpPerSec), "xpPerHour", math.floor(xpPerHour), "secondsToLevel", math.floor(secondsToLevel), "timeToLevel", timeToLevel)
+        elseif sessionTime > 0 and sessionTime < 60 and sessionXP > 0 then
+            timeToLevel = "..."
+            debug(1, "UpdateXpFrame", "waiting for 60s", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP)
+        else
+            debug(1, "UpdateXpFrame", "no XP gained", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP)
+        end
+
         QuickAuras_XP_Left_Text:SetText(FormatNumberWithCommas(currentXP).." / "..FormatNumberWithCommas(maxXP))
         QuickAuras_XP_Right_Text:SetText(s_current)
-        QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff9700"..s_completed.."|r - Rested: |cff4f90ff"..s_rested.."|r")
+        QuickAuras_XP_Bottom_Text:SetText("Completed: |cffff9700"..s_completed.."|r - Rested: |cff4f90ff"..s_rested.."|r - Level up: |cff00ff00"..timeToLevel.."|r")
     end
 end
 

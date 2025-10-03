@@ -172,6 +172,7 @@ function QA:ResetXpTracker()
     QA.xpTracker = {
         sessionStartXP = currentXP,
         sessionStartTime = GetTime(),
+        hasGainedXP = false,
     }
     out("XP session tracker reset!")
     QA:UpdateXpFrame()
@@ -211,6 +212,14 @@ function QA:UpdateXpFrame()
 
         local sessionTime = GetTime() - QA.xpTracker.sessionStartTime
         local sessionXP = currentXP - QA.xpTracker.sessionStartXP
+
+        -- Reset session start time when XP gained changes from 0 to something
+        if sessionXP > 0 and not QA.xpTracker.hasGainedXP then
+            QA.xpTracker.sessionStartTime = GetTime()
+            QA.xpTracker.hasGainedXP = true
+            sessionTime = 0
+            debug(1, "UpdateXpFrame", "First XP gained, resetting timer")
+        end
 
         -- Calculate XP rate based on session progress (minimum 60 seconds of data)
         if sessionTime >= 60 and sessionXP > 0 then

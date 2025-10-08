@@ -43,6 +43,7 @@ QA.defaultOptions = {
         xpFrameEnabled = true,
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue,
+        readyThingsEnabled = true,
         swingTimerOH = true,
         swingTimerRanged = true,
         raidBars = true,
@@ -265,6 +266,23 @@ QA.options = {
                         end
                     end,
                     order = 14,
+                },
+                readyThingsEnabled = {
+                    type = "toggle",
+                    name = "Ready Things",
+                    desc = "Shows icons for abilities/items that are off cooldown (e.g., Mana Potion, Mana Tide, Nature's Swiftness)",
+                    get = function(info) return QA.db.profile.readyThingsEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.readyThingsEnabled = value
+                        if value then
+                            QuickAuras_ReadyThings:Show()
+                            QA:CheckCooldowns()
+                        else
+                            QuickAuras_ReadyThings:Hide()
+                            QA:ClearIcons(WINDOW.READYTHINGS)
+                        end
+                    end,
+                    order = 14.5,
                 },
                 overaggroWarning = {
                     type = "toggle",

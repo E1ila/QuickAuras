@@ -15,7 +15,12 @@ QA.targetInRange = false
 local targetAggro = {}
 
 -- ReadyThings management
+local readyThingsState = {} -- Track which things are currently ready
+local readyThingsInitialized = false
+
 function QA:AddReadyThing(conf, id)
+    if not QA.db.profile.readyThingsEnabled then return end
+
     -- Check if spell/item is known/available
     if conf.spellId then
         local known = false
@@ -34,12 +39,32 @@ function QA:AddReadyThing(conf, id)
         if not known then return end
     end
 
+    -- Check if this is a state change (was not ready, now is ready)
+    local wasReady = readyThingsState[id]
+    if not wasReady then
+        readyThingsState[id] = true
+
+        -- Play sound when item becomes ready (state changed from cooldown to ready)
+        -- But not during initial load
+        if readyThingsInitialized and QA.db.profile.soundsEnabled then
+            PlaySoundFile("Interface\\AddOns\\QuickAuras\\assets\\Kachink.ogg", "Master")
+        end
+    end
+
     local idType = conf.itemId and "item" or "spell"
     QA:AddIcon(WINDOW.READYTHINGS, idType, id, conf)
 end
 
 function QA:RemoveReadyThing(id)
+    readyThingsState[id] = nil
     QA:RemoveIcon(WINDOW.READYTHINGS, id)
+end
+
+function QA:InitReadyThings()
+    -- Mark as initialized after first cooldown check
+    C_Timer.After(2, function()
+        readyThingsInitialized = true
+    end)
 end
 
 function QA:GroupCompoChanged()

@@ -363,7 +363,7 @@
 
     <Frame name="QuickAuras_ReadyThings" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
-            <AbsDimension x="24" y="60" />
+            <AbsDimension x="60" y="24" />
         </Size>
         <Anchors>
             <Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="PlayerFrame" x="-60" y="-40" />

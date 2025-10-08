@@ -363,10 +363,10 @@
 
     <Frame name="QuickAuras_ReadyThings" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
         <Size>
-            <AbsDimension x="60" y="60" />
+            <AbsDimension x="24" y="60" />
         </Size>
         <Anchors>
-            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PlayerFrame" x="80" y="28" />
+            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PlayerFrame" x="92" y="28" />
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">
@@ -378,68 +378,6 @@
                 </FontString>
             </Layer>
         </Layers>
-        <Frames>
-            <Frame name="QuickAuras_ReadyThings_ManaPotion">
-                <Size>
-                    <AbsDimension x="50" y="20" />
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="0" />
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <Texture name="$parent_Icon" file="Interface\Icons\INV_Potion_76">
-                            <Size>
-                                <AbsDimension x="20" y="20" />
-                            </Size>
-                            <Anchors>
-                                <Anchor point="CENTER" />
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-            </Frame>
-            <Frame name="QuickAuras_ReadyThings_ManaTide">
-                <Size>
-                    <AbsDimension x="50" y="20" />
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="20" />
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <Texture name="$parent_Icon" file="Interface\Icons\Spell_Frost_SummonWaterElemental">
-                            <Size>
-                                <AbsDimension x="20" y="20" />
-                            </Size>
-                            <Anchors>
-                                <Anchor point="CENTER" />
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-            </Frame>
-            <Frame name="QuickAuras_ReadyThings_NaturesSwiftness">
-                <Size>
-                    <AbsDimension x="50" y="20" />
-                </Size>
-                <Anchors>
-                    <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="0" y="40" />
-                </Anchors>
-                <Layers>
-                    <Layer level="ARTWORK">
-                        <Texture name="$parent_Icon" file="Interface\Icons\Spell_Nature_RavenForm">
-                            <Size>
-                                <AbsDimension x="20" y="20" />
-                            </Size>
-                            <Anchors>
-                                <Anchor point="CENTER" />
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-            </Frame>
-        </Frames>
     </Frame>
 
     <Frame name="QuickAuras_RangeIndicator" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">

@@ -14,6 +14,77 @@ QA.targetInRange = false
 
 local targetAggro = {}
 
+-- ReadyThings management
+local readyThings = {}
+local readyThingsFrame = nil
+local ICON_SIZE = 20
+local ICON_SPACING = 2
+
+function QA:AddReadyThing(conf, id)
+    if not readyThingsFrame then
+        readyThingsFrame = QuickAuras_ReadyThings
+    end
+
+    -- Check if spell/item is known/available
+    if conf.spellId then
+        local known = false
+        if type(conf.spellId) == "table" then
+            for _, spellId in ipairs(conf.spellId) do
+                local spellName = GetSpellInfo(spellId)
+                if spellName and (IsSpellKnown(spellId) or IsPlayerSpell(spellId) or GetSpellCooldown(spellId)) then
+                    known = true
+                    break
+                end
+            end
+        else
+            local spellName = GetSpellInfo(conf.spellId)
+            known = spellName and (IsSpellKnown(conf.spellId) or IsPlayerSpell(conf.spellId) or GetSpellCooldown(conf.spellId))
+        end
+        if not known then return end
+    end
+
+    if readyThings[id] then return end -- already exists
+
+    local frame = CreateFrame("Frame", nil, readyThingsFrame)
+    frame:SetSize(ICON_SIZE, ICON_SIZE)
+
+    local texture = frame:CreateTexture(nil, "ARTWORK")
+    texture:SetAllPoints()
+    texture:SetTexture(conf.icon)
+
+    readyThings[id] = {
+        frame = frame,
+        texture = texture,
+        conf = conf,
+    }
+
+    QA:ArrangeReadyThings()
+end
+
+function QA:RemoveReadyThing(id)
+    local thing = readyThings[id]
+    if not thing then return end
+
+    thing.frame:Hide()
+    thing.frame:SetParent(nil)
+    thing.frame = nil
+    readyThings[id] = nil
+
+    QA:ArrangeReadyThings()
+end
+
+function QA:ArrangeReadyThings()
+    if not readyThingsFrame then return end
+
+    local yOffset = 0
+    for _, thing in pairs(readyThings) do
+        thing.frame:ClearAllPoints()
+        thing.frame:SetPoint("BOTTOMLEFT", readyThingsFrame, "BOTTOMLEFT", 0, yOffset)
+        thing.frame:Show()
+        yOffset = yOffset + ICON_SIZE + ICON_SPACING
+    end
+end
+
 function QA:GroupCompoChanged()
     QA.isMainTank = QA.isWarrior and IsInRaid() and (GetPartyAssignment("MAINTANK", "player") or GetPartyAssignment("MAINASSIST", "player"))
     QA:CheckIfWarriorInParty()
@@ -494,24 +565,20 @@ end
 
 local function _checkCooldown(conf, idType, id, start, duration)
     --debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
-    if start and start > 0 and duration and duration > 2 and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
+    local isOnCooldown = start and start > 0 and duration and duration > 2
+
+    if isOnCooldown and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
         --debug(3, "_checkCooldown", "FOUND", conf.name)
         QA:AddTimer(WINDOW.COOLDOWNS, conf, id, updatedDuration, start + duration)
-        -- Hide readyIcon when cooldown starts
-        if conf.readyIcon then
-            local frame = _G[conf.readyIcon]
-            if frame then
-                frame:Hide()
-            end
-        end
-    else
-        -- Show readyIcon when no cooldown (ready)
-        if conf.readyIcon then
-            local frame = _G[conf.readyIcon]
-            if frame then
-                frame:Show()
-            end
+    end
+
+    -- Handle readyThings visibility
+    if conf.readyThings then
+        if isOnCooldown then
+            QA:RemoveReadyThing(id)
+        else
+            QA:AddReadyThing(conf, id)
         end
     end
 end

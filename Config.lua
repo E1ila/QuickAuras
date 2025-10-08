@@ -59,6 +59,7 @@ QA.adjustableFrames = {
     QuickAuras_RaidBars,
     QuickAuras_SpellQueue,
     QuickAuras_Ready,
+    QuickAuras_ReadyThings,
 }
 
 --QuickAuras.adjustableFrames = {

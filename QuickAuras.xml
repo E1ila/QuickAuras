@@ -366,7 +366,7 @@
             <AbsDimension x="24" y="60" />
         </Size>
         <Anchors>
-            <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PlayerFrame" x="92" y="28" />
+            <Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="PlayerFrame" x="-60" y="-40" />
         </Anchors>
         <Layers>
             <Layer level="OVERLAY">

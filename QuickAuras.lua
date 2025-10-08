@@ -46,6 +46,7 @@ QA.list_raidBars = {} -- timer
 QA.list_queue = {}
 QA.list_swingTimers = {}
 QA.list_ready = {}
+QA.list_readyThings = {} -- item/spell icon
 QA.arrangeQueue = {}
 
 local pclass = select(2, UnitClass("player"))
@@ -97,6 +98,7 @@ QA.WINDOW = {
     WATCH = "watch",
     OFFENSIVE = "offensive",
     READY = "ready",
+    READYTHINGS = "readythings",
 }
 
 QA.FEATUERS = {

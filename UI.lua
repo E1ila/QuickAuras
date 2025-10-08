@@ -454,6 +454,14 @@ function QA:GetWindowAttributes(window)
             align = "left",
             glowInCombat = true,
         }
+    elseif window == WINDOW.READYTHINGS then
+        return {
+            widthMul = 1,
+            parent = QuickAuras_ReadyThings,
+            height = 20,
+            list = QA.list_readyThings,
+            align = "right",
+        }
     end
 end
 

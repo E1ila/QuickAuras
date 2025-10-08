@@ -15,16 +15,7 @@ QA.targetInRange = false
 local targetAggro = {}
 
 -- ReadyThings management
-local readyThings = {}
-local readyThingsFrame = nil
-local ICON_SIZE = 20
-local ICON_SPACING = 2
-
 function QA:AddReadyThing(conf, id)
-    if not readyThingsFrame then
-        readyThingsFrame = QuickAuras_ReadyThings
-    end
-
     -- Check if spell/item is known/available
     if conf.spellId then
         local known = false
@@ -43,46 +34,12 @@ function QA:AddReadyThing(conf, id)
         if not known then return end
     end
 
-    if readyThings[id] then return end -- already exists
-
-    local frame = CreateFrame("Frame", nil, readyThingsFrame)
-    frame:SetSize(ICON_SIZE, ICON_SIZE)
-
-    local texture = frame:CreateTexture(nil, "ARTWORK")
-    texture:SetAllPoints()
-    texture:SetTexture(conf.icon)
-
-    readyThings[id] = {
-        frame = frame,
-        texture = texture,
-        conf = conf,
-    }
-
-    QA:ArrangeReadyThings()
+    local idType = conf.itemId and "item" or "spell"
+    QA:AddIcon(WINDOW.READYTHINGS, idType, id, conf)
 end
 
 function QA:RemoveReadyThing(id)
-    local thing = readyThings[id]
-    if not thing then return end
-
-    thing.frame:Hide()
-    thing.frame:SetParent(nil)
-    thing.frame = nil
-    readyThings[id] = nil
-
-    QA:ArrangeReadyThings()
-end
-
-function QA:ArrangeReadyThings()
-    if not readyThingsFrame then return end
-
-    local yOffset = 0
-    for _, thing in pairs(readyThings) do
-        thing.frame:ClearAllPoints()
-        thing.frame:SetPoint("BOTTOMLEFT", readyThingsFrame, "BOTTOMLEFT", 0, yOffset)
-        thing.frame:Show()
-        yOffset = yOffset + ICON_SIZE + ICON_SPACING
-    end
+    QA:RemoveIcon(WINDOW.READYTHINGS, id)
 end
 
 function QA:GroupCompoChanged()

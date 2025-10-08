@@ -498,6 +498,21 @@ local function _checkCooldown(conf, idType, id, start, duration)
         local updatedDuration = duration - (GetTime() - start)
         --debug(3, "_checkCooldown", "FOUND", conf.name)
         QA:AddTimer(WINDOW.COOLDOWNS, conf, id, updatedDuration, start + duration)
+        -- Hide readyIcon when cooldown starts
+        if conf.readyIcon then
+            local frame = _G[conf.readyIcon]
+            if frame then
+                frame:Hide()
+            end
+        end
+    else
+        -- Show readyIcon when no cooldown (ready)
+        if conf.readyIcon then
+            local frame = _G[conf.readyIcon]
+            if frame then
+                frame:Show()
+            end
+        end
     end
 end
 

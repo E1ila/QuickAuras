@@ -552,6 +552,14 @@ local function _checkCooldown(conf, idType, id, start, duration)
     if isOnCooldown and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
         --debug(3, "_checkCooldown", "FOUND", conf.name)
+
+        -- Add onEnd callback to add readyThings icon when cooldown expires
+        if conf.readyThings then
+            conf.onEnd = function(timer)
+                QA:AddReadyThing(conf, id)
+            end
+        end
+
         QA:AddTimer(WINDOW.COOLDOWNS, conf, id, updatedDuration, start + duration)
     end
 

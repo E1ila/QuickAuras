@@ -269,7 +269,7 @@ QA.options = {
                 },
                 readyThingsEnabled = {
                     type = "toggle",
-                    name = "Ready Things",
+                    name = "Mini Ready",
                     desc = "Shows icons for abilities/items that are off cooldown (e.g., Mana Potion, Mana Tide, Nature's Swiftness)",
                     get = function(info) return QA.db.profile.readyThingsEnabled end,
                     set = function(info, value)

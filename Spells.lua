@@ -1071,9 +1071,10 @@ spells.racials = {
 spells.other = {
     potion = {
         -- placed here for cooldown support, even that it's an item
-        itemId = 13444,
+        -- itemId and icon are set based on class (healer = Major Mana Potion, others = Limited Invulnerability Potion)
+        itemId = (QA.isPriest or QA.isShaman or QA.isPaladin or QA.isDruid) and 13444 or 3387,
         name = "Potion",
-        icon = "Interface\\Icons\\inv_potion_76",
+        icon = (QA.isPriest or QA.isShaman or QA.isPaladin or QA.isDruid) and "Interface\\Icons\\inv_potion_76" or "Interface\\Icons\\inv_potion_62",
         cooldown = true,
         readyThings = true,
         evenIfNotInBag = true,

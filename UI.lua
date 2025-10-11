@@ -9,7 +9,8 @@ local WINDOW = QA.WINDOW
 QA.uiLocked = true
 
 local LSM = LibStub("LibSharedMedia-3.0")
-local cleanTexture = LSM:Fetch("statusbar", "Clean")
+LSM:Register("statusbar", "Minimalist", [[Interface\AddOns\QuickAuras\assets\Minimalist]])
+local cleanTexture = LSM:Fetch("statusbar", "Minimalist")
 
 local function FormatNumberWithCommas(n)
     local str = tostring(n)

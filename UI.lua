@@ -574,9 +574,11 @@ function QA:ArrangeIcons(window)
             --if window == WINDOW.RAIDBARS and height * QA.list_raidBars
             local padding = 2
             frame:SetPoint("CENTER", attr.parent, "CENTER", 0, 0)
-            frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), attr.height)
-            frame.iconFrame:SetSize(attr.height-padding*2, attr.height-padding*2)
-            frame.iconFrame.icon:SetSize(attr.height-padding*2, attr.height-padding*2)
+            local heightMultiplier = (obj.conf and obj.conf.taunt) and 2 or 1
+            local barHeight = attr.height * heightMultiplier
+            frame:SetSize(QA.db.profile.barWidth * (obj.widthMul or 1), barHeight)
+            frame.iconFrame:SetSize(barHeight-padding*2, barHeight-padding*2)
+            frame.iconFrame.icon:SetSize(barHeight-padding*2, barHeight-padding*2)
         else
             frame:SetSize(attr.height, attr.height)
             if attr.align == "right" then --      ------->

@@ -49,6 +49,7 @@ function QA:AddTimer(window, conf, id, duration, expTime, showAtTime, text, keyE
     end
     local timer = {
         color = conf.color or {0.5, 0.5, 0.5},
+        conf = conf,
         count = conf.count,
         duration = duration,
         expTime = expTime,

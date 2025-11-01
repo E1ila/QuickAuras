@@ -591,7 +591,7 @@ spells.warrior = {
                 local timeSinceClick = QA.battleShoutClickTime and (GetTime() - QA.battleShoutClickTime) or 999
                 if timeSinceClick <= 10 then
                     local cleanName = strsplit("-", sourceName)
-                    SendChatMessage("Buffed by " .. cleanName .. ", thanks!!", "PARTY")
+                    SendChatMessage("BS applied by " .. cleanName .. ", thanks!! <3", "PARTY")
                 end
             end
         end,

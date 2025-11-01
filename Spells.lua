@@ -4,6 +4,7 @@ QA.spells = { }
 local spells = QA.spells
 local WINDOW = QA.WINDOW
 local out = QA.Print
+local debug = QA.Debug
 
 spells.warlock = {
     corruption = {
@@ -579,16 +580,25 @@ spells.warrior = {
         spellId = { 25289, 11551, 11550, 11549, 6192, 5242, 6673, 25101 },
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
+        aura = true,
         crucial = QA.isWarrior or QA.isRogue,
         OnClick = function()
-            --if not QA.isWarrior then
-                SendChatMessage("Battle Shout dropped!", "PARTY")
-            --end
+            QA.battleShoutClickTime = GetTime()
+            SendChatMessage("Battle Shout dropped!", "PARTY")
+        end,
+        OnSpellDetectCombatLog = function(conf, subevent, sourceGuid, sourceName, destGuid, destName, ...)
+            if subevent == "SPELL_AURA_APPLIED" and destGuid == QA.playerGuid then
+                local timeSinceClick = QA.battleShoutClickTime and (GetTime() - QA.battleShoutClickTime) or 999
+                if timeSinceClick <= 10 then
+                    local cleanName = strsplit("-", sourceName)
+                    SendChatMessage("Buffed by " .. cleanName .. ", thanks!!", "PARTY")
+                end
+            end
         end,
         CrucialCond = function()
             return QA.db.profile.battleShoutMissing and (not QA.isWarrior or QA.inCombat or IsInGroup()) and (QA.isWarrior or QA.hasWarriorInParty)
         end,
-        visible = QA.isWarrior,
+        visible = QA.isWarrior or QA.isRogue,
     },
     deathWish = {
         spellId = { 12328 },

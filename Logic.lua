@@ -989,7 +989,7 @@ function QA:GetStanceTexture(stanceIndex)
         local texture, name, isActive, isCastable = GetShapeshiftFormInfo(stanceIndex)
         if texture then
             self.stancePortrait.stanceTextures[stanceIndex] = texture
-            debug(2, "StancePortrait", "Cached stance texture", stanceIndex, name, texture)
+            --debug(2, "StancePortrait", "Cached stance texture", stanceIndex, name, texture)
         end
     end
     return self.stancePortrait.stanceTextures[stanceIndex]
@@ -1001,7 +1001,7 @@ function QA:ApplyStancePortrait(stanceIndex)
     end
 
     if not PlayerFrame or not PlayerFrame.portrait then
-        debug(2, "StancePortrait", "PlayerFrame or portrait not available")
+        --debug(2, "StancePortrait", "PlayerFrame or portrait not available")
         return
     end
 
@@ -1010,9 +1010,9 @@ function QA:ApplyStancePortrait(stanceIndex)
         if texture then
             SetPortraitToTexture(PlayerFrame.portrait, texture)
             self.stancePortrait.currentStance = stanceIndex
-            debug(2, "StancePortrait", "Applied stance portrait", stanceIndex, texture)
-        else
-            debug(1, "StancePortrait", "Failed to get texture for stance", stanceIndex)
+            --debug(2, "StancePortrait", "Applied stance portrait", stanceIndex, texture)
+        --else
+        --    debug(1, "StancePortrait", "Failed to get texture for stance", stanceIndex)
         end
     else
         self:RestorePlayerPortrait()
@@ -1023,7 +1023,7 @@ function QA:RestorePlayerPortrait()
     if PlayerFrame and PlayerFrame.portrait then
         SetPortraitTexture(PlayerFrame.portrait, "player")
         self.stancePortrait.currentStance = 0
-        debug(2, "StancePortrait", "Restored default portrait")
+        --debug(2, "StancePortrait", "Restored default portrait")
     end
 end
 
@@ -1046,7 +1046,7 @@ end
 function QA:InitStancePortrait()
     if not self.isWarrior then return end
 
-    debug(2, "StancePortrait", "Initializing warrior stance portraits")
+    --debug(2, "StancePortrait", "Initializing warrior stance portraits")
     C_Timer.After(0.5, function()
         self:UpdateStancePortrait()
     end)

@@ -335,6 +335,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         if conf.multi then
                             text = destName
                         end
+                        --debug(1, "CLEU ".._c.bold.."AddTimer|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)
                         --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
                         local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
                         if not conf.aoe then

@@ -581,6 +581,7 @@ spells.warrior = {
         name = "Battle Shout",
         icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
         aura = true,
+        dontWatch = true,
         crucial = QA.isWarrior or QA.isRogue,
         OnClick = function()
             QA.battleShoutClickTime = GetTime()

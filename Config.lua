@@ -191,7 +191,7 @@ function QA:BuildTrackedSpells()
                     end
                     for _, spellId in ipairs(spell.spellId) do
                         --debug("BuildTrackedSpells", "    -- ", spell.name, "["..tostring(spellId).."]", spell.aura and "AURA" or "-", "duration", spell.duration, "[option:", tostring(spell.option).."]")
-                        if spell.aura then
+                        if (spell.aura or spell.OnSpellDetectCombatLog) and not spell.dontWatch then
                             QA.trackedAuras[spellId] = spell
                         end
                         if (not spell.aura and spell.duration) or spell.OnSpellDetectCombatLog then

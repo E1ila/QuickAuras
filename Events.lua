@@ -473,6 +473,17 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
+    -- rogue spell cast success events
+    if QA.isRogue and subevent == "SPELL_CAST_SUCCESS" and sourceGuid == QA.playerGuid then
+        -- announce Riposte
+        if QA.db.profile.announceDisarm and QA.spells.rogue.riposte.bySpellId[extra[1]] then
+            local targetName = UnitName("target")
+            if targetName then
+                SendChatMessage(">> Disarmed " .. targetName .. " <<", "SAY")
+            end
+        end
+    end
+
     if QA.encounter.CombatLog[subevent] then
         QA.encounter.CombatLog[subevent](timestamp, subevent, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, ...)
     end

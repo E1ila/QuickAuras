@@ -37,7 +37,7 @@ QA.defaultOptions = {
         announceMisses = QA.isWarrior,
         announceTauntResists = QA.isWarrior,
         announceShieldWall = QA.isWarrior,
-        announceDisarm = QA.isWarrior,
+        announceDisarm = QA.isWarrior or QA.isRogue,
         announceSquawk = true,
         announceCcBreak = true,
         stealthInInstance = true,
@@ -740,12 +740,12 @@ QA.options = {
                 announceDisarm = {
                     type = "toggle",
                     name = "Announce Disarm",
-                    desc = "Announce in SAY when Disarm is cast on a target.",
+                    desc = "Announce in SAY when Disarm or Riposte is cast on a target.",
                     get = function(info) return QA.db.profile.announceDisarm end,
                     set = function(info, value)
                         QA.db.profile.announceDisarm = value
                     end,
-                    hidden = not QA.isWarrior,
+                    hidden = not (QA.isWarrior or QA.isRogue),
                     order = 107.6,
                 },
                 announceSquawk = {

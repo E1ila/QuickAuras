@@ -384,6 +384,9 @@ spells.warrior = {
     },
     disarm = {
         spellId = { 676 },
+        bySpellId = {
+            [676] = 676,
+        },
         name = "Disarm",
         icon = "Interface\\Icons\\Ability_Warrior_Disarm",
         color = {0.533, 0.290, 0.173},

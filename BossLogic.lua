@@ -35,11 +35,20 @@ local Sapphiron = {
     sampleInterval = 0.3,
     minNoTargetTime = 0.5,
 }
+local Thaddius = {
+    encounterId = 1113,
+    stalaggId = 15929,
+    feugenId = 15930,
+    updateInterval = 1,
+    timer = nil,
+    lastAnnouncedHP = nil,
+}
 QA.boss = {
     FHM = FHM,
     KT = KT,
     Loatheb = Loatheb,
     Sapphiron = Sapphiron,
+    Thaddius = Thaddius,
 }
 QA.trackedEncounters = {}
 
@@ -222,4 +231,66 @@ function FHM:Mark()
     self.timer = C_Timer.NewTimer(13, function()
         FHM:Mark()
     end)
+end
+
+function Thaddius:EncounterStart()
+    self.lastAnnouncedHP = nil
+    self:ScheduleHPCheck()
+end
+
+function Thaddius:EncounterEnd()
+    if self.timer then
+        self.timer:Cancel()
+        self.timer = nil
+    end
+end
+
+function Thaddius:ScheduleHPCheck()
+    self.timer = C_Timer.NewTimer(self.updateInterval, function()
+        if not QA.inCombat then return end
+        self:CheckHP()
+        self:ScheduleHPCheck()
+    end)
+end
+
+function Thaddius:CheckHP()
+    local stalaggHP, feugenHP
+    local stalaggName, feugenName
+
+    for i = 1, GetNumGroupMembers() do
+        local unitId = "raid"..i.."target"
+        if UnitExists(unitId) then
+            local guid = UnitGUID(unitId)
+            local npcId = QA:GetNpcIdFromGuid(guid)
+
+            if npcId == self.stalaggId then
+                stalaggHP = math.floor((UnitHealth(unitId) / UnitHealthMax(unitId)) * 100)
+                stalaggName = UnitName(unitId)
+            elseif npcId == self.feugenId then
+                feugenHP = math.floor((UnitHealth(unitId) / UnitHealthMax(unitId)) * 100)
+                feugenName = UnitName(unitId)
+            end
+        end
+    end
+
+    if stalaggHP and feugenHP and stalaggHP > 0 and feugenHP > 0 then
+        local minHP = math.min(stalaggHP, feugenHP)
+        if (minHP % 10 == 0 or (minHP <= 15 and minHP % 5 == 0)) and minHP ~= self.lastAnnouncedHP then
+            self.lastAnnouncedHP = minHP
+            --SendChatMessage(string.format(" >> %s %d%%  |  %s %d%%  << ", stalaggName, stalaggHP, feugenName, feugenHP), "RAID")
+            out(string.format(" >> %s %d%%  |  %s %d%%  << ", stalaggName, stalaggHP, feugenName, feugenHP))
+        end
+    elseif stalaggHP and stalaggHP > 0 then
+        if (stalaggHP % 10 == 0 or (stalaggHP <= 15 and stalaggHP % 5 == 0)) % 10 == 0 and stalaggHP ~= self.lastAnnouncedHP then
+            self.lastAnnouncedHP = stalaggHP
+            --SendChatMessage(string.format(" >> %s %d%%  << ", stalaggName, stalaggHP), "RAID")
+            out(string.format(" >> %s %d%%  << ", stalaggName, stalaggHP))
+        end
+    elseif feugenHP and feugenHP > 0 then
+        if (feugenHP % 10 == 0 or (feugenHP <= 15 and feugenHP % 5 == 0)) and feugenHP ~= self.lastAnnouncedHP then
+            self.lastAnnouncedHP = feugenHP
+            --SendChatMessage(string.format(" >> %s %d%%  << ", feugenName, feugenHP), "RAID")
+            out(string.format(" >> %s %d%%  << ", feugenName, feugenHP))
+        end
+    end
 end

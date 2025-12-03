@@ -714,7 +714,7 @@ spells.rogue = {
         color = {0.9333, 0.1255, 0.2941},
         list = WINDOW.OFFENSIVE,
         category = "bars",
-        duration = 6,
+        duration = 4,
         cooldown = 10,
         visible = QA.isRogue,
     },

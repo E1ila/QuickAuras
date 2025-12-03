@@ -812,10 +812,10 @@ local errorCount = 0
 local OOR_TIMEOUT_SEC = 10
 local OOR_CYCLE = 6
 local OOR_SOUND = 3
-function QA:ShowNoticableError(text)
+function QA:ShowNoticableError(text, playSound)
     QuickAuras_OutOfRange_Text:SetText(string.upper(text))
     QuickAuras_OutOfRange:Show()
-    if QA.db.profile.outOfRangeSound then
+    if playSound and QA.db.profile.outOfRangeSound then
         if GetTime() - lastErrorTime > OOR_TIMEOUT_SEC then
             errorCount = 0
         end

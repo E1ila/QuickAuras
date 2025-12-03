@@ -46,9 +46,9 @@ function QA:UI_ERROR_MESSAGE(errorType, errorMessage)
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
         if  errorMessage == ERR_OUT_OF_RANGE
             or errorMessage == ERR_SPELL_OUT_OF_RANGE then
-            QA:ShowNoticableError("RANGE")
+            QA:ShowNoticableError("RANGE", true)
         elseif errorMessage == "You must be behind your target" then
-            QA:ShowNoticableError("NOT BEHIND")
+            QA:ShowNoticableError("NOT BEHIND", false)
         end
     end
 end

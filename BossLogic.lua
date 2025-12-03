@@ -36,7 +36,7 @@ local Sapphiron = {
     minNoTargetTime = 0.5,
 }
 local Thaddius = {
-    encounterId = 1113,
+    encounterId = 1120,
     stalaggId = 15929,
     feugenId = 15930,
     updateInterval = 1,

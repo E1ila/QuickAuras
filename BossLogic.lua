@@ -277,20 +277,17 @@ function Thaddius:CheckHP()
         local minHP = math.min(stalaggHP, feugenHP)
         if (minHP % 10 == 0 or (minHP <= 15 and minHP % 5 == 0)) and minHP ~= self.lastAnnouncedHP then
             self.lastAnnouncedHP = minHP
-            --SendChatMessage(string.format(" >> %s %d%%  |  %s %d%%  << ", stalaggName, stalaggHP, feugenName, feugenHP), "RAID")
-            out(string.format(" >> %s %d%%  |  %s %d%%  << ", stalaggName, stalaggHP, feugenName, feugenHP))
+            SendChatMessage(string.format(" >> %s %d%%  |  %s %d%%  << ", stalaggName, stalaggHP, feugenName, feugenHP), "RAID")
         end
     elseif stalaggHP and stalaggHP > 0 then
         if (stalaggHP % 10 == 0 or (stalaggHP <= 15 and stalaggHP % 5 == 0)) % 10 == 0 and stalaggHP ~= self.lastAnnouncedHP then
             self.lastAnnouncedHP = stalaggHP
-            --SendChatMessage(string.format(" >> %s %d%%  << ", stalaggName, stalaggHP), "RAID")
-            out(string.format(" >> %s %d%%  << ", stalaggName, stalaggHP))
+            SendChatMessage(string.format(" >> %s %d%%  << ", stalaggName, stalaggHP), "RAID")
         end
     elseif feugenHP and feugenHP > 0 then
         if (feugenHP % 10 == 0 or (feugenHP <= 15 and feugenHP % 5 == 0)) and feugenHP ~= self.lastAnnouncedHP then
             self.lastAnnouncedHP = feugenHP
-            --SendChatMessage(string.format(" >> %s %d%%  << ", feugenName, feugenHP), "RAID")
-            out(string.format(" >> %s %d%%  << ", feugenName, feugenHP))
+            SendChatMessage(string.format(" >> %s %d%%  << ", feugenName, feugenHP), "RAID")
         end
     end
 end

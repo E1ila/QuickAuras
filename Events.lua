@@ -262,7 +262,7 @@ local TRACKED_SPELL_EVENTS = {
     ["SPELL_AURA_APPLIED"] = true,
     ["SPELL_AURA_REFRESH"] = true,
     ["SPELL_AURA_REMOVED"] = true,
-    --["SPELL_CAST_SUCCESS"] = true,
+    ["SPELL_CAST_SUCCESS"] = true,
     --["SPELL_SUMMON"] = true,
 }
 
@@ -323,7 +323,16 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
             end
             -- offensive debuffs
             if conf.duration and conf.list then
-                if  (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
+                -- AoE abilities: track by SPELL_CAST_SUCCESS instead of SPELL_AURA_APPLIED
+                if conf.trackSpellCast and subevent == "SPELL_CAST_SUCCESS" and sourceGuid == QA.playerGuid
+                        and QA.db.profile.watchBars
+                        and (not conf.option or QA.db.profile[conf.option])
+                then
+                    local duration = QA:GetDuration(conf, spellId)
+                    QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, nil, nil)
+                end
+                -- Non-AoE abilities: track by SPELL_AURA_APPLIED
+                if not conf.trackSpellCast and (subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REFRESH")
                         and sourceGuid == QA.playerGuid
                         --and destGUID == UnitGUID("target")
                         and QA.db.profile.watchBars
@@ -338,10 +347,8 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                         --debug(1, "CLEU ".._c.bold.."AddTimer|r spell:", conf.name, "sourceGUID", sourceGuid, "destGUID", destGuid)
                         --            QA:AddTimer(window,  conf,  id,     duration,       expTime,                 showAtTime, text, keyExtra)
                         local timer = QA:AddTimer(conf.list or WINDOW.OFFENSIVE, conf, spellId, duration, GetTime()+duration, nil, text, keyExtra)
-                        if not conf.aoe then
-                            if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
-                            enemyDebuffs[extra[1]][destGuid] = timer
-                        end
+                        if not enemyDebuffs[extra[1]] then enemyDebuffs[extra[1]] = {} end
+                        enemyDebuffs[extra[1]][destGuid] = timer
                     end
                 end
 

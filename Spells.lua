@@ -611,6 +611,7 @@ spells.warrior = {
         list = WINDOW.WATCH,
         category = "bars",
         raidBars = true,
+        readyThings = true,
         cooldown = true,
         duration = 30,
         color = {0.902, 0.357, 0.055},

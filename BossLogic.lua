@@ -289,5 +289,6 @@ function Thaddius:CheckHP()
             self.lastAnnouncedHP = feugenHP
             SendChatMessage(string.format(" >> %s %d%%  << ", feugenName, feugenHP), "RAID")
         end
+
     end
 end

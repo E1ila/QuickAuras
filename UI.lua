@@ -491,7 +491,11 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
         end or nil
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
         local frame = attr.Create(QA, id, attr.parent, window .."-".. key, showTooltip, showCount, onRightClick, onClick)
-        frame:SetSize(attr.height, attr.height)
+        local iconSize = attr.height
+        if conf.iconScale then
+            iconSize = iconSize * conf.iconScale
+        end
+        frame:SetSize(iconSize, iconSize)
         button = {
             name = conf.name,
             conf = conf,
@@ -501,6 +505,7 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
             list = attr.list,
             parent = attr.parent,
             count = count,
+            iconSize = iconSize,
             glowInCombat = attr.glowInCombat,
             window = window,
         }
@@ -580,7 +585,8 @@ function QA:ArrangeIcons(window)
             frame.iconFrame:SetSize(barHeight-padding*2, barHeight-padding*2)
             frame.iconFrame.icon:SetSize(barHeight-padding*2, barHeight-padding*2)
         else
-            frame:SetSize(attr.height, attr.height)
+            local size = obj.iconSize or attr.height
+            frame:SetSize(size, size)
             if attr.align == "right" then --      ------->
                 if lastFrame then
                     frame:SetPoint("TOPLEFT", lastFrame, "TOPRIGHT", 2, 0)

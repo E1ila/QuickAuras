@@ -49,6 +49,7 @@ QA.defaultOptions = {
         swingTimerRanged = true,
         raidBars = true,
         notifyExplosivesReady = true,
+        announceThaddiusAdds = false,
         missingBuffsMode = "raid",
         rogueTeaTime = "always",
         rogueTeaTimeEnabled = QA.isRogue,

@@ -301,6 +301,14 @@ function QA:HandleSlashCommand(input)
             else
                 out("4HM healer mode disabled.")
             end
+        elseif cmd == "thaddius" then
+            local startAt = arg1 and tonumber(arg1) or 0
+            QA.db.profile.announceThaddiusAdds = not QA.db.profile.announceThaddiusAdds
+            if QA.db.profile.announceThaddiusAdds then
+                out("Thaddius adds announce is ".._c.enabled.."enabled")
+            else
+                out("Thaddius adds announce is ".._c.disabled.."disabled")
+            end
         elseif cmd == "spore" then
             local startAt = arg1 and tonumber(arg1) or 0
             QA.db.profile.encounterLoathebStartAt = startAt

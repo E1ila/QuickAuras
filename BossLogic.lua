@@ -235,7 +235,9 @@ end
 
 function Thaddius:EncounterStart()
     self.lastAnnouncedHP = nil
-    self:ScheduleHPCheck()
+    if QA.db.profile.announceThaddiusAdds then
+        self:ScheduleHPCheck()
+    end
 end
 
 function Thaddius:EncounterEnd()
@@ -243,6 +245,22 @@ function Thaddius:EncounterEnd()
         self.timer:Cancel()
         self.timer = nil
     end
+end
+
+function Thaddius:ShouldAnnounceHP(hp, lastAnnounced)
+    if not hp or hp <= 0 then return false end
+
+    local thresholds = {80, 70, 60, 50, 40, 30, 25, 20, 15, 10, 5}
+
+    for _, threshold in ipairs(thresholds) do
+        if (hp == threshold or hp == threshold - 1) then
+            if not lastAnnounced or math.abs(hp - lastAnnounced) >= 5 then
+                return true, threshold
+            end
+        end
+    end
+
+    return false
 end
 
 function Thaddius:ScheduleHPCheck()
@@ -275,20 +293,23 @@ function Thaddius:CheckHP()
 
     if stalaggHP and feugenHP and stalaggHP > 0 and feugenHP > 0 then
         local minHP = math.min(stalaggHP, feugenHP)
-        if (minHP % 10 == 0 or (minHP <= 15 and minHP % 5 == 0)) and minHP ~= self.lastAnnouncedHP then
-            self.lastAnnouncedHP = minHP
+        local shouldAnnounce, threshold = self:ShouldAnnounceHP(minHP, self.lastAnnouncedHP)
+        if shouldAnnounce then
+            self.lastAnnouncedHP = threshold
             local st = string.format(" >> %s %d%%  /  %s %d%%  << ", stalaggName, stalaggHP, feugenName, feugenHP)
             SendChatMessage(st, "RAID")
         end
     elseif stalaggHP and stalaggHP > 0 then
-        if (stalaggHP % 10 == 0 or (stalaggHP <= 15 and stalaggHP % 5 == 0)) and stalaggHP ~= self.lastAnnouncedHP then
-            self.lastAnnouncedHP = stalaggHP
+        local shouldAnnounce, threshold = self:ShouldAnnounceHP(stalaggHP, self.lastAnnouncedHP)
+        if shouldAnnounce then
+            self.lastAnnouncedHP = threshold
             local st = string.format(" >> %s %d%%  << ", stalaggName, stalaggHP)
             SendChatMessage(st, "RAID")
         end
     elseif feugenHP and feugenHP > 0 then
-        if (feugenHP % 10 == 0 or (feugenHP <= 15 and feugenHP % 5 == 0)) and feugenHP ~= self.lastAnnouncedHP then
-            self.lastAnnouncedHP = feugenHP
+        local shouldAnnounce, threshold = self:ShouldAnnounceHP(feugenHP, self.lastAnnouncedHP)
+        if shouldAnnounce then
+            self.lastAnnouncedHP = threshold
             local st = string.format(" >> %s %d%%  << ", feugenName, feugenHP)
             SendChatMessage(st, "RAID")
         end

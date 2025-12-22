@@ -72,6 +72,7 @@ QA.defaultOptions = {
         barHeight = 25,
         barWidth = 128,
         barGap = 2,
+        swingTimerWidth = 120,
         cooldownIconSize = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
@@ -545,6 +546,20 @@ QA.options = {
                         QA:TestBars()
                     end,
                     order = 111,
+                },
+                swingTimerWidth = {
+                    type = "range",
+                    name = "Swing Timer Width",
+                    desc = "Set the width of the swing timer bar",
+                    min = 50,
+                    max = 300,
+                    step = 1,
+                    get = function(info) return QA.db.profile.swingTimerWidth end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimerWidth = value
+                        QuickAuras_SwingTimer:SetWidth(value)
+                    end,
+                    order = 112,
                 },
                 spacer198 = {
                     type = "header",

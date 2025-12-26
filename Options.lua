@@ -63,6 +63,7 @@ QA.defaultOptions = {
         warriorBloodthirst = QA.isWarrior,
         warriorBloodthirstFrame = WINDOW.QUEUE,
         warriorStancePortrait = QA.isWarrior,
+        warriorExecuteIconScale = 2,
         targetMissingDebuffFrame = WINDOW.WARNING,
         rogueRiposte = QA.isRogue,
         rogueRiposteFrame = WINDOW.QUEUE,
@@ -892,19 +893,19 @@ QA.options = {
                     hidden = not QA.isWarrior,
                     order = 406,
                 },
-                warriorBloodthirstFrame = {
-                    type = "select",
-                    name = "Bloodthirst Frame",
-                    desc = "Choose where to show the Bloodthirst indication.",
-                    values = frameSelection,
-                    get = function(info)
-                        return QA.db.profile.warriorBloodthirstFrame or WINDOW.QUEUE
-                    end,
+                warriorExecuteIconScale = {
+                    type = "range",
+                    name = "Execute! Icon Size",
+                    desc = "Set the size of the Execute icon",
+                    min = 0.5,
+                    max = 4,
+                    step = 0.1,
+                    get = function(info) return QA.db.profile.warriorExecuteIconScale end,
                     set = function(info, value)
-                        QA.db.profile.warriorBloodthirstFrame = value
+                        QA.db.profile.warriorExecuteIconScale = value
                     end,
                     hidden = not QA.isWarrior,
-                    order = 409,
+                    order = 410,
                 },
                 warriorStancePortrait = {
                     type = "toggle",
@@ -922,7 +923,21 @@ QA.options = {
                         end
                     end,
                     hidden = not QA.isWarrior,
-                    order = 410,
+                    order = 409,
+                },
+                warriorBloodthirstFrame = {
+                    type = "select",
+                    name = "Bloodthirst Frame",
+                    desc = "Choose where to show the Bloodthirst indication.",
+                    values = frameSelection,
+                    get = function(info)
+                        return QA.db.profile.warriorBloodthirstFrame or WINDOW.QUEUE
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.warriorBloodthirstFrame = value
+                    end,
+                    hidden = not QA.isWarrior,
+                    order = 411,
                 },
                 warlockUtilsHeader = {
                     type = "header",

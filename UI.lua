@@ -492,7 +492,9 @@ function QA:AddIcon(window, idType, key, conf, count, showTooltip, onClick, id)
         if showTooltip == nil then showTooltip = conf.tooltip == nil or conf.tooltip end
         local frame = attr.Create(QA, id, attr.parent, window .."-".. key, showTooltip, showCount, onRightClick, onClick)
         local iconSize = attr.height
-        if conf.iconScale then
+        if conf.iconScaleOption and QA.db.profile[conf.iconScaleOption] then
+            iconSize = iconSize * QA.db.profile[conf.iconScaleOption]
+        elseif conf.iconScale then
             iconSize = iconSize * conf.iconScale
         end
         frame:SetSize(iconSize, iconSize)

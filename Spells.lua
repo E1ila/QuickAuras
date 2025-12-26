@@ -467,7 +467,7 @@ spells.warrior = {
         cooldown = true,
         proc = "unitHealth",
         procFrameOption = "warriorExecute",
-        iconScale = 2,
+        iconScaleOption = "warriorExecuteIconScale",
         unitHealth = "target",
         visible = QA.isWarrior,
     },

@@ -1412,6 +1412,7 @@ function QA:AddAbilitiesOptions()
     AddSpells(QA.spells.hunter, 1000, not QA.isHunter)
     AddSpells(QA.spells.warrior, 1000, not QA.isWarrior)
     AddSpells(QA.spells.shaman, 1000, not QA.isShaman)
+    AddSpells(QA.spells.mage, 1000, not QA.isMage)
     AddSpells(QA.spells.warlock, 1000, not QA.isWarlock)
 end
 

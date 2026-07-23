@@ -23,6 +23,40 @@ end
 
 -- General -----------------------------------------------------------
 
+-- Classic Era has no ActionButton_ShowOverlayGlow; use a lightweight ADD border fallback.
+function QA:ShowOverlayGlow(frame)
+    if not frame then return end
+    if ActionButton_ShowOverlayGlow then
+        ActionButton_ShowOverlayGlow(frame)
+        return
+    end
+    if frame._qaGlow then
+        frame._qaGlow:Show()
+        return
+    end
+    local glow = CreateFrame("Frame", nil, frame)
+    glow:SetAllPoints(frame)
+    glow:SetFrameLevel(frame:GetFrameLevel() + 5)
+    local tex = glow:CreateTexture(nil, "OVERLAY")
+    tex:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+    tex:SetBlendMode("ADD")
+    tex:SetPoint("TOPLEFT", glow, "TOPLEFT", -8, 8)
+    tex:SetPoint("BOTTOMRIGHT", glow, "BOTTOMRIGHT", 8, -8)
+    tex:SetVertexColor(1.0, 0.9, 0.3, 1)
+    frame._qaGlow = glow
+end
+
+function QA:HideOverlayGlow(frame)
+    if not frame then return end
+    if ActionButton_HideOverlayGlow then
+        ActionButton_HideOverlayGlow(frame)
+        return
+    end
+    if frame._qaGlow then
+        frame._qaGlow:Hide()
+    end
+end
+
 function QA:InitUI()
     debug("Initializing UI")
     _c = QA.colors
@@ -84,10 +118,10 @@ function QA:SetWeaponEnchantIcon(slot, itemId)
         frame:SetSize(QA.db.profile.weaponEnchantSize, QA.db.profile.weaponEnchantSize)
         frame:Show()
         if QA.inCombat and not frame.glowing then
-            ActionButton_ShowOverlayGlow(frame)
+            QA:ShowOverlayGlow(frame)
             frame.glowing = true
         elseif not QA.inCombat and frame.glowing then
-            ActionButton_HideOverlayGlow(frame)
+            QA:HideOverlayGlow(frame)
             frame.glowing = false
         end
     else
@@ -648,10 +682,10 @@ end
 function QA:CheckCombatGlow(obj)
     if obj.glowInCombat then
         if QA.inCombat and not obj.frame.glow then
-            ActionButton_ShowOverlayGlow(obj.frame)
+            QA:ShowOverlayGlow(obj.frame)
             obj.frame.glow = true
         elseif not QA.inCombat and obj.frame.glow then
-            ActionButton_HideOverlayGlow(obj.frame)
+            QA:HideOverlayGlow(obj.frame)
             obj.frame.glow = false
         end
     end

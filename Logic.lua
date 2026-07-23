@@ -394,7 +394,7 @@ function QA:CheckTransmuteCooldown()
                 local button = QA:AddIcon(WINDOW.REMINDER, "spell", id, spell, nil, nil, "cast "..tostring(id))
                 if button then
                     C_Timer.After(0.1, function()
-                        ActionButton_ShowOverlayGlow(button.frame)
+                        QA:ShowOverlayGlow(button.frame)
                     end)
                 end
             elseif timeLeft <= QA.db.profile.transmutePreReadyTime then

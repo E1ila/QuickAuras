@@ -1,8 +1,8 @@
-﻿## Interface: 11507
+﻿## Interface: 11509
 ## Title: QuickAuras
 ## Notes: Lightweight addon that implements many common WAs, with a fraction of the CPU and FPS impact.
 ## Author: Kof
-## Version: v0.14.3
+## Version: v1.0.0
 ## SavedVariables: QuickAurasDBG
 ## SavedVariablesPerCharacter: QuickAurasDB
 

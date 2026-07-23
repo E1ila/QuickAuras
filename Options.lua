@@ -1413,6 +1413,7 @@ function QA:AddAbilitiesOptions()
     AddSpells(QA.spells.warrior, 1000, not QA.isWarrior)
     AddSpells(QA.spells.shaman, 1000, not QA.isShaman)
     AddSpells(QA.spells.mage, 1000, not QA.isMage)
+    AddSpells(QA.spells.priest, 1000, not QA.isPriest)
     AddSpells(QA.spells.warlock, 1000, not QA.isWarlock)
 end
 

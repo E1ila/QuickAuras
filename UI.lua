@@ -23,31 +23,48 @@ end
 
 -- General -----------------------------------------------------------
 
--- Classic Era has no ActionButton_ShowOverlayGlow; use a lightweight ADD border fallback.
+-- Classic Era has no ActionButton_ShowOverlayGlow.
+-- Prefer LibCustomGlow (e.g. from WeakAuras); otherwise a sized ADD border.
 function QA:ShowOverlayGlow(frame)
     if not frame then return end
+    local LCG = LibStub("LibCustomGlow-1.0", true)
+    if LCG then
+        LCG.ButtonGlow_Start(frame)
+        return
+    end
     if ActionButton_ShowOverlayGlow then
         ActionButton_ShowOverlayGlow(frame)
         return
     end
+    local w, h = frame:GetSize()
+    -- Texture has large transparent padding; expand so the visible ring matches the icon.
+    local ox, oy = w * 0.35, h * 0.35
     if frame._qaGlow then
+        frame._qaGlow:ClearAllPoints()
+        frame._qaGlow:SetPoint("TOPLEFT", frame, "TOPLEFT", -ox, oy)
+        frame._qaGlow:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", ox, -oy)
         frame._qaGlow:Show()
         return
     end
     local glow = CreateFrame("Frame", nil, frame)
-    glow:SetAllPoints(frame)
+    glow:SetPoint("TOPLEFT", frame, "TOPLEFT", -ox, oy)
+    glow:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", ox, -oy)
     glow:SetFrameLevel(frame:GetFrameLevel() + 5)
     local tex = glow:CreateTexture(nil, "OVERLAY")
     tex:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
     tex:SetBlendMode("ADD")
-    tex:SetPoint("TOPLEFT", glow, "TOPLEFT", -8, 8)
-    tex:SetPoint("BOTTOMRIGHT", glow, "BOTTOMRIGHT", 8, -8)
+    tex:SetAllPoints()
     tex:SetVertexColor(1.0, 0.9, 0.3, 1)
     frame._qaGlow = glow
 end
 
 function QA:HideOverlayGlow(frame)
     if not frame then return end
+    local LCG = LibStub("LibCustomGlow-1.0", true)
+    if LCG then
+        LCG.ButtonGlow_Stop(frame)
+        return
+    end
     if ActionButton_HideOverlayGlow then
         ActionButton_HideOverlayGlow(frame)
         return

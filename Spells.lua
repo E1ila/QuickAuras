@@ -954,6 +954,7 @@ spells.mage = {
         name = "Ice Armor",
         icon = "Interface\\Icons\\Spell_Frost_FrostArmor02",
         aura = true,
+        dontWatch = true,
         visible = QA.isMage,
     },
     mageArmor = {
@@ -961,6 +962,7 @@ spells.mage = {
         name = "Mage Armor",
         icon = "Interface\\Icons\\Spell_MageArmor",
         aura = true,
+        dontWatch = true,
         visible = QA.isMage,
     },
     frostArmor = {
@@ -968,6 +970,7 @@ spells.mage = {
         name = "Frost Armor",
         icon = "Interface\\Icons\\Spell_Frost_FrostArmor",
         aura = true,
+        dontWatch = true,
         visible = QA.isMage,
     },
     slowFall = {

@@ -21,22 +21,24 @@ local readyThingsInitialized = false
 function QA:AddReadyThing(conf, id)
     if not QA.db.profile.readyThingsEnabled then return end
 
-    -- Check if spell/item is known/available
+    -- Check if spell is actually known
     if conf.spellId then
         local known = false
         if type(conf.spellId) == "table" then
             for _, spellId in ipairs(conf.spellId) do
-                local spellName = GetSpellInfo(spellId)
-                if spellName and (IsSpellKnown(spellId) or IsPlayerSpell(spellId) or GetSpellCooldown(spellId)) then
+                if IsSpellKnown(spellId) or IsPlayerSpell(spellId) then
                     known = true
                     break
                 end
             end
         else
-            local spellName = GetSpellInfo(conf.spellId)
-            known = spellName and (IsSpellKnown(conf.spellId) or IsPlayerSpell(conf.spellId) or GetSpellCooldown(conf.spellId))
+            known = IsSpellKnown(conf.spellId) or IsPlayerSpell(conf.spellId)
         end
         if not known then return end
+
+        -- Don't show if currently on cooldown (ignore GCD: duration <= 2)
+        local start, duration = GetSpellCooldown(id)
+        if start and start > 0 and duration and duration > 2 then return end
     end
 
     -- Check if this is a state change (was not ready, now is ready)

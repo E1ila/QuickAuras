@@ -11,7 +11,6 @@ local GetQuestIDForLogIndex = C_QuestLog.GetQuestIDForLogIndex or function(i)
     return select(8, GetQuestLogTitle(i))
 end
 local SelectQuestLogEntry = SelectQuestLogEntry or function() end
-local IsQuestComplete = C_QuestLog.IsComplete or IsQuestComplete
 local QuestReadyForTurnIn = C_QuestLog.ReadyForTurnIn or function(questID) return false end
 
 aura_env.UpdateQuestXP = function()
@@ -19,7 +18,8 @@ aura_env.UpdateQuestXP = function()
     local questXP = 0
     local completeXP = 0
     local incompleteXP = 0
-    local questID, rewardXP
+    local questID, rewardXP, isHeader, isComplete
+    local _
     local selQ = 0
     local GetQuestLogRewardXP = GetQuestLogRewardXP or function(questID)
         return 0
@@ -31,15 +31,17 @@ aura_env.UpdateQuestXP = function()
 
     for i = 1, numQ do
         SelectQuestLogEntry(i)
-        questID = GetQuestIDForLogIndex(i)
+        -- isComplete: 1 = ready to turn in, -1 = failed, nil = incomplete
+        _, _, _, isHeader, _, isComplete, _, questID = GetQuestLogTitle(i)
+        questID = questID or GetQuestIDForLogIndex(i) or 0
 
-        if questID > 0 then
+        if not isHeader and questID > 0 then
             rewardXP = GetQuestLogRewardXP(questID) or 0
 
             if rewardXP > 0 then
                 questXP = questXP + rewardXP
 
-                if IsQuestComplete(questID) or QuestReadyForTurnIn(questID) then
+                if isComplete == 1 or QuestReadyForTurnIn(questID) then
                     completeXP = completeXP + rewardXP
                 else
                     incompleteXP = incompleteXP + rewardXP

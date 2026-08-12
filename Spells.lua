@@ -1123,6 +1123,7 @@ spells.priest = {
         name = "Touch of Weakness",
         icon = "Interface\\Icons\\Spell_Shadow_DeadofNight",
         aura = true,
+        dontWatch = true,
         visible = QA.isPriest and QA.isUndead,
     },
     eluneSGrace = {

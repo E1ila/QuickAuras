@@ -113,6 +113,8 @@ function QA:PLAYER_LEVEL_UP()
     QA.playerLevel = UnitLevel("player")
     if QA.playerLevel == 60 then
         QuickAuras_XP:Hide()
+    else
+        QA:UpdateXpFrame()
     end
 end
 
@@ -409,15 +411,15 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
-    -- announce interrupts
+    -- announce interrupts (any dest: target, focus, mouseover, add)
     if      subevent == "SPELL_INTERRUPT" and
             sourceGuid == QA.playerGuid and
-            QA.InstanceName and QA.db.profile.announceInterrupts and
-            destGuid == UnitGUID("target")
+            QA.InstanceName and QA.db.profile.announceInterrupts
     then
-        if extra[5] then
-            SendChatMessage(">> Interrupted "..tostring(extra[5]).." <<", "SAY")
-        else
+        local interrupted = extra[5]
+        if interrupted and interrupted ~= "" then
+            SendChatMessage(">> Interrupted "..tostring(interrupted).." <<", "SAY")
+        elseif destName and destName ~= "" then
             SendChatMessage(">> Interrupted "..destName.." <<", "SAY")
         end
     end

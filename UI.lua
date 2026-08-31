@@ -220,9 +220,10 @@ function QA:ConfigureXpFrame()
 end
 
 function QA:ResetXpTracker()
-    local currentXP = UnitXP("player")
     QA.xpTracker = {
-        sessionStartXP = currentXP,
+        lastXP = UnitXP("player"),
+        lastMaxXP = UnitXPMax("player"),
+        sessionXP = 0,
         sessionStartTime = GetTime(),
         hasGainedXP = false,
     }
@@ -250,28 +251,42 @@ function QA:UpdateXpFrame()
         QuickAuras_XP_Bar_Completed:SetValue(p_current+p_completed)
         QuickAuras_XP_Bar_Rested:SetValue(p_current+p_completed+p_rested)
 
-        -- Calculate time until level based on session XP gains
-        local xpNeeded = maxXP - currentXP
+        -- Calculate time until level based on session XP gains.
+        -- Completed quests are already earned, so only count XP still to be ground out.
+        local xpNeeded = math.max(maxXP - currentXP - QA.xp.completeXP, 0)
         local timeToLevel = "??"
 
         -- Track XP gains from session start for rate calculation
         if not QA.xpTracker then
             QA.xpTracker = {
-                sessionStartXP = currentXP,
+                lastXP = currentXP,
+                lastMaxXP = maxXP,
+                sessionXP = 0,
                 sessionStartTime = GetTime(),
+                hasGainedXP = false,
             }
         end
 
-        local sessionTime = GetTime() - QA.xpTracker.sessionStartTime
-        local sessionXP = currentXP - QA.xpTracker.sessionStartXP
-
-        -- Reset session start time when XP gained changes from 0 to something
-        if sessionXP > 0 and not QA.xpTracker.hasGainedXP then
-            QA.xpTracker.sessionStartTime = GetTime()
-            QA.xpTracker.hasGainedXP = true
-            sessionTime = 0
-            debug(1, "UpdateXpFrame", "First XP gained, resetting timer")
+        local tracker = QA.xpTracker
+        local gained = currentXP - tracker.lastXP
+        if gained < 0 then
+            -- Leveled up: XP that was still missing on the old level plus what carried over
+            gained = (tracker.lastMaxXP - tracker.lastXP) + currentXP
         end
+        tracker.lastXP = currentXP
+        tracker.lastMaxXP = maxXP
+
+        if gained > 0 and not tracker.hasGainedXP then
+            -- Start the clock at the first gain so idle time before it doesn't skew the rate
+            tracker.hasGainedXP = true
+            tracker.sessionStartTime = GetTime()
+            debug(1, "UpdateXpFrame", "First XP gained, resetting timer")
+        else
+            tracker.sessionXP = tracker.sessionXP + gained
+        end
+
+        local sessionTime = GetTime() - tracker.sessionStartTime
+        local sessionXP = tracker.sessionXP
 
         -- Calculate XP rate based on session progress (minimum 60 seconds of data)
         if sessionTime >= 60 and sessionXP > 0 then
@@ -280,9 +295,9 @@ function QA:UpdateXpFrame()
             local secondsToLevel = xpNeeded / xpPerSec
             timeToLevel = QA.xp.FormatTime(secondsToLevel)
             debug(1, "UpdateXpFrame", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP, "xpPerSec", string.format("%.2f", xpPerSec), "xpPerHour", math.floor(xpPerHour), "secondsToLevel", math.floor(secondsToLevel), "timeToLevel", timeToLevel)
-        elseif sessionTime > 0 and sessionTime < 60 and sessionXP > 0 then
+        elseif tracker.hasGainedXP then
             timeToLevel = "..."
-            debug(1, "UpdateXpFrame", "waiting for 60s", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP)
+            debug(1, "UpdateXpFrame", "waiting for data", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP)
         else
             debug(1, "UpdateXpFrame", "no XP gained", "sessionTime", math.floor(sessionTime), "sessionXP", sessionXP)
         end

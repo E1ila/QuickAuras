@@ -1509,6 +1509,8 @@ function QA:SetRangeDefaultSpellId()
         QA.defaultOptions.profile.rangeSpellId = 8056 -- frost shock
     elseif QA.isMage then
         QA.defaultOptions.profile.rangeSpellId = 116 -- frostbolt
+    elseif QA.isPriest then
+        QA.defaultOptions.profile.rangeSpellId = 8092 -- mind blast
     elseif QA.isWarlock then
         QA.defaultOptions.profile.rangeSpellId = 686 -- shadow bolt
     elseif QA.isHunter then

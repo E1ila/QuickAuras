@@ -319,7 +319,9 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.targetInRangeIndication = value
                         QuickAuras_RangeIndicator:Hide()
+                        QuickAuras_RangeIndicator2:Hide()
                         QA.targetInRange = false
+                        QA.targetInRange2 = false
                         QA:CheckTargetRange()
                     end,
                     order = 17,
@@ -530,7 +532,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.rangeIconSize end,
                     set = function(info, value)
                         QA.db.profile.rangeIconSize = value
-                        --QuickAuras:TestIconAlerts()
+                        QA:UpdateRangeIndication()
                     end,
                     order = 110,
                 },
@@ -1511,6 +1513,7 @@ function QA:SetRangeDefaultSpellId()
         QA.defaultOptions.profile.rangeSpellId = 116 -- frostbolt
     elseif QA.isPriest then
         QA.defaultOptions.profile.rangeSpellId = 8092 -- mind blast
+        QA.defaultOptions.profile.rangeSpellId2 = 15407 -- mind flay
     elseif QA.isWarlock then
         QA.defaultOptions.profile.rangeSpellId = 686 -- shadow bolt
     elseif QA.isHunter then

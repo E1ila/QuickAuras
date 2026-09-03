@@ -11,6 +11,7 @@ local _c = QA.colors
 local _aurasCombatState = false
 
 QA.targetInRange = false
+QA.targetInRange2 = false
 
 local targetAggro = {}
 
@@ -227,16 +228,32 @@ function QA:CheckIfWarriorInParty()
 end
 
 function QA:CheckTargetRange()
-    if not QA.db.profile.targetInRangeIndication or not QA.db.profile.rangeSpellId then return end
-    local spellName = GetSpellInfo(QA.db.profile.rangeSpellId)
-    local inRange = IsSpellInRange(spellName, "target") == 1
-    if inRange ~= QA.targetInRange then
-        QA.targetInRange = inRange
-        debug(2, "CheckTargetRange", "spellName", spellName, "inRange", inRange)
-        if inRange then
-            QuickAuras_RangeIndicator:Show()
-        else
-            QuickAuras_RangeIndicator:Hide()
+    if not QA.db.profile.targetInRangeIndication then return end
+    if QA.db.profile.rangeSpellId then
+        local spellName = GetSpellInfo(QA.db.profile.rangeSpellId)
+        local inRange = IsSpellInRange(spellName, "target") == 1
+        if inRange ~= QA.targetInRange then
+            QA.targetInRange = inRange
+            debug(2, "CheckTargetRange", "spellName", spellName, "inRange", inRange)
+            if inRange then
+                QuickAuras_RangeIndicator:Show()
+            else
+                QuickAuras_RangeIndicator:Hide()
+            end
+        end
+    end
+    if QA.db.profile.rangeSpellId2 then
+        local spellName = GetSpellInfo(QA.db.profile.rangeSpellId2)
+        -- nil when the spell is unknown, there is no target, or it cannot be used on the unit
+        local inRange = spellName and IsSpellInRange(spellName, "target") == 1
+        if inRange ~= QA.targetInRange2 then
+            QA.targetInRange2 = inRange
+            debug(2, "CheckTargetRange", "spellName", spellName, "inRange", inRange)
+            if inRange then
+                QuickAuras_RangeIndicator2:Show()
+            else
+                QuickAuras_RangeIndicator2:Hide()
+            end
         end
     end
 end

@@ -152,14 +152,23 @@ function QA:InitRangeIndication(frame)
     QuickAuras_RangeIndicator.icon = QuickAuras_RangeIndicator:CreateTexture(nil, "BACKGROUND")
     QuickAuras_RangeIndicator.icon:SetAllPoints(QuickAuras_RangeIndicator)
     QuickAuras_RangeIndicator:Hide()
+    QuickAuras_RangeIndicator2.icon = QuickAuras_RangeIndicator2:CreateTexture(nil, "BACKGROUND")
+    QuickAuras_RangeIndicator2.icon:SetAllPoints(QuickAuras_RangeIndicator2)
+    QuickAuras_RangeIndicator2:Hide()
     QA:UpdateRangeIndication()
 end
 
 function QA:UpdateRangeIndication()
-    QuickAuras_RangeIndicator:SetSize(QA.db.profile.rangeIconSize, QA.db.profile.rangeIconSize)
+    local size = QA.db.profile.rangeIconSize
+    QuickAuras_RangeIndicator:SetSize(size, size)
     if QA.db.profile.rangeSpellId then
         local texture = GetSpellTexture(QA.db.profile.rangeSpellId)
         QuickAuras_RangeIndicator.icon:SetTexture(texture)
+    end
+    QuickAuras_RangeIndicator2:SetSize(size, size)
+    if QA.db.profile.rangeSpellId2 then
+        local texture = GetSpellTexture(QA.db.profile.rangeSpellId2)
+        QuickAuras_RangeIndicator2.icon:SetTexture(texture)
     end
 end
 

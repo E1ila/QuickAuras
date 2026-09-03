@@ -399,6 +399,15 @@
         </Layers>
     </Frame>
 
+    <Frame name="QuickAuras_RangeIndicator2" parent="UIParent" inherits="QuickAuras_Widget" hidden="true">
+        <Size>
+            <AbsDimension x="30" y="30" />
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="QuickAuras_RangeIndicator" x="2" y="0" />
+        </Anchors>
+    </Frame>
+
     <Frame name="QuickAuras_Parry" parent="UIParent" inherits="QuickAuras_Widget">
         <Size>
             <AbsDimension x="128" y="128" /> <!-- Frame size -->

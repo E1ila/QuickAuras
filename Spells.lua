@@ -1389,11 +1389,9 @@ spells.racials = {
         visible = QA.isOrc,
     },
     berserking = { -- ability
-        spellId = { 20554 },
+        spellId = { 20554, 26296, 26297 }, -- mana, rage, energy
         name = "Berserking",
         icon = "Interface\\Icons\\racial_troll_berserk",
-        list = WINDOW.WATCH,
-        category = "bars",
         cooldown = true,
         visible = QA.isTroll,
     },

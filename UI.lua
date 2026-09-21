@@ -260,9 +260,9 @@ function QA:UpdateXpFrame()
         QuickAuras_XP_Bar_Completed:SetValue(p_current+p_completed)
         QuickAuras_XP_Bar_Rested:SetValue(p_current+p_completed+p_rested)
 
-        -- Calculate time until level based on session XP gains.
-        -- Completed quests are already earned, so only count XP still to be ground out.
-        local xpNeeded = math.max(maxXP - currentXP - QA.xp.completeXP, 0)
+        -- Time to level is based on grinding rate only. Completed quest XP is shown
+        -- on the bar but is not earned until turn-in, so it must not shrink this ETA.
+        local xpNeeded = math.max(maxXP - currentXP, 0)
         local timeToLevel = "??"
 
         -- Track XP gains from session start for rate calculation

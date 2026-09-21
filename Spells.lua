@@ -858,7 +858,7 @@ spells.mage = {
         visible = QA.isMage,
     },
     coldSnap = {
-        spellId = { 11958 },
+        spellId = { 12472 },
         name = "Cold Snap",
         icon = "Interface\\Icons\\Spell_Frost_WizardMark",
         cooldown = true,
@@ -940,6 +940,7 @@ spells.mage = {
         name = "Ice Barrier",
         icon = "Interface\\Icons\\Spell_Ice_Lament",
         aura = true,
+        dontWatch = true,
         visible = QA.isMage,
     },
     manaShield = {
@@ -947,6 +948,7 @@ spells.mage = {
         name = "Mana Shield",
         icon = "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility",
         aura = true,
+        dontWatch = true,
         visible = QA.isMage,
     },
     iceArmor = {

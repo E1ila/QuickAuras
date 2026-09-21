@@ -74,9 +74,18 @@ function QA:HideOverlayGlow(frame)
     end
 end
 
+function QA:HideLegacyPartyFrames()
+    if not PartyFrame then return end
+    PartyFrame:UnregisterAllEvents()
+    PartyFrame:Hide()
+end
+
 function QA:InitUI()
     debug("Initializing UI")
     _c = QA.colors
+    if QA.db.profile.hideLegacyPartyFrames then
+        QA:HideLegacyPartyFrames()
+    end
     QA:ParentFramesNormalState()
     QA:InitWeaponEnchants()
     QA:InitSwingTimers()

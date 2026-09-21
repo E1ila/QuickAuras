@@ -94,6 +94,7 @@ QA.defaultOptions = {
         outOfRangeSound = true,
         offensiveBars = true,
         showTimeOnBars = true,
+        hideLegacyPartyFrames = false,
         battleShoutMissing = QA.isWarrior or QA.isRogue,
         frostResistanceTotemMissing = true,
         lowConsumesMinLevel = 58,
@@ -576,6 +577,19 @@ QA.options = {
                     get = function(info) return QA.db.profile.showTimeOnBars end,
                     set = function(info, value) QA.db.profile.showTimeOnBars = value end,
                     order = 200,
+                },
+                hideLegacyPartyFrames = {
+                    type = "toggle",
+                    name = "Remove Legacy Party Frames",
+                    desc = "Hides the default party frames on every addon load. Reload the UI to restore them after turning this off.",
+                    get = function(info) return QA.db.profile.hideLegacyPartyFrames end,
+                    set = function(info, value)
+                        QA.db.profile.hideLegacyPartyFrames = value
+                        if value then
+                            QA:HideLegacyPartyFrames()
+                        end
+                    end,
+                    order = 201,
                 },
             },
         },

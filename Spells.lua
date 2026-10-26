@@ -1201,13 +1201,18 @@ spells.shaman = {
     --    icon = "Interface\\Icons\\Spell_nature_invisibilitytotem",
     --    visible = QuickAuras.isShaman,
     --},
-    frostShock = {
-        spellId = { 8056, 8058, 10472, 10473 },
-        name = "Frost Shock",
-        icon = "Interface\\Icons\\Spell_Frost_FrostShock",
+    shock = {
+        -- Earth / Frost / Flame Shock share one cooldown
+        spellId = {
+            8042, 8044, 8045, 8046, 10412, 10413, 10414, -- Earth Shock
+            8056, 8058, 10472, 10473, -- Frost Shock
+            8050, 8052, 8053, 10447, 10448, 29228, -- Flame Shock
+        },
+        name = "Shock",
+        icon = "Interface\\Icons\\Spell_Nature_EarthShock",
         color = {0.5, 0.5, 0.5},
         visible = QA.isShaman,
-        cooldown = 6
+        cooldown = 6,
     },
     frostResistanceTotem = {
         spellId = { 10479, 10477 },

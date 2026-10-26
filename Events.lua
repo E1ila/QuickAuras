@@ -293,6 +293,13 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         end
     end
 
+    if subevent == "SPELL_CAST_SUCCESS" and sourceGuid == QA.playerGuid and type(extra[1]) == "number" then
+        local cooldownConf = QA.trackedSpellCooldowns[extra[1]]
+        if cooldownConf then
+            QA:OnTrackedSpellCast(cooldownConf, extra[1])
+        end
+    end
+
     -- tracked spells
     if type(extra[1]) == "number" and extra[1] > 0 and TRACKED_SPELL_EVENTS[subevent] then
         --debug("CombatLog", subevent, extra[2], extra[1])

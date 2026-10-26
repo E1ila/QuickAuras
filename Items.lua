@@ -50,7 +50,7 @@ QA.consumes = {
         visible = QA.isShaman,
     },
     {
-        name = "Arcane Elixir",
+        name = "Greater Arcane Elixir",
         spellIds = { 17539, 11390 },
         itemIds = { 13454, 9155 },
         itemId = 13454,
@@ -82,6 +82,13 @@ QA.consumes = {
         name = "Elixir of Fortitude",
         spellIds = { 3593 },
         itemId = 3825,
+        minCount = 5,
+    },
+    {
+        name = "Elixir of Shadow Power",
+        spellIds = { 11474 },
+        itemId = 9264,
+        default = QA.isWarlock or QA.isPriest,
         minCount = 5,
     },
     --{

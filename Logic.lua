@@ -564,6 +564,16 @@ function QA:CheckGear(eventType, ...)
     end
 end
 
+local function fallbackCooldownDuration(spellId, conf)
+    if type(conf.cooldown) == "number" then
+        return conf.cooldown
+    end
+    local ms = GetSpellBaseCooldown and GetSpellBaseCooldown(spellId)
+    if ms and ms > 2000 then
+        return ms / 1000
+    end
+end
+
 local function _checkCooldown(conf, idType, id, start, duration)
     --debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
     local isOnCooldown = start and start > 0 and duration and duration > 2
@@ -590,6 +600,18 @@ local function _checkCooldown(conf, idType, id, start, duration)
             QA:AddReadyThing(conf, id)
         end
     end
+end
+
+function QA:OnTrackedSpellCast(conf, spellId)
+    if not QA.db.profile.cooldowns then return end
+    if conf.ignoreCooldownInStealth and QA.playerIsStealthed then return end
+    local start, duration = GetSpellCooldown(spellId)
+    if not duration or duration <= 2 then
+        duration = fallbackCooldownDuration(spellId, conf)
+        if not duration then return end
+        start = GetTime()
+    end
+    _checkCooldown(conf, "spell", spellId, start, duration)
 end
 
 local function isItemReady(item)

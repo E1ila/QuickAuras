@@ -220,10 +220,10 @@ function QA:RegisterOptionalEvents()
     if QA.db.profile.enabled  then
         debug("Registering events")
         for event, optionKeys in pairs(QA.optionalEvents) do
-            local enabled = true
+            local enabled = #optionKeys == 0
             for _, optionKey in ipairs(optionKeys) do
-                if not QA.db.profile[optionKey] then
-                    enabled = false
+                if QA.db.profile[optionKey] then
+                    enabled = true
                     break
                 end
             end

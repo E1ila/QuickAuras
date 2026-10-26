@@ -967,6 +967,8 @@ local _swing = {
     },
     oh = {0.2, 0.2, 1, 1},
     ranged = {0.2, 1, 0.2, 1},
+    wasted = {0.0, 1.0, 1.0, 0.9},
+    wastedWidth = 2,
 }
 
 function QA:InitSwingTimers()
@@ -1000,7 +1002,13 @@ function QA:InitSwingTimers()
     texture:SetColorTexture(unpack(_swing.oh))
     QuickAuras_SwingTimer_OH.texture = texture
     QuickAuras_SwingTimer_OH:Hide()
-    
+
+    texture = QuickAuras_SwingTimer:CreateTexture(nil, "ARTWORK")
+    texture:SetColorTexture(unpack(_swing.wasted))
+    texture:SetWidth(_swing.wastedWidth)
+    QuickAuras_SwingTimer.wastedLine = texture
+    texture:Hide()
+
     -- Initialize Flurry icon as hidden
     QuickAuras_SwingTimer_FlurryIcon:Hide()
 
@@ -1025,6 +1033,35 @@ function QA:SetSwingProgress(hand, progress, timeLeft)
             QuickAuras_SwingTimer_TimeText:SetText(string.format("%.1f", timeLeft or 0))
         end
     end
+end
+
+-- The MH marker moves right-to-left (progress = timeLeft / duration), so elapsed time `avg`
+-- maps to where the marker's center is when that much of the swing has passed.
+function QA:UpdateWastedLine()
+    local line = QuickAuras_SwingTimer.wastedLine
+    if not line then return end
+    local avg = QA.GetWastedSwingAverage()
+    if not QA.db.profile.wastedSwingEnabled or not avg then
+        line:Hide()
+        return
+    end
+    local duration = QA.GetSwingTimerInfo("main")
+    if not duration or duration <= 0 then
+        duration = UnitAttackSpeed("player")
+    end
+    if not duration or duration <= 0 then
+        line:Hide()
+        return
+    end
+    local markerWidth = QuickAuras_SwingTimer_MH:GetWidth()
+    local width = QuickAuras_SwingTimer:GetWidth() - markerWidth
+    local progress = 1 - math.min(1, math.max(0, avg / duration))
+    local offset = width * progress + (markerWidth - _swing.wastedWidth) / 2
+    line:ClearAllPoints()
+    line:SetPoint("LEFT", QuickAuras_SwingTimer, "LEFT", offset, 0)
+    line:SetPoint("TOP", QuickAuras_SwingTimer, "TOP", 0, -2)
+    line:SetPoint("BOTTOM", QuickAuras_SwingTimer, "BOTTOM", 0, 2)
+    line:Show()
 end
 
 local function CreateSwingConf(hand)
@@ -1115,6 +1152,7 @@ function QA:UpdateSwingTimer(hand, source)
     else
         QA:AddTimer(WINDOW.SWING, conf, id, duration, expTime)
     end
+    if hand == "main" then QA:UpdateWastedLine() end
     return true
 end
 

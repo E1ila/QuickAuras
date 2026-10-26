@@ -17,6 +17,21 @@ QA.OHMissStats = {
     normal = { hits = 0, misses = 0 },
 }
 
+QA.WastedStats = { sum = 0, count = 0 }
+
+---@return number? average
+---@return number count
+function QA.GetWastedSwingAverage()
+    local stats = QA.WastedStats
+    if stats.count == 0 then return nil, 0 end
+    return stats.sum / stats.count, stats.count
+end
+
+function QA.ResetWastedSwingStats()
+    QA.WastedStats.sum = 0
+    QA.WastedStats.count = 0
+end
+
 function QuickAurasTimers:ScheduleTimerFixed(func, delay, ...)
     if (delay < maxTimerDuration) then
         if delay + GetTime() > maxUpTime then
@@ -216,6 +231,78 @@ do
         end
     end
 
+    -- Wasted swing tracking: an extra attack proc resets the MH swing timer, so when an instant
+    -- ability procs it, the elapsed part of the current MH swing is lost. CLEU order between the
+    -- proc, the triggering ability and the white swing is not guaranteed, so the proc is held as
+    -- pending and every related event within wastedWindow (before or after it) marks it. It is
+    -- resolved a bit later: counted only if a non-queued player ability was seen and neither a
+    -- real MH white swing nor an on-next-swing ability was.
+    local wastedWindow = 0.05
+    local wastedResolveDelay = 0.15
+    local pendingWasted = {}
+    local lastAbilityTs, lastQueuedAbilityTs, lastWhiteSwingTs
+
+    local function isWithinWastedWindow(ts1, ts2)
+        return ts1 and ts2 and math.abs(ts1 - ts2) <= wastedWindow
+    end
+
+    local function resolveWasted(pending)
+        for i, entry in ipairs(pendingWasted) do
+            if entry == pending then
+                table.remove(pendingWasted, i)
+                break
+            end
+        end
+        if not QA.db.profile.wastedSwingEnabled then return end
+        local stats = QA.WastedStats
+        if pending.ability and not pending.blocked then
+            stats.sum = stats.sum + pending.wasted
+            stats.count = stats.count + 1
+            debug("Extra attack proc", string.format("wasted %.2fs, sum %.2fs, count %d, avg %.2fs", pending.wasted, stats.sum, stats.count, stats.sum / stats.count))
+            if QA.UpdateWastedLine then QA:UpdateWastedLine() end
+        else
+            debug("Extra attack proc ignored", pending.blocked and "(white swing / queued ability)" or "(no ability)", string.format("sum %.2fs, count %d", stats.sum, stats.count))
+        end
+    end
+
+    local function onExtraAttacks(ts)
+        if not lastSwingMain or not swingDurationMain or swingDurationMain <= 0 then return end
+        local elapsed = GetTime() - lastSwingMain + (mainSwingOffset or 0)
+        local pending = {
+            ts = ts,
+            wasted = math.max(0, math.min(swingDurationMain, elapsed)),
+            ability = isWithinWastedWindow(ts, lastAbilityTs),
+            blocked = isWithinWastedWindow(ts, lastQueuedAbilityTs) or isWithinWastedWindow(ts, lastWhiteSwingTs),
+        }
+        table.insert(pendingWasted, pending)
+        C_Timer.After(wastedResolveDelay, function() resolveWasted(pending) end)
+    end
+
+    local function markPendingWasted(ts, field)
+        for _, pending in ipairs(pendingWasted) do
+            if isWithinWastedWindow(ts, pending.ts) then
+                pending[field] = true
+            end
+        end
+    end
+
+    local function onPlayerSpellHit(ts, spellId)
+        if not spellId then return end
+        if reset_swing_spells[spellId] then
+            lastQueuedAbilityTs = ts
+            markPendingWasted(ts, "blocked")
+        elseif IsPlayerSpell(spellId) then
+            -- IsPlayerSpell filters out proc damage (poisons, weapon procs) that isn't a cast ability
+            lastAbilityTs = ts
+            markPendingWasted(ts, "ability")
+        end
+    end
+
+    local function onWhiteSwing(ts)
+        lastWhiteSwingTs = ts
+        markPendingWasted(ts, "blocked")
+    end
+
     local function swingTimerCLEUCheck(ts, event, _, sourceGUID, _, _, _, destGUID, _, _, _, ...)
         --Private.StartProfileSystem("generictrigger swing");
         if(sourceGUID == selfGUID) then
@@ -224,14 +311,20 @@ do
                 --debug("SWING_EXTRA_ATTACKS", ...)
                 skipNextAttack = ts
                 skipNextAttackCount = select(4, ...)
+                if QA.db.profile.wastedSwingEnabled then onExtraAttacks(ts) end
+            elseif (event == "SPELL_DAMAGE" or event == "SPELL_MISSED") and QA.db.profile.wastedSwingEnabled then
+                onPlayerSpellHit(ts, (...))
             elseif(isSwingDamage or event == "SWING_MISSED") then
+                local isOffHand = select(isSwingDamage and 10 or 2, ...);
                 if tonumber(skipNextAttack) and (ts - skipNextAttack) < 0.04 and tonumber(skipNextAttackCount) then
                     if skipNextAttackCount > 0 then
                         skipNextAttackCount = skipNextAttackCount - 1
+                        -- the extra attack still resets the MH swing, but isn't a regular white swing
+                        if not isOffHand then swingStart("main") end
                         return
                     end
                 end
-                local isOffHand = select(isSwingDamage and 10 or 2, ...);
+                if QA.db.profile.wastedSwingEnabled then onWhiteSwing(ts) end
                 if not isOffHand then
                     --debug("SWING_DAMAGE", "main")
                     swingStart("main")

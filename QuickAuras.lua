@@ -319,12 +319,31 @@ function QA:HandleSlashCommand(input)
             end
         elseif cmd == "xp" then
             QA:ResetXpTracker()
+        elseif cmd == "wasted" and (arg1 == "r" or arg1 == "reset") then
+            QA.ResetWastedSwingStats()
+            out("Wasted swing stats reset")
+            QA:UpdateWastedLine()
+        elseif cmd == "wasted" then
+            QA.db.profile.wastedSwingEnabled = not QA.db.profile.wastedSwingEnabled
+            if QA.db.profile.wastedSwingEnabled then
+                local avg, count = QA.GetWastedSwingAverage()
+                if avg then
+                    out("Wasted swing tracking ".._c.enabled.."enabled|r", string.format("(avg %.2fs over %d procs)", avg, count))
+                else
+                    out("Wasted swing tracking ".._c.enabled.."enabled|r")
+                end
+            else
+                out("Wasted swing tracking ".._c.disabled.."disabled|r")
+            end
+            QA:UpdateWastedLine()
         else
             out("QuickAuras available commands:")
             out("  |cFF00FFaa/qa|r - Open options")
             out("  |cFF00FFaa/qa lock|r - Toggle lock/unlock window position")
             out("  |cFF00FFaa/qa clear|r - Clear ignored (right clicked) icons")
             out("  |cFF00FFaa/qa xp|r - Reset XP session tracker")
+            out("  |cFF00FFaa/qa wasted|r - Toggle tracking of MH swing time wasted by extra attack procs from abilities")
+            out("  |cFF00FFaa/qa wasted reset|r - Reset wasted swing time stats")
             out("|cff000000-------------------------------|r")
             --out("  |cFF00FFaa/qa reset|r - Reset UI position")
         end

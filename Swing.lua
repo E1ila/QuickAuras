@@ -32,6 +32,15 @@ function QA.ResetWastedSwingStats()
     QA.WastedStats.count = 0
 end
 
+function QA.ReportWastedSwingStats(label)
+    local avg, count = QA.GetWastedSwingAverage()
+    if avg then
+        out(string.format("Wasted swing time (%s): avg %.2fs over %d procs, total %.2fs", label, avg, count, QA.WastedStats.sum))
+    else
+        out(string.format("Wasted swing time (%s): no procs from abilities", label))
+    end
+end
+
 function QuickAurasTimers:ScheduleTimerFixed(func, delay, ...)
     if (delay < maxTimerDuration) then
         if delay + GetTime() > maxUpTime then

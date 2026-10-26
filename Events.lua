@@ -82,6 +82,11 @@ function QA:ENCOUNTER_START(encounterId, encounterName)
     QA.encounter.id = encounterId
     QA.encounter.name = encounterName
 
+    if QA.db.profile.wastedSwingEnabled then
+        QA.ResetWastedSwingStats()
+        QA:UpdateWastedLine()
+    end
+
     QA:CheckMissingBuffs()
 
     QA:EncounterStarted(encounterId)
@@ -91,6 +96,10 @@ function QA:ENCOUNTER_END()
     if not QA.encounter.id then return end -- not in encounter
     local encounterId = QA.encounter.id
     QA.encounter.id = nil
+
+    if QA.db.profile.wastedSwingEnabled then
+        QA.ReportWastedSwingStats(QA.encounter.name or tostring(encounterId))
+    end
 
     QA:EncounterEnded(encounterId)
 

@@ -174,6 +174,7 @@ function QA:PLAYER_REGEN_ENABLED()
     -- out of combat
     QA.inCombat = false
     QA:ResetPoisonImmunity()
+    QA:ResetMarking()
     QA:CheckAuras()
     QA:CheckPlayerAggro()
     QA:CheckCooldowns()
@@ -270,6 +271,7 @@ function QA:OnUpdate()
     end
 
     QA:CheckHealerMana(currentTime)
+    QA:CheckMarking(currentTime)
 
     -- Periodically check and reapply stance portrait to combat WoW UI resets
     if QA.isWarrior and QA.db and QA.db.profile.warriorStancePortrait and currentTime - lastStancePortraitCheck >= stancePortraitCheckInterval then
@@ -453,6 +455,7 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     end
 
     if subevent == "UNIT_DIED" then
+        QA:MarkingUnitDied(destGuid)
         if sourceGuid == QA.playerGuid then
             enemyDebuffs = {}
             QA:PlayerDied()

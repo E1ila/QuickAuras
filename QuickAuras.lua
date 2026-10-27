@@ -322,6 +322,17 @@ function QA:HandleSlashCommand(input)
             QA:ResetXpTracker()
         elseif cmd == "mana" then
             QA:SetHealerManaEnabled(not QA.db.profile.healerManaEnabled)
+        elseif cmd == "mark" and arg1 == "clear" then
+            QA:ClearAllMarks()
+        elseif cmd == "mark" then
+            QA.db.profile.markingEnabled = not QA.db.profile.markingEnabled
+            QA:ResetMarking()
+            if QA.db.profile.markingEnabled then
+                out("Auto marking ".._c.enabled.."enabled|r")
+                QA:PrintMarkRules()
+            else
+                out("Auto marking ".._c.disabled.."disabled|r")
+            end
         elseif cmd == "wasted" and (arg1 == "r" or arg1 == "reset") then
             QA.ResetWastedSwingStats()
             out("Wasted swing stats reset")
@@ -346,6 +357,8 @@ function QA:HandleSlashCommand(input)
             out("  |cFF00FFaa/qa clear|r - Clear ignored (right clicked) icons")
             out("  |cFF00FFaa/qa xp|r - Reset XP session tracker")
             out("  |cFF00FFaa/qa mana|r - Toggle the healer mana window")
+            out("  |cFF00FFaa/qa mark|r - Toggle auto raid marking")
+            out("  |cFF00FFaa/qa mark clear|r - Remove all raid marks")
             out("  |cFF00FFaa/qa wasted|r - Toggle tracking of MH swing time wasted by extra attack procs from abilities")
             out("  |cFF00FFaa/qa wasted reset|r - Reset wasted swing time stats")
             out("|cff000000-------------------------------|r")

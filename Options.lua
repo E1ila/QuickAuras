@@ -47,6 +47,11 @@ QA.defaultOptions = {
         healerManaEnabled = true,
         healerManaMode = "raid",
         floatingLoot = false,
+        markingEnabled = false,
+        markModifier = "shift",
+        markNameplates = true,
+        markStealLowerPriority = true,
+        markRules = "",
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue or QA.isHunter,
         readyThingsEnabled = true,
@@ -1472,6 +1477,82 @@ QA.options = {
                     type = "description",
                     name = "FYI: You can right click reminder icons to dismiss them for this session.",
                     order = 999,
+                },
+            },
+        },
+        marking = {
+            type = "group",
+            name = "Marking",
+            order = 19000,
+            args = {
+                markingEnabled = {
+                    type = "toggle",
+                    name = "Auto Marking",
+                    desc = "Mark mobs listed below with raid marks while holding the modifier key. In a raid you need to be leader or assistant.",
+                    get = function(info) return QA.db.profile.markingEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.markingEnabled = value
+                        QA:ResetMarking()
+                    end,
+                    order = 1,
+                },
+                markModifier = {
+                    type = "select",
+                    name = "Hold Key",
+                    desc = "Marking happens only while this key is held. \"Always\" marks without holding anything.",
+                    values = {
+                        shift = "Shift",
+                        ctrl = "Ctrl",
+                        alt = "Alt",
+                        always = "Always",
+                    },
+                    get = function(info) return QA.db.profile.markModifier end,
+                    set = function(info, value) QA.db.profile.markModifier = value end,
+                    disabled = function() return not QA.db.profile.markingEnabled end,
+                    order = 2,
+                },
+                markNameplates = {
+                    type = "toggle",
+                    name = "Mark Nameplates",
+                    desc = "Also mark mobs with a visible nameplate, not only the one under the mouse.",
+                    get = function(info) return QA.db.profile.markNameplates end,
+                    set = function(info, value) QA.db.profile.markNameplates = value end,
+                    disabled = function() return not QA.db.profile.markingEnabled end,
+                    order = 3,
+                },
+                markStealLowerPriority = {
+                    type = "toggle",
+                    name = "Priority Takes Marks",
+                    desc = "When all of a mob's marks are taken, take one from a lower priority mob. Marks set manually or by others are never taken.",
+                    get = function(info) return QA.db.profile.markStealLowerPriority end,
+                    set = function(info, value) QA.db.profile.markStealLowerPriority = value end,
+                    disabled = function() return not QA.db.profile.markingEnabled end,
+                    order = 4,
+                },
+                rulesHelp = {
+                    type = "description",
+                    name = "One mob per line: |cffffff00Mob Name: skull, cross, square|r. An NPC ID can be used instead of the name. Each mob gets the first free mark from its list, left to right. Mobs higher in the list have higher priority. Lines starting with # are ignored.\nMarks: skull, cross (x), square, moon, triangle, diamond, circle, star.",
+                    order = 10,
+                },
+                markRules = {
+                    type = "input",
+                    name = "Mobs",
+                    multiline = 15,
+                    width = "full",
+                    get = function(info) return QA.db.profile.markRules end,
+                    set = function(info, value)
+                        QA.db.profile.markRules = value
+                        QA:ResetMarking()
+                        QA:PrintMarkRules()
+                    end,
+                    order = 11,
+                },
+                clearMarks = {
+                    type = "execute",
+                    name = "Clear All Marks",
+                    desc = "Remove every raid mark and forget the current assignments.",
+                    func = function() QA:ClearAllMarks() end,
+                    order = 20,
                 },
             },
         },

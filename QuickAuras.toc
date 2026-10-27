@@ -20,6 +20,7 @@ Logic.lua
 BossLogic.lua
 XP.lua
 HealerMana.lua
+Marking.lua
 Swing.lua
 CastBar.lua
 FloatingLoot.lua

@@ -68,6 +68,10 @@ function QA:SPELL_UPDATE_COOLDOWN(...)
     QA:CheckCooldowns()
 end
 
+function QA:SPELLS_CHANGED()
+    QA:RefreshRangedSwing()
+end
+
 function QA:BAG_UPDATE_COOLDOWN(...)
     QA:CheckCooldowns()
 end
@@ -340,17 +344,20 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
                 conf.OnSpellDetectCombatLog(conf, subevent, sourceGuid, sourceName, destGuid, destName, ...)
             end
             -- npc auras
-            if conf.npcId and QA:GetNpcIdFromGuid(sourceGuid) == conf.npcId and QA.db.profile[conf.option] then
-                if subevent == "SPELL_AURA_APPLIED" then
+            local npcGuid = conf.npcIds and destGuid or sourceGuid
+            local npcId = (conf.npcId or conf.npcIds) and npcGuid and QA:GetNpcIdFromGuid(npcGuid)
+            if npcId and (npcId == conf.npcId or conf.npcIds and conf.npcIds[npcId]) then
+                if subevent == "SPELL_AURA_APPLIED" and QA.db.profile[conf.option] then
                     local keyExtra, duration = destGuid, QA:GetDuration(conf, spellId)
-                    local timer = QA:AddTimer(conf.list or WINDOW.ALERT, conf, spellId, duration, GetTime()+duration, nil, nil, keyExtra)
+                    local timer, added = QA:AddTimer(conf.list or WINDOW.ALERT, conf, spellId, duration, GetTime()+duration, nil, nil, keyExtra)
                     if not enemyDebuffs[spellId] then enemyDebuffs[spellId] = {} end
-                    enemyDebuffs[spellId][sourceGuid] = timer
+                    enemyDebuffs[spellId][npcGuid] = timer
+                    if added and conf.alertSound then QA:PlayAirHorn() end
 
-                elseif subevent == "SPELL_AURA_REMOVED" and enemyDebuffs[spellId] and enemyDebuffs[spellId][sourceGuid] then
+                elseif subevent == "SPELL_AURA_REMOVED" and enemyDebuffs[spellId] and enemyDebuffs[spellId][npcGuid] then
                     -- end offensive timer
-                    QA:RemoveTimer(enemyDebuffs[spellId][sourceGuid], "combatlog")
-                    enemyDebuffs[spellId][sourceGuid] = nil
+                    QA:RemoveTimer(enemyDebuffs[spellId][npcGuid], "combatlog")
+                    enemyDebuffs[spellId][npcGuid] = nil
                 end
             end
 

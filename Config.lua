@@ -8,6 +8,7 @@ QA.optionalEvents = {
     UNIT_AURA = {},
     UI_ERROR_MESSAGE = { "outOfRange", "feignDeathResist" },
     SPELL_UPDATE_COOLDOWN = { "cooldowns", "notifyExplosivesReady" },
+    SPELLS_CHANGED = { "swingTimerRangedClip" },
     BAG_UPDATE_COOLDOWN = { "cooldowns", "notifyExplosivesReady" },
     PLAYER_EQUIPMENT_CHANGED = { "trackedGear" },
     PLAYER_TARGET_CHANGED = {},

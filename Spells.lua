@@ -1423,6 +1423,25 @@ spells.iconAlerts = {
         duration = 6,
         icon = "Interface\\Icons\\spell_nature_naturetouchdecay",
     },
+    bossFrenzy = {
+        spellId = { 19451, 23342, 23128, 28371, 26051 },
+        npcIds = {
+            [11982] = true, -- Magmadar
+            [11981] = true, -- Flamegor
+            [14020] = true, -- Chromaggus
+            [15932] = true, -- Gluth
+            [15509] = true, -- Princess Huhuran
+        },
+        list = WINDOW.ALERT,
+        option = "bossFrenzy",
+        category = "iconAlerts",
+        name = "Boss Frenzy - Tranq!",
+        desc = "Alert when Magmadar, Flamegor, Chromaggus, Gluth or Princess Huhuran frenzies. Use Tranquilizing Shot.",
+        duration = { 8, 10, 8, 8, 8 },
+        icon = "Interface\\Icons\\Spell_Nature_Drowsy",
+        alertSound = true,
+        visible = QA.isHunter,
+    },
     naxxDeathknightCaptainCleave = {
         spellId = { 28334 },
         npcId = 16145,

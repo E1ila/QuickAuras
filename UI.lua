@@ -967,9 +967,14 @@ local _swing = {
     },
     oh = {0.2, 0.2, 1, 1},
     ranged = {0.2, 1, 0.2, 1},
+    rangedSafe = {0.2, 0.7, 1, 1},
+    rangedWindow = {1, 0.4, 0.1, 0.35},
+    autoShotWindow = 0.5,
     wasted = {0.0, 1.0, 1.0, 0.9},
     wastedWidth = 2,
 }
+local autoShotWindow = _swing.autoShotWindow
+local multiShotId, multiShotCastTime
 
 function QA:InitSwingTimers()
     QuickAuras_SwingTimer:SetBackdrop({
@@ -1009,15 +1014,75 @@ function QA:InitSwingTimers()
     QuickAuras_SwingTimer.wastedLine = texture
     texture:Hide()
 
+    texture = QuickAuras_SwingTimer:CreateTexture(nil, "ARTWORK")
+    texture:SetColorTexture(unpack(_swing.rangedWindow))
+    QuickAuras_SwingTimer.rangedWindow = texture
+    texture:Hide()
+    QA:RefreshAutoShotWindow()
+    QA:RefreshRangedSwing()
+
     -- Initialize Flurry icon as hidden
     QuickAuras_SwingTimer_FlurryIcon:Hide()
 
     QuickAuras_SwingTimer:Hide()
 end
 
-function QA:SetSwingProgress(hand, progress, timeLeft)
+function QA:RefreshAutoShotWindow()
+    if not QA.isHunter then return end
+    local _, _, _, latency = GetNetStats()
+    autoShotWindow = _swing.autoShotWindow + math.min(0.35, math.max(0, (latency or 0) / 1000))
+end
+
+function QA:RefreshRangedSwing()
+    if not QA.isHunter then return end
+    multiShotId = nil
+    if not QA.db.profile.swingTimerRangedClip then return end
+    local spell = QA.spells.hunter.multiShot
+    for i = #spell.spellId, 1, -1 do
+        local spellId = spell.spellId[i]
+        if IsSpellKnown(spellId) or IsPlayerSpell(spellId) then
+            multiShotId = spellId
+            local _, _, _, castTime = GetSpellInfo(spellId)
+            multiShotCastTime = castTime and castTime > 0 and castTime / 1000 or spell.shootCastTime
+            break
+        end
+    end
+end
+
+function QA:UpdateRangedSwingWindow(duration)
+    local window = QuickAuras_SwingTimer.rangedWindow
+    if not window then return end
+    if not QA.isHunter or not QA.db.profile.swingTimersEnabled or not QA.db.profile.swingTimerRanged
+        or not QA.db.profile.swingTimerRangedWindow or not QuickAuras_SwingTimer_Ranged:IsShown()
+    then
+        window:Hide()
+        return
+    end
+    duration = duration or QA.GetSwingTimerInfo("ranged")
+    if not duration or duration <= 0 then
+        window:Hide()
+        return
+    end
+    local markerWidth = QuickAuras_SwingTimer_Ranged:GetWidth()
+    local width = QuickAuras_SwingTimer:GetWidth() - markerWidth
+    if window.duration ~= duration or window.width ~= width or window.window ~= autoShotWindow then
+        -- Shade the low-timeLeft end, following the ranged marker's center.
+        window:ClearAllPoints()
+        window:SetPoint("LEFT", QuickAuras_SwingTimer, "LEFT", markerWidth / 2, 0)
+        window:SetPoint("TOP", QuickAuras_SwingTimer, "TOP", 0, -2)
+        window:SetPoint("BOTTOM", QuickAuras_SwingTimer, "BOTTOM", 0, 2)
+        window:SetWidth(width * math.min(1, autoShotWindow / duration))
+        window.duration, window.width, window.window = duration, width, autoShotWindow
+    end
+    window:Show()
+end
+
+function QA:SetSwingProgress(hand, progress, timeLeft, duration)
     local isMain = hand == "main"
-    local frame = isMain and QuickAuras_SwingTimer_MH or (hand == "oh" and QuickAuras_SwingTimer_OH or QuickAuras_SwingTimer_Ranged)
+    local frame = isMain and QuickAuras_SwingTimer_MH or (hand == "off" and QuickAuras_SwingTimer_OH or QuickAuras_SwingTimer_Ranged)
+    if hand == "ranged" and (not QA.db.profile.swingTimersEnabled or not QA.db.profile.swingTimerRanged) then
+        progress = 0
+    end
     if progress == 0 then
         if isMain then QuickAuras_SwingTimer_TimeText:SetText("") end
         frame:Hide()
@@ -1031,6 +1096,22 @@ function QA:SetSwingProgress(hand, progress, timeLeft)
         frame:Show()
         if isMain then
             QuickAuras_SwingTimer_TimeText:SetText(string.format("%.1f", timeLeft or 0))
+        end
+    end
+    if hand == "ranged" then
+        QA:UpdateRangedSwingWindow(duration)
+        local color = _swing.ranged
+        if progress > 0 and QA.isHunter and QA.db.profile.swingTimerRangedClip and multiShotId
+            and timeLeft > multiShotCastTime + autoShotWindow
+        then
+            local start, cooldown, enabled = GetSpellCooldown(multiShotId)
+            if start and cooldown and enabled ~= 0 and (cooldown <= 1.5 or start + cooldown <= GetTime()) then
+                color = _swing.rangedSafe
+            end
+        end
+        if frame.color ~= color then
+            frame.texture:SetColorTexture(unpack(color))
+            frame.color = color
         end
     end
 end
@@ -1073,7 +1154,7 @@ local function CreateSwingConf(hand)
                 local timeLeft = timer.expTime - GetTime()
                 if timeLeft > 0 then
                     local progress = timeLeft / timer.duration
-                    QA:SetSwingProgress(hand, progress, timeLeft)
+                    QA:SetSwingProgress(hand, progress, timeLeft, timer.duration)
                 else
                     QA:SetSwingProgress(hand, 0, 0)
                 end
@@ -1143,6 +1224,7 @@ end
 
 function QA:UpdateSwingTimer(hand, source)
     local duration, expTime, weaponName, icon = QA.GetSwingTimerInfo(hand)
+    if hand == "ranged" then QA:RefreshAutoShotWindow() end
     --local duration, expTime = 2.7, GetTime() + 2.7
     local id = "swing-"..hand
     local conf = swingConf[hand]

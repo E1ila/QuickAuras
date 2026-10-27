@@ -44,10 +44,13 @@ QA.defaultOptions = {
         hunterAspectDanger = QA.isHunter,
         xpFrameEnabled = true,
         spellQueueEnabled = true,
-        swingTimersEnabled = QA.isWarrior or QA.isRogue,
+        swingTimersEnabled = QA.isWarrior or QA.isRogue or QA.isHunter,
         readyThingsEnabled = true,
         swingTimerOH = true,
         swingTimerRanged = true,
+        swingTimerRangedWindow = QA.isHunter,
+        swingTimerRangedClip = QA.isHunter,
+        bossFrenzy = QA.isHunter,
         raidBars = true,
         notifyExplosivesReady = true,
         announceThaddiusAdds = false,
@@ -266,7 +269,7 @@ QA.options = {
                 swingTimersEnabled = {
                     type = "toggle",
                     name = "Swing Timers",
-                    desc = "Shows MH and OH swing timers",
+                    desc = "Shows MH, OH and ranged swing timers",
                     get = function(info) return QA.db.profile.swingTimersEnabled end,
                     set = function(info, value)
                         QA.db.profile.swingTimersEnabled = value
@@ -846,6 +849,42 @@ QA.options = {
                     end,
                     hidden = not QA.isRogue and not QA.isWarrior and not QA.isWarrior,
                     order = 109,
+                },
+                swingTimerRanged = {
+                    type = "toggle",
+                    name = "Swing Timer Ranged",
+                    desc = "Show ranged swing timer",
+                    get = function(info) return QA.db.profile.swingTimerRanged end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimerRanged = value
+                        QA:SetSwingProgress("ranged", 0, 0)
+                    end,
+                    order = 109.1,
+                },
+                swingTimerRangedWindow = {
+                    type = "toggle",
+                    name = "Auto Shot Don't Move Window",
+                    desc = "Shade the final 0.5 seconds plus world latency of the ranged swing, when moving delays Auto Shot.",
+                    get = function(info) return QA.db.profile.swingTimerRangedWindow end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimerRangedWindow = value
+                        QA:UpdateRangedSwingWindow()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 109.2,
+                },
+                swingTimerRangedClip = {
+                    type = "toggle",
+                    name = "Multi-Shot Clip Indicator",
+                    desc = "Color the ranged marker blue when Multi-Shot is ready and can finish before the Auto Shot window.",
+                    get = function(info) return QA.db.profile.swingTimerRangedClip end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimerRangedClip = value
+                        QA:RefreshRangedSwing()
+                        QA:RegisterOptionalEvents()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 109.3,
                 },
                 warriorUtilsHeader = {
                     type = "header",

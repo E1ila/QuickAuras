@@ -393,6 +393,20 @@ do
             end
             mainSpeed, offSpeed = mainSpeedNew, offSpeedNew
             swingTriggerUpdate("main", "attack-speed")
+        elseif event == "UNIT_RANGEDDAMAGE" then
+            local rangeSpeed = UnitRangedDamage("player")
+            if lastSwingRange and rangeSpeed and rangeSpeed > 0 and swingDurationRange > 0 and rangeSpeed ~= swingDurationRange then
+                local timeLeft = (lastSwingRange + swingDurationRange - now) * rangeSpeed / swingDurationRange
+                lastSwingRange = now + timeLeft - rangeSpeed
+                swingDurationRange = rangeSpeed
+                if rangeTimer then timer:CancelTimer(rangeTimer) end
+                if timeLeft > 0 then
+                    rangeTimer = timer:ScheduleTimerFixed(swingEnd, timeLeft, "ranged")
+                    swingTriggerUpdate("ranged", "ranged-speed", true)
+                else
+                    swingEnd("ranged")
+                end
+            end
         elseif casting and (event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED") then
             casting = false
         elseif event == "PLAYER_EQUIPMENT_CHANGED" and isAttacking then
@@ -447,6 +461,7 @@ do
             swingTimerFrame:RegisterEvent("PLAYER_LEAVE_COMBAT");
             swingTimerFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
             swingTimerFrame:RegisterUnitEvent("UNIT_ATTACK_SPEED", "player");
+            swingTimerFrame:RegisterUnitEvent("UNIT_RANGEDDAMAGE", "player");
             swingTimerFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
             if QA.IsClassicEra() then
                 swingTimerFrame:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")

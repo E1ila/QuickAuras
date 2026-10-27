@@ -206,6 +206,10 @@ function QA:UNIT_INVENTORY_CHANGED()
     QA:CheckWeaponEnchants()
 end
 
+function QA:CHAT_MSG_LOOT(message)
+    QA:OnLootMessage(message)
+end
+
 function QA:UNIT_PORTRAIT_UPDATE(unit)
     -- Reapply stance portrait when the portrait updates
     if unit == "player" and QA.isWarrior and QA.db and QA.db.profile.warriorStancePortrait then

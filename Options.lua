@@ -42,6 +42,7 @@ QA.defaultOptions = {
         announceCcBreak = true,
         stealthInInstance = true,
         xpFrameEnabled = true,
+        floatingLoot = true,
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue,
         readyThingsEnabled = true,
@@ -84,6 +85,7 @@ QA.defaultOptions = {
         reminderIconSize = 40,
         readyIconSize = 50,
         weaponEnchantSize = 40,
+        floatingLootIconSize = 28,
         crucialExpireTime = 5,
         targetAuraExpireTime = 8,
         transmutePreReadyTime = 60,
@@ -345,6 +347,20 @@ QA.options = {
                     end,
                     order = 18,
                 },
+                floatingLoot = {
+                    type = "toggle",
+                    name = "Floating Loot",
+                    desc = "Shows looted items floating upwards next to your character",
+                    get = function(info) return QA.db.profile.floatingLoot end,
+                    set = function(info, value)
+                        QA.db.profile.floatingLoot = value
+                        if not value then
+                            QA:ClearFloatingLoot()
+                        end
+                        QA:RegisterOptionalEvents()
+                    end,
+                    order = 19,
+                },
             }
         },
         lookAndFeel = {
@@ -564,6 +580,20 @@ QA.options = {
                         QuickAuras_SwingTimer:SetWidth(value)
                     end,
                     order = 112,
+                },
+                floatingLootIconSize = {
+                    type = "range",
+                    name = "Floating Loot Size",
+                    desc = "Set the size of the floating loot icons",
+                    min = 10,
+                    max = 64,
+                    step = 1,
+                    get = function(info) return QA.db.profile.floatingLootIconSize end,
+                    set = function(info, value)
+                        QA.db.profile.floatingLootIconSize = value
+                        QA:TestFloatingLoot()
+                    end,
+                    order = 113,
                 },
                 spacer198 = {
                     type = "header",

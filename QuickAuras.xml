@@ -450,6 +450,31 @@
         </Layers>
     </Frame>
 
+    <Frame name="QuickAuras_HealerMana" parent="UIParent" inherits="QuickAuras_Widget">
+        <Size>
+            <AbsDimension x="150" y="80" />
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativePoint="CENTER" relativeTo="UIParent" x="-650" y="-50" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Healer Mana">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="BOTTOM" relativePoint="TOP" y="2" />
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_Title" inherits="QuickAuras_NormalFont" text="Healers">
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="4" y="-2" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
     <Frame name="QuickAuras_XP" parent="UIParent" inherits="QuickAuras_Widget">
         <Size>
             <AbsDimension x="250" y="24" /> <!-- Frame size -->

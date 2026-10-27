@@ -19,4 +19,5 @@ Events.lua
 Logic.lua
 BossLogic.lua
 XP.lua
+HealerMana.lua
 Swing.lua

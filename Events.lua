@@ -152,6 +152,7 @@ function QA:BANKFRAME_CLOSED()
 end
 
 function QA:UNIT_POWER_UPDATE(unit, powerType)
+    QA:HealerManaPowerChanged(unit, powerType)
     QA:CheckPower(unit, powerType)
 end
 
@@ -256,6 +257,8 @@ function QA:OnUpdate()
         QA:CheckTimers()
         QA:CheckTargetRange()
     end
+
+    QA:CheckHealerMana(currentTime)
 
     -- Periodically check and reapply stance portrait to combat WoW UI resets
     if QA.isWarrior and QA.db and QA.db.profile.warriorStancePortrait and currentTime - lastStancePortraitCheck >= stancePortraitCheckInterval then

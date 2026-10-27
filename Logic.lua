@@ -76,6 +76,7 @@ function QA:GroupCompoChanged()
     QA:CheckForShaman()
     QA:CheckAuras()
     QA:CheckWeaponEnchants()
+    QA:BuildHealerManaRoster()
 end
 
 function QA:CheckTargetAuras(targetChanged)
@@ -996,6 +997,7 @@ function QA:RefreshAll()
     QA:RefreshMissing()
     QA:RefreshAlerts()
     QA:RefreshReminders()
+    QA:UpdateHealerMana()
 end
 
 -- DEBOUNCE FUNCTIONS

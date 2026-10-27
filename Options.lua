@@ -43,6 +43,8 @@ QA.defaultOptions = {
         stealthInInstance = true,
         hunterAspectDanger = QA.isHunter,
         xpFrameEnabled = true,
+        healerManaEnabled = true,
+        healerManaMode = "raid",
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue or QA.isHunter,
         readyThingsEnabled = true,
@@ -297,6 +299,35 @@ QA.options = {
                         end
                     end,
                     order = 14.5,
+                },
+                healerManaEnabled = {
+                    type = "toggle",
+                    name = "Healer Mana",
+                    desc = "Shows the mana of healers in your group, lowest first",
+                    get = function(info) return QA.db.profile.healerManaEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.healerManaEnabled = value
+                        QA:UpdateHealerMana()
+                    end,
+                    order = 14.6,
+                },
+                healerManaMode = {
+                    type = "select",
+                    name = "Show Healer Mana",
+                    desc = "Choose when to show the healer mana panel.",
+                    values = {
+                        group = "Party or Raid",
+                        raid = "Raid Only",
+                    },
+                    get = function(info)
+                        return QA.db.profile.healerManaMode or "raid"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.healerManaMode = value
+                        QA:UpdateHealerMana()
+                    end,
+                    disabled = function() return not QA.db.profile.healerManaEnabled end,
+                    order = 14.7,
                 },
                 overaggroWarning = {
                     type = "toggle",

@@ -98,6 +98,7 @@ function QA:InitUI()
 
     QA:ConfigureXpFrame()
     QA:UpdateXpFrame()
+    QA:InitHealerMana()
 end
 
 -- weapon enchants --------------------------------
@@ -777,6 +778,7 @@ function QA:ParentFramesEditState()
         _G[frame:GetName().."_Text"]:Show()
         frame:EnableMouse(true)
     end
+    QA:UpdateHealerMana()
 end
 
 function QA:ToggleLockedState()
@@ -799,6 +801,7 @@ function QA:ToggleLockedState()
         out("  |cFF00FFaa Swing|r - Swing timer for melee classes, MH and OH")
         out("  |cFF00FFaa Raid Bars|r - Time on important raid player buffs |cffaaaaaa(Taunt, LIP, Death Wish, etc.)")
         out("  |cFF00FFaa Cooldowns|r - Time on cooldowns")
+        out("  |cFF00FFaa Healer Mana|r - Mana of healers in your group, lowest first")
     end
 end
 

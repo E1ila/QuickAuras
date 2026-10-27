@@ -904,6 +904,73 @@ function QA:CheckHunterAspectDanger(seen)
     end
 end
 
+-- Documented poison / Nature immune bosses; anything else is learned from IMMUNE misses in combat.
+local POISON_IMMUNE_NPCS = {
+    [12057] = true, -- Garr
+    [11502] = true, -- Ragnaros
+    [15299] = true, -- Viscidus
+    [15275] = true, -- Emperor Vek'nilash
+    [14887] = true, -- Ysondre
+    [14888] = true, -- Lethon
+    [14889] = true, -- Emeriss
+    [14890] = true, -- Taerar
+}
+-- Only pure Nature-damage poisons: a snare or debuff can be refused for reasons other than poison immunity.
+local POISON_SPELLS = {}
+for _, spellId in ipairs({
+    1978, 13549, 13550, 13551, 13552, 13553, 13554, 13555, 25295, -- Serpent Sting
+    2818, 2819, 11353, 11354, 25349, -- Deadly Poison
+    8680, 8685, 8689, 11335, 11336, 11337, -- Instant Poison
+}) do
+    POISON_SPELLS[spellId] = true
+end
+local POISON_SUCCESS_EVENTS = {
+    SPELL_AURA_APPLIED = true,
+    SPELL_AURA_REFRESH = true,
+    SPELL_DAMAGE = true,
+    SPELL_PERIODIC_DAMAGE = true,
+}
+local poisonImmuneConf = {
+    name = "Poison Immune",
+    spellId = { 1978 },
+}
+local learnedPoisonImmune = {}
+
+function QA:OnPoisonCombatLog(subevent, destGuid, spellId, missType)
+    if not POISON_SPELLS[spellId] or not destGuid then return end
+    if (subevent == "SPELL_MISSED" or subevent == "SPELL_PERIODIC_MISSED") and missType == "IMMUNE" then
+        learnedPoisonImmune[destGuid] = true
+    elseif POISON_SUCCESS_EVENTS[subevent] then
+        learnedPoisonImmune[destGuid] = nil
+    else
+        return
+    end
+    if destGuid == UnitGUID("target") then
+        QA:CheckPoisonImmunity()
+    end
+end
+
+function QA:ResetPoisonImmunity()
+    learnedPoisonImmune = {}
+    QA:CheckPoisonImmunity()
+end
+
+function QA:CheckPoisonImmunity()
+    local iconId = poisonImmuneConf.spellId[1]
+    local guid = UnitGUID("target")
+    local immune = guid
+            and QA.db.profile.poisonImmuneWarning
+            and QA.isHunter
+            and UnitCanAttack("player", "target")
+            and not UnitIsDead("target")
+            and (learnedPoisonImmune[guid] or POISON_IMMUNE_NPCS[QA:GetNpcIdFromGuid(guid)])
+    if immune then
+        QA:AddIcon(WINDOW.WARNING, "spell", iconId, poisonImmuneConf)
+    else
+        QA:RemoveIcon(WINDOW.WARNING, iconId)
+    end
+end
+
 function QA:CheckForShaman()
     if QA.isAlliance then return end
     QA.partyShamans = {}
@@ -981,6 +1048,7 @@ function QA:RefreshWarnings()
     QA:ClearIcons(WINDOW.WARNING)
     QA:CheckGear()
     QA:CheckHearthstone()
+    QA:CheckPoisonImmunity()
 end
 
 function QA:RefreshAlerts()

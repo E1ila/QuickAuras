@@ -90,6 +90,7 @@ function QA:PLAYER_TARGET_CHANGED(...)
     QA:ResetErrorCount()
     QA:CheckAllProcs()
     QA:CheckTargetAuras(true)
+    QA:CheckPoisonImmunity()
 end
 
 function QA:BAG_UPDATE(bagId)
@@ -172,6 +173,7 @@ end
 function QA:PLAYER_REGEN_ENABLED()
     -- out of combat
     QA.inCombat = false
+    QA:ResetPoisonImmunity()
     QA:CheckAuras()
     QA:CheckPlayerAggro()
     QA:CheckCooldowns()
@@ -320,6 +322,10 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
         and sourceGuid == QA.playerGuid and extra[1] == QA.spells.hunter.feignDeath.spellId[1] and extra[4] == "RESIST"
     then
         QA:NotifyFeignDeathResist()
+    end
+
+    if QA.isHunter then
+        QA:OnPoisonCombatLog(subevent, destGuid, extra[1], extra[4])
     end
 
     if  -- parry haste

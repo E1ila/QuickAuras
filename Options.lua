@@ -42,6 +42,7 @@ QA.defaultOptions = {
         announceCcBreak = true,
         stealthInInstance = true,
         hunterAspectDanger = QA.isHunter,
+        poisonImmuneWarning = QA.isHunter,
         xpFrameEnabled = true,
         healerManaEnabled = true,
         healerManaMode = "raid",
@@ -1270,6 +1271,18 @@ QA.options = {
                     end,
                     hidden = not QA.isHunter,
                     order = 306.5,
+                },
+                poisonImmuneWarning = {
+                    type = "toggle",
+                    name = "Poison Immune Target",
+                    desc = "Show a warning when your target is immune to Serpent Sting. Known for Garr, Ragnaros, Viscidus, Vek'nilash and the Emerald Dragons, and learned in combat when a sting or rogue poison on the target is reported as immune.",
+                    get = function(info) return QA.db.profile.poisonImmuneWarning end,
+                    set = function(info, value)
+                        QA.db.profile.poisonImmuneWarning = value
+                        QA:CheckPoisonImmunity()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 306.6,
                 },
                 rogueTeaTime = {
                     type = "select",

@@ -979,13 +979,15 @@ local _swing = {
     oh = {0.2, 0.2, 1, 1},
     ranged = {0.2, 1, 0.2, 1},
     rangedSafe = {0.2, 0.7, 1, 1},
+    rangedAimed = {1, 0.82, 0.1, 1},
     rangedWindow = {1, 0.4, 0.1, 0.35},
     autoShotWindow = 0.5,
+    aimedShotWindow = 0.4,
     wasted = {0.0, 1.0, 1.0, 0.9},
     wastedWidth = 2,
 }
 local autoShotWindow = _swing.autoShotWindow
-local multiShotId, multiShotCastTime
+local multiShotId, multiShotCastTime, aimedShotId
 
 function QA:InitSwingTimers()
     QuickAuras_SwingTimer:SetBackdrop({
@@ -1044,19 +1046,34 @@ function QA:RefreshAutoShotWindow()
     autoShotWindow = _swing.autoShotWindow + math.min(0.35, math.max(0, (latency or 0) / 1000))
 end
 
-function QA:RefreshRangedSwing()
-    if not QA.isHunter then return end
-    multiShotId = nil
-    if not QA.db.profile.swingTimerRangedClip then return end
-    local spell = QA.spells.hunter.multiShot
+local function HighestKnownRank(spell)
     for i = #spell.spellId, 1, -1 do
         local spellId = spell.spellId[i]
         if IsSpellKnown(spellId) or IsPlayerSpell(spellId) then
-            multiShotId = spellId
-            local _, _, _, castTime = GetSpellInfo(spellId)
-            multiShotCastTime = castTime and castTime > 0 and castTime / 1000 or spell.shootCastTime
-            break
+            return spellId
         end
+    end
+end
+
+local function IsSpellReady(spellId)
+    local start, cooldown, enabled = GetSpellCooldown(spellId)
+    return start and cooldown and enabled ~= 0 and (cooldown <= 1.5 or start + cooldown <= GetTime())
+end
+
+function QA:RefreshRangedSwing()
+    if not QA.isHunter then return end
+    multiShotId = nil
+    aimedShotId = nil
+    if QA.db.profile.swingTimerRangedClip then
+        local spell = QA.spells.hunter.multiShot
+        multiShotId = HighestKnownRank(spell)
+        if multiShotId then
+            local _, _, _, castTime = GetSpellInfo(multiShotId)
+            multiShotCastTime = castTime and castTime > 0 and castTime / 1000 or spell.shootCastTime
+        end
+    end
+    if QA.db.profile.swingTimerRangedAimed then
+        aimedShotId = HighestKnownRank(QA.spells.hunter.aimedShot)
     end
 end
 
@@ -1112,11 +1129,11 @@ function QA:SetSwingProgress(hand, progress, timeLeft, duration)
     if hand == "ranged" then
         QA:UpdateRangedSwingWindow(duration)
         local color = _swing.ranged
-        if progress > 0 and QA.isHunter and QA.db.profile.swingTimerRangedClip and multiShotId
-            and timeLeft > multiShotCastTime + autoShotWindow
-        then
-            local start, cooldown, enabled = GetSpellCooldown(multiShotId)
-            if start and cooldown and enabled ~= 0 and (cooldown <= 1.5 or start + cooldown <= GetTime()) then
+        if progress > 0 and QA.isHunter then
+            -- Aimed Shot started right after an Auto Shot finishes without delaying the next one, so it takes precedence
+            if aimedShotId and duration and duration - timeLeft <= _swing.aimedShotWindow and IsSpellReady(aimedShotId) then
+                color = _swing.rangedAimed
+            elseif multiShotId and timeLeft > multiShotCastTime + autoShotWindow and IsSpellReady(multiShotId) then
                 color = _swing.rangedSafe
             end
         end

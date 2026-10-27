@@ -53,6 +53,7 @@ QA.defaultOptions = {
         swingTimerRanged = true,
         swingTimerRangedWindow = QA.isHunter,
         swingTimerRangedClip = QA.isHunter,
+        swingTimerRangedAimed = QA.isHunter,
         castBarEnabled = QA.isHunter,
         castBarHideBlizzard = false,
         bossFrenzy = QA.isHunter,
@@ -992,6 +993,19 @@ QA.options = {
                     end,
                     hidden = not QA.isHunter,
                     order = 109.3,
+                },
+                swingTimerRangedAimed = {
+                    type = "toggle",
+                    name = "Aimed Shot Clip Indicator",
+                    desc = "Color the ranged marker gold right after an Auto Shot while Aimed Shot is ready. Casting it then doesn't delay your next Auto Shot. Takes precedence over the Multi-Shot indicator.",
+                    get = function(info) return QA.db.profile.swingTimerRangedAimed end,
+                    set = function(info, value)
+                        QA.db.profile.swingTimerRangedAimed = value
+                        QA:RefreshRangedSwing()
+                        QA:RegisterOptionalEvents()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 109.4,
                 },
                 castBarHideBlizzard = {
                     type = "toggle",

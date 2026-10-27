@@ -83,6 +83,8 @@ QA.defaultOptions = {
         barWidth = 128,
         barGap = 2,
         swingTimerWidth = 120,
+        castBarWidth = 120,
+        castBarHeight = 18,
         cooldownIconSize = 50,
         gearWarningSize = 80,
         iconAlertSize = 80,
@@ -162,7 +164,7 @@ QA.options = {
                             QA:TestProgressBar(QA.trackedAuras, 5)
                         end
                     end,
-                    order = 14,
+                    order = 16,
                 },
                 offensiveBarsEnabled = {
                     type = "toggle",
@@ -175,7 +177,7 @@ QA.options = {
                             QA:TestProgressBar(QA.trackedCombatLog, 3)
                         end
                     end,
-                    order = 6,
+                    order = 8,
                 },
                 cooldownsEnabled = {
                     type = "toggle",
@@ -189,7 +191,7 @@ QA.options = {
                         end
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 2,
+                    order = 3,
                 },
                 iconWarningEnabled = {
                     type = "toggle",
@@ -205,7 +207,7 @@ QA.options = {
                             QA:ClearIcons(WINDOW.WARNING)
                         end
                     end,
-                    order = 13,
+                    order = 15,
                 },
                 missingBuffsEnabled = {
                     type = "toggle",
@@ -216,7 +218,7 @@ QA.options = {
                         QA.db.profile.missingConsumes = value
                         QA:RefreshMissing()
                     end,
-                    order = 5,
+                    order = 7,
                 },
                 remindersEnabled = {
                     type = "toggle",
@@ -228,7 +230,7 @@ QA.options = {
                         QA:RegisterOptionalEvents()
                         QA:RefreshReminders()
                     end,
-                    order = 9,
+                    order = 11,
                 },
                 raidBars = {
                     type = "toggle",
@@ -238,7 +240,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.raidBars = value
                     end,
-                    order = 8,
+                    order = 10,
                 },
                 xpFrameEnabled = {
                     type = "toggle",
@@ -254,7 +256,7 @@ QA.options = {
                             QuickAuras_XP:Hide()
                         end
                     end,
-                    order = 16,
+                    order = 18,
                 },
                 spellQueueEnabled = {
                     type = "toggle",
@@ -272,6 +274,17 @@ QA.options = {
                     end,
                     order = 1,
                 },
+                castBarEnabled = {
+                    type = "toggle",
+                    name = "Cast Bar",
+                    desc = "Show your casts and channels in a bar under the swing timer. Casts the game doesn't report, like Aimed Shot, are estimated and shown in orange with a ~ before the name.",
+                    get = function(info) return QA.db.profile.castBarEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.castBarEnabled = value
+                        QA:UpdateCastBar()
+                    end,
+                    order = 2,
+                },
                 swingTimersEnabled = {
                     type = "toggle",
                     name = "Swing Timers",
@@ -285,7 +298,7 @@ QA.options = {
                             QuickAuras_SwingTimer:Hide()
                         end
                     end,
-                    order = 11,
+                    order = 13,
                 },
                 readyThingsEnabled = {
                     type = "toggle",
@@ -303,7 +316,7 @@ QA.options = {
                             QA:ClearIcons(WINDOW.READYTHINGS)
                         end
                     end,
-                    order = 4,
+                    order = 6,
                 },
                 healerManaEnabled = {
                     type = "toggle",
@@ -313,7 +326,7 @@ QA.options = {
                     set = function(info, value)
                         QA:SetHealerManaEnabled(value)
                     end,
-                    order = 3,
+                    order = 5,
                 },
                 overaggroWarning = {
                     type = "toggle",
@@ -324,7 +337,7 @@ QA.options = {
                         QA.db.profile.overaggroWarning = value
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 7,
+                    order = 9,
                 },
                 soundsEnabled = {
                     type = "toggle",
@@ -334,7 +347,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.soundsEnabled = value
                     end,
-                    order = 10,
+                    order = 12,
                 },
                 targetInRangeIndication = {
                     type = "toggle",
@@ -351,7 +364,7 @@ QA.options = {
                         QA.targetInRange2 = false
                         QA:CheckTargetRange()
                     end,
-                    order = 12,
+                    order = 14,
                 },
                 weaponEnchantEnabled = {
                     type = "toggle",
@@ -369,7 +382,7 @@ QA.options = {
                         end
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 15,
+                    order = 17,
                 },
                 floatingLoot = {
                     type = "toggle",
@@ -383,7 +396,7 @@ QA.options = {
                         end
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 2.5,
+                    order = 4,
                 },
             }
         },
@@ -604,6 +617,34 @@ QA.options = {
                         QuickAuras_SwingTimer:SetWidth(value)
                     end,
                     order = 112,
+                },
+                castBarWidth = {
+                    type = "range",
+                    name = "Cast Bar Width",
+                    desc = "Set the width of the cast bar",
+                    min = 50,
+                    max = 300,
+                    step = 1,
+                    get = function(info) return QA.db.profile.castBarWidth end,
+                    set = function(info, value)
+                        QA.db.profile.castBarWidth = value
+                        QA:UpdateCastBarSize()
+                    end,
+                    order = 112.1,
+                },
+                castBarHeight = {
+                    type = "range",
+                    name = "Cast Bar Height",
+                    desc = "Set the height of the cast bar",
+                    min = 10,
+                    max = 40,
+                    step = 1,
+                    get = function(info) return QA.db.profile.castBarHeight end,
+                    set = function(info, value)
+                        QA.db.profile.castBarHeight = value
+                        QA:UpdateCastBarSize()
+                    end,
+                    order = 112.2,
                 },
                 floatingLootIconSize = {
                     type = "range",
@@ -951,17 +992,6 @@ QA.options = {
                     end,
                     hidden = not QA.isHunter,
                     order = 109.3,
-                },
-                castBarEnabled = {
-                    type = "toggle",
-                    name = "Cast Bar",
-                    desc = "Show your casts and channels in a bar under the swing timer. Casts the game doesn't report, like Aimed Shot, are estimated and shown in orange with a ~ before the name.",
-                    get = function(info) return QA.db.profile.castBarEnabled end,
-                    set = function(info, value)
-                        QA.db.profile.castBarEnabled = value
-                        QA:UpdateCastBar()
-                    end,
-                    order = 109.4,
                 },
                 castBarHideBlizzard = {
                     type = "toggle",

@@ -3,7 +3,7 @@ local QA = addon.root
 local debug = QA.Debug
 
 local LSM = LibStub("LibSharedMedia-3.0")
-local HEIGHT = 14
+local INSET = 2
 local FAIL_DISPLAY_TIME = 0.5
 -- an estimate is dropped if no result event arrives this long after it should have ended
 local ESTIMATE_GRACE = 0.5
@@ -202,26 +202,31 @@ function QA:UpdateCastBar()
     end
 end
 
+function QA:UpdateCastBarSize()
+    if not cb.frame then return end
+    local height = QA.db.profile.castBarHeight
+    cb.frame:SetSize(QA.db.profile.castBarWidth, height)
+    cb.frame.icon:SetSize(height - 2 * INSET, height - 2 * INSET)
+end
+
 function QA:InitCastBar()
     local frame = CreateFrame("Frame", "QuickAuras_CastBar", UIParent, "BackdropTemplate")
-    frame:SetHeight(HEIGHT)
-    frame:SetPoint("TOPLEFT", QuickAuras_SwingTimer, "BOTTOMLEFT", HEIGHT, -2)
-    frame:SetPoint("TOPRIGHT", QuickAuras_SwingTimer, "BOTTOMRIGHT", 0, -2)
-    QA:SetDarkBackdrop(frame)
+    frame:SetPoint("TOP", QuickAuras_SwingTimer, "BOTTOM", 0, -2)
+    QA:SetDarkBackdrop(frame, true)
 
     frame.icon = frame:CreateTexture(nil, "ARTWORK")
-    frame.icon:SetSize(HEIGHT, HEIGHT)
-    frame.icon:SetPoint("RIGHT", frame, "LEFT", 0, 0)
+    frame.icon:SetPoint("LEFT", frame, "LEFT", INSET, 0)
     frame.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 
     frame.bar = CreateFrame("StatusBar", nil, frame)
-    frame.bar:SetAllPoints(frame)
+    frame.bar:SetPoint("TOPLEFT", frame.icon, "TOPRIGHT", 1, 0)
+    frame.bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -INSET, INSET)
     frame.bar:SetStatusBarTexture(LSM:Fetch("statusbar", "Minimalist"))
     frame.bar:SetMinMaxValues(0, 1)
 
     frame.name = frame.bar:CreateFontString(nil, "OVERLAY")
     frame.name:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
-    frame.name:SetPoint("LEFT", frame, "LEFT", 3, 0)
+    frame.name:SetPoint("LEFT", frame.bar, "LEFT", 3, 0)
     frame.name:SetPoint("RIGHT", frame, "RIGHT", -28, 0)
     frame.name:SetJustifyH("LEFT")
     frame.name:SetWordWrap(false)
@@ -232,6 +237,7 @@ function QA:InitCastBar()
 
     frame:Hide()
     cb.frame = frame
+    QA:UpdateCastBarSize()
 
     cb.eventFrame = CreateFrame("Frame")
     for _, event in ipairs({

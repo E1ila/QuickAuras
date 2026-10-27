@@ -34,6 +34,7 @@ QA.optionalEvents = {
     UNIT_SPELLCAST_SENT = { "spellQueueEnabled" },
     UNIT_INVENTORY_CHANGED = { "weaponEnchantEnabled", "item_Ammo" },
     UNIT_PORTRAIT_UPDATE = { "warriorStancePortrait" },
+    CHAT_MSG_LOOT = { "floatingLoot" },
     --ACTIONBAR_SLOT_CHANGED = {},
     --ACTIONBAR_PAGE_CHANGED = {},
     --ACTIONBAR_UPDATE_STATE = {},
@@ -61,6 +62,7 @@ QA.adjustableFrames = {
     QuickAuras_SpellQueue,
     QuickAuras_Ready,
     QuickAuras_ReadyThings,
+    QuickAuras_FloatingLoot,
 }
 
 --QuickAuras.adjustableFrames = {

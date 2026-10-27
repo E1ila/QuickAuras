@@ -399,6 +399,25 @@
         </Layers>
     </Frame>
 
+    <Frame name="QuickAuras_FloatingLoot" parent="UIParent" inherits="QuickAuras_Widget" hidden="false">
+        <Size>
+            <AbsDimension x="80" y="40" />
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent" x="0" y="0" />
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="Floating Loot">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
     <Frame name="QuickAuras_RangeIndicator2" parent="UIParent" inherits="QuickAuras_Widget" hidden="true">
         <Size>
             <AbsDimension x="30" y="30" />
@@ -469,6 +488,12 @@
                     <Color r="1" g="1" b="1"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" x="4" y="-2" />
+                    </Anchors>
+                </FontString>
+                <FontString name="$parent_Tag" inherits="QuickAuras_NormalFont" text="QA">
+                    <Color r="0.3" g="0.7" b="1"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" x="-4" y="-2" />
                     </Anchors>
                 </FontString>
             </Layer>

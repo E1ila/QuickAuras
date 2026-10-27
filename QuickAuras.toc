@@ -21,3 +21,4 @@ BossLogic.lua
 XP.lua
 HealerMana.lua
 Swing.lua
+FloatingLoot.lua

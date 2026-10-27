@@ -232,4 +232,5 @@ end
 function QA:InitHealerMana()
     QA:SetDarkBackdrop(QuickAuras_HealerMana)
     QuickAuras_HealerMana_Title:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
+    QuickAuras_HealerMana_Tag:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
 end

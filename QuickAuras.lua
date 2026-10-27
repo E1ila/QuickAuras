@@ -19,6 +19,7 @@ QA.partyShamans = {}
 QA.encounter = { OnStart = {}, OnEnd = {}, CombatLog = {} }
 QA.procCheck = { cooldown = {}, FadeCheck = {} }
 QA.hasTaunted = 0
+QA.nefarianSeen = false
 QAG = QA
 QuickAurasDBG = QuickAurasDBG or {
     debug = 0,

@@ -80,6 +80,27 @@ QA.adjustableFrames = {
 QA.trackedGear = {
     [15138] = {
         name = "Onyxia Scale Cloak",
+        desc = "Shows a warning when Onyxia Scale Cloak is worn outside Blackwing Lair, or when it's in your bags and not worn once Nefarius / Nefarian was targeted in Blackwing Lair.",
+        targetDependant = true,
+        visibleFunc = function(equipped)
+            local inBWL = select(8, GetInstanceInfo()) == 469
+            if not inBWL then
+                QA.nefarianSeen = false
+                return equipped
+            end
+            if equipped then
+                QA.nefarianSeen = false
+                return false
+            end
+            local targetGuid = UnitGUID("target")
+            if targetGuid then
+                local npcId = QA:GetNpcIdFromGuid(targetGuid)
+                if (npcId == 10162 or npcId == 11583) and not UnitIsDead("target") then -- Lord Victor Nefarius, Nefarian
+                    QA.nefarianSeen = true
+                end
+            end
+            return QA.nefarianSeen and QA.bags[15138] ~= nil
+        end,
     },
     [4984] = {
         name = "Skull of Impending Doom",

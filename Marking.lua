@@ -20,6 +20,103 @@ QA.raidMarks = {
     skull = 8,
 }
 
+QA.markPresets = {
+    naxx = {
+        name = "Naxxramas",
+        rules = [[
+# Naxxramas trash
+Living Monstrosity: skull
+Necro Knight: skull, cross
+Deathknight Captain: skull, cross
+Death Lord: skull
+Tomb Horror: skull
+Venom Stalker: skull, cross
+Necro Stalker: skull, cross
+Shade of Naxxramas: skull, cross
+Stoneskin Gargoyle: skull, cross
+Plagued Gargoyle: skull, cross, square
+Deathknight Cavalier: skull, cross
+Deathknight Vindicator: skull, cross
+Unholy Axe: skull, cross
+Unholy Staff: skull, cross
+Unholy Swords: skull, cross
+Patchwork Golem: skull, cross, square, moon
+Bile Retcher: skull, cross
+Sludge Belcher: skull, cross
+Stitched Spewer: skull, cross
+Plague Beast: skull, cross
+Infectious Ghoul: skull, cross, square
+Dread Creeper: skull, cross, square, moon
+Carrion Spinner: skull, cross, square, moon
+Naxxramas Acolyte: skull, cross, square, moon, triangle
+Naxxramas Cultist: skull, cross, square
+Necropolis Acolyte: skull, cross
+Skeletal Smith: square, moon
+# Boss adds
+Crypt Guard: skull, cross
+Naxxramas Follower: skull, cross
+Naxxramas Worshipper: square, moon, triangle, diamond
+Deathknight Understudy: skull, cross, square, moon
+]],
+    },
+    aq40 = {
+        name = "Ahn'Qiraj",
+        rules = [[
+# Temple of Ahn'Qiraj trash
+Qiraji Mindslayer: skull, cross, square, moon
+Qiraji Slayer: skull, cross, square, moon
+Qiraji Brainwasher: skull
+Qiraji Champion: skull, cross
+Anubisath Sentinel: skull, cross, square, moon, triangle
+Anubisath Defender: skull
+Anubisath Warder: skull
+Obsidian Eradicator: skull, cross, square
+Obsidian Nullifier: skull, cross
+Qiraji Lasher: skull, cross, square
+Vekniss Guardian: skull, cross, square
+Vekniss Warrior: skull, cross, square
+Vekniss Hive Crawler: skull, cross
+# Boss adds
+Sartura's Royal Guard: skull, cross, square
+]],
+    },
+    bwl = {
+        name = "Blackwing Lair",
+        rules = [[
+# Blackwing Lair trash
+Death Talon Captain: skull
+Death Talon Wyrmguard: skull, cross, square
+Death Talon Overseer: skull, cross
+Death Talon Flamescale: skull, cross
+Death Talon Seether: skull, cross
+Blackwing Spellbinder: skull, cross
+Blackwing Warlock: skull, cross
+Blackwing Taskmaster: skull, cross
+Blackwing Technician: skull, cross, square, moon
+Chromatic Elite Guard: skull, cross, square
+Death Talon Dragonspawn: skull, cross
+]],
+    },
+    mc = {
+        name = "Molten Core",
+        rules = [[
+# Molten Core trash
+Molten Destroyer: skull, cross
+Molten Giant: skull, cross
+Lava Annihilator: skull, cross
+Ancient Core Hound: skull, cross
+Firelord: skull, cross
+Lava Surger: skull, cross
+Core Hound: square, moon, triangle, diamond, circle
+# Boss adds
+Flamewaker Protector: skull, cross
+Flamewaker Priest: skull, cross, square, moon
+Flamewaker Elite: skull, cross, square, moon
+Flamewaker Healer: triangle, diamond, circle, star
+]],
+    },
+}
+
 local modifierChecks = {
     shift = IsShiftKeyDown,
     ctrl = IsControlKeyDown,
@@ -236,6 +333,15 @@ function QA:ClearAllMarks()
     end
     SetRaidTarget("player", 0)
     out("Raid marks cleared.")
+end
+
+function QA:LoadMarkPreset(key)
+    local preset = QA.markPresets[key]
+    if not preset then return end
+    QA.db.profile.markRules = preset.rules
+    QA:ResetMarking()
+    out(_c.bold.."Marking|r loaded "..preset.name.." preset.")
+    QA:PrintMarkRules()
 end
 
 function QA:PrintMarkRules()

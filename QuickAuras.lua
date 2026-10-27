@@ -324,6 +324,8 @@ function QA:HandleSlashCommand(input)
             QA:SetHealerManaEnabled(not QA.db.profile.healerManaEnabled)
         elseif cmd == "mark" and arg1 == "clear" then
             QA:ClearAllMarks()
+        elseif cmd == "mark" and QA.markPresets[arg1] then
+            QA:LoadMarkPreset(arg1)
         elseif cmd == "mark" then
             QA.db.profile.markingEnabled = not QA.db.profile.markingEnabled
             QA:ResetMarking()
@@ -359,6 +361,7 @@ function QA:HandleSlashCommand(input)
             out("  |cFF00FFaa/qa mana|r - Toggle the healer mana window")
             out("  |cFF00FFaa/qa mark|r - Toggle auto raid marking")
             out("  |cFF00FFaa/qa mark clear|r - Remove all raid marks")
+            out("  |cFF00FFaa/qa mark <preset>|r - Load a marking preset: naxx, aq40, bwl, mc")
             out("  |cFF00FFaa/qa wasted|r - Toggle tracking of MH swing time wasted by extra attack procs from abilities")
             out("  |cFF00FFaa/qa wasted reset|r - Reset wasted swing time stats")
             out("|cff000000-------------------------------|r")

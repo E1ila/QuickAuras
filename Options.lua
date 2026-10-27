@@ -1534,6 +1534,27 @@ QA.options = {
                     name = "One mob per line: |cffffff00Mob Name: skull, cross, square|r. An NPC ID can be used instead of the name. Each mob gets the first free mark from its list, left to right. Mobs higher in the list have higher priority. Lines starting with # are ignored.\nMarks: skull, cross (x), square, moon, triangle, diamond, circle, star.",
                     order = 10,
                 },
+                markPreset = {
+                    type = "select",
+                    name = "Load Preset",
+                    desc = "Replace the mob list below with a ready made list. You can edit it afterwards.",
+                    values = function()
+                        local values = {}
+                        for key, preset in pairs(QA.markPresets) do
+                            values[key] = preset.name
+                        end
+                        return values
+                    end,
+                    get = function(info) return nil end,
+                    set = function(info, value) QA:LoadMarkPreset(value) end,
+                    confirm = function(info, value)
+                        if (QA.db.profile.markRules or ""):match("%S") then
+                            return "Replace your current mob list with the "..QA.markPresets[value].name.." preset?"
+                        end
+                        return false
+                    end,
+                    order = 10.5,
+                },
                 markRules = {
                     type = "input",
                     name = "Mobs",

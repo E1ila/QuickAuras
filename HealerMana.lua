@@ -80,6 +80,17 @@ function QA:IsHealerManaVisible()
     return IsInGroup()
 end
 
+function QA:SetHealerManaEnabled(enabled)
+    QA.db.profile.healerManaEnabled = enabled
+    if enabled then
+        QA:BuildHealerManaRoster()
+        QA.Print("Healer mana window enabled.")
+    else
+        QuickAuras_HealerMana:Hide()
+        QA.Print("Healer mana window closed. Type |cffffff00/qa mana|r to toggle it back on.")
+    end
+end
+
 function QA:BuildHealerManaRoster()
     hm.units = {}
     hm.tracked = {}
@@ -178,6 +189,10 @@ function QA:UpdateHealerMana()
     hm.dirty = false
     hm.lastUpdate = GetTime()
     local frame = QuickAuras_HealerMana
+    if not QA.db.profile.healerManaEnabled then
+        frame:Hide()
+        return
+    end
 
     local entries
     if not QA.uiLocked then
@@ -232,5 +247,8 @@ end
 function QA:InitHealerMana()
     QA:SetDarkBackdrop(QuickAuras_HealerMana)
     QuickAuras_HealerMana_Title:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
-    QuickAuras_HealerMana_Tag:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
+    QuickAuras_HealerMana_Close_Text:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
+    QuickAuras_HealerMana_Close:SetScript("OnClick", function()
+        QA:SetHealerManaEnabled(false)
+    end)
 end

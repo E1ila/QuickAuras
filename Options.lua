@@ -53,6 +53,8 @@ QA.defaultOptions = {
         swingTimerRanged = true,
         swingTimerRangedWindow = QA.isHunter,
         swingTimerRangedClip = QA.isHunter,
+        castBarEnabled = QA.isHunter,
+        castBarHideBlizzard = false,
         bossFrenzy = QA.isHunter,
         raidBars = true,
         notifyExplosivesReady = true,
@@ -292,6 +294,7 @@ QA.options = {
                     get = function(info) return QA.db.profile.readyThingsEnabled end,
                     set = function(info, value)
                         QA.db.profile.readyThingsEnabled = value
+                        QA:RegisterOptionalEvents()
                         if value then
                             QuickAuras_ReadyThings:Show()
                             QA:CheckCooldowns()
@@ -308,8 +311,7 @@ QA.options = {
                     desc = "Shows the mana of healers in your group, lowest first",
                     get = function(info) return QA.db.profile.healerManaEnabled end,
                     set = function(info, value)
-                        QA.db.profile.healerManaEnabled = value
-                        QA:UpdateHealerMana()
+                        QA:SetHealerManaEnabled(value)
                     end,
                     order = 3,
                 },
@@ -949,6 +951,28 @@ QA.options = {
                     end,
                     hidden = not QA.isHunter,
                     order = 109.3,
+                },
+                castBarEnabled = {
+                    type = "toggle",
+                    name = "Cast Bar",
+                    desc = "Show your casts and channels in a bar under the swing timer. Casts the game doesn't report, like Aimed Shot, are estimated and shown in orange with a ~ before the name.",
+                    get = function(info) return QA.db.profile.castBarEnabled end,
+                    set = function(info, value)
+                        QA.db.profile.castBarEnabled = value
+                        QA:UpdateCastBar()
+                    end,
+                    order = 109.4,
+                },
+                castBarHideBlizzard = {
+                    type = "toggle",
+                    name = "Hide Blizzard Cast Bar",
+                    desc = "Hide Blizzard's default player cast bar.",
+                    get = function(info) return QA.db.profile.castBarHideBlizzard end,
+                    set = function(info, value)
+                        QA.db.profile.castBarHideBlizzard = value
+                        QA:UpdateBlizzardCastBar()
+                    end,
+                    order = 109.5,
                 },
                 warriorUtilsHeader = {
                     type = "header",

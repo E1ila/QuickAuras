@@ -89,6 +89,7 @@ function QA:InitUI()
     QA:ParentFramesNormalState()
     QA:InitWeaponEnchants()
     QA:InitSwingTimers()
+    QA:InitCastBar()
     --QA:InitCrucialBuffMissing()
     QA:InitRangeIndication()
     QA:InitFloatingLoot()
@@ -755,7 +756,7 @@ end
 
 function QA:ParentFramesNormalState()
     QuickAuras_XP:EnableMouse(false)
-    QuickAuras_HealerMana:EnableMouse(false)
+    QuickAuras_HealerMana:EnableMouse(true)
     QuickAuras_HealerMana_Text:Hide()
     QuickAuras_SwingTimer:EnableMouse(false)
     QuickAuras_SwingTimer_Text:Hide()
@@ -765,6 +766,7 @@ function QA:ParentFramesNormalState()
         _G[frame:GetName().."_Text"]:Hide()
         frame:EnableMouse(false)
     end
+    QA:UpdateCastBar()
     QA:RefreshAll()
 end
 
@@ -784,6 +786,7 @@ function QA:ParentFramesEditState()
         frame:EnableMouse(true)
     end
     QA:UpdateHealerMana()
+    QA:UpdateCastBar()
 end
 
 function QA:ToggleLockedState()

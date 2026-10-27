@@ -490,14 +490,29 @@
                         <Anchor point="TOPLEFT" x="4" y="-2" />
                     </Anchors>
                 </FontString>
-                <FontString name="$parent_Tag" inherits="QuickAuras_NormalFont" text="QA">
-                    <Color r="0.3" g="0.7" b="1"/>
-                    <Anchors>
-                        <Anchor point="TOPRIGHT" x="-4" y="-2" />
-                    </Anchors>
-                </FontString>
             </Layer>
         </Layers>
+        <Frames>
+            <Button name="$parent_Close" enableMouse="true">
+                <Size>
+                    <AbsDimension x="16" y="16" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="-1" />
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString name="$parent_Text" inherits="QuickAuras_NormalFont" text="X">
+                            <Color r="0.3" g="0.7" b="1"/>
+                            <Anchors>
+                                <Anchor point="CENTER" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+            </Button>
+        </Frames>
     </Frame>
 
     <Frame name="QuickAuras_XP" parent="UIParent" inherits="QuickAuras_Widget">

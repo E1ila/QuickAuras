@@ -320,6 +320,8 @@ function QA:HandleSlashCommand(input)
             end
         elseif cmd == "xp" then
             QA:ResetXpTracker()
+        elseif cmd == "mana" then
+            QA:SetHealerManaEnabled(not QA.db.profile.healerManaEnabled)
         elseif cmd == "wasted" and (arg1 == "r" or arg1 == "reset") then
             QA.ResetWastedSwingStats()
             out("Wasted swing stats reset")
@@ -343,6 +345,7 @@ function QA:HandleSlashCommand(input)
             out("  |cFF00FFaa/qa lock|r - Toggle lock/unlock window position")
             out("  |cFF00FFaa/qa clear|r - Clear ignored (right clicked) icons")
             out("  |cFF00FFaa/qa xp|r - Reset XP session tracker")
+            out("  |cFF00FFaa/qa mana|r - Toggle the healer mana window")
             out("  |cFF00FFaa/qa wasted|r - Toggle tracking of MH swing time wasted by extra attack procs from abilities")
             out("  |cFF00FFaa/qa wasted reset|r - Reset wasted swing time stats")
             out("|cff000000-------------------------------|r")

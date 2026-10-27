@@ -35,11 +35,17 @@ function QA:AddReadyThing(conf, id)
         else
             known = IsSpellKnown(conf.spellId) or IsPlayerSpell(conf.spellId)
         end
-        if not known then return end
+        if not known then
+            QA:RemoveReadyThing(id)
+            return
+        end
 
         -- Don't show if currently on cooldown (ignore GCD: duration <= 2)
         local start, duration = GetSpellCooldown(id)
-        if start and start > 0 and duration and duration > 2 then return end
+        if start and start > 0 and duration and duration > 2 then
+            QA:RemoveReadyThing(id)
+            return
+        end
     end
 
     -- Check if this is a state change (was not ready, now is ready)
@@ -594,7 +600,7 @@ local function _checkCooldown(conf, idType, id, start, duration)
     --debug(4, "_checkCooldown", idType, id, conf.name, start, duration, "option", conf.option)
     local isOnCooldown = start and start > 0 and duration and duration > 2
 
-    if isOnCooldown and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
+    if QA.db.profile.cooldowns and isOnCooldown and (not conf.option or QA.db.profile[conf.option.."_cd"]) then
         local updatedDuration = duration - (GetTime() - start)
         --debug(3, "_checkCooldown", "FOUND", conf.name)
 
@@ -636,7 +642,7 @@ local function isItemReady(item)
 end
 
 function QA:CheckCooldowns()
-    if QA.db.profile.cooldowns then
+    if QA.db.profile.cooldowns or QA.db.profile.readyThingsEnabled then
         --debug(2, "CheckCooldowns", "check")
         for spellId, conf in pairs(QA.trackedSpellCooldowns) do
             if not (conf.ignoreCooldownInStealth and QA.playerIsStealthed) then

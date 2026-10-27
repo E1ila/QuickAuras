@@ -70,6 +70,11 @@ end
 
 function QA:SPELLS_CHANGED()
     QA:RefreshRangedSwing()
+    QA:CheckCooldowns()
+end
+
+function QA:CHARACTER_POINTS_CHANGED()
+    QA:CheckCooldowns()
 end
 
 function QA:BAG_UPDATE_COOLDOWN(...)

@@ -44,6 +44,16 @@ QA.consumes = {
     QA.explosives.ironGranade,
     QA.explosives.thoriumGrenade,
     {
+        name = "Ammo",
+        desc = "Shows a reminder below 1000 rounds of equipped ammo, including bags and the ammo slot. Shown at any level; follows the low consumes \"only in capital\" setting.",
+        itemId = 2512,
+        itemIds = { 2512, 2515, 3030, 11285, 19316, 18042, 12654, 2516, 2519, 3033, 11284, 19317, 15997, 13377 },
+        minCount = 1000,
+        ammoSlot = true,
+        default = QA.isHunter,
+        visible = QA.isHunter,
+    },
+    {
         name = "Ankh",
         itemId = 17030,
         minCount = 2,

@@ -41,7 +41,18 @@ function QA:UNIT_AURA(unit)
     end
 end
 
+function QA:NotifyFeignDeathResist()
+    if not QA.isHunter or not QA.db.profile.feignDeathResist then return end
+    local now = GetTime()
+    if QA.lastFeignDeathResist and now - QA.lastFeignDeathResist < 1 then return end
+    QA.lastFeignDeathResist = now
+    QA:ShowNoticableError("FD RESISTED", true)
+end
+
 function QA:UI_ERROR_MESSAGE(errorType, errorMessage)
+    if ERR_FEIGN_DEATH_RESISTED and errorMessage == ERR_FEIGN_DEATH_RESISTED then
+        QA:NotifyFeignDeathResist()
+    end
     if QA.db.profile.outOfRange and UnitAffectingCombat("player") then
         --debug("UI_ERROR_MESSAGE", errorType, errorMessage)
         if  errorMessage == ERR_OUT_OF_RANGE
@@ -202,8 +213,11 @@ function QA:ADDON_ACTION_BLOCKED(...)
     debug("ADDON_ACTION_BLOCKED", _c.alert, ...)
 end
 
-function QA:UNIT_INVENTORY_CHANGED()
+function QA:UNIT_INVENTORY_CHANGED(unit)
     QA:CheckWeaponEnchants()
+    if unit == "player" and QA.isHunter and QA.db.profile.item_Ammo then
+        QA:BagsChanged()
+    end
 end
 
 function QA:UNIT_PORTRAIT_UPDATE(unit)
@@ -285,6 +299,12 @@ function QA:HandleCombatLogEvent(timestamp, subevent, _, sourceGuid, sourceName,
     if IGNORED_EVENTS[subevent] then return end
     local extra = {...}
     --debug("CombatLog", subevent, sourceName, destName, ...)
+
+    if (subevent == "SPELL_MISSED" or subevent == "SPELL_AURA_MISSED")
+        and sourceGuid == QA.playerGuid and extra[1] == QA.spells.hunter.feignDeath.spellId[1] and extra[4] == "RESIST"
+    then
+        QA:NotifyFeignDeathResist()
+    end
 
     if  -- parry haste
             QA.db.profile.harryPaste and

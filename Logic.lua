@@ -113,7 +113,8 @@ function QA:CheckTargetAuras(targetChanged)
                         break
                     end
                 end
-                local stackCount = found and found.count or 0
+                -- Non-stacking auras report zero stacks.
+                local stackCount = found and math.max(found.count or 0, 1) or 0
                 local missing = stackCount < spell.enemyAura.requiredStacks
                 --debug("CheckTargetAuras", "(check)", _c.yellow..spell.name.."|r", "missing", missing, "count", found and found.count or 0)
                 if missing then
@@ -130,6 +131,8 @@ function QA:CheckTargetAuras(targetChanged)
                         QA:AddTimer(window, spell, spell.spellId[1], found.duration, found.expires, QA.db.profile.targetAuraExpireTime)
                     end
                 end
+            else
+                QA:RemoveIcon(window, spell.spellId[1])
             end
         end
     end
@@ -489,13 +492,25 @@ function QA:CheckLowConsumes()
     for _, consume in pairs(QA.trackedLowConsumes) do
         if not consume.option or QA.db.profile[consume.option] then
             local foundItemId, details = QA:FindInBags(consume.itemIds or consume.itemId)
+            local displayItemId = consume.itemId
+            if consume.ammoSlot then
+                displayItemId = GetInventoryItemID("player", 0) or foundItemId or consume.itemId
+                -- GetItemCount includes equipped ammo; adding slot 0 again would double count it.
+                local count = GetItemCount(displayItemId) or 0
+                foundItemId = count > 0 and displayItemId or nil
+                details = { count = count }
+                if consume.ammoItemId ~= displayItemId then
+                    QA:RemoveIcon(WINDOW.REMINDER, consume.itemId)
+                    consume.ammoItemId = displayItemId
+                end
+            end
             local minCount = consume.minCount or QA.db.profile.lowConsumesMinCount
             --debug(3, "CheckLowConsumes", "(scan)", consume.name, "foundItemId", foundItemId, "option", consume.option, consume.option and QA.db.profile[consume.option])
             if
                 (not foundItemId or details.count < minCount)
-                and QA.db.profile.lowConsumesMinLevel <= QA.playerLevel
+                and (consume.ammoSlot or QA.db.profile.lowConsumesMinLevel <= QA.playerLevel)
             then
-                QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, details and details.count or 0)
+                QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, details and details.count or 0, nil, nil, displayItemId)
             else
                 QA:RemoveIcon(WINDOW.REMINDER, consume.itemId)
             end
@@ -506,7 +521,7 @@ function QA:CheckLowConsumes()
                     -- no more item
                     QA.existingConsumes[consume.itemId] = nil
                     if IsInInstance() then
-                        QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, 0)
+                        QA:AddIcon(WINDOW.REMINDER, "item", consume.itemId, consume, 0, nil, nil, displayItemId)
                     end
                 end
             end
@@ -769,6 +784,7 @@ function QA:CheckAuras()
     QA:CheckMissingBuffs(seen, combatStateChanged)
     QA:CheckCrucialBuffs(seen, combatStateChanged)
     QA:CheckStealthInInstance(seen)
+    QA:CheckHunterAspectDanger(seen)
     QA:UpdateFlurryIcon()
 end
 
@@ -829,7 +845,7 @@ function QA:CheckCrucialBuffs(activeAuras, combatStateChanged)
                 end
                 local OnClick = buff.conf.OnClick
                 for _, id in ipairs(buff.spellIds) do
-                    if IsSpellKnown(id) then
+                    if IsSpellKnown(id) or IsPlayerSpell(id) then
                         OnClick = "cast "..tostring(id)
                         break
                     end
@@ -867,6 +883,17 @@ function QA:CheckStealthInInstance(seen)
     end
     if not found then
         QA:RemoveIcon(WINDOW.WARNING, stealth.spellId[1])
+    end
+end
+
+function QA:CheckHunterAspectDanger(seen)
+    for _, aspect in ipairs({ QA.spells.hunter.aspectOfTheCheetah, QA.spells.hunter.aspectOfThePack }) do
+        local spellId = aspect.spellId[1]
+        if QA.isHunter and QA.db.profile.hunterAspectDanger and QA.inCombat and seen[spellId] then
+            QA:AddIcon(WINDOW.WARNING, "spell", spellId, aspect)
+        else
+            QA:RemoveIcon(WINDOW.WARNING, spellId)
+        end
     end
 end
 

@@ -6,6 +6,16 @@ local WINDOW = QA.WINDOW
 local out = QA.Print
 local debug = QA.Debug
 
+local function HunterCrucialBuffEnabled(option, spellIds)
+    if not QA.isHunter or not QA.db.profile[option] or not QA.inCombat or not IsInInstance() then return false end
+    for _, spellId in ipairs(spellIds) do
+        if IsSpellKnown(spellId) or IsPlayerSpell(spellId) then
+            return true
+        end
+    end
+    return false
+end
+
 spells.warlock = {
     corruption = {
         spellId = { 172, 6222, 6223, 7648, 11671, 11672, 25311 },
@@ -197,6 +207,52 @@ spells.warlock = {
 }
 
 spells.hunter = {
+    trueshotAura = {
+        spellId = { 19506, 20905, 20906 },
+        name = "Trueshot Aura",
+        icon = "Interface\\Icons\\Ability_TrueShot",
+        crucial = QA.isHunter,
+        CrucialCond = function()
+            return HunterCrucialBuffEnabled("trueshotAuraMissing", spells.hunter.trueshotAura.spellId)
+        end,
+        visible = QA.isHunter,
+    },
+    aspectOfTheHawk = {
+        spellId = { 13165, 14318, 14319, 14320, 14321, 14322, 25296 },
+        name = "Aspect of the Hawk",
+        icon = "Interface\\Icons\\Spell_Nature_RavenForm",
+        crucial = QA.isHunter,
+        CrucialCond = function()
+            return HunterCrucialBuffEnabled("aspectOfTheHawkMissing", spells.hunter.aspectOfTheHawk.spellId)
+        end,
+        visible = QA.isHunter,
+    },
+    huntersMark = {
+        spellId = { 1130, 14323, 14324, 14325 },
+        name = "Hunter's Mark",
+        icon = "Interface\\Icons\\Ability_Hunter_SniperShot",
+        enemyAura = {
+            requiredStacks = 1,
+            hidden = not QA.isHunter,
+            ShowCond = function()
+                local classification = UnitClassification("target")
+                return QA.isHunter and (IsInInstance() or classification == "elite" or classification == "worldboss" or classification == "rareelite")
+            end,
+        },
+        visible = QA.isHunter,
+    },
+    aspectOfTheCheetah = {
+        spellId = { 5118 },
+        name = "Aspect of the Cheetah",
+        icon = "Interface\\Icons\\Ability_Mount_JungleTiger",
+        visible = QA.isHunter,
+    },
+    aspectOfThePack = {
+        spellId = { 13159 },
+        name = "Aspect of the Pack",
+        icon = "Interface\\Icons\\Ability_Mount_WhiteTiger",
+        visible = QA.isHunter,
+    },
     scatterShot = {
         spellId = { 19503 },
         name = "Scatter Shot",

@@ -41,6 +41,7 @@ QA.defaultOptions = {
         announceSquawk = true,
         announceCcBreak = true,
         stealthInInstance = true,
+        hunterAspectDanger = QA.isHunter,
         xpFrameEnabled = true,
         spellQueueEnabled = true,
         swingTimersEnabled = QA.isWarrior or QA.isRogue,
@@ -91,14 +92,19 @@ QA.defaultOptions = {
         rogue5combo = true,
         harryPaste = true,
         outOfRange = true,
+        feignDeathResist = QA.isHunter,
         outOfRangeSound = true,
         offensiveBars = true,
         showTimeOnBars = true,
         hideLegacyPartyFrames = false,
         battleShoutMissing = QA.isWarrior or QA.isRogue,
+        trueshotAuraMissing = QA.isHunter,
+        aspectOfTheHawkMissing = QA.isHunter,
+        hunter_huntersMark_enemy = QA.isHunter,
         frostResistanceTotemMissing = true,
         lowConsumesMinLevel = 58,
         lowConsumesMinCount = 1,
+        item_Ammo = QA.isHunter,
         manaTideAura = QA.isManaClass,
         innervateAura = QA.isManaClass,
         encounter4hmStartAt = 0, -- 0 = disabled
@@ -630,6 +636,18 @@ QA.options = {
                     end,
                     order = 12,
                 },
+                feignDeathResist = {
+                    type = "toggle",
+                    name = "Feign Death Resisted",
+                    desc = "Show a visible warning when Feign Death is resisted.",
+                    get = function(info) return QA.db.profile.feignDeathResist end,
+                    set = function(info, value)
+                        QA.db.profile.feignDeathResist = value
+                        QA:RegisterOptionalEvents()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 12.5,
+                },
                 notifyExplosivesReady = {
                     type = "toggle",
                     name = "Explosives Ready",
@@ -736,6 +754,32 @@ QA.options = {
                     end,
                     hidden = not QA.isRogue and not QA.isWarrior and not QA.isShaman,
                     order = 105,
+                },
+                trueshotAuraMissing = {
+                    type = "toggle",
+                    name = "Trueshot Aura Missing",
+                    desc = "Show a warning when a known Trueshot Aura is missing in combat in an instance.",
+                    get = function(info) return QA.db.profile.trueshotAuraMissing end,
+                    set = function(info, value)
+                        QA.db.profile.trueshotAuraMissing = value
+                        QA:ClearIcons(WINDOW.CRUCIAL)
+                        QA:CheckAuras()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 105.1,
+                },
+                aspectOfTheHawkMissing = {
+                    type = "toggle",
+                    name = "Aspect of the Hawk Missing",
+                    desc = "Show a warning when a known Aspect of the Hawk is missing in combat in an instance.",
+                    get = function(info) return QA.db.profile.aspectOfTheHawkMissing end,
+                    set = function(info, value)
+                        QA.db.profile.aspectOfTheHawkMissing = value
+                        QA:ClearIcons(WINDOW.CRUCIAL)
+                        QA:CheckAuras()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 105.2,
                 },
                 announceMisses = {
                     type = "toggle",
@@ -1044,6 +1088,18 @@ QA.options = {
                     hidden = not QA.isRogue,
                     order = 306,
                 },
+                hunterAspectDanger = {
+                    type = "toggle",
+                    name = "Cheetah / Pack in Combat",
+                    desc = "Show a warning when Aspect of the Cheetah or Aspect of the Pack is active in combat.",
+                    get = function(info) return QA.db.profile.hunterAspectDanger end,
+                    set = function(info, value)
+                        QA.db.profile.hunterAspectDanger = value
+                        QA:CheckAuras()
+                    end,
+                    hidden = not QA.isHunter,
+                    order = 306.5,
+                },
                 rogueTeaTime = {
                     type = "select",
                     name = "Tea Time!",
@@ -1343,7 +1399,9 @@ local function AddSpells(cspells, orderStart, categoryHidden)
                 set = function(info, value)
                     QA.db.profile[key] = value
                     debug("Set enemy aura", key, value)
+                    QA:CheckTargetAuras(true)
                 end,
+                hidden = spell.enemyAura.hidden,
                 order = order + 30,
             }
         end
@@ -1507,6 +1565,7 @@ function QA:AddConsumeOptions()
                 end,
                 set = function(info, value)
                     QA.db.profile[item.option] = value
+                    QA:RegisterOptionalEvents()
                     QA:RefreshMissing()
                     if (item.visible == nil or item.visible) and (item.visibleFunc == nil or item.visibleFunc()) then
                         QA:RefreshReminders()

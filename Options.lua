@@ -158,7 +158,7 @@ QA.options = {
                             QA:TestProgressBar(QA.trackedAuras, 5)
                         end
                     end,
-                    order = 5,
+                    order = 14,
                 },
                 offensiveBarsEnabled = {
                     type = "toggle",
@@ -185,7 +185,7 @@ QA.options = {
                         end
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 7,
+                    order = 2,
                 },
                 iconWarningEnabled = {
                     type = "toggle",
@@ -201,7 +201,7 @@ QA.options = {
                             QA:ClearIcons(WINDOW.WARNING)
                         end
                     end,
-                    order = 8,
+                    order = 13,
                 },
                 missingBuffsEnabled = {
                     type = "toggle",
@@ -212,7 +212,7 @@ QA.options = {
                         QA.db.profile.missingConsumes = value
                         QA:RefreshMissing()
                     end,
-                    order = 9,
+                    order = 5,
                 },
                 remindersEnabled = {
                     type = "toggle",
@@ -224,7 +224,7 @@ QA.options = {
                         QA:RegisterOptionalEvents()
                         QA:RefreshReminders()
                     end,
-                    order = 10,
+                    order = 9,
                 },
                 raidBars = {
                     type = "toggle",
@@ -234,7 +234,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.raidBars = value
                     end,
-                    order = 11,
+                    order = 8,
                 },
                 xpFrameEnabled = {
                     type = "toggle",
@@ -250,7 +250,7 @@ QA.options = {
                             QuickAuras_XP:Hide()
                         end
                     end,
-                    order = 12,
+                    order = 16,
                 },
                 spellQueueEnabled = {
                     type = "toggle",
@@ -266,7 +266,7 @@ QA.options = {
                         end
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 13,
+                    order = 1,
                 },
                 swingTimersEnabled = {
                     type = "toggle",
@@ -281,7 +281,7 @@ QA.options = {
                             QuickAuras_SwingTimer:Hide()
                         end
                     end,
-                    order = 14,
+                    order = 11,
                 },
                 readyThingsEnabled = {
                     type = "toggle",
@@ -298,7 +298,7 @@ QA.options = {
                             QA:ClearIcons(WINDOW.READYTHINGS)
                         end
                     end,
-                    order = 14.5,
+                    order = 4,
                 },
                 healerManaEnabled = {
                     type = "toggle",
@@ -309,25 +309,7 @@ QA.options = {
                         QA.db.profile.healerManaEnabled = value
                         QA:UpdateHealerMana()
                     end,
-                    order = 14.6,
-                },
-                healerManaMode = {
-                    type = "select",
-                    name = "Show Healer Mana",
-                    desc = "Choose when to show the healer mana panel.",
-                    values = {
-                        group = "Party or Raid",
-                        raid = "Raid Only",
-                    },
-                    get = function(info)
-                        return QA.db.profile.healerManaMode or "raid"
-                    end,
-                    set = function(info, value)
-                        QA.db.profile.healerManaMode = value
-                        QA:UpdateHealerMana()
-                    end,
-                    disabled = function() return not QA.db.profile.healerManaEnabled end,
-                    order = 14.7,
+                    order = 3,
                 },
                 overaggroWarning = {
                     type = "toggle",
@@ -338,7 +320,7 @@ QA.options = {
                         QA.db.profile.overaggroWarning = value
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 15,
+                    order = 7,
                 },
                 soundsEnabled = {
                     type = "toggle",
@@ -348,7 +330,7 @@ QA.options = {
                     set = function(info, value)
                         QA.db.profile.soundsEnabled = value
                     end,
-                    order = 16,
+                    order = 10,
                 },
                 targetInRangeIndication = {
                     type = "toggle",
@@ -365,7 +347,7 @@ QA.options = {
                         QA.targetInRange2 = false
                         QA:CheckTargetRange()
                     end,
-                    order = 17,
+                    order = 12,
                 },
                 weaponEnchantEnabled = {
                     type = "toggle",
@@ -383,7 +365,7 @@ QA.options = {
                         end
                         QA:RegisterOptionalEvents()
                     end,
-                    order = 18,
+                    order = 15,
                 },
             }
         },
@@ -711,6 +693,27 @@ QA.options = {
                         QA:RefreshMissing()
                     end,
                     order = 14,
+                },
+                healerManaMode = {
+                    type = "select",
+                    name = "Show Healer Mana",
+                    desc = "Choose when to show the healer mana panel. \"By role\" lists only players assigned the Healer role; otherwise all Priests, Druids, Paladins and Shamans that aren't tanks are listed.",
+                    values = {
+                        raid = "Raid Only",
+                        group = "Party or Raid",
+                        raidRole = "Raid Only (by role)",
+                        groupRole = "Party or Raid (by role)",
+                    },
+                    sorting = { "raid", "group", "raidRole", "groupRole" },
+                    get = function(info)
+                        return QA.db.profile.healerManaMode or "raid"
+                    end,
+                    set = function(info, value)
+                        QA.db.profile.healerManaMode = value
+                        QA:BuildHealerManaRoster()
+                    end,
+                    disabled = function() return not QA.db.profile.healerManaEnabled end,
+                    order = 15,
                 },
                 spacer20 = {
                     type = "description",

@@ -34,15 +34,37 @@ QA.healerMana = {
 }
 local hm = QA.healerMana
 
-local function IsTankOrDps(unit, raidIndex)
+local byRoleModes = {
+    raidRole = true,
+    groupRole = true,
+}
+
+local function GetRoles(unit, raidIndex)
     local role = UnitGroupRolesAssigned and UnitGroupRolesAssigned(unit)
-    if role == "TANK" or role == "DAMAGER" then return true end
     if raidIndex then
         local _, _, _, _, _, _, _, _, _, raidRole, _, combatRole = GetRaidRosterInfo(raidIndex)
-        if raidRole == "MAINTANK" or raidRole == "MAINASSIST" then return true end
-        if combatRole == "TANK" or combatRole == "DAMAGER" then return true end
+        return role, raidRole, combatRole
     end
-    return false
+    return role
+end
+
+-- DAMAGER isn't trusted: Classic Era often reports it for every member, healers included
+local function IsTank(unit, raidIndex)
+    local role, raidRole, combatRole = GetRoles(unit, raidIndex)
+    return role == "TANK" or combatRole == "TANK" or raidRole == "MAINTANK" or raidRole == "MAINASSIST"
+end
+
+local function IsHealerRole(unit, raidIndex)
+    local role, _, combatRole = GetRoles(unit, raidIndex)
+    return role == "HEALER" or combatRole == "HEALER"
+end
+
+local function IsHealer(unit, raidIndex)
+    if byRoleModes[QA.db.profile.healerManaMode] then
+        return IsHealerRole(unit, raidIndex)
+    end
+    local class = select(2, UnitClass(unit))
+    return healerClasses[class] and not IsTank(unit, raidIndex)
 end
 
 local function ManaColor(pct)
@@ -54,7 +76,7 @@ end
 function QA:IsHealerManaVisible()
     if not QA.db.profile.healerManaEnabled then return false end
     local mode = QA.db.profile.healerManaMode
-    if mode == "raid" then return IsInRaid() end
+    if mode == "raid" or mode == "raidRole" then return IsInRaid() end
     return IsInGroup()
 end
 
@@ -62,9 +84,7 @@ function QA:BuildHealerManaRoster()
     hm.units = {}
     hm.tracked = {}
     local function add(unit, raidIndex)
-        if not UnitExists(unit) then return end
-        local class = select(2, UnitClass(unit))
-        if healerClasses[class] and not IsTankOrDps(unit, raidIndex) then
+        if UnitExists(unit) and IsHealer(unit, raidIndex) then
             table.insert(hm.units, unit)
             hm.tracked[unit] = true
         end
@@ -210,5 +230,6 @@ function QA:UpdateHealerMana()
 end
 
 function QA:InitHealerMana()
+    QA:SetDarkBackdrop(QuickAuras_HealerMana)
     QuickAuras_HealerMana_Title:SetFont("Fonts\\FRIZQT__.TTF", 11, "OUTLINE")
 end

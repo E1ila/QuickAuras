@@ -754,6 +754,8 @@ end
 
 function QA:ParentFramesNormalState()
     QuickAuras_XP:EnableMouse(false)
+    QuickAuras_HealerMana:EnableMouse(false)
+    QuickAuras_HealerMana_Text:Hide()
     QuickAuras_SwingTimer:EnableMouse(false)
     QuickAuras_SwingTimer_Text:Hide()
     QuickAuras_SwingTimer:Hide()
@@ -767,6 +769,8 @@ end
 
 function QA:ParentFramesEditState()
     QuickAuras_XP:EnableMouse(true)
+    QuickAuras_HealerMana:EnableMouse(true)
+    QuickAuras_HealerMana_Text:Show()
     QuickAuras_SwingTimer:Show()
     QuickAuras_SwingTimer:EnableMouse(true)
     QuickAuras_SwingTimer_Text:Show()

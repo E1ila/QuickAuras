@@ -61,7 +61,6 @@ QA.adjustableFrames = {
     QuickAuras_SpellQueue,
     QuickAuras_Ready,
     QuickAuras_ReadyThings,
-    QuickAuras_HealerMana,
 }
 
 --QuickAuras.adjustableFrames = {
